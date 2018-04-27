@@ -1,0 +1,20 @@
+require(["esri/tasks/support/RelationshipQuery", "esri/tasks/QueryTask"],
+function(RelationshipQuery, QueryTask)
+{
+    var queryTask = new QueryTask({
+        url: "http://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/LABINS_Update/MapServer/0"
+    });
+
+    var oid = <input ObjectID of pls_ptp_master here as int>;
+
+    var relQuery = new RelationshipQuery({
+        objectIds: [oid],
+        relationshipId: 0,
+        outFields: ["*"],
+        returnGeometry: false
+    });
+    
+    queryTask.executeRelationshipQuery(relQuery).then(function(results){
+        console.log(results[oid].features);
+    });
+});

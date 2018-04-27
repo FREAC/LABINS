@@ -1,0 +1,172 @@
+
+html, body, #viewDiv {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+}
+
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+
+html, body, #viewDiv {
+padding: 0;
+margin: 0;
+height: 100%;
+width: 100%;
+}
+
+.esri-popup .esri-popup-header .esri-title {
+  font-size: 18px;
+  font-weight: bolder;
+}
+
+.esri-popup .esri-popup-body .esri-popup-content {
+  font-size: 14px;
+}
+.esri-ui-top-left {
+  top: 100;
+  left: 500;
+}
+
+
+#overviewDiv {
+  position: absolute;
+  bottom: 20px;
+  right: 12px;
+  width: 225px;
+  height: 150px;
+  border: 1.5px solid black;
+  z-index: 1;
+}
+
+#extentDiv {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  z-index: 2;
+}
+
+
+@media only screen and (max-width: 1026px) { 
+  #overviewDiv { 
+    display: none; 
+  } 
+  #extentDiv {
+    display: none;
+  }
+}
+
+
+.switch {
+position: relative;
+display: inline-block;
+width: 100px;
+height: 25px;
+}
+
+#searchWidgetDiv-suggest-menu {
+background-color: #0d3b4b;
+color: #f6f8f8;
+}
+
+.navbar {
+background-color: #0d3b4b
+
+}
+
+.esri-legend__message {
+  background-color: #0d3b4b;
+  color: #f6f8f8;
+}
+
+
+.esri-legend__service {
+  background-color:#0d3b4b;
+  color: white;
+}
+
+.esri-search .esri-search__container {
+  background-color: #0d3b4b;
+}
+
+.esri-header {
+  background-color: #0d3b4b;
+}
+
+#searchWidgetDiv-suggest-menu:hover {
+  background-color: #0d3b4b;
+}
+
+.esri-menu:hover .esri-search__suggestions-menu:hover {
+  background-color: #0d3b4b;
+}
+
+.esri-search__source {
+  background-color: #FFFF;
+}
+
+#searchWidgetDiv-source-menu {
+  background-color: #315866;
+}
+
+
+
+#clearButton {
+  width: 32px;
+  height: 32px;
+}
+
+/*
+Print Widget
+*/
+
+.esri-print__layout-tab {
+  border: 1px solid #617f8a;
+  color: #d1d9db;
+}
+
+.esri-print__form-section-container {
+  color: #ffffff;
+}
+
+/*
+Popup Styling
+.esri-popup__feature-buttons .esri-popup__actions {
+  display: contents;
+}
+
+*/
+
+/*
+Legend styling
+*/
+
+.esri-legend__message {
+  display:none;
+}
+
+
+
+/*
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(49,88,102,1); 
+  background-color:#fff;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color:#0d3b4b;
+  -webkit-box-shadow: inset 0 0 6px rgba(13,59,75,1); 
+}
+*/

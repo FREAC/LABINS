@@ -700,7 +700,7 @@ require([
   params = new IdentifyParameters();
   params.tolerance = 3;
   params.layerIds = [0, 3, 4, 5, 11];
-  params.layerOption = "all";
+  params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
@@ -709,7 +709,7 @@ require([
   params = new IdentifyParameters();
   params.tolerance = 3;
   params.layerIds = [0, 1, 2, 5, 6, 9, 10];
-  params.layerOption = "all";
+  params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
@@ -718,7 +718,7 @@ require([
   params = new IdentifyParameters();
   params.tolerance = 3;
   params.layerIds = [0];
-  params.layerOption = "all";
+  params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
@@ -727,6 +727,7 @@ require([
 
   var identifyElements = [];
 
+  // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("double-click", function(event) {
       if (mapView.scale < 100000) {
         executeIdentifyTask(event);
@@ -826,12 +827,12 @@ require([
         url: labinslayerURL + "0", 
         popupTemplate: NGSpopupTemplate
       },
-      searchFields: ["pid"],
-      suggestionTemplate: "PID: {pid}, County {county}",
+      searchFields: ["name"],
+      suggestionTemplate: "Designation: {name}, County {county}",
       displayField: "pid",
       exactMatch: false,
-      outFields: ["dec_lat", "dec_long", "pid", "county", "data_srce", "datasheet2"],
-      name: "NGS Control Points PID",
+      outFields: ["dec_lat", "dec_long", "pid", "county", "data_srce", "datasheet2", "name"],
+      name: "NGS Control Points",
       placeholder: "Search by PID",
     }, {
       featureLayer: {
@@ -1014,6 +1015,8 @@ require([
     container: "basemapGalleryDiv",
     view: mapView
   })
+
+
 
   /*
   // LegendLegend

@@ -63,7 +63,7 @@
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelBasemaps" aria-haspopup="true"><span class="glyphicon glyphicon-th-large"></span> Basemaps</a></li>
         <li><a role="menuitem" tebindex="0" data-target="#panelInfo" aria-haspopup="true"><span class="glyphicon glyphicon-info-sign"></span> Info</a></li>
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelPrint" aria-haspopup="true"><span class="glyphicon glyphicon-print"></span> Print</a></li>
-        <li><a role="menuitem" tabindex="0" href="#" id="calciteToggleNavbar" aria-haspopup="true"><span class="glyphicon glyphicon-fullscreen"></span> Full Map</a></li>
+        <li><a role="menuitem" tabindex="0" href="#" id="calciteToggleNavbar" aria-haspopup="true"><span class="glyphicon glyphicon-fullscreen"></span> Toggle Navigation Bar</a></li>
       </ul>
     </div>
     <!-- Title -->
@@ -105,10 +105,10 @@
 
 
   <!-- Info Panel -->
-  <div id="panelInfo" class="panel collapse in">
+  <div id="panelInfo" class="panel collapse">
       <div id="headingInfo" class="panel-heading" role="tab">
         <div class="panel-title">
-          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseInfo" aria-expanded="true" aria-controls="collapseInfo">
+          <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseInfo" aria-expanded="true" aria-controls="collapseInfo">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
             <span class="panel-label">Info</span>
           </a> 
@@ -117,18 +117,12 @@
           </a>  
         </div>
       </div>
-      <div id="collapseInfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingInfo">
+      <div id="collapseInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingInfo">
         <div id="info" class="panel-body" style="text-align: justify">
           <p><span style="font-size: medium">This is the updated LABINS Data Explorer created to replace the current LABINS Viewer in Flex which can be found <a id="tablelink" href="http://labins.org/map/index.html" target="_blank">here</a>.</span></p>
-          <p>Current functionality includes:
-            <br>- Basemaps:
-            <br>- Zoom to Feature:
-            <br>- Legend:
-            <br>- Basemaps:
-            <br>- Info:
-            <br>- Print:
-            <br>- Full Map:
-          </p>
+          <p><span style="font-size: medium">For data questions, contact Lamar Evers. 850.245.2606</span></p>
+          <br>
+          <p><span style="font-size: medium">For website questions, contact Technical Support. 850.644.2305</span></p>
         </div>
     </div>
   </div>
@@ -186,14 +180,16 @@
     </div>
 
 
- <div id="panelLegend" class="panel collapse">
+  <!-- Panel - Layers -->
+
+ <div id="panelLegend" class="panel collapse in">
   <div id="headingLegend" class="panel-heading" role="tab">
     <div class="panel-title">
       <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseLegend" aria-expanded="false" aria-controls="collapseLegend"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span><span class="panel-label">Legend</span></a> 
       <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelLegend"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a> 
     </div>
   </div>
-  <div id="collapseLegend" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLegend">
+  <div id="collapseLegend" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingLegend">
     <div class="panel-body">            
       <div id="legendDiv"></div>
     </div>
@@ -202,21 +198,21 @@
 
 
 
-    <!-- Panel - Layers -->
+  <!-- Panel - Layers -->
 
-    <div id="panelLayers" class="panel collapse">
-      <div id="headingLayers" class="panel-heading" role="tab">
-        <div class="panel-title">
-          <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseLayers" aria-expanded="false" aria-controls="collapseLayers"><span class="glyphicon glyphicon-list" aria-hidden="true"></span><span class="panel-label">Layers</span></a> 
-          <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelLayers"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a> 
-        </div>
-      </div>
-      <div id="collapseLayers" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLayers">
-        <div class="panel-body">            
-          <div id="layersDiv"></div>
-        </div>
+  <div id="panelLayers" class="panel collapse">
+    <div id="headingLayers" class="panel-heading" role="tab">
+      <div class="panel-title">
+        <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseLayers" aria-expanded="false" aria-controls="collapseLayers"><span class="glyphicon glyphicon-list" aria-hidden="true"></span><span class="panel-label">Layers</span></a> 
+        <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelLayers"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a> 
       </div>
     </div>
+    <div id="collapseLayers" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLayers">
+      <div class="panel-body">            
+        <div id="layersDiv"></div>
+      </div>
+    </div>
+  </div>
     
     <!-- Panel - Print -->
 

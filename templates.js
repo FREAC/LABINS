@@ -6,7 +6,7 @@ var customZoomAction = {
 
 
   var NGSpopupTemplate = {
-    title: 'NGS Control Points: {objectid}',
+    title: 'NGS Control Points: {name}',
     content: "<p>(Latitude, Longitude): {dec_lat}, {dec_long}</p>" +
       "<p>County: {county}</p>" +
       "<p>PID: {pid}</p>" +
@@ -20,7 +20,7 @@ var customZoomAction = {
   };
 
   var NGSIdentifyPopupTemplate = {
-    title: 'NGS Control Points: {OBJECTID}',
+    title: 'NGS Control Points: {NAME}',
     content: "<p>(Latitude, Longitude): {DEC_LAT}, {DEC_LONG}</p>" +
       "<p>County: {COUNTY}</p>" +
       "<p>PID: {PID}</p>" +
@@ -91,8 +91,8 @@ var customZoomAction = {
       "<p>Steven's ID: {stevens_id}</p>" +
       "<p><b>DEP Report: <a target='_blank' href={report_dep}>here</a></b></p>",
     actions: [{
-      title: "Visit the National Geodetic Survey website",
-      id: "ngsWebsite",
+      title: "Water Boundary Data - LABINS",
+      id: "waterBoundaryData",
       className: "esri-icon-launch-link-external"
     }]
   };
@@ -133,7 +133,7 @@ var customZoomAction = {
   };
 
   var erosionControlLineTemplate = {
-    title: 'Range Monument',
+    title: 'Erosion Control Line',
     content: "<p><b>Feature ID: {objectid}</b></p>" +
       "<p>County: {county}</p>" +
       "<p>ECL Name: {ecl_name}</p>" +
@@ -280,7 +280,7 @@ var customZoomAction = {
       "<p>BLMID: {blmid}</p>" +
       "<p>Quad Name: {tile_name}</p>" +
       "<p>Quad Number: {quad_num}</p>" +
-      "<p>Image: <a target='_blank' href={image1}>here</a></p>" +
-      "<p>Image: <a target='_blank' href={image2}>here</a></p>" +
-      "<p>Image: <a target='_blank' href={image3}>here</a></p>",
+      "<p>Image: <a target='_blank' href={image1}>{image1}</a></p>" +
+      "<p>Image: <a target='_blank' href={image2}>{image2}</a></p>" +
+      "<p>Image: <a target='_blank' href={image3}>{image3}</a></p>",
   };

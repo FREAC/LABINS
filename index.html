@@ -36,6 +36,8 @@
     <!-- Templates -->
     <script src="templates.js"></script>
 
+    <!-- Parcel Information Templates -->
+    <script src="infopanel.js"></script>
 
     
 
@@ -60,6 +62,7 @@
 
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelLayers" aria-haspopup="true"><span class="glyphicon glyphicon-list"></span> Layers</a></li>
         <li><a role="menuitem" data-target="#panelLayer" aria-haspopup="true"><span class="glyphicon glyphicon-flag"></span> Zoom to Feature</a></li>
+        <li><a role="menuitem" tabindex="0" data-target="#panelPopup" aria-haspopup="true"><span class="glyphicon glyphicon-th-list"></span> Parcel Information</a></li>
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelLegend" aria-haspopup="true"><span class="glyphicon glyphicon-list-alt"></span> Legend</a></li>
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelBasemaps" aria-haspopup="true"><span class="glyphicon glyphicon-th-large"></span> Basemaps</a></li>
         <li><a role="menuitem" tebindex="0" data-target="#panelInfo" aria-haspopup="true"><span class="glyphicon glyphicon-info-sign"></span> Info</a></li>
@@ -128,6 +131,45 @@
     </div>
   </div>
 
+  <!-- Panel - Parcel Information -->
+  <div id="panelPopup" class="panel collapse">
+    <div id="headingPopup" class="panel-heading" role="tab">
+      <div class="panel-title">
+        <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapsePopup"  aria-expanded="true" aria-controls="collapsePopup">
+          <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          <span class="panel-label">Parcel Information</span>
+        </a> 
+        <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelPopup">
+          <span class="esri-icon esri-icon-close" aria-hidden="true"></span>
+        </a>  
+      </div>
+    </div>
+    <div id="collapsePopup" class="panel-collapse" role="tabpanel" aria-labelledby="headingPopup">
+      <div class="panel-body">
+        <li class="dropdown-header" style="color: #FFFFFF"><font size="3">Select Owner</font></li>
+        <select id="selectAgencyPanel" class="form-control"></select>
+        <br>
+        <p><div id="informationdiv"></div></p>
+        <br>
+        <p><div id="numberinputdiv">
+            <nav class="leader-1">
+                <button title="Previous" type="button" class="btn btn-default" id="back">
+                    <span class="esri-icon-reverse" ></span>
+                    
+                </button>
+                <input type="text" id="numinput">
+                <button title="Next" type="button" class="btn btn-default" id="forward">
+                  <span class="esri-icon-forward"></span>
+                    
+                </button>             
+            </nav>
+        </div></p>
+        <p><div id="arraylengthdiv"></div></p>
+      </div>
+   </div>
+  
+  
+  </div>
     
   <!-- Panel - Basemaps -->
 

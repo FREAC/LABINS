@@ -773,6 +773,12 @@ require([
     iPromises.then(function (rArray) {
       arrayUtils.map(rArray, function(response){
         var results = response.results;
+        console.log(results);
+        //Do something here with results
+        for (i=0; i<results.length; i++) {
+          queryInfoPanel(results, i);
+          console.log(i);
+          }
         return arrayUtils.map(results, function(result) {
           var feature = result.feature;
           var layerName = result.layerName;
@@ -1037,6 +1043,11 @@ require([
       selectionLayer.graphics.add(highlightGraphic);
     };
   });
+
+  searchWidget.on("search-complete", function(event){
+      console.log(event);
+      // The results are stored in the event Object[]
+    });
 
   /////////////
   // Widgets //

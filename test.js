@@ -209,7 +209,7 @@ require([
     }, {
       id: 1,
       title: "Township-Range",
-      visible: false,
+      visible: true,
     }, {
       id: 0,
       title: "USGS Quads",
@@ -231,7 +231,6 @@ require([
   var selectionLayer = new GraphicsLayer({
     listMode: "hide"
   });
-
 
   // Symbol that will populate the graphics Layer
   var highlightSymbol = new SimpleFillSymbol(
@@ -773,7 +772,15 @@ require([
     iPromises.then(function (rArray) {
       arrayUtils.map(rArray, function(response){
         var results = response.results;
+        console.log(results);
+        //Do something here with results
+        for (i=0; i<results.length; i++) {
+          queryInfoPanel(results, i);
+          console.log(i);
+          }
+
         return arrayUtils.map(results, function(result) {
+          //console.log(results);
           var feature = result.feature;
           var layerName = result.layerName;
           feature.attributes.layerName = layerName;
@@ -812,6 +819,7 @@ require([
     });
     // Shows the results of the Identify in a popup once the promise is resolved
     function showPopup(response) {
+      console.log(identifyElements);
       console.log(response);
       if (response.length > 0) {
         mapView.popup.open({
@@ -978,7 +986,7 @@ require([
       exactMatch: false,
       outFields: ["t_ch", "r_ch", "twnrng"],
       name: "Township Range",
-      placeholder: "Search by township, range, or township range."
+      placeholder: "Search by township, range, or township range.",
     }],
   });
 
@@ -1036,6 +1044,11 @@ require([
       highlightGraphic = new Graphic(mapView.popup.selectedFeature.geometry, highlightSymbol);
       selectionLayer.graphics.add(highlightGraphic);
     };
+  });
+
+  searchWidget.on("search-complete", function(event){
+    console.log(event);
+    // The results are stored in the event Object[]
   });
 
   /////////////

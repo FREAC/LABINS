@@ -284,3 +284,12 @@ var customZoomAction = {
       "<p>Image: <a target='_blank' href={image2}>{image2}</a></p>" +
       "<p>Image: <a target='_blank' href={image3}>{image3}</a></p>",
   };
+
+  // TRS
+  var TRSTemplate = {
+    title: "Township Range",
+    content:
+      "<p>Township: {t_ch}</p>"+
+      "<p>Range: {r_ch}</p>"+
+      "<p>Township, Range: {twnrng}</p>",
+  }

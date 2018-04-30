@@ -135,6 +135,32 @@ Print Widget
   color: #ffffff;
 }
 
+.esri-print__export-panel-container {
+  color: #ffffff;
+}
+
+.esri-print__author-info-container {
+  color: #000000;
+}
+.esri-print__copyright-info-container {
+  color: #000000;
+}
+
+.esri-print__legend-info-container {
+  color: #000000;
+}
+
+.esri-print__input-text .esri-input {
+  color: #000000;
+}
+
+.esri-print__form-section-container {
+  color: #000000
+}
+
+.esri-print__input-text {
+  color: #000000
+}
 /*
 Popup Styling
 .esri-popup__feature-buttons .esri-popup__actions {

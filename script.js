@@ -751,16 +751,19 @@ require([
 
 
   var identifyElements = [];
-
+  var infoPanelData = [];
   // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("double-click", function(event) {
       if (mapView.scale < 100000) {
         executeIdentifyTask(event);
+        //queryInfoPanel(infoPanelData, 0);
       }  
   });
 
 
   function executeIdentifyTask(event) {
+    infoPanelData = [];
+    identifyElements = [];
     event.stopPropagation()
     promises = [];
     // Set the geometry to the location of the view click
@@ -773,12 +776,7 @@ require([
     iPromises.then(function (rArray) {
       arrayUtils.map(rArray, function(response){
         var results = response.results;
-        console.log(results);
-        //Do something here with results
-        for (i=0; i<results.length; i++) {
-          queryInfoPanel(results, i);
-          console.log(i);
-          }
+        console.log(typeof results);
         return arrayUtils.map(results, function(result) {
           var feature = result.feature;
           var layerName = result.layerName;
@@ -812,6 +810,7 @@ require([
           }
           //console.log(identifyElements);
           identifyElements.push(feature);
+          infoPanelData.push(feature);
         });
       })
       showPopup(identifyElements);
@@ -824,10 +823,10 @@ require([
           features: response,
           location: event.mapPoint
         });
-      identifyElements = [];
+      //identifyElements = [];
       }
       dom.byId("viewDiv").style.cursor = "auto";
-      identifyElements = [];
+      //identifyElements = [];
     }
   }
 
@@ -1048,6 +1047,40 @@ require([
       console.log(event);
       // The results are stored in the event Object[]
     });
+
+  query("#numinput").on("change", function(e) {
+    console.log(identifyElements.length);
+    if (e.target.value < identifyElements.length && e.target.value >= 1) {
+    queryInfoPanel(identifyElements, e.target.value);
+    var itemVal = $('#numinput').val();
+    var indexVal = parcelVal - 1;
+
+    // Determine the index value
+    var parcelVal = $('#numinput').val();
+    var indexVal = parcelVal - 1;
+    
+    // Go to the selected parcel
+    //mapView.goTo(parcelData[indexVal]);
+    var ext = identifyElements[indexVal].geometry.extent;
+    var cloneExt = ext.clone();
+    mapView.goTo({
+        target: identifyElements[indexVal],
+        extent: cloneExt.expand(1.75)
+    });
+
+    // Remove current selection
+    selectionLayer.graphics.removeAll();
+
+    // Highlight the selected parcel
+    
+    highlightGraphic = new Graphic(identifyElements[indexVal].geometry, highlightSymbol);
+    selectionLayer.graphics.add(highlightGraphic);
+
+    } else {
+        //$('#numinput').val(currentIndex);
+        console.log("number out of range");
+    }
+});
 
   /////////////
   // Widgets //

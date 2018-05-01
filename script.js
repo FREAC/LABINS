@@ -756,7 +756,6 @@ require([
   mapView.on("double-click", function(event) {
       if (mapView.scale < 100000) {
         executeIdentifyTask(event);
-        //queryInfoPanel(infoPanelData, 0);
       }  
   });
 
@@ -811,13 +810,16 @@ require([
           //console.log(identifyElements);
           identifyElements.push(feature);
           infoPanelData.push(feature);
+
         });
       })
-      showPopup(identifyElements);
+      console.log(infoPanelData);
+      queryInfoPanel(infoPanelData, 0);
+      showPopup(identifyElements); 
+      
     });
     // Shows the results of the Identify in a popup once the promise is resolved
     function showPopup(response) {
-      console.log(response);
       if (response.length > 0) {
         mapView.popup.open({
           features: response,
@@ -829,6 +831,7 @@ require([
       //identifyElements = [];
     }
   }
+                        
 
   //////////////////////////////////
   //// Search Widget Text Search ///
@@ -1049,9 +1052,10 @@ require([
     });
 
   query("#numinput").on("change", function(e) {
-    console.log(identifyElements.length);
-    if (e.target.value < identifyElements.length && e.target.value >= 1) {
-    queryInfoPanel(identifyElements, e.target.value);
+    console.log("target value");
+    console.log(e.target.value);
+    if (e.target.value < infoPanelData.length && e.target.value >= 1) {
+    queryInfoPanel(infoPanelData, e.target.value);
     var itemVal = $('#numinput').val();
     var indexVal = parcelVal - 1;
 
@@ -1061,10 +1065,10 @@ require([
     
     // Go to the selected parcel
     //mapView.goTo(parcelData[indexVal]);
-    var ext = identifyElements[indexVal].geometry.extent;
+    var ext = infoPanelData[indexVal].geometry.extent;
     var cloneExt = ext.clone();
     mapView.goTo({
-        target: identifyElements[indexVal],
+        target: infoPanelData[indexVal],
         extent: cloneExt.expand(1.75)
     });
 
@@ -1073,14 +1077,74 @@ require([
 
     // Highlight the selected parcel
     
-    highlightGraphic = new Graphic(identifyElements[indexVal].geometry, highlightSymbol);
+    highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
     selectionLayer.graphics.add(highlightGraphic);
 
     } else {
         //$('#numinput').val(currentIndex);
         console.log("number out of range");
     }
-});
+  });
+
+    // Listen for the back button
+    query("#back").on("click", function() {
+      if ($('#numinput').val() > 1) {
+      value = $('#numinput').val();
+      value = parseInt(value);
+      queryInfoPanel(infoPanelData, --value);
+      $('#numinput').val(value);
+
+      // Determine the index value
+      var parcelVal = $('#numinput').val();
+      var indexVal = parcelVal - 1;
+
+      // Go to the selected parcel
+      var ext = infoPanelData[indexVal].geometry.extent;
+      var cloneExt = ext.clone();
+      mapView.goTo({
+          target: infoPanelData[indexVal],
+          extent: cloneExt.expand(1.75)
+      });
+
+      // Remove current selection
+      selectionLayer.graphics.removeAll();
+
+      // Highlight the selected parcel
+      highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
+      selectionLayer.graphics.add(highlightGraphic);
+      }
+      
+  });
+  
+  // Listen for forward button
+  query("#forward").on("click", function() {
+      if ($('#numinput').val() < infoPanelData.length) {
+      value = $('#numinput').val();
+      value = parseInt(value);
+      queryInfoPanel(infoPanelData, ++value);
+      $('#numinput').val(value);
+
+      // Determine the index value
+      var parcelVal = $('#numinput').val();
+      var indexVal = parcelVal - 1;
+      
+      // Go to the selected parcel
+      var ext = infoPanelData[indexVal].geometry.extent;
+      var cloneExt = ext.clone();
+      mapView.goTo({
+          target: infoPanelData[indexVal],
+          extent: cloneExt.expand(1.75)
+      });
+
+      // Remove current selection
+      selectionLayer.graphics.removeAll();
+
+      // Highlight the selected parcel
+      highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
+      selectionLayer.graphics.add(highlightGraphic);
+      }
+  });
+
 
   /////////////
   // Widgets //

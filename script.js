@@ -752,6 +752,8 @@ require([
 
   var identifyElements = [];
   var infoPanelData = [];
+  var currentIndex;
+
   // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("double-click", function(event) {
       if (mapView.scale < 100000) {
@@ -1121,6 +1123,7 @@ require([
       if ($('#numinput').val() < infoPanelData.length) {
       value = $('#numinput').val();
       value = parseInt(value);
+      console.log(value);
       queryInfoPanel(infoPanelData, ++value);
       $('#numinput').val(value);
 

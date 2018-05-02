@@ -1132,13 +1132,22 @@ require([
       var indexVal = parcelVal - 1;
       
       // Go to the selected parcel
-      var ext = infoPanelData[indexVal].geometry.extent;
-      var cloneExt = ext.clone();
-      mapView.goTo({
+      if (infoPanelData[indexVal].geometry.extent) {
+        var ext = infoPanelData[indexVal].geometry.extent;
+        var cloneExt = ext.clone();
+        mapView.goTo({
           target: infoPanelData[indexVal],
           extent: cloneExt.expand(1.75)
-      });
-
+        });
+      } else {
+        var ext = infoPanelData[indexVal].geometry;
+        var cloneExt = ext.clone();
+        mapView.goTo({
+          target: infoPanelData[indexVal],
+          //extent: cloneExt.expand(1.75)
+        });
+      }
+      
       // Remove current selection
       selectionLayer.graphics.removeAll();
 

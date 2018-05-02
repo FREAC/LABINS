@@ -2,10 +2,10 @@ function queryInfoPanel (results, i) {
     console.log(results);
     // Set HTML templates for information panel
     if (results[i-1].attributes.layerName === 'USGS Quads') {
-        $('#informationdiv').html('<b>Quad Name:</b> ' + results[i-1].attributes.tile_name + '<br>' + 
-                                '<b>Latitude, Longitude:</b> ' + results[i-1].attributes.latitude + ', ' + results[i-1].attributes.longitude + '<br>' +
-                                '<b>County:</b> ' + results[i-1].attributes.quad + '<br>' + 
-                                '<b>Layer Name:</b> ' + results[i-1].attributes.layerName + '<br>' 
+        $('#informationdiv').html('<b>Quad Name:</b> ' + results[i-1].attributes.tile_name + '</p>' + 
+                                '<p><b>Latitude, Longitude:</b> ' + results[i-1].attributes.latitude + ', ' + results[i-1].attributes.longitude + '</p>' +
+                                '<p><b>County:</b> ' + results[i-1].attributes.quad + '</p>' + 
+                                '<p><b>Layer Name:</b> ' + results[i-1].attributes.layerName + '</p>' 
                                 );
     } else if (results[i-1].attributes.layerName === 'County Boundaries') {
         $('#informationdiv').html('<p><b>County Name:</b> ' + results[i-1].attributes.ctyname + '</p>' + 
@@ -61,30 +61,44 @@ function queryInfoPanel (results, i) {
                                 '<p><b>Status: </b>' + results[i-1].attributes.status + '</p>' +
                                 '<p><b>MHW (feet): </b>' + results[i-1].attributes.navd88mhw_ft + '</p>' +
                                 '<p><b>MLW (feet): </b>' + results[i-1].attributes.navd88mlw_ft + '</p>' +
-                                "<p><b>Steven's ID: </b>" + results[i-1].attributes.navd88mlw_ft + '</p>' +
+                                "<p><b>Steven's ID: </b>" + results[i-1].attributes.stevens_id + '</p>' +
                                 '<p>DEP Report: ' + '<a href=' + results[i-1].attributes.report_dep + '>' + results[i-1].attributes.filename + '</a></p>',
 
         );
     } else if (results[i-1].attributes.layerName === 'Tide Interpolation Points') {
-        $('#informationdiv').html(
-
-        );
+        $('#informationdiv').html('<p><b>Tide Interpolation Points: </b>' + results[i-1].attributes.iden + '</p>' +
+                                '<p><b>County: </b>' + results[i-1].attributes.cname + '</p>' +
+                                '<p><b>Quad: </b>' + results[i-1].attributes.tile_name + '</p>' + 
+                                '<p><b>Method: </b>' + results[i-1].attributes.method + '</p>' +
+                                '<p><b>MHW (feet): </b>' + results[i-1].attributes.mhw2_ft + '</p>' +
+                                '<p><b>MLW (feet): </b>' + results[i-1].attributes.mlw2_ft + '</p>' +
+                                '<p><b>Station 1: </b>' + results[i-1].attributes.station1 + '</p>' +
+                                '<p><b>Station 2: </b>' + results[i-1].attributes.station2 + '</p>' +
+                                '<p>Report: ' + '<p>Download report: <a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin=' + results[i-1].attributes.iden + '&mCountyName=' + results[i-1].attributes.cname + '&mQuad=' + results[i-1].attributes.tile_name + '&mhw=' + results[i-1].attributes.mhw2_ft + '&mlw=' + results[i-1].attributes.mlw2_ft + '>here</a></p>'
+                                );
     } else if (results[i-1].attributes.layerName === 'R-Monuments') {
-        $('#informationdiv').html(
-
-        );
+        $('#informationdiv').html('<p><b>Regional Coastal Monitoring Data</b> </p>' + 
+                                '<p><b>Feature ID: </b>' + results[i-1].attributes.unique_id + '</p>' +
+                                '<p><b>Monument Name: </b>' + results[i-1].attributes.monument_name + '</p>' + 
+                                '<p><b>State Plane Zone: </b>' + results[i-1].attributes.state_plane_zone + '</p>' +
+                                '<p><b>County: </b>' + results[i-1].attributes.county + '</p>' +
+                                '<p><b>Latitude: </b>' + results[i-1].attributes.latitude + '</p>' +
+                                '<p><b>Longitude: </b>' + results[i-1].attributes.longitude + '</p>' 
+                                );
     } else if (results[i-1].attributes.layerName === 'Erosion Control Line') {
-        $('#informationdiv').html(
-
-        );
+        $('#informationdiv').html('<p><b>Erosion Control Line</b> </p>' + 
+                                '<p><b>Feature ID: </b>' + results[i-1].attributes.objectid + '</p>' +
+                                '<p><b>County: </b>' + results[i-1].attributes.county + '</p>' + 
+                                '<p><b>ECL Name: </b>' + results[i-1].attributes.ecl_name + '</p>' +
+                                '<p><b>MHW: </b>' + results[i-1].attributes.mhw + '</p>' +
+                                '<p><b>Location: </b>' + results[i-1].attributes.location + '</p>' +
+                                '<p><b>Download Information: </b>' + '<a target="_blank" href=http://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i-1].attributes.mhw + '.pdf&fileType=MAP>here</a></p>' 
+                                );
     } else if (results[i-1].attributes.layerName === 'Survey Benchmarks') {
-        $('#informationdiv').html(
-
-        );
-    } else if (results[i-1].attributes.layerName === 'Tide Interpolation Points') {
-        $('#informationdiv').html(
-
-        );
+        $('#informationdiv').html('<p><b>SWFWMD Survey Benchmarks</b></p>' + 
+                                '<p><b>Benchmark Name: {BENCHMARK_NAME}</b></p>' +
+                                '<p>More Information: <a target="_blank" href=http://ftp.labins.org/swfwmd/SWFWMD_control_2013/' + results[i-1].attributes.FILE_NAME + '>' + results[i-1].attributes.FILE_NAME + '</a></p>'
+                                );
     }
     currentIndex = i-1;
     console.log(i);

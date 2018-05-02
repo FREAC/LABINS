@@ -177,6 +177,13 @@ Legend styling
   display:none;
 }
 
+/*
+Info Panel
+*/
+.leader-1 {
+  display: flex;
+  justify-content: space-around;
+}
 
 
 /*

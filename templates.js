@@ -244,10 +244,10 @@ var customZoomAction = {
 
   var cityLimitsTemplate = { // autocasts as new PopupTemplate()
     title: "City name: {name}",
-    content: "<b>county:</b> {county}" +
-      "<br><b>objectid:</b> {objectid}" +
-      "<br><b>tax_count:</b> {tax_count}" +
-      "<br><b>descript:</b> {descript}"
+    content: "<b>county:</b> {county}'</p>'" +
+      "<p><b>objectid:</b> {objectid}'</p>'" +
+      "<p><b>tax_count:</b> {tax_count}'</p>'" + 
+      "<p><b>descript:</b> {descript}'</p>'"
   };
 
   var countyTemplate = { // autocasts as new PopupTemplate()

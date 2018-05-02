@@ -816,7 +816,7 @@ require([
         });
       })
       console.log(infoPanelData);
-      queryInfoPanel(infoPanelData, 0);
+      queryInfoPanel(infoPanelData, 1);
       showPopup(identifyElements); 
       
     });
@@ -1056,7 +1056,7 @@ require([
   query("#numinput").on("change", function(e) {
     console.log("target value");
     console.log(e.target.value);
-    if (e.target.value < infoPanelData.length && e.target.value >= 1) {
+    if (e.target.value <= infoPanelData.length && e.target.value >= 1) {
     queryInfoPanel(infoPanelData, e.target.value);
     var itemVal = $('#numinput').val();
     var indexVal = parcelVal - 1;

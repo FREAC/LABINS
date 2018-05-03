@@ -755,6 +755,7 @@ require([
   // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("double-click", function(event) {
       if (mapView.scale < 100000) {
+        console.log(event);
         executeIdentifyTask(event);
       }  
   });
@@ -1038,6 +1039,10 @@ require([
     };
   });
 
+  
+
+
+
   /////////////
   // Widgets //
   /////////////
@@ -1111,7 +1116,15 @@ require([
   });
   mapView.ui.add(locateBtn, "top-left");
 
+  // Fires after the user's location has been found
+  locateBtn.on("locate", function(event) {
+    console.log(event);
+    executeIdentifyTask(event);
+    console.log("finished");
+  });
+
   var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
 
+  
 });

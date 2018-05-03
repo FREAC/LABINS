@@ -412,6 +412,32 @@ require([
       return union;
   }
 
+  // Build select panel for info panel filter dropdown
+  function buildUniquePanel () {
+    console.log("into the build function");
+    var uniqueLayerNames = [];
+    for(i = 0; i< infoPanelData.length; i++){    
+      if(uniqueLayerNames.indexOf(infoPanelData[i].attributes.layerName) === -1){
+          uniqueLayerNames.push(infoPanelData[i].attributes.layerName);        
+      } 
+      //console.log(infoPanelData[i].attributes.layerName);       
+    }
+
+    uniqueLayerNames.sort();
+
+    // Create the placeholder
+    var option = domConstruct.create("option");
+    option.text = "Filter by Layer";
+    dom.byId("filterLayerPanel").add(option);
+
+    // Populate with unique layers
+    uniqueLayerNames.forEach(function (value) {
+      var option = domConstruct.create("option");
+      option.text = value;
+      dom.byId("filterLayerPanel").add(option);
+    });
+  }
+
   // Union geometries of multi polygon features
   function unionGeometries (response) {
     // Array to store polygons in
@@ -591,6 +617,8 @@ require([
   query("#selectCityPanel").on("change", function (e) {
     return zoomToFeature(controlLinesURL + "3", e.target.value, "name");
   });
+
+
 
   ////////////////////////////////////////////////
   //// Zoom to Township/Section/Range Feature ////
@@ -817,6 +845,7 @@ require([
       })
       console.log(infoPanelData);
       queryInfoPanel(infoPanelData, 1);
+      buildUniquePanel();
       showPopup(identifyElements); 
       
     });

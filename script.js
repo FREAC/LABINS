@@ -412,6 +412,32 @@ require([
       return union;
   }
 
+  // Build select panel for info panel filter dropdown
+  function buildUniquePanel () {
+    console.log("into the build function");
+    var uniqueLayerNames = [];
+    for(i = 0; i< infoPanelData.length; i++){    
+      if(uniqueLayerNames.indexOf(infoPanelData[i].attributes.layerName) === -1){
+          uniqueLayerNames.push(infoPanelData[i].attributes.layerName);        
+      } 
+      //console.log(infoPanelData[i].attributes.layerName);       
+    }
+
+    uniqueLayerNames.sort();
+    domConstruct.empty("filterLayerPanel");
+    // Create the placeholder
+    var option = domConstruct.create("option");
+    option.text = "Filter by Layer";
+    dom.byId("filterLayerPanel").add(option);
+
+    // Populate with unique layers
+    uniqueLayerNames.forEach(function (value) {
+      var option = domConstruct.create("option");
+      option.text = value;
+      dom.byId("filterLayerPanel").add(option);
+    });
+  }
+
   // Union geometries of multi polygon features
   function unionGeometries (response) {
     // Array to store polygons in
@@ -592,6 +618,8 @@ require([
     return zoomToFeature(controlLinesURL + "3", e.target.value, "name");
   });
 
+
+
   ////////////////////////////////////////////////
   //// Zoom to Township/Section/Range Feature ////
   ////////////////////////////////////////////////
@@ -751,6 +779,8 @@ require([
 
 
   var identifyElements = [];
+  var infoPanelData = [];
+  var currentIndex;
 
   // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("double-click", function(event) {
@@ -762,6 +792,8 @@ require([
 
 
   function executeIdentifyTask(event) {
+    infoPanelData = [];
+    identifyElements = [];
     event.stopPropagation()
     promises = [];
     // Set the geometry to the location of the view click
@@ -774,6 +806,7 @@ require([
     iPromises.then(function (rArray) {
       arrayUtils.map(rArray, function(response){
         var results = response.results;
+        console.log(typeof results);
         return arrayUtils.map(results, function(result) {
           var feature = result.feature;
           var layerName = result.layerName;
@@ -807,24 +840,30 @@ require([
           }
           //console.log(identifyElements);
           identifyElements.push(feature);
+          infoPanelData.push(feature);
+
         });
       })
-      showPopup(identifyElements);
+      console.log(infoPanelData);
+      queryInfoPanel(infoPanelData, 1);
+      buildUniquePanel();
+      showPopup(identifyElements); 
+      
     });
     // Shows the results of the Identify in a popup once the promise is resolved
     function showPopup(response) {
-      console.log(response);
       if (response.length > 0) {
         mapView.popup.open({
           features: response,
           location: event.mapPoint
         });
-      identifyElements = [];
+      //identifyElements = [];
       }
       dom.byId("viewDiv").style.cursor = "auto";
-      identifyElements = [];
+      //identifyElements = [];
     }
   }
+                        
 
   //////////////////////////////////
   //// Search Widget Text Search ///
@@ -1039,7 +1078,145 @@ require([
     };
   });
 
+
+  searchWidget.on("search-complete", function(event){
+      console.log(event);
+      // The results are stored in the event Object[]
+    });
+
+  query("#numinput").on("change", function(e) {
+    console.log("target value");
+    console.log(e.target.value);
+    if (e.target.value <= infoPanelData.length && e.target.value >= 1) {
+    queryInfoPanel(infoPanelData, e.target.value);
+    var itemVal = $('#numinput').val();
+    var indexVal = parcelVal - 1;
+
+    // Determine the index value
+    var parcelVal = $('#numinput').val();
+    var indexVal = parcelVal - 1;
+    
+    // Go to the selected parcel
+    //mapView.goTo(parcelData[indexVal]);
+    var ext = infoPanelData[indexVal].geometry.extent;
+    var cloneExt = ext.clone();
+    mapView.goTo({
+        target: infoPanelData[indexVal],
+        extent: cloneExt.expand(1.75)
+    });
+
+    // Remove current selection
+    selectionLayer.graphics.removeAll();
+
+    // Highlight the selected parcel
+    
+    highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
+    selectionLayer.graphics.add(highlightGraphic);
+
+    } else {
+        //$('#numinput').val(currentIndex);
+        console.log("number out of range");
+    }
+  });
+
+    // Listen for the back button
+    query("#back").on("click", function() {
+      if ($('#numinput').val() > 1) {
+      value = $('#numinput').val();
+      value = parseInt(value);
+      queryInfoPanel(infoPanelData, --value);
+      $('#numinput').val(value);
+
+      // Determine the index value
+      var parcelVal = $('#numinput').val();
+      var indexVal = parcelVal - 1;
+
+      // Go to the selected parcel
+      var ext = infoPanelData[indexVal].geometry.extent;
+      var cloneExt = ext.clone();
+      mapView.goTo({
+          target: infoPanelData[indexVal],
+          extent: cloneExt.expand(1.75)
+      });
+
+      // Remove current selection
+      selectionLayer.graphics.removeAll();
+
+      // Highlight the selected parcel
+      highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
+      selectionLayer.graphics.add(highlightGraphic);
+      }
+      
+  });
   
+  // Listen for forward button
+  query("#forward").on("click", function() {
+      if ($('#numinput').val() < infoPanelData.length) {
+      value = $('#numinput').val();
+      value = parseInt(value);
+      console.log(value);
+      queryInfoPanel(infoPanelData, ++value);
+      $('#numinput').val(value);
+
+      // Determine the index value
+      var parcelVal = $('#numinput').val();
+      var indexVal = parcelVal - 1;
+      
+      // Go to the selected parcel
+      if (infoPanelData[indexVal].geometry.extent) {
+        var ext = infoPanelData[indexVal].geometry.extent;
+        var cloneExt = ext.clone();
+        mapView.goTo({
+          target: infoPanelData[indexVal],
+          extent: cloneExt.expand(1.75)
+        });
+      } else {
+        var ext = infoPanelData[indexVal].geometry;
+        var cloneExt = ext.clone();
+        mapView.goTo({
+          target: infoPanelData[indexVal],
+          //extent: cloneExt.expand(1.75)
+        });
+      }
+      
+      // Remove current selection
+      selectionLayer.graphics.removeAll();
+
+      // Highlight the selected parcel
+      highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
+      selectionLayer.graphics.add(highlightGraphic);
+      }
+  });
+  
+  // handle the dropdown layer selection
+  // the identifyElements array will hold all of the identifyTask values
+  query("#filterLayerPanel").on("change", function (e) {
+    // intermediary container
+    var infoPanelDataCopy = [];
+
+    //copy to an infopaneldatacopy array
+    for (i=0;i<identifyElements.length;i++) {
+      infoPanelDataCopy.push(identifyElements[i]);
+    }
+    infoPanelData = [];
+
+    console.log(e.target.value);
+    // loop through copy array to check for selected layers
+    for (i=0;i<infoPanelDataCopy.length;i++) {
+      if (infoPanelDataCopy[i].attributes.layerName === e.target.value) {
+        infoPanelData.push(infoPanelDataCopy[i]);
+      }
+    }
+    // if layer changes to "filter by layer", reset everything
+    if (e.target.value === "Filter by Layer") {
+      for (i=0;i<identifyElements.length;i++) {
+        infoPanelData.push(identifyElements[i]);
+      }      
+    }
+    queryInfoPanel(infoPanelData, 1);
+
+  });
+
 
 
 

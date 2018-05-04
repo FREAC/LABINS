@@ -1185,10 +1185,11 @@ require([
       selectionLayer.graphics.add(highlightGraphic);
       }
   });
-  var filterArray = [];
+  
   // handle the dropdown layer selection
+  // the identifyElements array will hold all of the identifyTask values
   query("#filterLayerPanel").on("change", function (e) {
-    filterArray = [];
+    // intermediary container
     var infoPanelDataCopy = [];
 
     //copy to an infopaneldatacopy array

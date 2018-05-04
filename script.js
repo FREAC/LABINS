@@ -424,7 +424,7 @@ require([
     }
 
     uniqueLayerNames.sort();
-
+    domConstruct.empty("filterLayerPanel");
     // Create the placeholder
     var option = domConstruct.create("option");
     option.text = "Filter by Layer";
@@ -1184,6 +1184,34 @@ require([
       highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
       selectionLayer.graphics.add(highlightGraphic);
       }
+  });
+  var filterArray = [];
+  // handle the dropdown layer selection
+  query("#filterLayerPanel").on("change", function (e) {
+    filterArray = [];
+    var infoPanelDataCopy = [];
+
+    //copy to an infopaneldatacopy array
+    for (i=0;i<identifyElements.length;i++) {
+      infoPanelDataCopy.push(identifyElements[i]);
+    }
+    infoPanelData = [];
+
+    console.log(e.target.value);
+    // loop through copy array to check for selected layers
+    for (i=0;i<infoPanelDataCopy.length;i++) {
+      if (infoPanelDataCopy[i].attributes.layerName === e.target.value) {
+        infoPanelData.push(infoPanelDataCopy[i]);
+      }
+    }
+    // if layer changes to "filter by layer", reset everything
+    if (e.target.value === "Filter by Layer") {
+      for (i=0;i<identifyElements.length;i++) {
+        infoPanelData.push(identifyElements[i]);
+      }      
+    }
+    queryInfoPanel(infoPanelData, 1);
+
   });
 
 

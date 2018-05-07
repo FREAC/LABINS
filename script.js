@@ -105,7 +105,7 @@ require([
     }, {
       id:8,
       title: "CCR with Images",
-      visible: true,
+      visible: false,
       popupTemplate: CCRTemplate
     },  {
       id:7,
@@ -165,7 +165,7 @@ require([
     url: controlLinesURL,
     sublayers: [{
       id: 11,
-      title: "USDA Soils",
+      title: "Soils June 2012 - Dept. of Agriculture",
       visible: false,
       popupTemplate: soilsTemplate
     }, {
@@ -747,12 +747,12 @@ require([
 
   tasks.push(new IdentifyTask(controlLinesURL));
   tasks.push(new IdentifyTask(labinslayerURL));
-  tasks.push(new IdentifyTask(swfwmdURL));
+  tasks.push(new IdentifyTask('https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/'));
 
   // Set the parameters for the Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [0, 3, 4, 5, 11];
+  params.layerIds = [0, 3, 4, 5];
   params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;

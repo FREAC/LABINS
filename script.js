@@ -242,6 +242,15 @@ require([
     new Color([125, 125, 125, 0.35])
   );
 
+  var highlightPoint = {
+    type: "simple-marker",
+    outline: {
+        width: 1,
+        color: [255, 0, 0, 1]
+    },
+    color: [173, 173, 173, 0.52]
+};
+
   var sectionSym = {
     type: "simple-fill",
     outline: {
@@ -1154,7 +1163,6 @@ require([
       if ($('#numinput').val() < infoPanelData.length) {
       value = $('#numinput').val();
       value = parseInt(value);
-      console.log(value);
       queryInfoPanel(infoPanelData, ++value);
       $('#numinput').val(value);
 
@@ -1169,23 +1177,29 @@ require([
         mapView.goTo({
           target: infoPanelData[indexVal],
           extent: cloneExt.expand(1.75)
+          
         });
-      } else {
-        var ext = infoPanelData[indexVal].geometry;
-        var cloneExt = ext.clone();
-        mapView.goTo({
-          target: infoPanelData[indexVal],
-          //extent: cloneExt.expand(1.75)
-        });
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
+
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
+        selectionLayer.graphics.add(highlightGraphic);
+      }
+      } else if (infoPanelData[indexVal].geometry.type == "point") {
+
+        console.log("it's a point");
+
+        // Remove current selection
+        //selectionLayer.graphics.removeAll();
+
+        // Highlight the selected parcel
+        //highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightPoint);
+        //selectionLayer.graphics.add(highlightGraphic);
+        //mapView.goTo(infoPanelData[indexVal].geometry);
       }
       
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
 
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
-      selectionLayer.graphics.add(highlightGraphic);
-      }
   });
   
   // handle the dropdown layer selection
@@ -1213,6 +1227,8 @@ require([
         infoPanelData.push(identifyElements[i]);
       }      
     }
+
+
     queryInfoPanel(infoPanelData, 1);
 
   });

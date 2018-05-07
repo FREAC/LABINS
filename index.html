@@ -62,7 +62,7 @@
 
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelLayers" aria-haspopup="true"><span class="glyphicon glyphicon-list"></span> Layers</a></li>
         <li><a role="menuitem" data-target="#panelLayer" aria-haspopup="true"><span class="glyphicon glyphicon-flag"></span> Zoom to Feature</a></li>
-        <li><a role="menuitem" tabindex="0" data-target="#panelPopup" aria-haspopup="true"><span class="glyphicon glyphicon-th-list"></span> Parcel Information</a></li>
+        <li><a role="menuitem" tabindex="0" data-target="#panelPopup" aria-haspopup="true"><span class="glyphicon glyphicon-th-list"></span> Information Panel</a></li>
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelLegend" aria-haspopup="true"><span class="glyphicon glyphicon-list-alt"></span> Legend</a></li>
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelBasemaps" aria-haspopup="true"><span class="glyphicon glyphicon-th-large"></span> Basemaps</a></li>
         <li><a role="menuitem" tebindex="0" data-target="#panelInfo" aria-haspopup="true"><span class="glyphicon glyphicon-info-sign"></span> Info</a></li>
@@ -131,13 +131,13 @@
     </div>
   </div>
 
-  <!-- Panel - Parcel Information -->
-  <div id="panelPopup" class="panel collapse">
+  <!-- Panel - Information Panel -->
+  <div id="panelPopup" class="panel collapse in">
     <div id="headingPopup" class="panel-heading" role="tab">
       <div class="panel-title">
         <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapsePopup"  aria-expanded="true" aria-controls="collapsePopup">
           <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-          <span class="panel-label">Parcel Information</span>
+          <span class="panel-label">Information Panel</span>
         </a> 
         <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelPopup">
           <span class="esri-icon esri-icon-close" aria-hidden="true"></span>
@@ -224,9 +224,9 @@
     </div>
 
 
-  <!-- Panel - Layers -->
+  <!-- Panel - Legend -->
 
- <div id="panelLegend" class="panel collapse in">
+ <div id="panelLegend" class="panel collapse">
   <div id="headingLegend" class="panel-heading" role="tab">
     <div class="panel-title">
       <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseLegend" aria-expanded="false" aria-controls="collapseLegend"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span><span class="panel-label">Legend</span></a> 

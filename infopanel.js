@@ -3,6 +3,7 @@ function queryInfoPanel (results, i) {
     // Set HTML templates for information panel
     if (results[i-1].attributes.layerName === 'USGS Quads') {
         $('#informationdiv').html('<b>Quad Name:</b> ' + results[i-1].attributes.tile_name + '</p>' + 
+                                '<b> Quad Number: </b>' + results[i-1].attributes.q_902_83_i + '</p>' +
                                 '<p><b>Latitude, Longitude:</b> ' + results[i-1].attributes.latitude + ', ' + results[i-1].attributes.longitude + '</p>' +
                                 '<p><b>County:</b> ' + results[i-1].attributes.quad + '</p>' + 
                                 '<p><b>Layer Name:</b> ' + results[i-1].attributes.layerName + '</p>' 
@@ -40,11 +41,12 @@ function queryInfoPanel (results, i) {
                                 '<p><b>Description:</b> ' + results[i-1].attributes.descript + '</p>'   
                                 );
     } else if (results[i-1].attributes.layerName === 'Parcels') {
-        $('#informationdiv').html('<p><b>Parcels:</b> ' + results[i-1].attributes.objectid + '</p>' + 
-                                '<p><b>Parcel ID:</b> ' + results[i-1].attributes.parcel_id + '</p>' +
-                                '<p><b>City:</b> ' + results[i-1].attributes.own_city + '</p>' +
-                                '<p><b>State:</b> ' + results[i-1].attributes.own_state + '</p>' +
-                                '<p><b>Address:</b> ' + results[i-1].attributes.phy_addr1 + '</p>'
+        $('#informationdiv').html('<p><b>Parcels</b></p>' + 
+                                '<p><b>Parcel ID:</b> ' + results[i-1].attributes.CO_NO + '</p>' +
+                                '<p><b>Parcel ID:</b> ' + results[i-1].attributes.PARCEL_ID + '</p>' +
+                                '<p><b>City:</b> ' + results[i-1].attributes.OWN_CITY + '</p>' +
+                                '<p><b>State:</b> ' + results[i-1].attributes.OWN_STATE + '</p>' +
+                                '<p><b>Address:</b> ' + results[i-1].attributes.PHY_ADDR1 + '</p>'
                                 );
     } else if (results[i-1].attributes.layerName === 'Preliminary NGS Points') {
         $('#informationdiv').html('<p><b>Preliminary NGS Control Points: </b>' + results[i-1].attributes.FeatureID + '</p>' +
@@ -96,13 +98,14 @@ function queryInfoPanel (results, i) {
                                 );
     } else if (results[i-1].attributes.layerName === 'Survey Benchmarks') {
         $('#informationdiv').html('<p><b>SWFWMD Survey Benchmarks</b></p>' + 
-                                '<p><b>Benchmark Name: {BENCHMARK_NAME}</b></p>' +
-                                '<p>More Information: <a target="_blank" href=http://ftp.labins.org/swfwmd/SWFWMD_control_2013/' + results[i-1].attributes.FILE_NAME + '>' + results[i-1].attributes.FILE_NAME + '</a></p>'
+                                '<p><b>Benchmark Name: </b>' + results[i-1].attributes.BENCHMARK_NAME + '</p>' +
+                                '<p>More Information: </b><a target="_blank" href=http://ftp.labins.org/swfwmd/SWFWMD_control_2013/' + results[i-1].attributes.FILE_NAME + '>' + results[i-1].attributes.FILE_NAME + '</a></p>'
                                 );
         
     } else if (results[i-1].attributes.layerName === 'Certified Corners') {
         $('#informationdiv').html('<p><b>Certified Corners</b></p>' + 
-                                '<p><b>BLMID: </b>' + results[i-1].attributes.blmid + '</p>'
+                                '<p><b>BLMID: </b>' + results[i-1].attributes.blmid + '</p>' +
+                                '<p><b>Quad Name: </b>' + results[i-1].attributes.tile_name + '</p>'
                                 );
         //console.log(results[i-1].attributes.image1);
         for (var prop in results[i-1].attributes) {
@@ -117,5 +120,5 @@ function queryInfoPanel (results, i) {
     currentIndex = i-1;
     console.log(i);
     $('#numinput').val(parseInt(i));
-    $('#arraylengthdiv').html('Parcel ' + (parseInt(i)) + ' of ' + results.length);
+    $('#arraylengthdiv').html('Feature ' + (parseInt(i)) + ' of ' + results.length);
 }

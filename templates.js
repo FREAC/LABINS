@@ -25,7 +25,7 @@ var customZoomAction = {
       "<p>County: {COUNTY}</p>" +
       "<p>PID: {PID}</p>" +
       "<p>Data Source: <a target='_blank' href={DATA_SRCE}>here</a></p>" +
-      "<p>Datasheet: <a href={DATASHEET2}>here</a></p>",
+      "<p>Datasheet: <a href='_blank'{DATASHEET2}>here</a></p>",
     actions: [{
       title: "Visit NGS website",
       id: "ngsWebsite",
@@ -66,12 +66,10 @@ var customZoomAction = {
   // https://community.esri.com/community/gis/web-gis/arcgisonline/blog/2017/07/18/conditional-field-display-with-arcade-in-pop-ups
   // for conditional expressions
   var certifiedCornersTemplate = {
-    title: 'Certified Corners: {FeatureID}',
-    content: "<p><b>BLMID: {blmid}</b></p>" +
-      "<p><b>image1: <a target='_blank' href={image1}>here</a></b></p>" +
-      "<p><b>image2: <a target='_blank' href={image2}>here</a></b></p>" +
-      "<p>Quad Name: {tile_name}</p>" +
-      "<p>Quad Number: {quad_num}</p>",
+    title: 'Certified Corners',
+    content: "<p><b>BLMID: </b>{blmid}</p>" +
+      "<p>Quad Name: {tile_name}</p>" +  
+      "<p><b>Images: </b><a target='_blank' href=http://labins.org/survey_data/landrecords/fromFlexMap_blmid_search.cfm?blmid={blmid}>Here</a></p>",
     actions: [{
       title: "Visit the National Geodetic Survey website",
       id: "ngsWebsite",

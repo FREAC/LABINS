@@ -99,6 +99,20 @@ function queryInfoPanel (results, i) {
                                 '<p><b>Benchmark Name: {BENCHMARK_NAME}</b></p>' +
                                 '<p>More Information: <a target="_blank" href=http://ftp.labins.org/swfwmd/SWFWMD_control_2013/' + results[i-1].attributes.FILE_NAME + '>' + results[i-1].attributes.FILE_NAME + '</a></p>'
                                 );
+        
+    } else if (results[i-1].attributes.layerName === 'Certified Corners') {
+        $('#informationdiv').html('<p><b>Certified Corners</b></p>' + 
+                                '<p><b>BLMID: </b>' + results[i-1].attributes.blmid + '</p>'
+                                );
+        //console.log(results[i-1].attributes.image1);
+        for (var prop in results[i-1].attributes) {
+            if (prop.startsWith('image')) {
+                if (results[i-1].attributes[prop].length > 1) {
+                    $('#informationdiv').append('<p><b>Image: </b><a target="_blank" href=' + results[i-1].attributes[prop] + '>' + results[i-1].attributes[prop] + '</a></p>');
+                }
+            }
+            
+        }
     }
     currentIndex = i-1;
     console.log(i);

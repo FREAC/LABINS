@@ -16,7 +16,10 @@ require([
   "esri/symbols/SimpleLineSymbol",
   "esri/renderers/SimpleRenderer",
   "esri/tasks/Locator",
-
+  "esri/tasks/GeometryService",
+  "esri/geometry/support/webMercatorUtils",
+  "esri/tasks/support/BufferParameters",
+  "esri/geometry/SpatialReference",
 
   // Widgets
   "esri/widgets/BasemapGallery",
@@ -64,6 +67,10 @@ require([
   SimpleLineSymbol,
   SimpleRenderer,
   Locator,
+  GeometryService,
+  webMercatorUtils,
+  BufferParameters,
+  SpatialReference,
   Basemaps,
   Search,
   Legend,
@@ -78,6 +85,7 @@ require([
   Dropdown,
   CalciteMaps,
   CalciteMapsArcGISSupport) {
+
 
   var labinslayerURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/LABINS_2017_Pts_No_SWFMWD/MapServer/";
   var labinsLayer = new MapImageLayer({
@@ -596,6 +604,7 @@ require([
     selectionLayer.add(bufferGraphic);
     //console.log(bufferGeometry);
     return bufferGeometry;
+    //return buffer;
   }
 
   ///////////////////////
@@ -795,6 +804,7 @@ require([
   mapView.on("double-click", function(event) {
       if (mapView.scale < 100000) {
         console.log(event);
+        event.stopPropagation();
         executeIdentifyTask(event);
       }  
   });
@@ -803,11 +813,16 @@ require([
   function executeIdentifyTask(event) {
     infoPanelData = [];
     identifyElements = [];
-    event.stopPropagation()
     promises = [];
     // Set the geometry to the location of the view click
-    allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event.mapPoint;
-    allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
+    if (event.type === "double-click") {
+      allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event.mapPoint;
+      allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
+    } else {
+      allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event;
+      allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
+    }
+
     for (i = 0; i < tasks.length; i++) {
       promises.push(tasks[i].execute(allParams[i]));
     }
@@ -1368,14 +1383,48 @@ require([
   mapView.ui.add(locateBtn, "top-left");
 
   // Fires after the user's location has been found
-  locateBtn.on("locate", function(event) {
-    console.log(event);
-    executeIdentifyTask(event);
+  /*locateBtn.on("locate", function(event) {
+    var bufferGeometry = event.target.graphic.geometry;
+    var buffer = geometryEngine.buffer(bufferGeometry, 50, "feet", false)
+
+    console.log(bufferGeometry);
+    console.log(buffer);
+    var bufferGraphic = new Graphic({
+      geometry: buffer,
+      symbol: highlightSymbol
+    });
+    selectionLayer.graphics.removeAll();
+    selectionLayer.add(bufferGraphic);
+
+    console.log(selectionLayer.graphics.items[0].geometry);
+    executeIdentifyTask(buffer);
     console.log("finished");
   });
+*/
+locateBtn.on("locate", function(event) {
+  console.log("in")
+var webMerPoint = webMercatorUtils.geographicToWebMercator(event.target.graphic.geometry);
+console.log("params started");
+var params = new BufferParameters({
+  distances: [50],
+  unit: "meters",
+  geodesic: true,
+  //bufferSpatialReference: new SpatialReference({wkid: 3857}),
+  outSpatialReference: view.spatialReference,
+  geometries: [webMerPoint]
+});
 
-  var clearBtn = document.getElementById("clearButton");
+  console.log("params completed");
+geometryService.buffer(params).then(function(results){
+  selectionLayer.add(new Graphic({
+     geometry: results[0]
+
+  }));
+  console.log(results)
+});
+});
+
+var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
-
   
 });

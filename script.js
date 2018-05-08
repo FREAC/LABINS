@@ -886,7 +886,7 @@ require([
     sources: [{
       locator: new Locator({ url: "//geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer" }),
       singleLineFieldName: "SingleLine",
-      name: "Geocoder",
+      name: "Addresses and Points of Interest",
       localSearchOptions: {
         minScale: 300000,
         distance: 50000

@@ -1105,23 +1105,35 @@ require([
     var parcelVal = $('#numinput').val();
     var indexVal = parcelVal - 1;
     
-    // Go to the selected parcel
-    //mapView.goTo(parcelData[indexVal]);
-    var ext = infoPanelData[indexVal].geometry.extent;
-    var cloneExt = ext.clone();
-    mapView.goTo({
+  // Go to the selected parcel
+    if (infoPanelData[indexVal].geometry.type === "polygon") {
+      var ext = infoPanelData[indexVal].geometry.extent;
+      var cloneExt = ext.clone();
+      mapView.goTo({
         target: infoPanelData[indexVal],
-        extent: cloneExt.expand(1.75)
-    });
+        extent: cloneExt.expand(1.75)  
+      });
+    // Remove current selection
+      selectionLayer.graphics.removeAll();
+      console.log("it's a polygon");
+      // Highlight the selected parcel
+      highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
+      selectionLayer.graphics.add(highlightGraphic);
+    } else if (infoPanelData[indexVal].geometry.type === "point") {
+      console.log("it's a point");
+
 
     // Remove current selection
     selectionLayer.graphics.removeAll();
 
     // Highlight the selected parcel
-    
-    highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
+    highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightPoint);
     selectionLayer.graphics.add(highlightGraphic);
-
+    mapView.goTo({target: 
+      infoPanelData[indexVal].geometry,
+      zoom: 15
+    });
+    }
     } else {
         //$('#numinput').val(currentIndex);
         console.log("number out of range");
@@ -1141,19 +1153,34 @@ require([
       var indexVal = parcelVal - 1;
 
       // Go to the selected parcel
-      var ext = infoPanelData[indexVal].geometry.extent;
-      var cloneExt = ext.clone();
-      mapView.goTo({
+      if (infoPanelData[indexVal].geometry.type === "polygon") {
+        var ext = infoPanelData[indexVal].geometry.extent;
+        var cloneExt = ext.clone();
+        mapView.goTo({
           target: infoPanelData[indexVal],
-          extent: cloneExt.expand(1.75)
-      });
+          extent: cloneExt.expand(1.75)  
+        });
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
+        console.log("it's a polygon");
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
+        selectionLayer.graphics.add(highlightGraphic);
+      } else if (infoPanelData[indexVal].geometry.type === "point") {
+        console.log("it's a point");
 
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
+       
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
 
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
-      selectionLayer.graphics.add(highlightGraphic);
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightPoint);
+        selectionLayer.graphics.add(highlightGraphic);
+        mapView.goTo({target: 
+          infoPanelData[indexVal].geometry,
+          zoom: 15
+        });
+      }
       }
       
   });
@@ -1171,32 +1198,34 @@ require([
       var indexVal = parcelVal - 1;
       
       // Go to the selected parcel
-      if (infoPanelData[indexVal].geometry.extent) {
+      if (infoPanelData[indexVal].geometry.type === "polygon") {
         var ext = infoPanelData[indexVal].geometry.extent;
         var cloneExt = ext.clone();
         mapView.goTo({
           target: infoPanelData[indexVal],
-          extent: cloneExt.expand(1.75)
-          
+          extent: cloneExt.expand(1.75)  
         });
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
+        console.log("it's a polygon");
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
+        selectionLayer.graphics.add(highlightGraphic);
+      } else if (infoPanelData[indexVal].geometry.type === "point") {
+        console.log("it's a point");
+
+       
         // Remove current selection
         selectionLayer.graphics.removeAll();
 
         // Highlight the selected parcel
-        highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
+        highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightPoint);
         selectionLayer.graphics.add(highlightGraphic);
+        mapView.goTo({target: 
+          infoPanelData[indexVal].geometry,
+          zoom: 15
+        });
       }
-      } else if (infoPanelData[indexVal].geometry.type == "point") {
-
-        console.log("it's a point");
-
-        // Remove current selection
-        //selectionLayer.graphics.removeAll();
-
-        // Highlight the selected parcel
-        //highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightPoint);
-        //selectionLayer.graphics.add(highlightGraphic);
-        //mapView.goTo(infoPanelData[indexVal].geometry);
       }
       
 
@@ -1227,6 +1256,35 @@ require([
         infoPanelData.push(identifyElements[i]);
       }      
     }
+
+    if (infoPanelData[0].geometry.type === "polygon") {
+      var ext = infoPanelData[0].geometry.extent;
+      var cloneExt = ext.clone();
+      mapView.goTo({
+        target: infoPanelData[0],
+        extent: cloneExt.expand(1.75)  
+      });
+      // Remove current selection
+      selectionLayer.graphics.removeAll();
+
+      // Highlight the selected parcel
+      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
+      selectionLayer.graphics.add(highlightGraphic);
+    } else if (infoPanelData[0].geometry.type === "point") {     
+      
+      // Remove current selection
+      selectionLayer.graphics.removeAll();
+
+      // Highlight the selected parcel
+      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightPoint);
+      selectionLayer.graphics.add(highlightGraphic);
+      mapView.goTo({target: 
+        infoPanelData[0].geometry,
+        zoom: 15
+      });
+    }
+
+    
 
 
     queryInfoPanel(infoPanelData, 1);

@@ -932,7 +932,7 @@ require([
       outFields: ["*"],
       name: "Tide Interpolation Points",
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
-    }, {
+    },/* {
       featureLayer: {
         url: labinslayerURL + "4",
         popupTemplate: countyTemplate
@@ -945,7 +945,7 @@ require([
       name: "County Boundaries",
       placeholder: "Search by FIPS ID or County Name",
       resultSymbol: highlightSymbol
-    }, {
+  }, {
       featureLayer: {
         url: labinslayerURL + "0",
         popupTemplate: quadsTemplate
@@ -969,7 +969,7 @@ require([
       outFields: ["*"],
       name: "City Limits",
       placeholder: "Search by City Name or Surrounding County",
-    }, {
+    }, */{
       featureLayer: {
         url: labinslayerURL + "/9",
         popupTemplate: rMonumentsTemplate
@@ -1271,7 +1271,7 @@ require([
       highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
       selectionLayer.graphics.add(highlightGraphic);
     } else if (infoPanelData[0].geometry.type === "point") {     
-      
+
       // Remove current selection
       selectionLayer.graphics.removeAll();
 

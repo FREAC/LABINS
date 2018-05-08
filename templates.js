@@ -10,7 +10,7 @@ var customZoomAction = {
     content: "<p>(Latitude, Longitude): {dec_lat}, {dec_long}</p>" +
       "<p>County: {county}</p>" +
       "<p>PID: {pid}</p>" +
-      "<p>Data Source: <a target='_blank' href={data_srce}>here</a></p>" +
+      //"<p>Data Source: <a target='_blank' href={data_srce}>here</a></p>" +
       "<p>Datasheet: <a href={datasheet2}>here</a></p>",
     actions: [{
       title: "Visit NGS website",

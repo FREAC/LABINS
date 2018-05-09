@@ -36,6 +36,15 @@ width: 100%;
 }
 
 
+.esri-icon-erase {
+  position: absolute;
+  
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 16px;
+  display: block;
+}
+
 #overviewDiv {
   position: absolute;
   bottom: 20px;

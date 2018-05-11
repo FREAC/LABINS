@@ -599,8 +599,8 @@ require([
     selectionLayer.graphics.removeAll();
     selectionLayer.add(bufferGraphic);
     //console.log(bufferGeometry);
-    //return bufferGeometry;
-    return buffer;
+    return bufferGeometry;
+    //return buffer;
   }
 
   ///////////////////////

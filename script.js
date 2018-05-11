@@ -606,8 +606,7 @@ require([
         selectionLayer.graphics.addMany(graphicArray);
         return response;
       })
-      .then(unionGeometries)
-      .then(executeTRSIdentify);
+      .then(unionGeometries);
   }
 
    //Input geometry, output buffer

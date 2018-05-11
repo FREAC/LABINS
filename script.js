@@ -87,12 +87,12 @@ require([
   CalciteMapsArcGISSupport) {
 
 
-  var labinslayerURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/LABINS_2017_Pts_No_SWFMWD/MapServer/";
+  var labinslayerURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Points_3857/MapServer/";
   var labinsLayer = new MapImageLayer({
     url: labinslayerURL,
     title: "LABINS Data",
     sublayers: [{
-      id: 10,
+      id: 9,
       title: "Erosion Control Line",
       visible: true,
       popupTemplate: erosionControlLineTemplate,
@@ -106,34 +106,30 @@ require([
         }
       }
     }, {
-      id: 9,
+      id: 8,
       title: "R-Monuments",
       visible: true,
       popupTemplate: rMonumentsTemplate
     }, {
-      id:8,
+      id:7,
       title: "CCR with Images",
       visible: false,
       popupTemplate: CCRTemplate
     },  {
-      id:7,
+      id:6,
       title: "Geographic Names",
       visible: false,
       popupTemplate: geonamesTemplate
     },  {
-      id: 6,
+      id: 5,
       title: "Tide Interpolation Points",
       visible: true,
       popupTemplate: tideInterpPointsTemplate
     }, {
-      id: 5,
+      id: 4,
       title: "Tide Stations",
       visible: true,
       popupTemplate: tideStationsTemplate
-    }, {
-      id: 4,
-      title: "CCBLMID All Labels",
-      visible: false
     }, {
       id: 3,
       title: "Certified Corner (BLMID) Labels",
@@ -168,7 +164,7 @@ require([
   });
 
 
-  var controlLinesURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines/MapServer/";
+  var controlLinesURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/";
   var controlLinesLayer = new MapImageLayer({
     url: controlLinesURL,
     sublayers: [{
@@ -226,7 +222,7 @@ require([
   });
 
   // Layers needed for dependent dropdowns
-  var townshipRangeSectionURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_EPSG_3857/MapServer/1"
+  var townshipRangeSectionURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/2"
   var townshipRangeSectionLayer = new FeatureLayer({
     url: townshipRangeSectionURL,
     outFields: ["twn_ch", "rng_ch", "sec_ch"],
@@ -603,8 +599,8 @@ require([
     selectionLayer.graphics.removeAll();
     selectionLayer.add(bufferGraphic);
     //console.log(bufferGeometry);
-    return bufferGeometry;
-    //return buffer;
+    //return bufferGeometry;
+    return buffer;
   }
 
   ///////////////////////

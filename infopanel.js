@@ -102,7 +102,13 @@ function queryInfoPanel (results, i) {
                                 '<p>More Information: </b><a target="_blank" href=http://ftp.labins.org/swfwmd/SWFWMD_control_2013/' + results[i-1].attributes.FILE_NAME + '>' + results[i-1].attributes.FILE_NAME + '</a></p>'
                                 );
         
-    } else if (results[i-1].attributes.layerName === 'Certified Corners') {
+    } else if (results[i-1].attributes.layerName === 'Township-Range-Section') {
+        $('#informationdiv').html('<p><b>Section Lines</b> </p>' + 
+                                '<p><b>Township-Range-Section: </b>' + results[i-1].attributes.twnrngsec + '</p>'
+                                );
+    }
+    
+    else if (results[i-1].attributes.layerName === 'Certified Corners') {
         $('#informationdiv').html('<p><b>Certified Corners</b></p>' + 
                                 '<p><b>BLMID: </b>' + results[i-1].attributes.blmid + '</p>' +
                                 '<p><b>Quad Name: </b>' + results[i-1].attributes.tile_name + '</p>'
@@ -111,7 +117,7 @@ function queryInfoPanel (results, i) {
         for (var prop in results[i-1].attributes) {
             if (prop.startsWith('image')) {
                 if (results[i-1].attributes[prop].length > 1) {
-                    $('#informationdiv').append('<p><b>Image: </b><a target="_blank" href=' + results[i-1].attributes[prop] + '>' + results[i-1].attributes[prop] + '</a></p>');
+                    $('#informationdiv').append('<p><b>Image: </b><a target="_blank" href=' + results[i-1].attributes[prop] + '>' + results[i-1].attributes[prop].substring(40,52) + '</a></p>');
                 }
             }
             

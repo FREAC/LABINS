@@ -766,7 +766,7 @@ require([
   // Set the parameters for the Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [0, 3, 4, 5];
+  params.layerIds = [0, 2, 5];
   params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;
@@ -835,10 +835,6 @@ require([
             feature.popupTemplate = quadsIdentifyTemplate;
           } else if (layerName === 'NGS Control Points') {
               feature.popupTemplate = NGSIdentifyPopupTemplate;
-          } else if (layerName === 'City Limits') {
-            feature.popupTemplate = cityLimitsTemplate;
-          } else if (layerName === 'County Boundaries') {
-            feature.popupTemplate = countyTemplate;
           } else if (layerName === 'Parcels') {
             feature.popupTemplate = parcelsIdentifyTemplate;
           } else if (layerName === 'Soils June 2012 - Dept. of Agriculture') {

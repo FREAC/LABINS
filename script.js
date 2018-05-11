@@ -179,34 +179,24 @@ require([
   var controlLinesLayer = new MapImageLayer({
     url: controlLinesURL,
     sublayers: [{
-      id: 11,
+      id: 9,
       title: "Soils June 2012 - Dept. of Agriculture",
       visible: false,
       //popupTemplate: soilsTemplate
       popupEnabled: false
     }, {
-      id: 10,
+      id: 8,
       title: "Hi-Res Imagery Grid: State Plane East",
       visible: false,
       popupEnabled: false
     },{
-      id: 9,
+      id: 7,
       title: "Hi-Res Imagery Grid: State Plane North",
       visible: false,
       popupEnabled: false
     }, {
-      id: 8,
-      title: "Hi-Res Imagery Grid: State Plane West",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 7,
-      title: "Rivers, Streams, and Canals",
-      visible: false,
-      popupEnabled: false
-    }, {
       id: 6,
-      title: "Lakes, Ponds, and Reservoirs",
+      title: "Hi-Res Imagery Grid: State Plane West",
       visible: false,
       popupEnabled: false
     }, {

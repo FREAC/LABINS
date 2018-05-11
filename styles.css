@@ -170,6 +170,18 @@ Print Widget
 .esri-print__input-text {
   color: #000000
 }
+
+.esri-print__advanced-options-container {
+  background-color: #315866;
+}
+
+.esri-print__scale-info-container {
+  color: #ffffff;
+}
+
+.esri-print__form-section-container {
+  color: #ffffff;
+}
 /*
 Popup Styling
 .esri-popup__feature-buttons .esri-popup__actions {

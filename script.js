@@ -95,7 +95,8 @@ require([
       id: 9,
       title: "Erosion Control Line",
       visible: true,
-      popupTemplate: erosionControlLineTemplate,
+      //popupTemplate: erosionControlLineTemplate,
+      popupEnabled: false,
       renderer: { 
         type: "simple", // autocasts as new SimpleRenderer()
         symbol: {
@@ -109,46 +110,55 @@ require([
       id: 8,
       title: "R-Monuments",
       visible: true,
-      popupTemplate: rMonumentsTemplate
+      //popupTemplate: rMonumentsTemplate,
+      popupEnabled: false
     }, {
       id:7,
       title: "CCR with Images",
       visible: false,
-      popupTemplate: CCRTemplate
+      //popupTemplate: CCRTemplate,
+      popupEnabled: false
     },  {
       id:6,
       title: "Geographic Names",
       visible: false,
-      popupTemplate: geonamesTemplate
+      //popupTemplate: geonamesTemplate,
+      popupEnabled: false
     },  {
       id: 5,
       title: "Tide Interpolation Points",
       visible: true,
-      popupTemplate: tideInterpPointsTemplate
+      //popupTemplate: tideInterpPointsTemplate
+      popupEnabled: false
     }, {
       id: 4,
       title: "Tide Stations",
       visible: true,
-      popupTemplate: tideStationsTemplate
+      //popupTemplate: tideStationsTemplate
+      popupEnabled: false
     }, {
       id: 3,
       title: "Certified Corner (BLMID) Labels",
-      visible: false
+      visible: false,
+      popupEnabled: false
     }, {
       id: 2,
       title: "Certified Corners",
       visible: true,
-      popupTemplate: certifiedCornersTemplate
+      //popupTemplate: certifiedCornersTemplate,
+      popupEnabled: false
     }, {
       id: 1,
       title: "Preliminary NGS Points",
       visible: true,
-      popupTemplate: NGSPreliminarypopupTemplate
+      //popupTemplate: NGSPreliminarypopupTemplate,
+      popupEnabled: false
     }, {
       id: 0,
       title: "NGS Control Points",
       visible: true,
-      popupTemplate: NGSpopupTemplate
+      //popupTemplate: NGSpopupTemplate,
+      popupEnabled: false
     }]
   });
 
@@ -159,7 +169,8 @@ require([
     title: "SWFWMD Benchmarks",
     visible: true,
     //listMode: "hide",
-    popupTemplate: swfwmdLayerPopupTemplate
+    //popupTemplate: swfwmdLayerPopupTemplate,
+    popupEnabled: false
 
   });
 
@@ -171,53 +182,65 @@ require([
       id: 11,
       title: "Soils June 2012 - Dept. of Agriculture",
       visible: false,
-      popupTemplate: soilsTemplate
+      //popupTemplate: soilsTemplate
+      popupEnabled: false
     }, {
       id: 10,
       title: "Hi-Res Imagery Grid: State Plane East",
       visible: false,
+      popupEnabled: false
     },{
       id: 9,
       title: "Hi-Res Imagery Grid: State Plane North",
       visible: false,
+      popupEnabled: false
     }, {
       id: 8,
       title: "Hi-Res Imagery Grid: State Plane West",
       visible: false,
+      popupEnabled: false
     }, {
       id: 7,
       title: "Rivers, Streams, and Canals",
-      visible: false
+      visible: false,
+      popupEnabled: false
     }, {
       id: 6,
       title: "Lakes, Ponds, and Reservoirs",
       visible: false,
+      popupEnabled: false
     }, {
       id: 5,
       title: "Parcels",
       visible: false,
-      popupTemplate: parcelTemplate,
+      //popupTemplate: parcelTemplate,
+      popupEnabled: false
     }, {
       id: 4,
       title: "County Boundaries",
       visible: false,
+      popupEnabled: false
     }, {
       id: 3,
       title: "City Limits",
       visible: false,
-      cityLimitsTemplate,
+      //cityLimitsTemplate,
+      popupEnabled: false
     }, {
       id: 2,
       title: "Township-Range-Section",
       visible: true,
+      popupEnabled: false
     }, {
       id: 1,
       title: "Township-Range",
       visible: false,
+      popupEnabled: false
     }, {
       id: 0,
       title: "USGS Quads",
       visible: false,
+      popupEnabled: false
     }]
   });
 
@@ -228,7 +251,8 @@ require([
     outFields: ["twn_ch", "rng_ch", "sec_ch"],
     title: "Section Lines", 
     visible: false,
-    listMode: "hide"
+    listMode: "hide",
+    popupEnabled: false    
   });
 
   // Graphics layer that will highlight features accessed through zoomTo Functions
@@ -797,7 +821,7 @@ require([
   var currentIndex;
 
   // On a double click, execute identifyTask once the map is within the minimum scale
-  mapView.on("double-click", function(event) {
+  mapView.on("click", function(event) {
       if (mapView.scale < 100000) {
         console.log(event);
         event.stopPropagation();
@@ -811,7 +835,7 @@ require([
     identifyElements = [];
     promises = [];
     // Set the geometry to the location of the view click
-    if (event.type === "double-click") {
+    if (event.type === "click") {
       allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event.mapPoint;
       allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
     } else {

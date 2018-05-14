@@ -1057,45 +1057,148 @@ require([
   ////////////////////////////
   ///// Data Query////////////
   ////////////////////////////
-  var layerChoices = ['Select Layer', 'NGS Control Points', 'Certified Corners'];
+  var layerChoices = ['Select Layer', 'NGS Control Points', 'Certified Corners', 'Tide Interpolation Points', 'Tide Stations', 'Erosion Control Line', 'Survey Benchmarks'];
 
   for (var i=0;i<layerChoices.length;i++){
     $('<option/>').val(layerChoices[i]).text(layerChoices[i]).appendTo('#selectLayerDropdown');
  }
  query("#selectLayerDropdown").on("change", function(e) {
+
+//Quad select
+//buildSelectPanel(controlLinesURL + "0", "tile_name", "Zoom to a Quad", "selectQuadPanel");
+  function dataQueryIdentify (url, layerID, geometry) {
+    identifyTask = new IdentifyTask(url);
+
+    // Set the parameters for the Identify
+    params = new IdentifyParameters();
+    params.tolerance = 3;
+    params.layerIds = layerID;
+    params.layerOption = "top";
+    params.width = mapView.width;
+    params.height = mapView.height;
+    params.geometry = event.geometry;
+    params.mapExtent = mapView.extent;
+
+    identifyTask.execute(params).then(function(response) {
+
+      var results = response.results;
+      return results;
+    });
+  }
+
+  function getGeometry (url, attribute, value) {
+    var multiPolygonGeometries = [];
+    var union = geometryEngine.union(multiPolygonGeometries);
+    var queryTask = new QueryTask({
+    url: url
+    });
+    var query = new Query();
+    query.returnGeometry = true;
+    query.outFields = ['*'];
+    query.where = attribute + " = '" + value + "'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+    queryTask.execute(query).then(function(results){
+
+      for (i=0; i<results.features.length; i++) {
+        multiPolygonGeometries.push(results.features[i].geometry);
+      }
+    });
+    console.log(union);
+    return union;
+  }
+
+  function highlightResults (response) {
+    console.log(results);
+  }
+
+  function createCountyDropdown () {
+    var countyDropdown = document.createElement('select');
+    countyDropdown.setAttribute('id', 'countyQuery');
+    countyDropdown.setAttribute('class', 'form-control');
+    document.getElementById('parametersQuery').appendChild(countyDropdown);
+    buildSelectPanel(controlLinesURL + "4", "ctyname", "Select a County", "countyQuery");
+
+
+  }
+
+  function createQuadDropdown () {
+    var quadDropdown = document.createElement('select');
+    quadDropdown.setAttribute('id', 'quadQuery');
+    quadDropdown.setAttribute('class', 'form-control');
+    document.getElementById('parametersQuery').appendChild(quadDropdown);
+    buildSelectPanel(controlLinesURL + "0", "tile_name", "Select a Quad", "quadQuery");
+
+
+  }
+
+  function addDescript () {
+    $('#parametersQuery').html('<br><p>Filter by the following options: </p><br>');
+  }
+
   var layerSelection = e.target.value;
-  console.log(layerSelection === 'NGS Control Points');
   if (layerSelection === "Select Layer") {
     //clear div
-    $('#parametersQuery').html('');
+    var paramNode = document.getElementById("parametersQuery");
+    while (paramNode.firstChild) {
+      paramNode.removeChild(paramNode.firstChild);
+    }
 
   } else if (layerSelection === 'NGS Control Points') {
     // create html for NGS Control points
     // Call functions that build panels
-    $('#parametersQuery').html('<div id="collapseQuery" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLayer">' + 
-                                '<div class="panel-body">' + 
-                                '<li class="dropdown-header" style="color: #DCDCDC"><font size = "3">Select county</font></li>' +
-                                '<select id="selectCountyQuery" class="form-control"></select>' +
-                                '</div>' +
-                                '</div>');
+    addDescript();
+    createCountyDropdown();    
+    createQuadDropdown();
+    var countyDropdownAfter = document.getElementById('countyQuery');
+    query(countyDropdownAfter).on('change', function(e) {
+      console.log('change detected');
+      console.log(e);
+      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value).then(function(response) {
+        console.log(response);
+      });
+
+    });
+
+
+
   } else if (layerSelection === "Certified Corners") {
-    $('#parametersQuery').html();
+    addDescript();
+
+      // create html for corners
+    // Call functions that build panels
+  
+  } else if (layerSelection === 'Tide Interpolation Points') {
+    addDescript();
+
+      // create html for corners
+    // Call functions that build panels
+  
+  } else if (layerSelection === 'Tide Stations') {
+    addDescript();
+
+      // create html for corners
+    // Call functions that build panels
+  
+  } else if (layerSelection === 'Erosion Control Line') {
+    addDescript();
+
+      // create html for corners
+    // Call functions that build panels
+  
+  } else if (layerSelection === 'Survey Benchmarks') {
+    addDescript();
+
       // create html for corners
     // Call functions that build panels
   
   }
 });
 
+/////////////////////////////////
+/// Evt. Listeners Data Query ///
+/////////////////////////////////
 
- /*
- Possible way to dynamically create the dropdowns with information I want. 
-var s = $('<select/>');
-var o = [1, 2, 3];
-for (var i in o) {
-    s.append($('<option/>').html(o[i]));
-}
-$('body').append(s);
-*/
+
+
 
   ////////////////////////////
   ///// Event Listeners //////

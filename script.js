@@ -1053,6 +1053,50 @@ require([
 
   CalciteMapsArcGISSupport.setSearchExpandEvents(searchWidget);
 
+  
+  ////////////////////////////
+  ///// Data Query////////////
+  ////////////////////////////
+  var layerChoices = ['Select Layer', 'NGS Control Points', 'Certified Corners'];
+
+  for (var i=0;i<layerChoices.length;i++){
+    $('<option/>').val(layerChoices[i]).text(layerChoices[i]).appendTo('#selectLayerDropdown');
+ }
+ query("#selectLayerDropdown").on("change", function(e) {
+  var layerSelection = e.target.value;
+  console.log(layerSelection === 'NGS Control Points');
+  if (layerSelection === "Select Layer") {
+    //clear div
+    $('#parametersQuery').html('');
+
+  } else if (layerSelection === 'NGS Control Points') {
+    // create html for NGS Control points
+    // Call functions that build panels
+    $('#parametersQuery').html('<div id="collapseQuery" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLayer">' + 
+                                '<div class="panel-body">' + 
+                                '<li class="dropdown-header" style="color: #DCDCDC"><font size = "3">Select county</font></li>' +
+                                '<select id="selectCountyQuery" class="form-control"></select>' +
+                                '</div>' +
+                                '</div>');
+  } else if (layerSelection === "Certified Corners") {
+    $('#parametersQuery').html();
+      // create html for corners
+    // Call functions that build panels
+  
+  }
+});
+
+
+ /*
+ Possible way to dynamically create the dropdowns with information I want. 
+var s = $('<select/>');
+var o = [1, 2, 3];
+for (var i in o) {
+    s.append($('<option/>').html(o[i]));
+}
+$('body').append(s);
+*/
+
   ////////////////////////////
   ///// Event Listeners //////
   ////////////////////////////

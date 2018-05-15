@@ -1066,13 +1066,37 @@ require([
 
 //Quad select
 //buildSelectPanel(controlLinesURL + "0", "tile_name", "Zoom to a Quad", "selectQuadPanel");
+  
+  function getGeometry (url, attribute, value) {
+
+    var task = new QueryTask({
+    url: url
+    });
+    var query = new Query();
+    query.returnGeometry = true;
+    //query.outFields = ['*'];
+    query.where = attribute + " = '" + value + "'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+
+    console.log(task.execute(query));
+    return task.execute(query);
+
+    
+    
+    
+
+      // for (i=0; i<results.features.length; i++) {
+      //   multiPolygonGeometries.push(results.features[i]);
+      // }
+
+  }
+
   function dataQueryIdentify (url, layerID, geometry) {
     identifyTask = new IdentifyTask(url);
 
     // Set the parameters for the Identify
     params = new IdentifyParameters();
     params.tolerance = 3;
-    params.layerIds = layerID;
+    params.layerIds = [];
     params.layerOption = "any";
     params.width = mapView.width;
     params.height = mapView.height;
@@ -1081,36 +1105,6 @@ require([
     console.log(identifyTask.execute(params));
     return identifyTask.execute(params);
 
-    // .then(function(response) {
-
-    //   var results = response.results;
-    //   console.log(results);
-    //   return results;
-
-    // });
-  }
-
-  function getGeometry (url, attribute, value) {
-    var multiPolygonGeometries = [];
-    var union = geometryEngine.union(multiPolygonGeometries);
-    var queryTask = new QueryTask({
-    url: url
-    });
-    var query = new Query();
-    query.returnGeometry = true;
-    query.outFields = ['*'];
-    query.where = attribute + " = '" + value + "'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
-
-    console.log(queryTask.execute(query));
-    var result = queryTask.execute(query);
-    console.log(result);
-    return result;
-    
-    
-
-      // for (i=0; i<results.features.length; i++) {
-      //   multiPolygonGeometries.push(results.features[i]);
-      // }
 
   }
   
@@ -1159,16 +1153,18 @@ require([
     var countyDropdownAfter = document.getElementById('countyQuery');
     query(countyDropdownAfter).on('change', function(e) {
       console.log('change detected');
-      console.log(e);
+      console.log(e.target.value);
       getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
-      .then(unionGeometries)
-      .then(function(result) {
-        var geometry = result;
-        console.log(geometry);
-        dataQueryIdentify (labinslayerURL, [0], geometry)
-        .then(function (e) {
-          console.log(e);
-        });
+      //.then(unionGeometries)
+      .then(function(response) {
+        var geometry = response.features[0].geometry;
+
+        console.log(response);
+        executeTRSIdentify(geometry);
+        //dataQueryIdentify (labinslayerURL, 0, geometry);
+        //.then(function (e) {
+          //console.log(e);
+        //});
       });
       });
 

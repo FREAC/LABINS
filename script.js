@@ -1073,17 +1073,21 @@ require([
     params = new IdentifyParameters();
     params.tolerance = 3;
     params.layerIds = layerID;
-    params.layerOption = "top";
+    params.layerOption = "any";
     params.width = mapView.width;
     params.height = mapView.height;
-    params.geometry = event.geometry;
+    params.geometry = geometry;
     params.mapExtent = mapView.extent;
+    console.log(identifyTask.execute(params));
+    return identifyTask.execute(params);
 
-    identifyTask.execute(params).then(function(response) {
+    // .then(function(response) {
 
-      var results = response.results;
-      return results;
-    });
+    //   var results = response.results;
+    //   console.log(results);
+    //   return results;
+
+    // });
   }
 
   function getGeometry (url, attribute, value) {
@@ -1096,16 +1100,20 @@ require([
     query.returnGeometry = true;
     query.outFields = ['*'];
     query.where = attribute + " = '" + value + "'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
-    queryTask.execute(query).then(function(results){
 
-      for (i=0; i<results.features.length; i++) {
-        multiPolygonGeometries.push(results.features[i].geometry);
-      }
-    });
-    console.log(union);
-    return union;
+    console.log(queryTask.execute(query));
+    var result = queryTask.execute(query);
+    console.log(result);
+    return result;
+    
+    
+
+      // for (i=0; i<results.features.length; i++) {
+      //   multiPolygonGeometries.push(results.features[i]);
+      // }
+
   }
-
+  
   function highlightResults (response) {
     console.log(results);
   }
@@ -1152,11 +1160,19 @@ require([
     query(countyDropdownAfter).on('change', function(e) {
       console.log('change detected');
       console.log(e);
-      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value).then(function(response) {
-        console.log(response);
+      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      .then(unionGeometries)
+      .then(function(result) {
+        var geometry = result;
+        console.log(geometry);
+        dataQueryIdentify (labinslayerURL, [0], geometry)
+        .then(function (e) {
+          console.log(e);
+        });
+      });
       });
 
-    });
+    
 
 
 

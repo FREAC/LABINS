@@ -86,6 +86,16 @@ require([
   CalciteMaps,
   CalciteMapsArcGISSupport) {
 
+  var ngsControlPointsURL = 'https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/0';
+  var ngsControlPointsLayer = new FeatureLayer ({
+    url: ngsControlPointsURL,
+    title: "USGS Quads",
+    visible: false,
+    //listMode: "hide",
+    //popupTemplate: swfwmdLayerPopupTemplate,
+    popupEnabled: false
+  });
+
 
   var labinslayerURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Points_3857/MapServer/";
   var labinsLayer = new MapImageLayer({
@@ -291,7 +301,7 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, labinsLayer]
+    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, labinsLayer, ngsControlPointsLayer]
   });
 
   /////////////////////////
@@ -373,10 +383,10 @@ require([
   /// Dropdown Select Panel ///
   /////////////////////////////
 
-  function buildSelectPanel(vurl, attribute, zoomParam, panelParam) {
+  function buildSelectPanel(url, attribute, zoomParam, panelParam) {
 
     var task = new QueryTask({
-      url: vurl
+      url: url
     });
 
     var params = new Query({
@@ -530,6 +540,7 @@ require([
       }
       dom.byId("mapViewDiv").style.cursor = "auto";
     }
+    return identifyTask.execute(params);
   } 
 
   function zoomToSectionFeature(panelurl, location, attribute) {
@@ -1090,22 +1101,75 @@ require([
 
   }
 
-  function dataQueryIdentify (url, layerID, geometry) {
+  function dataQueryQuerytask (url, geometry) {
+    console.log("hello");
+    var queryTask = new QueryTask({
+      url: url
+    });
+    console.log("hello again");
+    var params = new Query({
+      where: '1=1',
+      geometry: geometry,
+      //spatialRelationship: "intersects"
+    });
+    return queryTask.execute(params);
+  }
+
+  function dataQueryIdentify (url, response, layers) {
+    console.log(response);
+            
     identifyTask = new IdentifyTask(url);
 
     // Set the parameters for the Identify
     params = new IdentifyParameters();
-    params.tolerance = 3;
-    params.layerIds = [];
-    params.layerOption = "any";
+    //params.tolerance = 3;
+    params.layerIds = layers;
+    params.layerOption = "all";
     params.width = mapView.width;
     params.height = mapView.height;
-    params.geometry = geometry;
+  
+    // Set the geometry to the location of the view click
+    params.geometry = response;
     params.mapExtent = mapView.extent;
-    console.log(identifyTask.execute(params));
+    dom.byId("mapViewDiv").style.cursor = "wait";
+
+    // This function returns a promise that resolves to an array of features
+    // A custom popupTemplate is set for each feature based on the layer it
+    // originates from
+    identifyTask.execute(params).then(function(response) {
+      var results = response.results;
+
+      return [arrayUtils.map(results, function(result) {
+
+        var feature = result.feature;
+        var layerName = result.layerName;
+
+        feature.attributes.layerName = layerName;
+        if (layerName === 'Certified Corners') {
+          feature.popupTemplate = CCRTemplate;
+        } else if (layerName === 'NGS Control Points') {
+          feature.popupTemplate = NGSIdentifyPopupTemplate;
+        }
+        //console.log(feature);
+        return feature;
+      }), params.geometry];
+    }).then(showPopup); // Send the array of features to showPopup()
+
+    // Shows the results of the Identify in a popup once the promise is resolved
+    function showPopup(data) {
+      response = data[0];
+      geometry = data[1];
+
+      if (response.length > 0) {
+        mapView.popup.open({
+          features: response,
+          location: geometry.centroid
+        });
+      }
+      dom.byId("mapViewDiv").style.cursor = "auto";
+    }
     return identifyTask.execute(params);
-
-
+  
   }
   
   function highlightResults (response) {
@@ -1127,10 +1191,18 @@ require([
     quadDropdown.setAttribute('id', 'quadQuery');
     quadDropdown.setAttribute('class', 'form-control');
     document.getElementById('parametersQuery').appendChild(quadDropdown);
-    buildSelectPanel(controlLinesURL + "0", "tile_name", "Select a Quad", "quadQuery");
-
-
+    buildSelectPanel(controlLinesURL + "0", "tile_name", "Select a Quad", "quadQuery")
+    
   }
+
+  function createTextBox (id) {
+    var textbox = document.createElement('input');
+    textbox.type = 'text';
+    textbox.setAttribute('id', id);
+    textbox.setAttribute('class', 'form-control');
+    document.getElementById('parametersQuery').appendChild(textbox);
+  }
+
 
   function addDescript () {
     $('#parametersQuery').html('<br><p>Filter by the following options: </p><br>');
@@ -1145,11 +1217,13 @@ require([
     }
 
   } else if (layerSelection === 'NGS Control Points') {
+    var queriedFeatures = [];
     // create html for NGS Control points
     // Call functions that build panels
     addDescript();
     createCountyDropdown();    
     createQuadDropdown();
+    createTextBox('nameQuery');
     var countyDropdownAfter = document.getElementById('countyQuery');
     query(countyDropdownAfter).on('change', function(e) {
       console.log('change detected');
@@ -1157,16 +1231,44 @@ require([
       getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
       //.then(unionGeometries)
       .then(function(response) {
-        var geometry = response.features[0].geometry;
 
+        var geometry = response.features[0].geometry;
+        console.log(geometry);
+        console.log(response.features);
+        for (i=0; i<response.features.length; i++) {
+          dataQueryQuerytask('https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/LABINS_2017_Pts_No_SWFMWD/MapServer/0', response.features[i].geometry)
+          .then(function (results) {
+            queriedFeatures.push(results);
+          });
+        }
+        console.log(queriedFeatures);
+        queriedFeatures.length = 0;
+
+        // dataQueryQuerytask('https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/LABINS_2017_Pts_No_SWFMWD/MapServer/0', geometry)
+        // .then(function (e) {
+        //   console.log(e);
+        // });
+      });
+      });
+
+    // Query the quad dropdown
+    var quadDropdownAfter = document.getElementById('quadQuery');
+
+    query(quadDropdownAfter).on('change', function(e) {
+      getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+      .then(function(response) {
+        var geometry = response.features[0].geometry;
+        mapView.goTo(geometry);
         console.log(response);
-        executeTRSIdentify(geometry);
-        //dataQueryIdentify (labinslayerURL, 0, geometry);
-        //.then(function (e) {
-          //console.log(e);
-        //});
+        console.log(response.features.length);
+
+        executeTRSIdentify(geometry)
+        //dataQueryIdentify (labinslayerURL, geometry, [0])
+        .then(function (e) {
+          console.log(e);
+        });
       });
-      });
+    });
 
     
 
@@ -1174,24 +1276,34 @@ require([
 
   } else if (layerSelection === "Certified Corners") {
     addDescript();
+    createTextBox('IDQuery');
 
       // create html for corners
     // Call functions that build panels
   
   } else if (layerSelection === 'Tide Interpolation Points') {
     addDescript();
+    createCountyDropdown();
+    createQuadDropdown();
+    createTextBox('IDQuery');
 
       // create html for corners
     // Call functions that build panels
   
   } else if (layerSelection === 'Tide Stations') {
     addDescript();
+    createCountyDropdown();
+    createQuadDropdown();
+    createTextBox('IDQuery');
+    createTextBox('nameQuery');
 
       // create html for corners
     // Call functions that build panels
   
   } else if (layerSelection === 'Erosion Control Line') {
     addDescript();
+    createCountyDropdown();
+    createNameTextBox();
 
       // create html for corners
     // Call functions that build panels

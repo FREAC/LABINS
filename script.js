@@ -1145,7 +1145,15 @@ require([
     });
     return queryTask.execute(params);
   }
+  // disable the filter layer dropdown
+  function disable() {
+    document.getElementById("filterLayerPanel").disabled=true;
+  }
 
+  // enable the filter layer dropdown
+  function enable() {
+      document.getElementById("filterLayerPanel").disabled=false;
+  }
   
   function highlightResults (response) {
     console.log(results);
@@ -1177,6 +1185,8 @@ require([
     textbox.setAttribute('class', 'form-control');
     document.getElementById('parametersQuery').appendChild(textbox);
   }
+
+  
 
 
   function addDescript () {
@@ -1212,22 +1222,13 @@ require([
         //dataQueryIdentify (labinslayerURL, response.features[0].geometry, 0)
         .then(function (response) {
           for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
+            console.log(response.features[i].attributes.layerName);
             infoPanelData.push(response.features[i]);
           }
           queryInfoPanel(infoPanelData, 1);
-          buildUniquePanel();
         });
-        // for (i=0; i<response.features.length; i++) {
-        //   dataQueryQuerytask(swfwmdURL, response.features[i].geometry)
-        //   .then(function (results) {
-        //     console.log(results.features.length);
-        //     for (j=0; j<results.features.length; j++) {
-        //       console.log(results.features);
-        //       queriedFeatures.push(results);
-        //     }
 
-        //   });
-        // }
         console.log(queriedFeatures);
 
       });
@@ -1240,20 +1241,28 @@ require([
     var quadDropdownAfter = document.getElementById('quadQuery');
 
     query(quadDropdownAfter).on('change', function(e) {
-      getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
-      .then(function(response) {
-        var geometry = response.features[0].geometry;
-        mapView.goTo(geometry);
-        console.log(response);
-        console.log(response.features.length);
+      infoPanelData = [];      
 
-        executeTRSIdentify(geometry)
-        //dataQueryIdentify (labinslayerURL, geometry, [0])
-        .then(function (e) {
-          console.log(e);
+      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        console.log(response);
+        dataQueryQuerytask(labinslayerURL + '0', response)
+        //dataQueryIdentify (labinslayerURL, response.features[0].geometry, 0)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
+            console.log(response.features[i].attributes.layerName);
+            infoPanelData.push(response.features[i]);
+          }
+          queryInfoPanel(infoPanelData, 1);
         });
+
+        console.log(queriedFeatures);
+
       });
-    });
+
+      });
 
     
 

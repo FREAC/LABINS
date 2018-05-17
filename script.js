@@ -173,6 +173,14 @@ require([
   });
 
 
+  var ngsURL = 'https://services7.arcgis.com/5MoZ4rGFfgp2h955/arcgis/rest/services/NGS_Control/FeatureServer';
+  var ngsLayer = new FeatureLayer({
+    url: ngsURL,
+    title: "NGS Control Points",
+    visible: false,
+    popupEnabled: false
+  });
+
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/0";
   var swfwmdLayer = new FeatureLayer({
     url: swfwmdURL,
@@ -301,7 +309,7 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, labinsLayer, ngsControlPointsLayer]
+    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, labinsLayer, ngsControlPointsLayer, ngsLayer]
   });
 
   /////////////////////////
@@ -1074,6 +1082,8 @@ require([
     $('<option/>').val(layerChoices[i]).text(layerChoices[i]).appendTo('#selectLayerDropdown');
  }
  query("#selectLayerDropdown").on("change", function(e) {
+  var queriedFeatures = [];
+
 
 //Quad select
 //buildSelectPanel(controlLinesURL + "0", "tile_name", "Zoom to a Quad", "selectQuadPanel");
@@ -1101,20 +1111,6 @@ require([
 
   }
 
-  function dataQueryQuerytask (url, geometry) {
-    console.log("hello");
-    var queryTask = new QueryTask({
-      url: url
-    });
-    console.log("hello again");
-    var params = new Query({
-      where: '1=1',
-      geometry: geometry,
-      //spatialRelationship: "intersects"
-    });
-    return queryTask.execute(params);
-  }
-
   function dataQueryIdentify (url, response, layers) {
     console.log(response);
             
@@ -1123,7 +1119,7 @@ require([
     // Set the parameters for the Identify
     params = new IdentifyParameters();
     //params.tolerance = 3;
-    params.layerIds = layers;
+    params.layerIds = [layers];
     params.layerOption = "all";
     params.width = mapView.width;
     params.height = mapView.height;
@@ -1133,44 +1129,23 @@ require([
     params.mapExtent = mapView.extent;
     dom.byId("mapViewDiv").style.cursor = "wait";
 
-    // This function returns a promise that resolves to an array of features
-    // A custom popupTemplate is set for each feature based on the layer it
-    // originates from
-    identifyTask.execute(params).then(function(response) {
-      var results = response.results;
-
-      return [arrayUtils.map(results, function(result) {
-
-        var feature = result.feature;
-        var layerName = result.layerName;
-
-        feature.attributes.layerName = layerName;
-        if (layerName === 'Certified Corners') {
-          feature.popupTemplate = CCRTemplate;
-        } else if (layerName === 'NGS Control Points') {
-          feature.popupTemplate = NGSIdentifyPopupTemplate;
-        }
-        //console.log(feature);
-        return feature;
-      }), params.geometry];
-    }).then(showPopup); // Send the array of features to showPopup()
-
-    // Shows the results of the Identify in a popup once the promise is resolved
-    function showPopup(data) {
-      response = data[0];
-      geometry = data[1];
-
-      if (response.length > 0) {
-        mapView.popup.open({
-          features: response,
-          location: geometry.centroid
-        });
-      }
-      dom.byId("mapViewDiv").style.cursor = "auto";
-    }
     return identifyTask.execute(params);
-  
   }
+
+  function dataQueryQuerytask (url, geometry) {
+    var queryTask = new QueryTask({
+      url: url
+    });
+    var params = new Query({
+      where: '1=1',
+      geometry: geometry,
+      returnGeometry: true,
+      outFields: '*'
+      //spatialRelationship: "intersects"
+    });
+    return queryTask.execute(params);
+  }
+
   
   function highlightResults (response) {
     console.log(results);
@@ -1217,7 +1192,8 @@ require([
     }
 
   } else if (layerSelection === 'NGS Control Points') {
-    var queriedFeatures = [];
+
+
     // create html for NGS Control points
     // Call functions that build panels
     addDescript();
@@ -1226,30 +1202,39 @@ require([
     createTextBox('nameQuery');
     var countyDropdownAfter = document.getElementById('countyQuery');
     query(countyDropdownAfter).on('change', function(e) {
-      console.log('change detected');
-      console.log(e.target.value);
+      infoPanelData = [];      
+
       getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
-      //.then(unionGeometries)
+      .then(unionGeometries)
       .then(function(response) {
+        console.log(response);
+        dataQueryQuerytask(labinslayerURL + '0', response)
+        //dataQueryIdentify (labinslayerURL, response.features[0].geometry, 0)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            infoPanelData.push(response.features[i]);
+          }
+          queryInfoPanel(infoPanelData, 1);
+          buildUniquePanel();
+        });
+        // for (i=0; i<response.features.length; i++) {
+        //   dataQueryQuerytask(swfwmdURL, response.features[i].geometry)
+        //   .then(function (results) {
+        //     console.log(results.features.length);
+        //     for (j=0; j<results.features.length; j++) {
+        //       console.log(results.features);
+        //       queriedFeatures.push(results);
+        //     }
 
-        var geometry = response.features[0].geometry;
-        console.log(geometry);
-        console.log(response.features);
-        for (i=0; i<response.features.length; i++) {
-          dataQueryQuerytask('https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/LABINS_2017_Pts_No_SWFMWD/MapServer/0', response.features[i].geometry)
-          .then(function (results) {
-            queriedFeatures.push(results);
-          });
-        }
+        //   });
+        // }
         console.log(queriedFeatures);
-        queriedFeatures.length = 0;
 
-        // dataQueryQuerytask('https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/LABINS_2017_Pts_No_SWFMWD/MapServer/0', geometry)
-        // .then(function (e) {
-        //   console.log(e);
-        // });
       });
+
       });
+      console.log("hello there");
+
 
     // Query the quad dropdown
     var quadDropdownAfter = document.getElementById('quadQuery');

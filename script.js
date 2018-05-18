@@ -1203,6 +1203,7 @@ require([
     textbox.type = 'text';
     textbox.setAttribute('id', id);
     textbox.setAttribute('class', 'form-control');
+    textbox.setAttribute('placeholder', 'this is a placeholder');
     textbox.setAttribute('value', '');
     document.getElementById('parametersQuery').appendChild(textbox);
   }
@@ -1210,11 +1211,25 @@ require([
   function createSubmit () {
     var submitButton = document.createElement('BUTTON');
     submitButton.setAttribute('id', 'submitQuery');
-    submitButton.setAttribute('class', 'form-control');
+    submitButton.setAttribute('class', 'btn btn-primary');
     var t = document.createTextNode('Submit');
     submitButton.appendChild(t);
     document.getElementById('parametersQuery').appendChild(submitButton);
 
+  }
+  
+  function clearDiv () {
+    var paramNode = document.getElementById("parametersQuery");
+    while (paramNode.firstChild) {
+      paramNode.removeChild(paramNode.firstChild);
+    }
+  }
+
+  function createTextDescription (string) {
+    var textDescription = document.createElement("P");
+    var t = document.createTextNode(string);
+    textDescription.appendChild(t);
+    document.getElementById('parametersQuery').appendChild(textDescription);
   }
 
   function addDescript () {
@@ -1224,12 +1239,10 @@ require([
   var layerSelection = e.target.value;
   if (layerSelection === "Select Layer") {
     //clear div
-    var paramNode = document.getElementById("parametersQuery");
-    while (paramNode.firstChild) {
-      paramNode.removeChild(paramNode.firstChild);
-    }
+    clearDiv();
 
   } else if (layerSelection === 'NGS Control Points') {
+    clearDiv();
     // create html for NGS Control points
     // Call functions that build panels
     addDescript();
@@ -1285,9 +1298,6 @@ require([
       textQueryQuerytask(labinslayerURL + '0', 'pid', textValue)
       .then(function (response) {
         console.log(response);
-        if (response.features.length === 0) {
-          console.log('nothing returned');
-        }
         for (i=0;i<response.features.length;i++) {
           response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
           infoPanelData.push(response.features[i]);
@@ -1297,14 +1307,33 @@ require([
     });
 
   } else if (layerSelection === "Certified Corners") {
-    addDescript();
+    clearDiv();
+    createTextDescription("Example: T28SR22E600200 (or first characters, e.g. t28s)");
     createTextBox('IDQuery');
     createSubmit();
+    var textboxAfter = document.getElementById('IDQuery');
+
+    var submitAfter = document.getElementById('submitQuery');
+    query(submitAfter).on('click', function(e) {
+      var textValue = document.getElementById('IDQuery').value;
+
+      console.log(textValue);
+      textQueryQuerytask(labinslayerURL + '2', 'blmid', textValue)
+      .then(function (response) {
+        console.log(response);
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'Certified Corners';
+          infoPanelData.push(response.features[i]);
+        }
+        queryInfoPanel(infoPanelData, 1);
+      });
+    });
 
       // create html for corners
     // Call functions that build panels
   
   } else if (layerSelection === 'Tide Interpolation Points') {
+    clearDiv();
     addDescript();
     createCountyDropdown();
     createQuadDropdown();
@@ -1315,6 +1344,7 @@ require([
     // Call functions that build panels
   
   } else if (layerSelection === 'Tide Stations') {
+    clearDiv();
     addDescript();
     createCountyDropdown();
     createQuadDropdown();
@@ -1326,15 +1356,16 @@ require([
     // Call functions that build panels
   
   } else if (layerSelection === 'Erosion Control Line') {
+    clearDiv();
     addDescript();
     createCountyDropdown();
-    createNameTextBox();
     createSubmit();
 
       // create html for corners
     // Call functions that build panels
   
   } else if (layerSelection === 'Survey Benchmarks') {
+    clearDiv();
     addDescript();
     createSubmit();
 

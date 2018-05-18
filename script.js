@@ -1199,8 +1199,6 @@ require([
     }
 
   } else if (layerSelection === 'NGS Control Points') {
-
-
     // create html for NGS Control points
     // Call functions that build panels
     addDescript();
@@ -1214,25 +1212,16 @@ require([
       getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
-        console.log(response);
         dataQueryQuerytask(labinslayerURL + '0', response)
-        //dataQueryIdentify (labinslayerURL, response.features[0].geometry, 0)
         .then(function (response) {
           for (i=0;i<response.features.length;i++) {
             response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
-            console.log(response.features[i].attributes.layerName);
             infoPanelData.push(response.features[i]);
           }
           queryInfoPanel(infoPanelData, 1);
         });
-
-        console.log(queriedFeatures);
-
       });
-
-      });
-      console.log("hello there");
-
+    });
 
     // Query the quad dropdown
     var quadDropdownAfter = document.getElementById('quadQuery');
@@ -1243,28 +1232,16 @@ require([
       getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
-        console.log(response);
         dataQueryQuerytask(labinslayerURL + '0', response)
-        //dataQueryIdentify (labinslayerURL, response.features[0].geometry, 0)
         .then(function (response) {
           for (i=0;i<response.features.length;i++) {
             response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
-            console.log(response.features[i].attributes.layerName);
             infoPanelData.push(response.features[i]);
           }
           queryInfoPanel(infoPanelData, 1);
         });
-
-        console.log(queriedFeatures);
-
       });
-
-    
-      });
-
-    
-
-
+    });
 
   } else if (layerSelection === "Certified Corners") {
     addDescript();

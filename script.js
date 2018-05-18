@@ -1186,9 +1186,6 @@ require([
     document.getElementById('parametersQuery').appendChild(textbox);
   }
 
-  
-
-
   function addDescript () {
     $('#parametersQuery').html('<br><p>Filter by the following options: </p><br>');
   }
@@ -1243,7 +1240,7 @@ require([
     query(quadDropdownAfter).on('change', function(e) {
       infoPanelData = [];      
 
-      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
         console.log(response);
@@ -1262,6 +1259,7 @@ require([
 
       });
 
+    
       });
 
     

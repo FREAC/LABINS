@@ -1154,7 +1154,7 @@ require([
       url: url
     });
     var params = new Query({
-      where: attribute +  ' LIKE ' + "'%" + queryStatement + "%'",
+      where: attribute +  ' LIKE ' + "'%" + queryStatement.toUpperCase() + "%'",
       //where: '"' + attribute +  ' = ' + "'%" + queryStatement + "%'" + '"',
       //geometry: geometry,
       returnGeometry: true,

@@ -86,6 +86,16 @@ require([
   CalciteMaps,
   CalciteMapsArcGISSupport) {
 
+  var ngsControlPointsURL = 'https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/0';
+  var ngsControlPointsLayer = new FeatureLayer ({
+    url: ngsControlPointsURL,
+    title: "USGS Quads",
+    visible: false,
+    //listMode: "hide",
+    //popupTemplate: swfwmdLayerPopupTemplate,
+    popupEnabled: false
+  });
+
 
   var labinslayerURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Points_3857/MapServer/";
   var labinsLayer = new MapImageLayer({
@@ -162,6 +172,14 @@ require([
     }]
   });
 
+
+  var ngsURL = 'https://services7.arcgis.com/5MoZ4rGFfgp2h955/arcgis/rest/services/NGS_Control/FeatureServer';
+  var ngsLayer = new FeatureLayer({
+    url: ngsURL,
+    title: "NGS Control Points",
+    visible: false,
+    popupEnabled: false
+  });
 
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/0";
   var swfwmdLayer = new FeatureLayer({
@@ -291,7 +309,7 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, labinsLayer]
+    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, labinsLayer, ngsControlPointsLayer, ngsLayer]
   });
 
   /////////////////////////
@@ -373,10 +391,10 @@ require([
   /// Dropdown Select Panel ///
   /////////////////////////////
 
-  function buildSelectPanel(vurl, attribute, zoomParam, panelParam) {
+  function buildSelectPanel(url, attribute, zoomParam, panelParam) {
 
     var task = new QueryTask({
-      url: vurl
+      url: url
     });
 
     var params = new Query({
@@ -530,6 +548,7 @@ require([
       }
       dom.byId("mapViewDiv").style.cursor = "auto";
     }
+    return identifyTask.execute(params);
   } 
 
   function zoomToSectionFeature(panelurl, location, attribute) {
@@ -1052,6 +1071,285 @@ require([
   });
 
   CalciteMapsArcGISSupport.setSearchExpandEvents(searchWidget);
+
+  
+  ////////////////////////////
+  ///// Data Query////////////
+  ////////////////////////////
+  var layerChoices = ['Select Layer', 'NGS Control Points', 'Certified Corners', 'Tide Interpolation Points', 'Tide Stations', 'Erosion Control Line', 'Survey Benchmarks'];
+
+  for (var i=0;i<layerChoices.length;i++){
+    $('<option/>').val(layerChoices[i]).text(layerChoices[i]).appendTo('#selectLayerDropdown');
+ }
+ query("#selectLayerDropdown").on("change", function(e) {
+  var queriedFeatures = [];
+
+
+//Quad select
+//buildSelectPanel(controlLinesURL + "0", "tile_name", "Zoom to a Quad", "selectQuadPanel");
+  
+  function getGeometry (url, attribute, value) {
+
+    var task = new QueryTask({
+    url: url
+    });
+    var query = new Query();
+    query.returnGeometry = true;
+    //query.outFields = ['*'];
+    query.where = attribute + " = '" + value + "'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+
+    console.log(task.execute(query));
+    return task.execute(query);
+
+    
+    
+    
+
+      // for (i=0; i<results.features.length; i++) {
+      //   multiPolygonGeometries.push(results.features[i]);
+      // }
+
+  }
+
+  function dataQueryIdentify (url, response, layers) {
+    console.log(response);
+            
+    identifyTask = new IdentifyTask(url);
+
+    // Set the parameters for the Identify
+    params = new IdentifyParameters();
+    //params.tolerance = 3;
+    params.layerIds = [layers];
+    params.layerOption = "all";
+    params.width = mapView.width;
+    params.height = mapView.height;
+  
+    // Set the geometry to the location of the view click
+    params.geometry = response;
+    params.mapExtent = mapView.extent;
+    dom.byId("mapViewDiv").style.cursor = "wait";
+
+    return identifyTask.execute(params);
+  }
+
+  function dataQueryQuerytask (url, geometry) {
+    var queryTask = new QueryTask({
+      url: url
+    });
+    var params = new Query({
+      where: '1=1',
+      geometry: geometry,
+      returnGeometry: true,
+      outFields: '*'
+      //spatialRelationship: "intersects"
+    });
+    return queryTask.execute(params);
+  }
+
+  
+  function textQueryQuerytask (url, attribute, queryStatement) {
+    console.log('into the query');
+    console.log(url);
+    var queryTask = new QueryTask({
+      url: url
+    });
+    var params = new Query({
+      where: attribute +  ' LIKE ' + "'%" + queryStatement.toUpperCase() + "%'",
+      //where: '"' + attribute +  ' = ' + "'%" + queryStatement + "%'" + '"',
+      //geometry: geometry,
+      returnGeometry: true,
+      outFields: '*'
+      //spatialRelationship: "intersects"
+    });
+    console.log(params.where);
+    return queryTask.execute(params);
+  }
+
+  // disable the filter layer dropdown
+  function disable() {
+    document.getElementById("filterLayerPanel").disabled=true;
+  }
+
+  // enable the filter layer dropdown
+  function enable() {
+      document.getElementById("filterLayerPanel").disabled=false;
+  }
+  
+  function highlightResults (response) {
+    console.log(results);
+  }
+
+  function createCountyDropdown () {
+    var countyDropdown = document.createElement('select');
+    countyDropdown.setAttribute('id', 'countyQuery');
+    countyDropdown.setAttribute('class', 'form-control');
+    document.getElementById('parametersQuery').appendChild(countyDropdown);
+    buildSelectPanel(controlLinesURL + "4", "ctyname", "Select a County", "countyQuery");
+
+
+  }
+
+  function createQuadDropdown () {
+    var quadDropdown = document.createElement('select');
+    quadDropdown.setAttribute('id', 'quadQuery');
+    quadDropdown.setAttribute('class', 'form-control');
+    document.getElementById('parametersQuery').appendChild(quadDropdown);
+    buildSelectPanel(controlLinesURL + "0", "tile_name", "Select a Quad", "quadQuery")
+    
+  }
+
+  function createTextBox (id) {
+    var textbox = document.createElement('input');
+    textbox.type = 'text';
+    textbox.setAttribute('id', id);
+    textbox.setAttribute('class', 'form-control');
+    textbox.setAttribute('value', '');
+    document.getElementById('parametersQuery').appendChild(textbox);
+  }
+
+  function createSubmit () {
+    var submitButton = document.createElement('BUTTON');
+    submitButton.setAttribute('id', 'submitQuery');
+    submitButton.setAttribute('class', 'form-control');
+    var t = document.createTextNode('Submit');
+    submitButton.appendChild(t);
+    document.getElementById('parametersQuery').appendChild(submitButton);
+
+  }
+
+  function addDescript () {
+    $('#parametersQuery').html('<br><p>Filter by the following options: </p><br>');
+  }
+
+  var layerSelection = e.target.value;
+  if (layerSelection === "Select Layer") {
+    //clear div
+    var paramNode = document.getElementById("parametersQuery");
+    while (paramNode.firstChild) {
+      paramNode.removeChild(paramNode.firstChild);
+    }
+
+  } else if (layerSelection === 'NGS Control Points') {
+    // create html for NGS Control points
+    // Call functions that build panels
+    addDescript();
+    createCountyDropdown();    
+    createQuadDropdown();
+    createTextBox('nameQuery');
+    createSubmit();
+    var countyDropdownAfter = document.getElementById('countyQuery');
+    query(countyDropdownAfter).on('change', function(e) {
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(labinslayerURL + '0', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
+            infoPanelData.push(response.features[i]);
+          }
+          queryInfoPanel(infoPanelData, 1);
+        });
+      });
+    });
+
+    // Query the quad dropdown
+    var quadDropdownAfter = document.getElementById('quadQuery');
+
+    query(quadDropdownAfter).on('change', function(e) {
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(labinslayerURL + '0', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
+            infoPanelData.push(response.features[i]);
+          }
+          queryInfoPanel(infoPanelData, 1);
+        });
+      });
+    });
+
+    var textboxAfter = document.getElementById('nameQuery');
+
+    var submitAfter = document.getElementById('submitQuery');
+    query(submitAfter).on('click', function(e) {
+      var textValue = document.getElementById('nameQuery').value;
+
+      console.log(textValue);
+      textQueryQuerytask(labinslayerURL + '0', 'pid', textValue)
+      .then(function (response) {
+        console.log(response);
+        if (response.features.length === 0) {
+          console.log('nothing returned');
+        }
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
+          infoPanelData.push(response.features[i]);
+        }
+        queryInfoPanel(infoPanelData, 1);
+      });
+    });
+
+  } else if (layerSelection === "Certified Corners") {
+    addDescript();
+    createTextBox('IDQuery');
+    createSubmit();
+
+      // create html for corners
+    // Call functions that build panels
+  
+  } else if (layerSelection === 'Tide Interpolation Points') {
+    addDescript();
+    createCountyDropdown();
+    createQuadDropdown();
+    createTextBox('IDQuery');
+    createSubmit();
+
+      // create html for corners
+    // Call functions that build panels
+  
+  } else if (layerSelection === 'Tide Stations') {
+    addDescript();
+    createCountyDropdown();
+    createQuadDropdown();
+    createTextBox('IDQuery');
+    createTextBox('nameQuery');
+    createSubmit();
+
+      // create html for corners
+    // Call functions that build panels
+  
+  } else if (layerSelection === 'Erosion Control Line') {
+    addDescript();
+    createCountyDropdown();
+    createNameTextBox();
+    createSubmit();
+
+      // create html for corners
+    // Call functions that build panels
+  
+  } else if (layerSelection === 'Survey Benchmarks') {
+    addDescript();
+    createSubmit();
+
+      // create html for corners
+    // Call functions that build panels
+  
+  }
+});
+
+/////////////////////////////////
+/// Evt. Listeners Data Query ///
+/////////////////////////////////
+
+
+
 
   ////////////////////////////
   ///// Event Listeners //////

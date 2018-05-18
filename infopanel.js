@@ -33,6 +33,14 @@ function queryInfoPanel (results, i) {
                                 '<p>Data Source: ' + '<a target="_blank" href=' + results[i-1].attributes.DATA_SRCE + '>here</a></p>' + 
                                 '<p>Datasheet: ' + '<a href=' + results[i-1].attributes.DATASHEET2 + '>here</a></p>',
                                 );
+    } else if (results[i-1].attributes.layerName === 'NGS Control Points QueryTask') {
+        $('#informationdiv').html('NGS Control Points: ' + results[i-1].attributes.name + '</p>' +
+                                '<p>Latitude, Longitude: ' + results[i-1].attributes.dec_lat + ', ' +  results[i-1].attributes.dec_long + '</p>' +
+                                '<p>County: ' + results[i-1].attributes.county + '</p>' + 
+                                '<p>PID: ' + results[i-1].attributes.pid + '</p>' + 
+                                '<p>Data Source: ' + '<a target="_blank" href=' + results[i-1].attributes.data_srce + '>here</a></p>' + 
+                                '<p>Datasheet: ' + '<a href=' + results[i-1].attributes.datasheet2 + '>here</a></p>',
+                                );
     } else if (results[i-1].attributes.layerName === 'City Limits') {
         $('#informationdiv').html('<p><b>City limits:</b> ' + results[i-1].attributes.name + '</p>' +
                                 '<p><b>County:</b> ' + results[i-1].attributes.county + '</p>' +

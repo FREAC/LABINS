@@ -1145,6 +1145,26 @@ require([
     });
     return queryTask.execute(params);
   }
+
+  
+  function textQueryQuerytask (url, attribute, queryStatement) {
+    console.log('into the query');
+    console.log(url);
+    var queryTask = new QueryTask({
+      url: url
+    });
+    var params = new Query({
+      where: attribute +  ' LIKE ' + "'%" + queryStatement + "%'",
+      //where: '"' + attribute +  ' = ' + "'%" + queryStatement + "%'" + '"',
+      //geometry: geometry,
+      returnGeometry: true,
+      outFields: '*'
+      //spatialRelationship: "intersects"
+    });
+    console.log(params.where);
+    return queryTask.execute(params);
+  }
+
   // disable the filter layer dropdown
   function disable() {
     document.getElementById("filterLayerPanel").disabled=true;
@@ -1183,7 +1203,18 @@ require([
     textbox.type = 'text';
     textbox.setAttribute('id', id);
     textbox.setAttribute('class', 'form-control');
+    textbox.setAttribute('value', '');
     document.getElementById('parametersQuery').appendChild(textbox);
+  }
+
+  function createSubmit () {
+    var submitButton = document.createElement('BUTTON');
+    submitButton.setAttribute('id', 'submitQuery');
+    submitButton.setAttribute('class', 'form-control');
+    var t = document.createTextNode('Submit');
+    submitButton.appendChild(t);
+    document.getElementById('parametersQuery').appendChild(submitButton);
+
   }
 
   function addDescript () {
@@ -1205,6 +1236,7 @@ require([
     createCountyDropdown();    
     createQuadDropdown();
     createTextBox('nameQuery');
+    createSubmit();
     var countyDropdownAfter = document.getElementById('countyQuery');
     query(countyDropdownAfter).on('change', function(e) {
       infoPanelData = [];      
@@ -1243,9 +1275,31 @@ require([
       });
     });
 
+    var textboxAfter = document.getElementById('nameQuery');
+
+    var submitAfter = document.getElementById('submitQuery');
+    query(submitAfter).on('click', function(e) {
+      var textValue = document.getElementById('nameQuery').value;
+
+      console.log(textValue);
+      textQueryQuerytask(labinslayerURL + '0', 'pid', textValue)
+      .then(function (response) {
+        console.log(response);
+        if (response.features.length === 0) {
+          console.log('nothing returned');
+        }
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
+          infoPanelData.push(response.features[i]);
+        }
+        queryInfoPanel(infoPanelData, 1);
+      });
+    });
+
   } else if (layerSelection === "Certified Corners") {
     addDescript();
     createTextBox('IDQuery');
+    createSubmit();
 
       // create html for corners
     // Call functions that build panels
@@ -1255,6 +1309,7 @@ require([
     createCountyDropdown();
     createQuadDropdown();
     createTextBox('IDQuery');
+    createSubmit();
 
       // create html for corners
     // Call functions that build panels
@@ -1265,6 +1320,7 @@ require([
     createQuadDropdown();
     createTextBox('IDQuery');
     createTextBox('nameQuery');
+    createSubmit();
 
       // create html for corners
     // Call functions that build panels
@@ -1273,12 +1329,14 @@ require([
     addDescript();
     createCountyDropdown();
     createNameTextBox();
+    createSubmit();
 
       // create html for corners
     // Call functions that build panels
   
   } else if (layerSelection === 'Survey Benchmarks') {
     addDescript();
+    createSubmit();
 
       // create html for corners
     // Call functions that build panels

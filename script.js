@@ -949,7 +949,7 @@ require([
       placeholder: "Search by PID",
     }, {
       featureLayer: {
-        url: labinslayerURL + "5",
+        url: labinslayerURL + "4",
         resultGraphicEnabled: true,
         popupTemplate: tideStationsTemplate
       },
@@ -961,7 +961,7 @@ require([
       placeholder: "Search by ID, County Name, or Quad Name",
     }, {
       featureLayer: {
-        url: labinslayerURL + "6",
+        url: labinslayerURL + "5",
         popupTemplate: tideInterpPointsTemplate
       },
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
@@ -1010,7 +1010,7 @@ require([
       placeholder: "Search by City Name or Surrounding County",
     }, */{
       featureLayer: {
-        url: labinslayerURL + "/9",
+        url: labinslayerURL + "8",
         popupTemplate: rMonumentsTemplate
       },
       searchFields: ["monument_name", "county"],
@@ -1021,7 +1021,7 @@ require([
       placeholder: "Search by County Name or R-Monument Name",
     }, {
       featureLayer: {
-        url: labinslayerURL + "/10",
+        url: labinslayerURL + "9",
         popupTemplate: erosionControlLineTemplate
       },
       searchFields: ["ecl_name", "county"],

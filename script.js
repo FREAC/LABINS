@@ -991,7 +991,7 @@ require([
       placeholder: "Search by City Name or Surrounding County",
     }, */{
       featureLayer: {
-        url: labinslayerURL + "/9",
+        url: labinslayerURL + "8",
         popupTemplate: rMonumentsTemplate
       },
       searchFields: ["monument_name", "county"],
@@ -1002,7 +1002,7 @@ require([
       placeholder: "Search by County Name or R-Monument Name",
     }, {
       featureLayer: {
-        url: labinslayerURL + "/10",
+        url: labinslayerURL + "9",
         popupTemplate: erosionControlLineTemplate
       },
       searchFields: ["ecl_name", "county"],

@@ -930,7 +930,7 @@ require([
       placeholder: "Search by PID",
     }, {
       featureLayer: {
-        url: labinslayerURL + "5",
+        url: labinslayerURL + "4",
         resultGraphicEnabled: true,
         popupTemplate: tideStationsTemplate
       },
@@ -942,7 +942,7 @@ require([
       placeholder: "Search by ID, County Name, or Quad Name",
     }, {
       featureLayer: {
-        url: labinslayerURL + "6",
+        url: labinslayerURL + "5",
         popupTemplate: tideInterpPointsTemplate
       },
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],

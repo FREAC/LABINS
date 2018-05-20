@@ -1217,13 +1217,60 @@ require([
     document.getElementById('parametersQuery').appendChild(submitButton);
 
   }
-  
+ 
   function clearDiv () {
     var paramNode = document.getElementById("parametersQuery");
     while (paramNode.firstChild) {
       paramNode.removeChild(paramNode.firstChild);
     }
   }
+
+  function togglePanel() {
+     
+    $('#allpanelsDiv > div').each(function () {
+      // turn off all panels that are not target
+      if (this.id != 'panelPopup') {
+        this.setAttribute('class', 'panel collapse');
+        this.setAttribute('style', 'height:0px;');
+        console.log('hello');
+
+      } else {
+        this.setAttribute('class', 'panel collapse in');
+        this.setAttribute('style', 'height:auto;');
+        $( '#' + this.id + '>div').each(function() {
+          if (this.id === 'collapsePopup') {
+            this.setAttribute('class', 'panel-collapse collapse in');
+            this.setAttribute('style', 'height:auto;');
+          }
+
+        });
+        
+      }
+
+      //turn on target
+      console.log(this.id);
+    });
+
+  }
+
+  function findPanel() {
+    var panel = document.getElementById("panelPopup");
+    
+    
+    console.log(panel.collapse);
+
+    $('#myTabs a[href="#name"]').tab('show');
+    if (panel) {
+      
+        console.log("Panel is visible");
+    }
+    else {
+        console.log("Panel is not visible");
+    }
+  }
+
+
+    
 
   function createTextDescription (string) {
     var textDescription = document.createElement("P");
@@ -1264,6 +1311,7 @@ require([
             infoPanelData.push(response.features[i]);
           }
           queryInfoPanel(infoPanelData, 1);
+          togglePanel();
         });
       });
     });

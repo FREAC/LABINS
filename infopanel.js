@@ -2,20 +2,23 @@ function queryInfoPanel (results, i) {
     console.log(results);
     // Set HTML templates for information panel
     if (results[i-1].attributes.layerName === 'USGS Quads') {
-        $('#informationdiv').html('<b>Quad Name:</b> ' + results[i-1].attributes.tile_name + '</p>' + 
+        $('#informationdiv').html('<p><b>USGS Quads</b></p>' + 
+                                '<b>Quad Name:</b> ' + results[i-1].attributes.tile_name + '</p>' + 
                                 '<b> Quad Number: </b>' + results[i-1].attributes.q_902_83_i + '</p>' +
                                 '<p><b>Latitude, Longitude:</b> ' + results[i-1].attributes.latitude + ', ' + results[i-1].attributes.longitude + '</p>' +
                                 '<p><b>County:</b> ' + results[i-1].attributes.quad + '</p>' + 
                                 '<p><b>Layer Name:</b> ' + results[i-1].attributes.layerName + '</p>' 
                                 );
     } else if (results[i-1].attributes.layerName === 'County Boundaries') {
-        $('#informationdiv').html('<p><b>County Name:</b> ' + results[i-1].attributes.ctyname + '</p>' + 
+        $('#informationdiv').html('<p><b>County Boundaries</b></p>' + 
+                                '<p><b>County Name:</b> ' + results[i-1].attributes.ctyname + '</p>' + 
                                 '<p><b>FIPS:</b> ' + results[i-1].attributes.cfips + '</p>' +
                                 '<p><b>Area:</b> ' + results[i-1].attributes.st_area + '</p>' +
                                 '<p><b>Layer Name:</b> ' + results[i-1].attributes.layerName + '</p>'                                  
                                 );
     } else if (results[i-1].attributes.layerName === 'Soils June 2012 - Dept. of Agriculture') {
-        $('#informationdiv').html('<p><b>USDA Soils: </b>' + results[i-1].attributes.muname + '</p>' +
+        $('#informationdiv').html('<p>Soils June 2012 - Dept. of Agriculture<b></b></p>' +
+                                '<p><b>USDA Soils: </b>' + results[i-1].attributes.muname + '</p>' +
                                 '<p><b>Mapunit Name:</b> ' + results[i-1].attributes.muname + '</p>' +
                                 '<p><b>Size (acres):</b> ' + results[i-1].attributes.muacres + '</p>' +
                                 '<p><b>Texture:</b> ' + results[i-1].attributes.texture + '</p>' +
@@ -26,7 +29,8 @@ function queryInfoPanel (results, i) {
                                 '<p><b>Description:</b> ' + results[i-1].attributes.descript + '</p>',       
                                 );
     } else if (results[i-1].attributes.layerName === 'NGS Control Points') {
-        $('#informationdiv').html('NGS Control Points: ' + results[i-1].attributes.NAME + '</p>' +
+        $('#informationdiv').html('<p><b>NGS Control Points</b></p>' +
+                                'Control Point Name: ' + results[i-1].attributes.NAME + '</p>' +
                                 '<p>Latitude, Longitude: ' + results[i-1].attributes.DEC_LAT + ', ' +  results[i-1].attributes.DEC_LONG + '</p>' +
                                 '<p>County: ' + results[i-1].attributes.COUNTY + '</p>' + 
                                 '<p>PID: ' + results[i-1].attributes.PID + '</p>' + 
@@ -34,7 +38,8 @@ function queryInfoPanel (results, i) {
                                 '<p>Datasheet: ' + '<a href=' + results[i-1].attributes.DATASHEET2 + '>here</a></p>',
                                 );
     } else if (results[i-1].attributes.layerName === 'NGS Control Points QueryTask') {
-        $('#informationdiv').html('NGS Control Points: ' + results[i-1].attributes.name + '</p>' +
+        $('#informationdiv').html('<p><b>NGS Control Points</b></p>' +
+                                'Control Point Name: ' + results[i-1].attributes.name + '</p>' +
                                 '<p>Latitude, Longitude: ' + results[i-1].attributes.dec_lat + ', ' +  results[i-1].attributes.dec_long + '</p>' +
                                 '<p>County: ' + results[i-1].attributes.county + '</p>' + 
                                 '<p>PID: ' + results[i-1].attributes.pid + '</p>' + 
@@ -42,14 +47,16 @@ function queryInfoPanel (results, i) {
                                 '<p>Datasheet: ' + '<a href=' + results[i-1].attributes.datasheet2 + '>here</a></p>',
                                 );
     } else if (results[i-1].attributes.layerName === 'City Limits') {
-        $('#informationdiv').html('<p><b>City limits:</b> ' + results[i-1].attributes.name + '</p>' +
+        $('#informationdiv').html('<p><b>City Limits</b></p>' +
+                                '<p><b>City limits:</b> ' + results[i-1].attributes.name + '</p>' +
                                 '<p><b>County:</b> ' + results[i-1].attributes.county + '</p>' +
                                 '<p><b>Object ID:</b> ' + results[i-1].attributes.objectid + '</p>' +
                                 '<p><b>tax_count:</b> ' + results[i-1].attributes.tax_count + '</p>' + 
                                 '<p><b>Description:</b> ' + results[i-1].attributes.descript + '</p>'   
                                 );
     } else if (results[i-1].attributes.layerName === 'Parcels') {
-        $('#informationdiv').html('<p><b>Parcels</b></p>' + 
+        $('#informationdiv').html('<p><b>Parcels</b></p>' +
+                                '<p><b>Parcels</b></p>' + 
                                 '<p><b>Parcel ID:</b> ' + results[i-1].attributes.CO_NO + '</p>' +
                                 '<p><b>Parcel ID:</b> ' + results[i-1].attributes.PARCEL_ID + '</p>' +
                                 '<p><b>City:</b> ' + results[i-1].attributes.OWN_CITY + '</p>' +
@@ -57,7 +64,8 @@ function queryInfoPanel (results, i) {
                                 '<p><b>Address:</b> ' + results[i-1].attributes.PHY_ADDR1 + '</p>'
                                 );
     } else if (results[i-1].attributes.layerName === 'Preliminary NGS Points') {
-        $('#informationdiv').html('<p><b>Preliminary NGS Control Points: </b>' + results[i-1].attributes.FeatureID + '</p>' +
+        $('#informationdiv').html('<p><b>Preliminary NGS Points</b></p>' +
+                                '<p><b>Preliminary NGS Control Points: </b>' + results[i-1].attributes.FeatureID + '</p>' +
                                 '<p><b>Designation: </b>' + results[i-1].attributes.base_and_survey.sde.Prelim_NGS_12_21_2011b.designatio + '</p>' +
                                 '<p><b>Latitude: </b>' + results[i-1].attributes.base_and_survey.sde.Prelim_NGS_12_21_2011b.latdecdeg + '</p>' + 
                                 '<p><b>Longitude: </b>' + results[i-1].attributes.base_and_survey.sde.Prelim_NGS_12_21_2011b.londecdeg + '</p>' +
@@ -65,7 +73,8 @@ function queryInfoPanel (results, i) {
                                 '<p>Description: ' + '<a href=' + results[i-1].attributes.base_and_survey.sde.PUBLISHED_PRELIMINARY.description2 + '>' + base_and_survey.sde.PUBLISHED_PRELIMINARY.l_number + '</a></p>',
         );
     } else if (results[i-1].attributes.layerName === 'Tide Stations') {
-        $('#informationdiv').html('<p><b>Tide Station ID: </b>' + results[i-1].attributes.id + '</p>' +
+        $('#informationdiv').html('<p><b>Tide Stations</b></p>' +
+                                '<p><b>Tide Station ID: </b>' + results[i-1].attributes.id + '</p>' +
                                 '<p><b>County: </b>' + results[i-1].attributes.countyname + '</p>' +
                                 '<p><b>Quad: </b>' + results[i-1].attributes.quadname + '</p>' + 
                                 '<p><b>Status: </b>' + results[i-1].attributes.status + '</p>' +
@@ -76,7 +85,8 @@ function queryInfoPanel (results, i) {
 
         );
     } else if (results[i-1].attributes.layerName === 'Tide Interpolation Points') {
-        $('#informationdiv').html('<p><b>Tide Interpolation Points: </b>' + results[i-1].attributes.iden + '</p>' +
+        $('#informationdiv').html('<p><b>Tide Interpolation Points</b></p>' +
+                                '<p><b>Tide Interpolation Points: </b>' + results[i-1].attributes.iden + '</p>' +
                                 '<p><b>County: </b>' + results[i-1].attributes.cname + '</p>' +
                                 '<p><b>Quad: </b>' + results[i-1].attributes.tile_name + '</p>' + 
                                 '<p><b>Method: </b>' + results[i-1].attributes.method + '</p>' +
@@ -96,7 +106,8 @@ function queryInfoPanel (results, i) {
                                 '<p><b>Longitude: </b>' + results[i-1].attributes.longitude + '</p>' 
                                 );
     } else if (results[i-1].attributes.layerName === 'Erosion Control Line') {
-        $('#informationdiv').html('<p><b>Erosion Control Line</b> </p>' + 
+        $('#informationdiv').html('<p><b>Erosion Control Line</b></p>' +
+                                '<p><b>Erosion Control Line</b> </p>' + 
                                 '<p><b>Feature ID: </b>' + results[i-1].attributes.objectid + '</p>' +
                                 '<p><b>County: </b>' + results[i-1].attributes.county + '</p>' + 
                                 '<p><b>ECL Name: </b>' + results[i-1].attributes.ecl_name + '</p>' +

@@ -1198,12 +1198,12 @@ require([
     
   }
 
-  function createTextBox (id) {
+  function createTextBox (id, placeholder) {
     var textbox = document.createElement('input');
     textbox.type = 'text';
     textbox.setAttribute('id', id);
     textbox.setAttribute('class', 'form-control');
-    textbox.setAttribute('placeholder', 'this is a placeholder');
+    textbox.setAttribute('placeholder', placeholder);
     textbox.setAttribute('value', '');
     document.getElementById('parametersQuery').appendChild(textbox);
   }
@@ -1232,7 +1232,6 @@ require([
       if (this.id != 'panelPopup') {
         this.setAttribute('class', 'panel collapse');
         this.setAttribute('style', 'height:0px;');
-        console.log('hello');
 
       } else {
         this.setAttribute('class', 'panel collapse in');
@@ -1247,30 +1246,10 @@ require([
         
       }
 
-      //turn on target
-      console.log(this.id);
     });
 
   }
 
-  function findPanel() {
-    var panel = document.getElementById("panelPopup");
-    
-    
-    console.log(panel.collapse);
-
-    $('#myTabs a[href="#name"]').tab('show');
-    if (panel) {
-      
-        console.log("Panel is visible");
-    }
-    else {
-        console.log("Panel is not visible");
-    }
-  }
-
-
-    
 
   function createTextDescription (string) {
     var textDescription = document.createElement("P");
@@ -1295,7 +1274,7 @@ require([
     addDescript();
     createCountyDropdown();    
     createQuadDropdown();
-    createTextBox('nameQuery');
+    createTextBox('nameQuery', 'Enter name. Example: BG4871');
     createSubmit();
     var countyDropdownAfter = document.getElementById('countyQuery');
     query(countyDropdownAfter).on('change', function(e) {
@@ -1332,25 +1311,27 @@ require([
             infoPanelData.push(response.features[i]);
           }
           queryInfoPanel(infoPanelData, 1);
+          togglePanel();
         });
       });
     });
 
+    // Textbox Query
     var textboxAfter = document.getElementById('nameQuery');
 
     var submitAfter = document.getElementById('submitQuery');
     query(submitAfter).on('click', function(e) {
+      infoPanelData = [];      
       var textValue = document.getElementById('nameQuery').value;
 
-      console.log(textValue);
       textQueryQuerytask(labinslayerURL + '0', 'pid', textValue)
       .then(function (response) {
-        console.log(response);
         for (i=0;i<response.features.length;i++) {
           response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
           infoPanelData.push(response.features[i]);
         }
         queryInfoPanel(infoPanelData, 1);
+        togglePanel();
       });
     });
 
@@ -1363,6 +1344,7 @@ require([
 
     var submitAfter = document.getElementById('submitQuery');
     query(submitAfter).on('click', function(e) {
+      infoPanelData = [];      
       var textValue = document.getElementById('IDQuery').value;
 
       console.log(textValue);
@@ -1374,6 +1356,7 @@ require([
           infoPanelData.push(response.features[i]);
         }
         queryInfoPanel(infoPanelData, 1);
+        togglePanel();
       });
     });
 

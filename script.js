@@ -1198,12 +1198,12 @@ require([
     
   }
 
-  function createTextBox (id) {
+  function createTextBox (id, placeholder) {
     var textbox = document.createElement('input');
     textbox.type = 'text';
     textbox.setAttribute('id', id);
     textbox.setAttribute('class', 'form-control');
-    textbox.setAttribute('placeholder', 'this is a placeholder');
+    textbox.setAttribute('placeholder', placeholder);
     textbox.setAttribute('value', '');
     document.getElementById('parametersQuery').appendChild(textbox);
   }
@@ -1217,13 +1217,39 @@ require([
     document.getElementById('parametersQuery').appendChild(submitButton);
 
   }
-  
+ 
   function clearDiv () {
     var paramNode = document.getElementById("parametersQuery");
     while (paramNode.firstChild) {
       paramNode.removeChild(paramNode.firstChild);
     }
   }
+
+  function togglePanel() {
+     
+    $('#allpanelsDiv > div').each(function () {
+      // turn off all panels that are not target
+      if (this.id != 'panelPopup') {
+        this.setAttribute('class', 'panel collapse');
+        this.setAttribute('style', 'height:0px;');
+
+      } else {
+        this.setAttribute('class', 'panel collapse in');
+        this.setAttribute('style', 'height:auto;');
+        $( '#' + this.id + '>div').each(function() {
+          if (this.id === 'collapsePopup') {
+            this.setAttribute('class', 'panel-collapse collapse in');
+            this.setAttribute('style', 'height:auto;');
+          }
+
+        });
+        
+      }
+
+    });
+
+  }
+
 
   function createTextDescription (string) {
     var textDescription = document.createElement("P");
@@ -1248,7 +1274,7 @@ require([
     addDescript();
     createCountyDropdown();    
     createQuadDropdown();
-    createTextBox('nameQuery');
+    createTextBox('nameQuery', 'Enter name. Example: BG4871');
     createSubmit();
     var countyDropdownAfter = document.getElementById('countyQuery');
     query(countyDropdownAfter).on('change', function(e) {
@@ -1264,6 +1290,7 @@ require([
             infoPanelData.push(response.features[i]);
           }
           queryInfoPanel(infoPanelData, 1);
+          togglePanel();
         });
       });
     });
@@ -1284,25 +1311,27 @@ require([
             infoPanelData.push(response.features[i]);
           }
           queryInfoPanel(infoPanelData, 1);
+          togglePanel();
         });
       });
     });
 
+    // Textbox Query
     var textboxAfter = document.getElementById('nameQuery');
 
     var submitAfter = document.getElementById('submitQuery');
     query(submitAfter).on('click', function(e) {
+      infoPanelData = [];      
       var textValue = document.getElementById('nameQuery').value;
 
-      console.log(textValue);
       textQueryQuerytask(labinslayerURL + '0', 'pid', textValue)
       .then(function (response) {
-        console.log(response);
         for (i=0;i<response.features.length;i++) {
           response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
           infoPanelData.push(response.features[i]);
         }
         queryInfoPanel(infoPanelData, 1);
+        togglePanel();
       });
     });
 
@@ -1315,6 +1344,7 @@ require([
 
     var submitAfter = document.getElementById('submitQuery');
     query(submitAfter).on('click', function(e) {
+      infoPanelData = [];      
       var textValue = document.getElementById('IDQuery').value;
 
       console.log(textValue);
@@ -1326,6 +1356,7 @@ require([
           infoPanelData.push(response.features[i]);
         }
         queryInfoPanel(infoPanelData, 1);
+        togglePanel();
       });
     });
 

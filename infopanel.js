@@ -85,6 +85,7 @@ function queryInfoPanel (results, i) {
 
         );
     } else if (results[i-1].attributes.layerName === 'Tide Interpolation Points') {
+        var replaceWhitespace = results[i-1].attributes.tile_name.replace(" ", "%20");
         $('#informationdiv').html('<p><b>Tide Interpolation Points</b></p>' +
                                 '<p><b>Tide Interpolation Points: </b>' + results[i-1].attributes.iden + '</p>' +
                                 '<p><b>County: </b>' + results[i-1].attributes.cname + '</p>' +
@@ -94,7 +95,7 @@ function queryInfoPanel (results, i) {
                                 '<p><b>MLW (feet): </b>' + results[i-1].attributes.mlw2_ft + '</p>' +
                                 '<p><b>Station 1: </b>' + results[i-1].attributes.station1 + '</p>' +
                                 '<p><b>Station 2: </b>' + results[i-1].attributes.station2 + '</p>' +
-                                '<p>Report: ' + '<p>Download report: <a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin=' + results[i-1].attributes.iden + '&mCountyName=' + results[i-1].attributes.cname + '&mQuad=' + results[i-1].attributes.tile_name + '&mhw=' + results[i-1].attributes.mhw2_ft + '&mlw=' + results[i-1].attributes.mlw2_ft + '>here</a></p>'
+                                '<p><b>Download Approval Form: </b><a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin=' + results[i-1].attributes.iden + '&mCountyName=' + results[i-1].attributes.cname + '&mQuad=' + replaceWhitespace + '&mhw=' + results[i-1].attributes.mhw2_ft + '&mlw=' + results[i-1].attributes.mlw2_ft + '>here</a></p>'
                                 );
     } else if (results[i-1].attributes.layerName === 'R-Monuments') {
         $('#informationdiv').html('<p><b>Regional Coastal Monitoring Data</b> </p>' + 

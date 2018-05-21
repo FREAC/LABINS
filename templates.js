@@ -76,7 +76,7 @@ var customZoomAction = {
       "<p>MLW: {mlw2_ft}</p>" +
       "<p>Station 1: {station1}</p>" +
       "<p>Station 2: {station2}</p>" +
-      "<p>Download report: <a target='_blank' href=http://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin={iden}&mCountyName={cname}&mQuad={tile_name}&mhw={mhw2_ft}&mlw={mlw2_ft}>here</a></p>"
+      "<p>Download Approval Form: <a target='_blank' href=http://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin={iden}&mCountyName={cname}&mQuad={tile_name}&mhw={mhw2_ft}&mlw={mlw2_ft}>here</a></p>"
   };
 
   var rMonumentsTemplate = {

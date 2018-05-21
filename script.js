@@ -791,28 +791,30 @@ require([
   tasks = [];
   allParams = [];
 
-  tasks.push(new IdentifyTask(controlLinesURL));
   tasks.push(new IdentifyTask(labinslayerURL));
+  tasks.push(new IdentifyTask(controlLinesURL));
   tasks.push(new IdentifyTask('https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/'));
 
   // Set the parameters for the Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [0, 2, 5];
+  params.layerIds = [2, 0, 1, 4, 5, 9, 6];
   params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
   allParams.push(params);
+
   // Set the parameters for the Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [0, 1, 2, 5, 6, 9, 10];
+  params.layerIds = [2, 5, 0];
   params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
   allParams.push(params);
+  
   // Set the parameters for the Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
@@ -834,9 +836,34 @@ require([
         console.log(event);
         event.stopPropagation();
         executeIdentifyTask(event);
+        togglePanel();
       }  
   });
 
+  function togglePanel() {
+     
+    $('#allpanelsDiv > div').each(function () {
+      // turn off all panels that are not target
+      if (this.id != 'panelPopup') {
+        this.setAttribute('class', 'panel collapse');
+        this.setAttribute('style', 'height:0px;');
+
+      } else {
+        this.setAttribute('class', 'panel collapse in');
+        this.setAttribute('style', 'height:auto;');
+        $( '#' + this.id + '>div').each(function() {
+          if (this.id === 'collapsePopup') {
+            this.setAttribute('class', 'panel-collapse collapse in');
+            this.setAttribute('style', 'height:auto;');
+          }
+
+        });
+        
+      }
+
+    });
+
+  }
 
   function executeIdentifyTask(event) {
     infoPanelData = [];
@@ -1225,30 +1252,6 @@ require([
     }
   }
 
-  function togglePanel() {
-     
-    $('#allpanelsDiv > div').each(function () {
-      // turn off all panels that are not target
-      if (this.id != 'panelPopup') {
-        this.setAttribute('class', 'panel collapse');
-        this.setAttribute('style', 'height:0px;');
-
-      } else {
-        this.setAttribute('class', 'panel collapse in');
-        this.setAttribute('style', 'height:auto;');
-        $( '#' + this.id + '>div').each(function() {
-          if (this.id === 'collapsePopup') {
-            this.setAttribute('class', 'panel-collapse collapse in');
-            this.setAttribute('style', 'height:auto;');
-          }
-
-        });
-        
-      }
-
-    });
-
-  }
 
 
   function createTextDescription (string) {
@@ -1338,7 +1341,7 @@ require([
   } else if (layerSelection === "Certified Corners") {
     clearDiv();
     createTextDescription("Example: T28SR22E600200 (or first characters, e.g. t28s)");
-    createTextBox('IDQuery');
+    createTextBox('IDQuery', 'Enter a Certified Corner BLMID.');
     createSubmit();
     var textboxAfter = document.getElementById('IDQuery');
 
@@ -1368,7 +1371,7 @@ require([
     addDescript();
     createCountyDropdown();
     createQuadDropdown();
-    createTextBox('IDQuery');
+    createTextBox('IDQuery', 'Enter an ID');
     createSubmit();
 
       // create html for corners
@@ -1379,8 +1382,8 @@ require([
     addDescript();
     createCountyDropdown();
     createQuadDropdown();
-    createTextBox('IDQuery');
-    createTextBox('nameQuery');
+    createTextBox('IDQuery', 'Enter an ID');
+    createTextBox('nameQuery', 'Enter a Tide Station name.');
     createSubmit();
 
       // create html for corners

@@ -86,6 +86,8 @@ require([
   CalciteMaps,
   CalciteMapsArcGISSupport) {
 
+  var minimumDrawScale = 100000;
+
   var ngsControlPointsURL = 'https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/0';
   var ngsControlPointsLayer = new FeatureLayer ({
     url: ngsControlPointsURL,
@@ -101,6 +103,7 @@ require([
   var labinsLayer = new MapImageLayer({
     url: labinslayerURL,
     title: "LABINS Data",
+    minScale: minimumDrawScale,
     sublayers: [{
       id: 9,
       title: "Erosion Control Line",
@@ -185,11 +188,8 @@ require([
   var swfwmdLayer = new FeatureLayer({
     url: swfwmdURL,
     title: "SWFWMD Benchmarks",
-    visible: true,
-    //listMode: "hide",
-    //popupTemplate: swfwmdLayerPopupTemplate,
-    popupEnabled: false
-
+    popupEnabled: false,
+    minScale: minimumDrawScale
   });
 
 
@@ -398,7 +398,7 @@ require([
     });
 
     var params = new Query({
-      where: "1 = 1 AND " + attribute + " IS NOT NULL",
+      where: attribute + " IS NOT NULL",
       outFields: [attribute],
       returnDistinctValues: true,
       });
@@ -832,7 +832,7 @@ require([
 
   // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("click", function(event) {
-      if (mapView.scale < 100000) {
+      if (mapView.scale < minimumDrawScale) {
         console.log(event);
         event.stopPropagation();
         executeIdentifyTask(event);

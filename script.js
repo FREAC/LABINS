@@ -967,7 +967,7 @@ require([
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
     },/* {
       featureLayer: {
-        url: labinslayerURL + "4",
+        url: controlPointsURL + "4",
         popupTemplate: countyTemplate
       },
       searchFields: ["fips", "ctyname"],
@@ -980,7 +980,7 @@ require([
       resultSymbol: highlightSymbol
   }, {
       featureLayer: {
-        url: labinslayerURL + "0",
+        url: controlPointsURL + "0",
         popupTemplate: quadsTemplate
       },
       searchFields: ["tile_name", "quad"],
@@ -992,7 +992,7 @@ require([
       placeholder: "Search by Quad Name or Quad number",
     }, {
       featureLayer: {
-        url: labinslayerURL + "3",
+        url: controlPointsURL + "3",
         popupTemplate: cityLimitsTemplate
       },
       searchFields: ["name", "county"],
@@ -1358,7 +1358,7 @@ require([
       getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
-        dataQueryQuerytask(labinslayerURL + '5', response)
+        dataQueryQuerytask(controlPointsURL + '5', response)
         .then(function (response) {
           for (i=0;i<response.features.length;i++) {
             response.features[i].attributes.layerName = 'Tide Interpolation Points';
@@ -1379,7 +1379,7 @@ require([
       getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
-        dataQueryQuerytask(labinslayerURL + '5', response)
+        dataQueryQuerytask(controlPointsURL + '5', response)
         .then(function (response) {
           for (i=0;i<response.features.length;i++) {
             response.features[i].attributes.layerName = 'Tide Interpolation Points';
@@ -1400,7 +1400,7 @@ require([
       var textValue = document.getElementById('IDQuery').value;
       textValue = parseInt(textValue);
 
-      textQueryQuerytask(labinslayerURL + '5', 'iden', textValue)
+      textQueryQuerytask(controlPointsURL + '5', 'iden', textValue)
       .then(function (response) {
         console.log(response)
         for (i=0;i<response.features.length;i++) {
@@ -1433,7 +1433,7 @@ require([
       getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
-        dataQueryQuerytask(labinslayerURL + '4', response)
+        dataQueryQuerytask(controlPointsURL + '4', response)
         .then(function (response) {
           for (i=0;i<response.features.length;i++) {
             response.features[i].attributes.layerName = 'Tide Stations';
@@ -1454,7 +1454,7 @@ require([
       getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
-        dataQueryQuerytask(labinslayerURL + '4', response)
+        dataQueryQuerytask(controlPointsURL + '4', response)
         .then(function (response) {
           for (i=0;i<response.features.length;i++) {
             response.features[i].attributes.layerName = 'Tide Stations';
@@ -1475,7 +1475,7 @@ require([
     //   var textValue = document.getElementById('IDQuery').value;
     //   textValue = textValue.padStart(4, '0');
 
-    //   textQueryQuerytask(labinslayerURL + '4', 'id', textValue, false)
+    //   textQueryQuerytask(controlPointsURL + '4', 'id', textValue, false)
     //   .then(function (response) {
     //     console.log(response)
     //     for (i=0;i<response.features.length;i++) {
@@ -1496,7 +1496,7 @@ require([
     //   infoPanelData = [];      
     //   var textValue = document.getElementById('nameQuery').value;
 
-    //   textQueryQuerytask(labinslayerURL + '5', 'name', textValue)
+    //   textQueryQuerytask(controlPointsURL + '5', 'name', textValue)
     //   .then(function (response) {
     //     console.log(response)
     //     for (i=0;i<response.features.length;i++) {
@@ -1519,7 +1519,7 @@ require([
       infoPanelData = [];
       var textValue = inputAfter.value.padStart(4, '0');
 
-      textQueryQuerytask(labinslayerURL + '4', 'id', textValue, false)
+      textQueryQuerytask(controlPointsURL + '4', 'id', textValue, false)
       .then(function (response) {
         console.log(response)
         for (i=0;i<response.features.length;i++) {
@@ -1533,7 +1533,7 @@ require([
 
     query(nameButton).on('click', function(e) {
       infoPanelData = [];
-      textQueryQuerytask(labinslayerURL + '4', 'name', inputAfter.value)
+      textQueryQuerytask(controlPointsURL + '4', 'name', inputAfter.value)
       .then(function (response) {
         console.log(response)
         for (i=0;i<response.features.length;i++) {

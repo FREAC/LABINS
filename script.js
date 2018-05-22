@@ -88,20 +88,9 @@ require([
 
   var minimumDrawScale = 100000;
 
-  var ngsControlPointsURL = 'https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/0';
-  var ngsControlPointsLayer = new FeatureLayer ({
-    url: ngsControlPointsURL,
-    title: "USGS Quads",
-    visible: false,
-    //listMode: "hide",
-    //popupTemplate: swfwmdLayerPopupTemplate,
-    popupEnabled: false
-  });
-
-
-  var labinslayerURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Points_3857/MapServer/";
-  var labinsLayer = new MapImageLayer({
-    url: labinslayerURL,
+  var controlPointsURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Points_3857/MapServer/";
+  var controlPointsLayer = new MapImageLayer({
+    url: controlPointsURL,
     title: "LABINS Data",
     minScale: minimumDrawScale,
     sublayers: [{
@@ -109,16 +98,7 @@ require([
       title: "Erosion Control Line",
       visible: true,
       //popupTemplate: erosionControlLineTemplate,
-      popupEnabled: false,
-      renderer: { 
-        type: "simple", // autocasts as new SimpleRenderer()
-        symbol: {
-          type: "simple-line", // autocasts as new SimpleFillSymbol()
-          style: "none",
-          width: 3,
-          color: "purple"
-        }
-      }
+      popupEnabled: false
     }, {
       id: 8,
       title: "R-Monuments",
@@ -175,15 +155,6 @@ require([
     }]
   });
 
-
-  var ngsURL = 'https://services7.arcgis.com/5MoZ4rGFfgp2h955/arcgis/rest/services/NGS_Control/FeatureServer';
-  var ngsLayer = new FeatureLayer({
-    url: ngsURL,
-    title: "NGS Control Points",
-    visible: false,
-    popupEnabled: false
-  });
-
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/0";
   var swfwmdLayer = new FeatureLayer({
     url: swfwmdURL,
@@ -191,7 +162,6 @@ require([
     popupEnabled: false,
     minScale: minimumDrawScale
   });
-
 
   var controlLinesURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/";
   var controlLinesLayer = new MapImageLayer({
@@ -268,7 +238,6 @@ require([
     listMode: "hide"
   });
 
-
   // Symbol that will populate the graphics Layer
   var highlightSymbol = new SimpleFillSymbol(
     SimpleFillSymbol.STYLE_SOLID,
@@ -296,7 +265,6 @@ require([
     color: [0, 0, 0, 0]
 };
 
-
   /////////////////////
   // Create the map ///
   /////////////////////
@@ -306,10 +274,9 @@ require([
     basemap: "topo"
   });
 
-
   var map = new Map({
     basemap: "topo",
-    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, labinsLayer, ngsControlPointsLayer, ngsLayer]
+    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, controlPointsLayer]
   });
 
   /////////////////////////
@@ -498,7 +465,7 @@ require([
   function executeTRSIdentify(response) {
     console.log(response);
             
-    identifyTask = new IdentifyTask(labinslayerURL);
+    identifyTask = new IdentifyTask(controlPointsURL);
 
     // Set the parameters for the Identify
     params = new IdentifyParameters();
@@ -791,7 +758,7 @@ require([
   tasks = [];
   allParams = [];
 
-  tasks.push(new IdentifyTask(labinslayerURL));
+  tasks.push(new IdentifyTask(controlPointsURL));
   tasks.push(new IdentifyTask(controlLinesURL));
   tasks.push(new IdentifyTask('https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/'));
 
@@ -964,7 +931,7 @@ require([
       minSuggestCharacters: 0
     }, {
       featureLayer: {
-        url: labinslayerURL + "0", 
+        url: controlPointsURL + "0", 
         popupTemplate: NGSpopupTemplate
       },
       searchFields: ["name"],
@@ -976,7 +943,7 @@ require([
       placeholder: "Search by PID",
     }, {
       featureLayer: {
-        url: labinslayerURL + "4",
+        url: controlPointsURL + "4",
         resultGraphicEnabled: true,
         popupTemplate: tideStationsTemplate
       },
@@ -988,7 +955,7 @@ require([
       placeholder: "Search by ID, County Name, or Quad Name",
     }, {
       featureLayer: {
-        url: labinslayerURL + "5",
+        url: controlPointsURL + "5",
         popupTemplate: tideInterpPointsTemplate
       },
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
@@ -1037,7 +1004,7 @@ require([
       placeholder: "Search by City Name or Surrounding County",
     }, */{
       featureLayer: {
-        url: labinslayerURL + "8",
+        url: controlPointsURL + "8",
         popupTemplate: rMonumentsTemplate
       },
       searchFields: ["monument_name", "county"],
@@ -1048,7 +1015,7 @@ require([
       placeholder: "Search by County Name or R-Monument Name",
     }, {
       featureLayer: {
-        url: labinslayerURL + "9",
+        url: controlPointsURL + "9",
         popupTemplate: erosionControlLineTemplate
       },
       searchFields: ["ecl_name", "county"],
@@ -1070,7 +1037,7 @@ require([
       placeholder: "Search by Survey Benchmark name",
     }, {
       featureLayer: {
-        url: labinslayerURL + "2",
+        url: controlPointsURL + "2",
         resultGraphicEnabled: true,
         popupTemplate: CCRTemplate
       },
@@ -1295,7 +1262,7 @@ require([
       getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
-        dataQueryQuerytask(labinslayerURL + '0', response)
+        dataQueryQuerytask(controlPointsURL + '0', response)
         .then(function (response) {
           for (i=0;i<response.features.length;i++) {
             response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
@@ -1316,7 +1283,7 @@ require([
       getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
-        dataQueryQuerytask(labinslayerURL + '0', response)
+        dataQueryQuerytask(controlPointsURL + '0', response)
         .then(function (response) {
           for (i=0;i<response.features.length;i++) {
             response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
@@ -1336,7 +1303,7 @@ require([
       infoPanelData = [];      
       var textValue = document.getElementById('nameQuery').value;
 
-      textQueryQuerytask(labinslayerURL + '0', 'pid', textValue)
+      textQueryQuerytask(controlPointsURL + '0', 'pid', textValue)
       .then(function (response) {
         for (i=0;i<response.features.length;i++) {
           response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
@@ -1360,7 +1327,7 @@ require([
       var textValue = document.getElementById('IDQuery').value;
 
       console.log(textValue);
-      textQueryQuerytask(labinslayerURL + '2', 'blmid', textValue)
+      textQueryQuerytask(controlPointsURL + '2', 'blmid', textValue)
       .then(function (response) {
         console.log(response);
         for (i=0;i<response.features.length;i++) {

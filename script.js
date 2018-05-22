@@ -1174,14 +1174,23 @@ require([
   }
 
   
-  function textQueryQuerytask (url, attribute, queryStatement) {
-    console.log('into the query');
-    console.log(url);
+  function textQueryQuerytask (url, attribute, queryStatement, flag = true) {
+
+    console.log(typeof queryStatement);
+    var whereStatement;
+    if (typeof queryStatement == 'string' && flag === true) {
+       whereStatement = "Upper(" + attribute +  ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'";
+    } else {
+      whereStatement = attribute +  ' = ' + "'" + queryStatement + "'";
+
+    }
+
     var queryTask = new QueryTask({
       url: url
     });
     var params = new Query({
-      where: attribute +  ' LIKE ' + "'%" + queryStatement.toUpperCase() + "%'",
+      where: whereStatement,
+      //where: "Upper(" + attribute +  ') = ' + "'%" + queryStatement.toUpperCase() + "%'",
       //where: '"' + attribute +  ' = ' + "'%" + queryStatement + "%'" + '"',
       //geometry: geometry,
       returnGeometry: true,
@@ -1235,11 +1244,11 @@ require([
     document.getElementById('parametersQuery').appendChild(textbox);
   }
 
-  function createSubmit () {
+  function createSubmit (text = 'Submit', id = 'submitQuery') {
     var submitButton = document.createElement('BUTTON');
-    submitButton.setAttribute('id', 'submitQuery');
+    submitButton.setAttribute('id', id);
     submitButton.setAttribute('class', 'btn btn-primary');
-    var t = document.createTextNode('Submit');
+    var t = document.createTextNode(text);
     submitButton.appendChild(t);
     document.getElementById('parametersQuery').appendChild(submitButton);
 
@@ -1371,8 +1380,70 @@ require([
     addDescript();
     createCountyDropdown();
     createQuadDropdown();
-    createTextBox('IDQuery', 'Enter an ID');
+    createTextBox('IDQuery', 'Enter an ID. Example: 1');
     createSubmit();
+
+    var countyDropdownAfter = document.getElementById('countyQuery');
+
+    query(countyDropdownAfter).on('change', function(e) {
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(labinslayerURL + '5', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'Tide Interpolation Points';
+            infoPanelData.push(response.features[i]);
+          }
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+        });
+      });
+    });
+
+    // Query the quad dropdown
+    var quadDropdownAfter = document.getElementById('quadQuery');
+
+    query(quadDropdownAfter).on('change', function(e) {
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(labinslayerURL + '5', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'Tide Interpolation Points';
+            infoPanelData.push(response.features[i]);
+          }
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+        });
+      });
+    });
+
+    // Textbox Query
+    var textboxAfter = document.getElementById('IDQuery');
+
+    var submitAfter = document.getElementById('submitQuery');
+    query(submitAfter).on('click', function(e) {
+      infoPanelData = [];      
+      var textValue = document.getElementById('IDQuery').value;
+      textValue = parseInt(textValue);
+
+      textQueryQuerytask(labinslayerURL + '5', 'iden', textValue)
+      .then(function (response) {
+        console.log(response)
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'Tide Interpolation Points';
+          infoPanelData.push(response.features[i]);
+        }
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });
 
       // create html for corners
     // Call functions that build panels
@@ -1382,9 +1453,131 @@ require([
     addDescript();
     createCountyDropdown();
     createQuadDropdown();
-    createTextBox('IDQuery', 'Enter an ID');
-    createTextBox('nameQuery', 'Enter a Tide Station name.');
-    createSubmit();
+    createTextBox('IDQuery', 'Enter an ID. Example: 1001');
+    // createTextBox('nameQuery', 'Example: KINGS FERRY, ST. MARYS');
+    createSubmit('Submit by ID', 'submitIDQuery');
+    createSubmit('Submit by Name', 'submitNameQuery');
+
+    var countyDropdownAfter = document.getElementById('countyQuery');
+
+    query(countyDropdownAfter).on('change', function(e) {
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(labinslayerURL + '4', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'Tide Stations';
+            infoPanelData.push(response.features[i]);
+          }
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+        });
+      });
+    });
+
+    // Query the quad dropdown
+    var quadDropdownAfter = document.getElementById('quadQuery');
+
+    query(quadDropdownAfter).on('change', function(e) {
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(labinslayerURL + '4', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'Tide Stations';
+            infoPanelData.push(response.features[i]);
+          }
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+        });
+      });
+    });
+
+    // Textbox Query
+    // var textboxAfter = document.getElementById('IDQuery');
+
+    // var submitAfter = document.getElementById('submitQuery');
+    // query(submitAfter).on('click', function(e) {
+    //   infoPanelData = [];      
+    //   var textValue = document.getElementById('IDQuery').value;
+    //   textValue = textValue.padStart(4, '0');
+
+    //   textQueryQuerytask(labinslayerURL + '4', 'id', textValue, false)
+    //   .then(function (response) {
+    //     console.log(response)
+    //     for (i=0;i<response.features.length;i++) {
+    //       response.features[i].attributes.layerName = 'Tide Stations';
+    //       infoPanelData.push(response.features[i]);
+    //     }
+    //     queryInfoPanel(infoPanelData, 1);
+    //     togglePanel();
+    //   });
+    // });
+
+    
+    //     // Textbox Name Query
+    // var textboxAfter = document.getElementById('nameQuery');
+
+    // var submitAfter = document.getElementById('submitQuery');
+    // query(submitAfter).on('click', function(e) {
+    //   infoPanelData = [];      
+    //   var textValue = document.getElementById('nameQuery').value;
+
+    //   textQueryQuerytask(labinslayerURL + '5', 'name', textValue)
+    //   .then(function (response) {
+    //     console.log(response)
+    //     for (i=0;i<response.features.length;i++) {
+    //       response.features[i].attributes.layerName = 'Tide Stations';
+    //       infoPanelData.push(response.features[i]);
+    //     }
+    //     queryInfoPanel(infoPanelData, 1);
+    //     togglePanel();
+    //   });
+    // });
+
+
+
+    // TEST
+    var inputAfter = document.getElementById('IDQuery');
+    var idButton = document.getElementById('submitIDQuery');
+    var nameButton = document.getElementById('submitNameQuery');
+
+    query(idButton).on('click', function(e) {
+      infoPanelData = [];
+      var textValue = inputAfter.value.padStart(4, '0');
+
+      textQueryQuerytask(labinslayerURL + '4', 'id', textValue, false)
+      .then(function (response) {
+        console.log(response)
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'Tide Stations';
+          infoPanelData.push(response.features[i]);
+        }
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });
+
+    query(nameButton).on('click', function(e) {
+      infoPanelData = [];
+      textQueryQuerytask(labinslayerURL + '4', 'name', inputAfter.value)
+      .then(function (response) {
+        console.log(response)
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'Tide Stations';
+          infoPanelData.push(response.features[i]);
+        }
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });
+
 
       // create html for corners
     // Call functions that build panels

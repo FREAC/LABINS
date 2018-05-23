@@ -238,6 +238,10 @@ require([
     listMode: "hide"
   });
 
+  var highlightFeaturesLayer = new GraphicsLayer({
+    listMode: "hide"
+  });
+
   // Symbol that will populate the graphics Layer
   var highlightSymbol = new SimpleFillSymbol(
     SimpleFillSymbol.STYLE_SOLID,
@@ -276,7 +280,7 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, controlPointsLayer]
+    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, controlPointsLayer, highlightFeaturesLayer]
   });
 
   /////////////////////////
@@ -351,7 +355,8 @@ require([
   function clearGraphics() {
     console.log("cleared graphics");
     map.graphics.clear();
-    selectionLayer.graphics.removeAll()
+    selectionLayer.graphics.removeAll();
+    highlightFeaturesLayer.removeAll();
   }
 
   /////////////////////////////
@@ -376,17 +381,14 @@ require([
 
     task.execute(params)
       .then(function (response) {
-        //console.log(response.features);
         var features = response.features;
         var values = features.map(function (feature) {
           return feature.attributes[attribute];
         });
-        //console.log(response);
         return values;
 
       })
       .then(function (uniqueValues) {
-        //console.log(uniqueValues);
         uniqueValues.sort();
         uniqueValues.forEach(function (value) {
           var option = domConstruct.create("option");
@@ -888,9 +890,10 @@ require([
         });
       })
       console.log(infoPanelData);
+      mapView.goTo(infoPanelData[0].geometry);
       queryInfoPanel(infoPanelData, 1);
       buildUniquePanel();
-      showPopup(identifyElements); 
+      //showPopup(identifyElements); 
       
     });
     // Shows the results of the Identify in a popup once the promise is resolved
@@ -900,10 +903,8 @@ require([
           features: response,
           location: event.mapPoint
         });
-      //identifyElements = [];
       }
       dom.byId("viewDiv").style.cursor = "auto";
-      //identifyElements = [];
     }
   }
                         

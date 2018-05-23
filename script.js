@@ -807,6 +807,7 @@ require([
       }  
   });
 
+
   function togglePanel() {
      
     $('#allpanelsDiv > div').each(function () {
@@ -1220,9 +1221,9 @@ require([
     document.getElementById('parametersQuery').appendChild(submitButton);
 
   }
- 
-  function clearDiv () {
-    var paramNode = document.getElementById("parametersQuery");
+
+  function clearDiv (div) {
+    var paramNode = document.getElementById(div);
     while (paramNode.firstChild) {
       paramNode.removeChild(paramNode.firstChild);
     }
@@ -1247,7 +1248,7 @@ require([
     clearDiv();
 
   } else if (layerSelection === 'NGS Control Points') {
-    clearDiv();
+    clearDiv('parametersQuery');
     // create html for NGS Control points
     // Call functions that build panels
     addDescript();
@@ -1315,7 +1316,7 @@ require([
     });
 
   } else if (layerSelection === "Certified Corners") {
-    clearDiv();
+    clearDiv('parametersQuery');
     createTextDescription("Example: T28SR22E600200 (or first characters, e.g. t28s)");
     createTextBox('IDQuery', 'Enter a Certified Corner BLMID.');
     createSubmit();
@@ -1343,7 +1344,7 @@ require([
     // Call functions that build panels
   
   } else if (layerSelection === 'Tide Interpolation Points') {
-    clearDiv();
+    clearDiv('parametersQuery');
     addDescript();
     createCountyDropdown();
     createQuadDropdown();
@@ -1416,11 +1417,11 @@ require([
     // Call functions that build panels
   
   } else if (layerSelection === 'Tide Stations') {
-    clearDiv();
+    clearDiv('parametersQuery');
     addDescript();
     createCountyDropdown();
     createQuadDropdown();
-    createTextBox('IDQuery', 'Enter an ID. Example: 1001');
+    createTextBox('textQuery', 'Enter an ID or Tide Station Name');
     // createTextBox('nameQuery', 'Example: KINGS FERRY, ST. MARYS');
     createSubmit('Submit by ID', 'submitIDQuery');
     createSubmit('Submit by Name', 'submitNameQuery');
@@ -1511,7 +1512,7 @@ require([
 
 
     // TEST
-    var inputAfter = document.getElementById('IDQuery');
+    var inputAfter = document.getElementById('textQuery');
     var idButton = document.getElementById('submitIDQuery');
     var nameButton = document.getElementById('submitNameQuery');
 
@@ -1550,29 +1551,81 @@ require([
     // Call functions that build panels
   
   } else if (layerSelection === 'Erosion Control Line') {
-    clearDiv();
+    clearDiv('parametersQuery');
     addDescript();
     createCountyDropdown();
-    createSubmit();
+    createTextBox('textQuery', 'Enter an ECL Name')
+    createSubmit('Submit by Name', 'submitNameQuery');
+
+    var nameButton = document.getElementById('submitNameQuery');
+    var countyDropdownAfter = document.getElementById('countyQuery');
+    var inputAfter = document.getElementById('textQuery');
+
+
+    query(countyDropdownAfter).on('change', function(e) {
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(controlPointsURL + '9', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'Erosion Control Line';
+            infoPanelData.push(response.features[i]);
+          }
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+        });
+      });
+    });
+
+    query(nameButton).on('click', function(e) {
+      infoPanelData = [];
+      textQueryQuerytask(controlPointsURL + '9', 'ecl_name', inputAfter.value)
+      .then(function (response) {
+        console.log(response)
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'Erosion Control Line';
+          infoPanelData.push(response.features[i]);
+        }
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });
 
       // create html for corners
     // Call functions that build panels
   
   } else if (layerSelection === 'Survey Benchmarks') {
-    clearDiv();
+    clearDiv('parametersQuery');
     addDescript();
-    createSubmit();
+    createTextBox('textQuery', 'Enter a Benchmark Name')
+    createSubmit('Submit by Name', 'submitNameQuery');
+
+    var nameButton = document.getElementById('submitNameQuery');
+    var inputAfter = document.getElementById('textQuery');
+
+    query(nameButton).on('click', function(e) {
+      infoPanelData = [];
+      textQueryQuerytask(swfwmdURL, 'BENCHMARK_NAME', inputAfter.value)
+      .then(function (response) {
+        console.log(response)
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'Survey Benchmarks';
+          infoPanelData.push(response.features[i]);
+        }
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });
+
 
       // create html for corners
     // Call functions that build panels
   
   }
 });
-
-/////////////////////////////////
-/// Evt. Listeners Data Query ///
-/////////////////////////////////
-
 
 
 
@@ -1584,6 +1637,22 @@ require([
 
   //// Clickable Links 
   //NGS link
+
+  // Switch to Data Query panel on click
+  query('#gobackBtn').on('click', function() {
+    var identifyPanel = document.getElementById('panelPopup');
+    var identifyStyle = document.getElementById('collapsePopup');
+    var dataQueryPanel = document.getElementById('panelQuery');
+
+    identifyPanel.setAttribute('class', 'panel collapse');
+    identifyPanel.setAttribute('style', 'height:0px;');
+
+    identifyStyle.setAttribute('class', 'panel-collapse collapse');
+    identifyStyle.setAttribute('style', 'height:0px;');
+
+    dataQueryPanel.setAttribute('class', 'panel collapse in');
+    dataQueryPanel.setAttribute('style', 'height:auto;');
+  })
 
   //Basemap panel change
   query("#selectBasemapPanel").on("change", function(e) {

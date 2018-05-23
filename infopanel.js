@@ -114,7 +114,7 @@ function queryInfoPanel (results, i) {
                                 '<p><b>ECL Name: </b>' + results[i-1].attributes.ecl_name + '</p>' +
                                 '<p><b>MHW: </b>' + results[i-1].attributes.mhw + '</p>' +
                                 '<p><b>Location: </b>' + results[i-1].attributes.location + '</p>' +
-                                '<p><b>Download Information: </b>' + '<a target="_blank" href=http://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i-1].attributes.mhw + '.pdf&fileType=MAP>here</a></p>' 
+                                '<p><b>Download Information: </b>' + '<a target="_blank" href=http://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i-1].attributes.mhw + '.pdf&fileType=MAP>' + results[i-1].attributes.pdf1 + '</a></p>' 
                                 );
     } else if (results[i-1].attributes.layerName === 'Survey Benchmarks') {
         $('#informationdiv').html('<p><b>SWFWMD Survey Benchmarks</b></p>' + 

@@ -2030,28 +2030,6 @@ require([
     console.log("finished");
   });
 */
-locateBtn.on("locate", function(event) {
-  console.log("in")
-var webMerPoint = webMercatorUtils.geographicToWebMercator(event.target.graphic.geometry);
-console.log("params started");
-var params = new BufferParameters({
-  distances: [50],
-  unit: "meters",
-  geodesic: true,
-  //bufferSpatialReference: new SpatialReference({wkid: 3857}),
-  outSpatialReference: view.spatialReference,
-  geometries: [webMerPoint]
-});
-
-  console.log("params completed");
-geometryService.buffer(params).then(function(results){
-  selectionLayer.add(new Graphic({
-     geometry: results[0]
-
-  }));
-  console.log(results)
-});
-});
 
 var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");

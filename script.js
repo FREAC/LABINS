@@ -1256,6 +1256,11 @@ require([
     }
   }
 
+  function resetElements (currentElement) {
+    // if elements are not equal to the current element
+    // then reset to the initial values
+  }
+
 
 
   function createTextDescription (string) {

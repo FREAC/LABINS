@@ -81,7 +81,7 @@ function queryInfoPanel (results, i) {
                                 '<p><b>MHW (feet): </b>' + results[i-1].attributes.navd88mhw_ft + '</p>' +
                                 '<p><b>MLW (feet): </b>' + results[i-1].attributes.navd88mlw_ft + '</p>' +
                                 "<p><b>Steven's ID: </b>" + results[i-1].attributes.stevens_id + '</p>' +
-                                '<p>DEP Report: ' + '<a href=' + results[i-1].attributes.report_dep + '>' + results[i-1].attributes.filename + '</a></p>',
+                                '<p>DEP Report: ' + '<a target="_blank" href=' + results[i-1].attributes.report_dep + '>' + results[i-1].attributes.filename + '</a></p>',
 
         );
     } else if (results[i-1].attributes.layerName === 'Tide Interpolation Points') {

@@ -891,6 +891,8 @@ require([
       })
       console.log(infoPanelData);
       mapView.goTo(infoPanelData[0].geometry);
+      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
+      selectionLayer.graphics.add(highlightGraphic);      
       queryInfoPanel(infoPanelData, 1);
       buildUniquePanel();
       //showPopup(identifyElements); 

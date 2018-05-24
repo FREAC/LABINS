@@ -82,8 +82,16 @@ function queryInfoPanel (results, i) {
                                 '<p><b>MLW (feet): </b>' + results[i-1].attributes.navd88mlw_ft + '</p>' +
                                 "<p><b>Steven's ID: </b>" + results[i-1].attributes.stevens_id + '</p>' +
                                 '<p>DEP Report: ' + '<a target="_blank" href=' + results[i-1].attributes.report_dep + '>' + results[i-1].attributes.filename + '</a></p>',
-
         );
+        if (results[i-1].attributes.navd88mhw_ft.toUpperCase() != "NULL" && results[i-1].attributes.navd88mlw_ft.toUpperCase() != "NULL") {
+            // MHW and MLW are available
+            // link to here: http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_2016.pdf
+            $('#informationdiv').append('<p> <a target="_blank" href=http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_2016.pdf><b>MHW Procedural Approval Form if data IS available</b></a></p>');
+        } else {
+            // MHW and MLW data is not available
+            // link to here: http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_noelevation.pdf
+            $('#informationdiv').append('<p><a target="_blank" href=http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_noelevation.pdf><b>MHW Procedural Approval Form if data IS NOT available</b></a></p>');
+        }
     } else if (results[i-1].attributes.layerName === 'Tide Interpolation Points') {
         var replaceWhitespace = results[i-1].attributes.tile_name.replace(" ", "%20");
         $('#informationdiv').html('<p><b>Tide Interpolation Points</b></p>' +
@@ -97,6 +105,15 @@ function queryInfoPanel (results, i) {
                                 '<p><b>Station 2: </b>' + results[i-1].attributes.station2 + '</p>' +
                                 '<p><b>Download Approval Form: </b><a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin=' + results[i-1].attributes.iden + '&mCountyName=' + results[i-1].attributes.cname + '&mQuad=' + replaceWhitespace + '&mhw=' + results[i-1].attributes.mhw2_ft + '&mlw=' + results[i-1].attributes.mlw2_ft + '>here</a></p>'
                                 );
+        if (results[i-1].attributes.status_col === "1") {
+            // add a note that says "Non-tidal Call BSM @ 850-2452606"
+            $('#informationdiv').append('<p>Non-tidal. Call BSM @ 850-2452606</p>');
+        } else if (results[i-1].attributes.status_col === "2") {
+            //then the point has data, fill in the report as you are currently doing
+        } else if  (results[i-1].attributes.status_col === "3") {
+            //This point needs a study. open: http://www.labins.org/survey_data/water/FlexMap_docs/MHW_Procedures_wo_29_or_88_data_May_2009_with_checklist.pdf
+            $('#informationdiv').append('<p>This point needs a study. Click <a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/MHW_Procedures_wo_29_or_88_data_May_2009_with_checklist.pdf>here</a> to open approval form.</p>');
+        }
     } else if (results[i-1].attributes.layerName === 'R-Monuments') {
         $('#informationdiv').html('<p><b>Regional Coastal Monitoring Data</b> </p>' + 
                                 '<p><b>Feature ID: </b>' + results[i-1].attributes.unique_id + '</p>' +
@@ -108,8 +125,6 @@ function queryInfoPanel (results, i) {
                                 );
     } else if (results[i-1].attributes.layerName === 'Erosion Control Line') {
         $('#informationdiv').html('<p><b>Erosion Control Line</b></p>' +
-                                '<p><b>Erosion Control Line</b> </p>' + 
-                                '<p><b>Feature ID: </b>' + results[i-1].attributes.objectid + '</p>' +
                                 '<p><b>County: </b>' + results[i-1].attributes.county + '</p>' + 
                                 '<p><b>ECL Name: </b>' + results[i-1].attributes.ecl_name + '</p>' +
                                 '<p><b>MHW: </b>' + results[i-1].attributes.mhw + '</p>' +

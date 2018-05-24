@@ -1665,6 +1665,7 @@ require([
   //// Clickable Links 
   //NGS link
 
+
   // Switch to Data Query panel on click
   query('#gobackBtn').on('click', function() {
     var identifyPanel = document.getElementById('panelPopup');
@@ -1679,7 +1680,11 @@ require([
 
     dataQueryPanel.setAttribute('class', 'panel collapse in');
     dataQueryPanel.setAttribute('style', 'height:auto;');
-  })
+  });
+
+  query('#goToIdentify').on('click', function(){
+    togglePanel();
+  });
 
   //Basemap panel change
   query("#selectBasemapPanel").on("change", function(e) {

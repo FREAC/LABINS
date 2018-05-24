@@ -766,7 +766,7 @@ require([
 
   // Set the parameters for the Identify
   params = new IdentifyParameters();
-  params.tolerance = 3;
+  params.tolerance = 5;
   params.layerIds = [2, 0, 1, 4, 5, 9, 6];
   params.layerOption = "visible";
   params.width = mapView.width;
@@ -889,10 +889,34 @@ require([
 
         });
       })
-      console.log(infoPanelData);
-      mapView.goTo(infoPanelData[0].geometry);
-      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
-      selectionLayer.graphics.add(highlightGraphic);      
+      // determine whether first index of identify 
+      // is a polygon or point then do appropriate highlight and zoom
+      if (infoPanelData[0].geometry.type === "polygon") {
+        var ext = infoPanelData[0].geometry.extent;
+        var cloneExt = ext.clone();
+        mapView.goTo({
+          target: infoPanelData[0],
+          extent: cloneExt.expand(1.75)  
+        });
+      // Remove current selection
+        selectionLayer.graphics.removeAll();
+        console.log("it's a polygon");
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
+        selectionLayer.graphics.add(highlightGraphic);
+      } else if (infoPanelData[0].geometry.type === "point") {
+        console.log("it's a point");
+            // Remove current selection
+        selectionLayer.graphics.removeAll();
+
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightPoint);
+        selectionLayer.graphics.add(highlightGraphic);
+        mapView.goTo({target: 
+          infoPanelData[0].geometry,
+          zoom: 15
+        });
+        }     
       queryInfoPanel(infoPanelData, 1);
       buildUniquePanel();
       //showPopup(identifyElements); 

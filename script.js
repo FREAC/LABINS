@@ -359,6 +359,27 @@ require([
     highlightFeaturesLayer.removeAll();
   }
 
+  
+  function resetElements (currentElement) {
+    // if elements are not equal to the current element
+    // then reset to the initial values
+    $("select").each(function() {
+      if((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
+        this.selectedIndex = 0
+      }
+    },
+
+     $("input").each(function() {
+       if (this != currentElement) {
+         $(this).val('');
+       }
+     })
+  );
+
+    
+  }
+
+
   /////////////////////////////
   /// Dropdown Select Panel ///
   /////////////////////////////
@@ -525,13 +546,13 @@ require([
     // Clear existing bufferElement items each time the zoom to feature runs
     //bufferElements.length = 0;
 
-    var township = document.getElementById("selectNGSCountyPanel");
+    var township = document.getElementById("selectTownship");
     var strUser = township.options[township.selectedIndex].text;
 
-    var range = document.getElementById("selectNGSCityPanel");
+    var range = document.getElementById("selectRange");
     var rangeUser = range.options[range.selectedIndex].text;
 
-    var section = document.getElementById("selectNGSSectionPanel");
+    var section = document.getElementById("selectSection");
     var sectionUser = section.options[section.selectedIndex].text;
 
 
@@ -556,10 +577,10 @@ require([
     multiPolygonGeometries = [];
     var union = geometryEngine.union(multiPolygonGeometries);
 
-    var township = document.getElementById("selectNGSCountyPanel");
+    var township = document.getElementById("selectTownship");
     var strUser = township.options[township.selectedIndex].text;
 
-    var range = document.getElementById("selectNGSCityPanel");
+    var range = document.getElementById("selectRange");
     var rangeUser = range.options[range.selectedIndex].text;
 
 
@@ -614,6 +635,7 @@ require([
 
   //Zoom to feature
   query("#selectCountyPanel").on("change", function (e) {
+    resetElements(document.getElementById('selectCountyPanel'));
     return zoomToFeature(controlLinesURL + "4", e.target.value, "ctyname")
   });
 
@@ -622,6 +644,7 @@ require([
 
   //Zoom to feature
   query("#selectQuadPanel").on("change", function (e) {
+    resetElements(document.getElementById('selectQuadPanel'));
     return zoomToFeature(controlLinesURL + "0", e.target.value, "tile_name");
   });
 
@@ -630,6 +653,7 @@ require([
 
   //Zoom to feature
   query("#selectCityPanel").on("change", function (e) {
+    resetElements(document.getElementById('selectCityPanel'));
     return zoomToFeature(controlLinesURL + "3", e.target.value, "name");
   });
 
@@ -639,9 +663,9 @@ require([
   //// Zoom to Township/Section/Range Feature ////
   ////////////////////////////////////////////////
 
-  var townshipSelect = dom.byId("selectNGSCountyPanel");
-  var rangeSelect = dom.byId("selectNGSCityPanel");
-  var sectionSelect = dom.byId("selectNGSSectionPanel");
+  var townshipSelect = dom.byId("selectTownship");
+  var rangeSelect = dom.byId("selectRange");
+  var sectionSelect = dom.byId("selectSection");
 
   mapView.when(function () {
     return townshipRangeSectionLayer.when(function (response) {
@@ -727,7 +751,7 @@ require([
       sectionSelect.remove(j);
     }
 
-    var e = document.getElementById("selectNGSCountyPanel");
+    var e = document.getElementById("selectTownship");
     var strUser = e.options[e.selectedIndex].text;
 
     var selectQuery = new Query();
@@ -738,13 +762,13 @@ require([
     return townshipRangeSectionLayer.queryFeatures(selectQuery).then(addToSelect3);
   });
 
-  var querySection = dom.byId("selectNGSSectionPanel");
+  var querySection = dom.byId("selectSection");
   on(querySection, "change", function (e) {
     var type = e.target.value;
     zoomToSectionFeature(townshipRangeSectionURL, type, "sec_ch");
   });
 
-  var queryTownship = dom.byId("selectNGSCityPanel");
+  var queryTownship = dom.byId("selectRange");
   on(queryTownship, "change", function (e) {
     var type = e.target.value;
     zoomToTRFeature(townshipRangeSectionURL, type, "rng_ch");
@@ -1196,20 +1220,6 @@ require([
     return queryTask.execute(params);
   }
 
-  // disable the filter layer dropdown
-  function disable() {
-    document.getElementById("filterLayerPanel").disabled=true;
-  }
-
-  // enable the filter layer dropdown
-  function enable() {
-      document.getElementById("filterLayerPanel").disabled=false;
-  }
-  
-  function highlightResults (response) {
-    console.log(results);
-  }
-
   function createCountyDropdown () {
     var countyDropdown = document.createElement('select');
     countyDropdown.setAttribute('id', 'countyQuery');
@@ -1256,12 +1266,6 @@ require([
     }
   }
 
-  function resetElements (currentElement) {
-    // if elements are not equal to the current element
-    // then reset to the initial values
-  }
-
-
 
   function createTextDescription (string) {
     var textDescription = document.createElement("P");
@@ -1290,6 +1294,7 @@ require([
     createSubmit();
     var countyDropdownAfter = document.getElementById('countyQuery');
     query(countyDropdownAfter).on('change', function(e) {
+      resetElements(countyDropdownAfter);
       infoPanelData = [];      
 
       getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
@@ -1311,6 +1316,7 @@ require([
     var quadDropdownAfter = document.getElementById('quadQuery');
 
     query(quadDropdownAfter).on('change', function(e) {
+      resetElements(quadDropdownAfter);
       infoPanelData = [];      
 
       getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
@@ -1330,6 +1336,10 @@ require([
 
     // Textbox Query
     var textboxAfter = document.getElementById('nameQuery');
+
+    query(textboxAfter).on('keypress', function() {
+      resetElements(textboxAfter);
+    });
 
     var submitAfter = document.getElementById('submitQuery');
     query(submitAfter).on('click', function(e) {
@@ -1386,6 +1396,7 @@ require([
     var countyDropdownAfter = document.getElementById('countyQuery');
 
     query(countyDropdownAfter).on('change', function(e) {
+      resetElements(countyDropdownAfter);
       infoPanelData = [];      
 
       getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
@@ -1407,6 +1418,7 @@ require([
     var quadDropdownAfter = document.getElementById('quadQuery');
 
     query(quadDropdownAfter).on('change', function(e) {
+      resetElements(quadDropdownAfter);
       infoPanelData = [];      
 
       getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
@@ -1426,6 +1438,10 @@ require([
 
     // Textbox Query
     var textboxAfter = document.getElementById('IDQuery');
+    
+    query(textboxAfter).on('keypress', function() {
+      resetElements(textboxAfter);
+    });
 
     var submitAfter = document.getElementById('submitQuery');
     query(submitAfter).on('click', function(e) {
@@ -1461,6 +1477,7 @@ require([
     var countyDropdownAfter = document.getElementById('countyQuery');
 
     query(countyDropdownAfter).on('change', function(e) {
+      resetElements(countyDropdownAfter);
       infoPanelData = [];      
 
       getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
@@ -1482,6 +1499,7 @@ require([
     var quadDropdownAfter = document.getElementById('quadQuery');
 
     query(quadDropdownAfter).on('change', function(e) {
+      resetElements(quadDropdownAfter);
       infoPanelData = [];      
 
       getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
@@ -1547,6 +1565,11 @@ require([
     var inputAfter = document.getElementById('textQuery');
     var idButton = document.getElementById('submitIDQuery');
     var nameButton = document.getElementById('submitNameQuery');
+    
+    // clear other elements when keypress happens
+    query(inputAfter).on('keypress', function() {
+      resetElements(inputAfter);
+    });
 
     query(idButton).on('click', function(e) {
       infoPanelData = [];
@@ -1593,8 +1616,14 @@ require([
     var countyDropdownAfter = document.getElementById('countyQuery');
     var inputAfter = document.getElementById('textQuery');
 
+    
+    // clear other elements when keypress happens
+    query(inputAfter).on('keypress', function() {
+      resetElements(inputAfter);
+    });
 
     query(countyDropdownAfter).on('change', function(e) {
+      resetElements(countyDropdownAfter);
       infoPanelData = [];      
 
       getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
@@ -1637,6 +1666,12 @@ require([
 
     var nameButton = document.getElementById('submitNameQuery');
     var inputAfter = document.getElementById('textQuery');
+
+    
+    // clear other elements when keypress happens
+    query(inputAfter).on('keypress', function() {
+      resetElements(inputAfter);
+    });
 
     query(nameButton).on('click', function(e) {
       infoPanelData = [];

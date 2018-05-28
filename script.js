@@ -352,6 +352,7 @@ require([
     }
   });
 
+  // clears selectionLayer (general feature highlighting) and highlightFeaturesLayer (data query highlighting)
   function clearGraphics() {
     console.log("cleared graphics");
     map.graphics.clear();
@@ -359,16 +360,18 @@ require([
     highlightFeaturesLayer.removeAll();
   }
 
-  
+  // reset dropdowns and all inputs that are not equal to the current element. 
   function resetElements (currentElement) {
     // if elements are not equal to the current element
     // then reset to the initial values
+
+    // find all dropdowns
     $("select").each(function() {
       if((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
         this.selectedIndex = 0
       }
     },
-
+    // find all inputs
      $("input").each(function() {
        if (this != currentElement) {
          $(this).val('');
@@ -384,6 +387,7 @@ require([
   /// Dropdown Select Panel ///
   /////////////////////////////
 
+  // query layer and populate a dropdown
   function buildSelectPanel(url, attribute, zoomParam, panelParam) {
 
     var task = new QueryTask({
@@ -421,8 +425,11 @@ require([
 
   // Input location from drop down, zoom to it and highlight
   function zoomToFeature(panelurl, location, attribute) {
-    var multiPolygonGeometries = [];
-    var union = geometryEngine.union(multiPolygonGeometries);
+
+    //var multiPolygonGeometries = [];
+    // union features so that they can be returned as a single geometry
+    //var union = geometryEngine.union(multiPolygonGeometries);
+    
     var task = new QueryTask({
       url: panelurl
     });
@@ -432,34 +439,38 @@ require([
     });
     task.execute(params)
       .then(function (response) {
-        // Go to feature and highlight
+        // Go to extent of features and highlight
         mapView.goTo(response.features);
         selectionLayer.graphics.removeAll();
         graphicArray = [];
+
         for (i=0; i<response.features.length; i++) {
           highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
           graphicArray.push(highlightGraphic);
-          multiPolygonGeometries.push(response.features[i].geometry);
+          //multiPolygonGeometries.push(response.features[i].geometry);
         }
         selectionLayer.graphics.addMany(graphicArray);          
       });
-      console.log(union);
-      return union;
+      //return union;
   }
 
-  // Build select panel for info panel filter dropdown
+  // Build select panel for Information Panel 'Filter By Layer' dropdown
+  // Query layerName property of all returned drill down identify Feature
   function buildUniquePanel () {
-    console.log("into the build function");
+    //empty the filterLayerPanel
+    domConstruct.empty("filterLayerPanel");
+    //console.log('unique layers being built');
     var uniqueLayerNames = [];
-    for(i = 0; i< infoPanelData.length; i++){    
+    for(i = 0; i< infoPanelData.length; i++){  
+      
+      // if layername isn't found within the uniqueLayerNames array,
+      // value of -1 is given, the layername is added to uniqueLayerNames array  
       if(uniqueLayerNames.indexOf(infoPanelData[i].attributes.layerName) === -1){
           uniqueLayerNames.push(infoPanelData[i].attributes.layerName);        
       } 
-      //console.log(infoPanelData[i].attributes.layerName);       
-    }
-
+    } 
+    // unique layers will always appear in the same order
     uniqueLayerNames.sort();
-    domConstruct.empty("filterLayerPanel");
     // Create the placeholder
     var option = domConstruct.create("option");
     option.text = "Filter by Layer";
@@ -485,6 +496,7 @@ require([
     return union;
   }
 
+  // the identify function that happens when a section is chosen from the Zoom to Feature panel
   function executeTRSIdentify(response) {
     console.log(response);
             
@@ -541,10 +553,8 @@ require([
     return identifyTask.execute(params);
   } 
 
+  // when a section feature is chose, a matching TRS combination is queried, highlighted and zoomed to
   function zoomToSectionFeature(panelurl, location, attribute) {
-      
-    // Clear existing bufferElement items each time the zoom to feature runs
-    //bufferElements.length = 0;
 
     var township = document.getElementById("selectTownship");
     var strUser = township.options[township.selectedIndex].text;
@@ -612,7 +622,6 @@ require([
   function createBuffer(response) {
     var bufferGeometry = response.features[0].geometry
     var buffer = geometryEngine.geodesicBuffer(bufferGeometry, 100, "feet", true);
-    //console.log(typeof buffer);
     // add the buffer to the view as a graphic
     var bufferGraphic = new Graphic({
       geometry: buffer,
@@ -833,7 +842,7 @@ require([
       }  
   });
 
-
+  // collapse any of the current panels and switch to the identifyResults panel
   function togglePanel() {
      
     $('#allpanelsDiv > div').each(function () {
@@ -859,6 +868,7 @@ require([
 
   }
 
+  // multi service identifytask
   function executeIdentifyTask(event) {
     infoPanelData = [];
     identifyElements = [];
@@ -1122,6 +1132,8 @@ require([
   ////////////////////////////
   ///// Data Query////////////
   ////////////////////////////
+
+  // Layer choices to query
   var layerChoices = ['Select Layer', 'NGS Control Points', 'Certified Corners', 'Tide Interpolation Points', 'Tide Stations', 'Erosion Control Line', 'Survey Benchmarks'];
 
   for (var i=0;i<layerChoices.length;i++){
@@ -1157,6 +1169,7 @@ require([
 
   }
 
+  // unused, could be removed
   function dataQueryIdentify (url, response, layers) {
     console.log(response);
             
@@ -1178,6 +1191,7 @@ require([
     return identifyTask.execute(params);
   }
 
+  // inputs the geometry of the data query feature, and matches to it. 
   function dataQueryQuerytask (url, geometry) {
     var queryTask = new QueryTask({
       url: url
@@ -1187,15 +1201,13 @@ require([
       geometry: geometry,
       returnGeometry: true,
       outFields: '*'
-      //spatialRelationship: "intersects"
     });
     return queryTask.execute(params);
   }
 
-  
+  // data query by text
   function textQueryQuerytask (url, attribute, queryStatement, flag = true) {
 
-    console.log(typeof queryStatement);
     var whereStatement;
     if (typeof queryStatement == 'string' && flag === true) {
        whereStatement = "Upper(" + attribute +  ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'";
@@ -1209,14 +1221,10 @@ require([
     });
     var params = new Query({
       where: whereStatement,
-      //where: "Upper(" + attribute +  ') = ' + "'%" + queryStatement.toUpperCase() + "%'",
-      //where: '"' + attribute +  ' = ' + "'%" + queryStatement + "%'" + '"',
-      //geometry: geometry,
       returnGeometry: true,
+      // possibly could be limited to return only necessary outfields
       outFields: '*'
-      //spatialRelationship: "intersects"
     });
-    console.log(params.where);
     return queryTask.execute(params);
   }
 
@@ -1259,19 +1267,19 @@ require([
 
   }
 
-  function clearDiv (div) {
-    var paramNode = document.getElementById(div);
-    while (paramNode.firstChild) {
-      paramNode.removeChild(paramNode.firstChild);
-    }
-  }
-
-
   function createTextDescription (string) {
     var textDescription = document.createElement("P");
     var t = document.createTextNode(string);
     textDescription.appendChild(t);
     document.getElementById('parametersQuery').appendChild(textDescription);
+  }
+
+  // clear all child nodes from current div
+  function clearDiv (div) {
+    var paramNode = document.getElementById(div);
+    while (paramNode.firstChild) {
+      paramNode.removeChild(paramNode.firstChild);
+    }
   }
 
   function addDescript () {
@@ -1284,15 +1292,17 @@ require([
     clearDiv();
 
   } else if (layerSelection === 'NGS Control Points') {
+    // clear the div of the previous input
     clearDiv('parametersQuery');
-    // create html for NGS Control points
-    // Call functions that build panels
+    // add dropdown, input, and submit elements
     addDescript();
     createCountyDropdown();    
     createQuadDropdown();
     createTextBox('nameQuery', 'Enter name. Example: BG4871');
     createSubmit();
+
     var countyDropdownAfter = document.getElementById('countyQuery');
+    // county event listener
     query(countyDropdownAfter).on('change', function(e) {
       resetElements(countyDropdownAfter);
       infoPanelData = [];      
@@ -1338,6 +1348,7 @@ require([
     var textboxAfter = document.getElementById('nameQuery');
 
     query(textboxAfter).on('keypress', function() {
+      // once typing begins, all of the other elements in the map will reset
       resetElements(textboxAfter);
     });
 
@@ -1358,7 +1369,9 @@ require([
     });
 
   } else if (layerSelection === "Certified Corners") {
+    // clear div of previous input
     clearDiv('parametersQuery');
+    // add input, and submit elements
     createTextDescription("Example: T28SR22E600200 (or first characters, e.g. t28s)");
     createTextBox('IDQuery', 'Enter a Certified Corner BLMID.');
     createSubmit();
@@ -1382,10 +1395,8 @@ require([
       });
     });
 
-      // create html for corners
-    // Call functions that build panels
-  
   } else if (layerSelection === 'Tide Interpolation Points') {
+
     clearDiv('parametersQuery');
     addDescript();
     createCountyDropdown();
@@ -1451,7 +1462,6 @@ require([
 
       textQueryQuerytask(controlPointsURL + '5', 'iden', textValue)
       .then(function (response) {
-        console.log(response)
         for (i=0;i<response.features.length;i++) {
           response.features[i].attributes.layerName = 'Tide Interpolation Points';
           infoPanelData.push(response.features[i]);
@@ -1460,9 +1470,6 @@ require([
         togglePanel();
       });
     });
-
-      // create html for corners
-    // Call functions that build panels
   
   } else if (layerSelection === 'Tide Stations') {
     clearDiv('parametersQuery');
@@ -1517,51 +1524,7 @@ require([
       });
     });
 
-    // Textbox Query
-    // var textboxAfter = document.getElementById('IDQuery');
-
-    // var submitAfter = document.getElementById('submitQuery');
-    // query(submitAfter).on('click', function(e) {
-    //   infoPanelData = [];      
-    //   var textValue = document.getElementById('IDQuery').value;
-    //   textValue = textValue.padStart(4, '0');
-
-    //   textQueryQuerytask(controlPointsURL + '4', 'id', textValue, false)
-    //   .then(function (response) {
-    //     console.log(response)
-    //     for (i=0;i<response.features.length;i++) {
-    //       response.features[i].attributes.layerName = 'Tide Stations';
-    //       infoPanelData.push(response.features[i]);
-    //     }
-    //     queryInfoPanel(infoPanelData, 1);
-    //     togglePanel();
-    //   });
-    // });
-
-    
-    //     // Textbox Name Query
-    // var textboxAfter = document.getElementById('nameQuery');
-
-    // var submitAfter = document.getElementById('submitQuery');
-    // query(submitAfter).on('click', function(e) {
-    //   infoPanelData = [];      
-    //   var textValue = document.getElementById('nameQuery').value;
-
-    //   textQueryQuerytask(controlPointsURL + '5', 'name', textValue)
-    //   .then(function (response) {
-    //     console.log(response)
-    //     for (i=0;i<response.features.length;i++) {
-    //       response.features[i].attributes.layerName = 'Tide Stations';
-    //       infoPanelData.push(response.features[i]);
-    //     }
-    //     queryInfoPanel(infoPanelData, 1);
-    //     togglePanel();
-    //   });
-    // });
-
-
-
-    // TEST
+    // query id and name fields through two buttons
     var inputAfter = document.getElementById('textQuery');
     var idButton = document.getElementById('submitIDQuery');
     var nameButton = document.getElementById('submitNameQuery');
@@ -1591,7 +1554,6 @@ require([
       infoPanelData = [];
       textQueryQuerytask(controlPointsURL + '4', 'name', inputAfter.value)
       .then(function (response) {
-        console.log(response)
         for (i=0;i<response.features.length;i++) {
           response.features[i].attributes.layerName = 'Tide Stations';
           infoPanelData.push(response.features[i]);
@@ -1601,10 +1563,6 @@ require([
       });
     });
 
-
-      // create html for corners
-    // Call functions that build panels
-  
   } else if (layerSelection === 'Erosion Control Line') {
     clearDiv('parametersQuery');
     addDescript();
@@ -1655,9 +1613,6 @@ require([
       });
     });
 
-      // create html for corners
-    // Call functions that build panels
-  
   } else if (layerSelection === 'Survey Benchmarks') {
     clearDiv('parametersQuery');
     addDescript();
@@ -1677,7 +1632,6 @@ require([
       infoPanelData = [];
       textQueryQuerytask(swfwmdURL, 'BENCHMARK_NAME', inputAfter.value)
       .then(function (response) {
-        console.log(response)
         for (i=0;i<response.features.length;i++) {
           response.features[i].attributes.layerName = 'Survey Benchmarks';
           infoPanelData.push(response.features[i]);
@@ -1685,12 +1639,7 @@ require([
         queryInfoPanel(infoPanelData, 1);
         togglePanel();
       });
-    });
-
-
-      // create html for corners
-    // Call functions that build panels
-  
+    });  
   }
 });
 
@@ -1703,7 +1652,6 @@ require([
 
 
   //// Clickable Links 
-  //NGS link
 
 
   // Switch to Data Query panel on click
@@ -1722,6 +1670,7 @@ require([
     dataQueryPanel.setAttribute('style', 'height:auto;');
   });
 
+  // switch to identify panel on click
   query('#goToIdentify').on('click', function(){
     togglePanel();
   });
@@ -1736,47 +1685,49 @@ require([
     selectionLayer.graphics.removeAll(); 
   });
 
-
-  mapView.popup.on("trigger-action", function (event) {
-    if (event.action.id === "ngsWebsite") {
-      window.open("https://www.ngs.noaa.gov");
-    }
-  });
-
-  //R Monuments link
-  mapView.popup.on("trigger-action", function (event) {
-    if (event.action.id === "rMonuments") {
-      window.open("https://floridadep.gov/water/beach-field-services/content/regional-coastal-monitoring-data");
-    }
-  });
-
-  //Erosion ControlLines Link
-  mapView.popup.on("trigger-action", function (event) {
-    if (event.action.id === "waterBoundaryData") {
-      window.open("http://www.labins.org/survey_data/water/water.cfm");
-    }
-  }); 
-
-  //Custom Zoom to feature
-  mapView.popup.on("trigger-action", function (evt) {
-    if (evt.action.id === "custom-zoom") {
-      selectionLayer.graphics.removeAll();
-      console.log(mapView.popup.selectedFeature);
-      mapView.goTo({
-        target: mapView.popup.selectedFeature.geometry,
-        zoom: 17
-      });
-      highlightGraphic = new Graphic(mapView.popup.selectedFeature.geometry, highlightSymbol);
-      selectionLayer.graphics.add(highlightGraphic);
-    };
-  });
+  // //Custom Zoom to feature
+  // mapView.popup.on("trigger-action", function (evt) {
+  //   if (evt.action.id === "custom-zoom") {
+  //     selectionLayer.graphics.removeAll();
+  //     console.log(mapView.popup.selectedFeature);
+  //     mapView.goTo({
+  //       target: mapView.popup.selectedFeature.geometry,
+  //       zoom: 17
+  //     });
+  //     highlightGraphic = new Graphic(mapView.popup.selectedFeature.geometry, highlightSymbol);
+  //     selectionLayer.graphics.add(highlightGraphic);
+  //   };
+  // });
 
 
   searchWidget.on("search-complete", function(event){
-      console.log(event);
-      // The results are stored in the event Object[]
-    });
+    infoPanelData = [];
 
+    var layerName = event.target.activeSource.name;
+    var geometry = event.results["0"].results["0"].feature.geometry;
+    var url = event.results["0"].results["0"].feature.layer.parsedUrl.path;
+      // // general event
+      // console.log(event);
+      // // layer name
+      // console.log(event.target.activeSource.name);
+      // // geometry
+      // console.log(event.results["0"].results["0"].feature.geometry);
+      // // need url to do dataquerytask
+      // console.log(event.results["0"].results["0"].feature.layer.parsedUrl.path);
+
+      // this function is not globally defined, need to fix that
+      dataQueryQuerytask(url, geometry)
+      .then(function (response) {
+        console.log("hello");
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = layerName;
+          infoPanelData.push(response.features[i]);
+        }
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });
+    
   query("#numinput").on("change", function(e) {
     console.log("target value");
     console.log(e.target.value);

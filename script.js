@@ -1023,6 +1023,7 @@ var highlightLine = {
       searchFields: ["name"],
       suggestionTemplate: "Designation: {name}, County {county}",
       displayField: "name",
+      zoomScale: 100000,
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
@@ -1048,6 +1049,7 @@ var highlightLine = {
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
       suggestionTemplate: "ID: {iden}, County: {cname}",
       displayField: "iden",
+      zoomScale: 100000,
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
@@ -1060,6 +1062,7 @@ var highlightLine = {
       },
       searchFields: ["monument_name", "county"],
       suggestionTemplate: "R-Monument Name: {monument_name}, County: {county}",
+      zoomScale: 100000,
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
@@ -1072,6 +1075,7 @@ var highlightLine = {
       },
       searchFields: ["ecl_name", "county"],
       suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
+      zoomScale: 150000,
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightLine,
@@ -1085,6 +1089,7 @@ var highlightLine = {
       },
       searchFields: ["BENCHMARK_NAME", "OBJECTID"],
       suggestionTemplate: "Benchmark Name: {BENCHMARK_NAME}, File Name: {FILE_NAME}",
+      zoomScale: 100000,
       displayField: "BENCHMARK_NAME",
       exactMatch: false,
       popupOpenOnSelect: false,
@@ -1099,6 +1104,7 @@ var highlightLine = {
       searchFields: ["blmid", "tile_name"],
       displayField: "blmid",
       suggestionTemplate: "BLMID: {blmid}, Quad Name: {tile_name}",
+      zoomScale: 100000,
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
@@ -1112,6 +1118,7 @@ var highlightLine = {
       searchFields: ["twn_ch", "rng_ch", "twnrngsec"],
       displayField: "twnrngsec",
       suggestionTemplate: "Township/Range/Section: {twnrngsec}",
+      zoomScale: 50000,
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightSymbol,
@@ -1689,20 +1696,15 @@ var highlightLine = {
     layerName = event.target.activeSource.name;
     if (layerName === 'NGS Control Points') {
       event.results["0"].results["0"].feature.attributes.layerName ='NGS Control Points QueryTask';
-    } else if (layerName === 'Survey Benchmarks') {
-      event.results["0"].results["0"].feature.attributes.layerName = 'Survey Benchmarks';
     } else {
       event.results["0"].results["0"].feature.attributes.layerName = layerName;
     }
     infoPanelData.push(event.results["0"].results["0"].feature);
     console.log(infoPanelData);
-    //var extent = event.results[0].results[0];
-    //var url = event.results["0"].results["0"].feature.layer.parsedUrl.path;
-      // // general event
-      // layer name
+    // layer name
     console.log(event.target.activeSource.name);
     console.log(infoPanelData);
-    mapView.goTo(event.results["0"].results["0"].feature);
+
     queryInfoPanel(infoPanelData, 1);
     togglePanel();
     console.log("toggled");

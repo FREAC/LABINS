@@ -1084,17 +1084,16 @@ var highlightLine = {
       placeholder: "Search by County Name or Town Name",
     }, {
       featureLayer: {
-        url: swfwmdURL,
-        resultGraphicEnabled: false
+        url: swfwmdURL
       },
-      searchFields: ["BENCHMARK_NAME", "OBJECTID"],
+      searchFields: ["BENCHMARK_NAME"],
       suggestionTemplate: "Benchmark Name: {BENCHMARK_NAME}, File Name: {FILE_NAME}",
       zoomScale: 100000,
       displayField: "BENCHMARK_NAME",
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
-      outFields: ["*"],
+      outFields: ["BENCHMARK_NAME", "FILE_NAME"],
       name: "Survey Benchmarks",
       placeholder: "Search by Survey Benchmark name",
     }, {
@@ -1706,9 +1705,7 @@ var highlightLine = {
     console.log(infoPanelData);
 
     queryInfoPanel(infoPanelData, 1);
-    togglePanel();
-    console.log("toggled");
-     
+    togglePanel();     
     });
     
   query("#numinput").on("change", function(e) {

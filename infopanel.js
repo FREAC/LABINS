@@ -82,7 +82,8 @@ function queryInfoPanel (results, i) {
                                 '<p><b>MLW (feet): </b>' + results[i-1].attributes.navd88mlw_ft + '</p>' +
                                 "<p><b>Steven's ID: </b>" + results[i-1].attributes.stevens_id + '</p>' +
                                 '<p>DEP Report: ' + '<a target="_blank" href=' + results[i-1].attributes.report_dep + '>' + results[i-1].attributes.filename + '</a></p>',
-        );
+        
+                            );
         if (results[i-1].attributes.navd88mhw_ft.toUpperCase() != "NULL" && results[i-1].attributes.navd88mlw_ft.toUpperCase() != "NULL") {
             // MHW and MLW are available
             // link to here: http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_2016.pdf

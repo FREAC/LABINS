@@ -260,6 +260,14 @@ require([
     color: [173, 173, 173, 0.52]
 };
 
+var highlightLine = {
+    type: "simple-line",
+    width: 2,
+    color: [255, 0, 0, 1]
+};
+
+
+
   var sectionSym = {
     type: "simple-fill",
     outline: {
@@ -1011,134 +1019,102 @@ require([
     }, {
       featureLayer: {
         url: controlPointsURL + "0", 
-        //popupTemplate: NGSpopupTemplate
       },
       searchFields: ["name"],
       suggestionTemplate: "Designation: {name}, County {county}",
       displayField: "name",
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
       outFields: ["dec_lat", "dec_long", "pid", "county", "data_srce", "datasheet2", "name"],
       name: "NGS Control Points",
-      placeholder: "Search by PID",
+      placeholder: "Search by Designation",
     }, {
       featureLayer: {
         url: controlPointsURL + "4",
-        resultGraphicEnabled: false,
-        //popupTemplate: tideStationsTemplate
       },
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
       outFields: ["*"],
       name: "Tide Stations",
       placeholder: "Search by ID, County Name, or Quad Name",
     }, {
       featureLayer: {
         url: controlPointsURL + "5",
-        //popupTemplate: tideInterpPointsTemplate
       },
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
       suggestionTemplate: "ID: {iden}, County: {cname}",
       displayField: "iden",
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
       outFields: ["*"],
       name: "Tide Interpolation Points",
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
-    },/* {
-      featureLayer: {
-        url: controlPointsURL + "4",
-        popupTemplate: countyTemplate
-      },
-      searchFields: ["fips", "ctyname"],
-      suggestionTemplate: "FIPS Code: {fips}, County Name {ctyname}",
-      displayField: "fips",
-      exactMatch: false,
-      outFields: ["*"],
-      name: "County Boundaries",
-      placeholder: "Search by FIPS ID or County Name",
-      resultSymbol: highlightSymbol
-  }, {
-      featureLayer: {
-        url: controlPointsURL + "0",
-        popupTemplate: quadsTemplate
-      },
-      searchFields: ["tile_name", "quad"],
-      suggestionTemplate: "Quad Name: {tile_name}, Quad Number {quad}",
-      displayField: "tile_name",
-      exactMatch: false,
-      outFields: ["*"],
-      name: "Quads",
-      placeholder: "Search by Quad Name or Quad number",
-    }, {
-      featureLayer: {
-        url: controlPointsURL + "3",
-        popupTemplate: cityLimitsTemplate
-      },
-      searchFields: ["name", "county"],
-      suggestionTemplate: "City Name: {name}, Surrounding County: {county}",
-      displayField: "name",
-      exactMatch: false,
-      outFields: ["*"],
-      name: "City Limits",
-      placeholder: "Search by City Name or Surrounding County",
-    }, */{
+    },{
       featureLayer: {
         url: controlPointsURL + "8",
-        //popupTemplate: rMonumentsTemplate
       },
       searchFields: ["monument_name", "county"],
       suggestionTemplate: "R-Monument Name: {monument_name}, County: {county}",
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
       outFields: ["*"],
       name: "R-Monuments",
       placeholder: "Search by County Name or R-Monument Name",
     }, {
       featureLayer: {
         url: controlPointsURL + "9",
-        //popupTemplate: erosionControlLineTemplate
       },
       searchFields: ["ecl_name", "county"],
       suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightLine,
       outFields: ["*"],
       name: "Erosion Control Lines",
       placeholder: "Search by County Name or Town Name",
     }, {
       featureLayer: {
         url: swfwmdURL,
-        //popupTemplate: swfwmdLayerPopupTemplate
         resultGraphicEnabled: false
       },
       searchFields: ["BENCHMARK_NAME", "OBJECTID"],
       suggestionTemplate: "Benchmark Name: {BENCHMARK_NAME}, File Name: {FILE_NAME}",
       displayField: "BENCHMARK_NAME",
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
       outFields: ["*"],
       name: "Survey Benchmarks",
       placeholder: "Search by Survey Benchmark name",
     }, {
       featureLayer: {
         url: controlPointsURL + "2",
-        //resultGraphicEnabled: true,
-        //popupTemplate: CCRTemplate
       },
       searchFields: ["blmid", "tile_name"],
       displayField: "blmid",
       suggestionTemplate: "BLMID: {blmid}, Quad Name: {tile_name}",
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
       outFields: ["blmid", "tile_name", "image1", "image2", "objectid"],
       name: "Certified Corners",
       placeholder: "Search by BLMID or Quad Name",
     }, {
       featureLayer: {
-        url: controlLinesURL + "1",
-        //resultGraphicEnabled: true,
-        //popupTemplate: TRSTemplate
+        url: controlLinesURL + "2",
       },
       searchFields: ["twn_ch", "rng_ch", "twnrngsec"],
       displayField: "twnrngsec",
       suggestionTemplate: "Township/Range/Section: {twnrngsec}",
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightSymbol,
       outFields: ["twn_ch", "rng_ch", "twnrngsec"],
       name: "Township Range",
       placeholder: "Search by township, range, or township range."
@@ -1726,8 +1702,10 @@ require([
       // layer name
     console.log(event.target.activeSource.name);
     console.log(infoPanelData);
+    mapView.goTo(event.results["0"].results["0"].feature);
     queryInfoPanel(infoPanelData, 1);
     togglePanel();
+    console.log("toggled");
      
     });
     

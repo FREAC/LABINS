@@ -132,9 +132,10 @@ function queryInfoPanel (results, i) {
                                 '<p><b>Download Information: </b>' + '<a target="_blank" href=http://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i-1].attributes.mhw + '.pdf&fileType=MAP>' + results[i-1].attributes.pdf1 + '</a></p>' 
                                 );
     } else if (results[i-1].attributes.layerName === 'Survey Benchmarks') {
+        var replaceWhitespace = results[i-1].attributes.FILE_NAME.replace(" ", "%20");
         $('#informationdiv').html('<p><b>SWFWMD Survey Benchmarks</b></p>' + 
                                 '<p><b>Benchmark Name: </b>' + results[i-1].attributes.BENCHMARK_NAME + '</p>' +
-                                '<p>More Information: </b><a target="_blank" href=http://ftp.labins.org/swfwmd/SWFWMD_control_2013/' + results[i-1].attributes.FILE_NAME + '>' + results[i-1].attributes.FILE_NAME + '</a></p>'
+                                '<p>More Information: </b><a target="_blank" href=http://ftp.labins.org/swfwmd/SWFWMD_control_2013/' + replaceWhitespace + '>' + results[i-1].attributes.FILE_NAME + '</a></p>'
                                 );
         
     } else if (results[i-1].attributes.layerName === 'Township-Range-Section') {

@@ -34,8 +34,7 @@ function queryInfoPanel (results, i) {
                                 '<p>Latitude, Longitude: ' + results[i-1].attributes.DEC_LAT + ', ' +  results[i-1].attributes.DEC_LONG + '</p>' +
                                 '<p>County: ' + results[i-1].attributes.COUNTY + '</p>' + 
                                 '<p>PID: ' + results[i-1].attributes.PID + '</p>' + 
-                                '<p>Data Source: ' + '<a target="_blank" href=' + results[i-1].attributes.DATA_SRCE + '>here</a></p>' + 
-                                '<p>Datasheet: ' + '<a href=' + results[i-1].attributes.DATASHEET2 + '>here</a></p>',
+                                '<p>Datasheet: ' + '<a target="_blank" href=' + results[i-1].attributes.DATASHEET2 + '>' + results[i-1].attributes.PID +'</a></p>',
                                 );
     } else if (results[i-1].attributes.layerName === 'NGS Control Points QueryTask') {
         $('#informationdiv').html('<p><b>NGS Control Points</b></p>' +
@@ -43,8 +42,7 @@ function queryInfoPanel (results, i) {
                                 '<p>Latitude, Longitude: ' + results[i-1].attributes.dec_lat + ', ' +  results[i-1].attributes.dec_long + '</p>' +
                                 '<p>County: ' + results[i-1].attributes.county + '</p>' + 
                                 '<p>PID: ' + results[i-1].attributes.pid + '</p>' + 
-                                '<p>Data Source: ' + '<a target="_blank" href=' + results[i-1].attributes.data_srce + '>here</a></p>' + 
-                                '<p>Datasheet: ' + '<a href=' + results[i-1].attributes.datasheet2 + '>here</a></p>',
+                                '<p>Datasheet: ' + '<a target="_blank" href=' + results[i-1].attributes.datasheet2 + '>' + results[i-1].attributes.pid +'</a></p>',
                                 );
     } else if (results[i-1].attributes.layerName === 'City Limits') {
         $('#informationdiv').html('<p><b>City Limits</b></p>' +
@@ -65,12 +63,11 @@ function queryInfoPanel (results, i) {
                                 );
     } else if (results[i-1].attributes.layerName === 'Preliminary NGS Points') {
         $('#informationdiv').html('<p><b>Preliminary NGS Points</b></p>' +
-                                '<p><b>Preliminary NGS Control Points: </b>' + results[i-1].attributes.FeatureID + '</p>' +
-                                '<p><b>Designation: </b>' + results[i-1].attributes.base_and_survey.sde.Prelim_NGS_12_21_2011b.designatio + '</p>' +
-                                '<p><b>Latitude: </b>' + results[i-1].attributes.base_and_survey.sde.Prelim_NGS_12_21_2011b.latdecdeg + '</p>' + 
-                                '<p><b>Longitude: </b>' + results[i-1].attributes.base_and_survey.sde.Prelim_NGS_12_21_2011b.londecdeg + '</p>' +
-                                '<p>Abstract: ' + '<a href=' + results[i-1].attributes.base_and_survey.sde.PUBLISHED_PRELIMINARY.abstract + '>' + base_and_survey.sde.PUBLISHED_PRELIMINARY.l_number + '</a></p>',
-                                '<p>Description: ' + '<a href=' + results[i-1].attributes.base_and_survey.sde.PUBLISHED_PRELIMINARY.description2 + '>' + base_and_survey.sde.PUBLISHED_PRELIMINARY.l_number + '</a></p>',
+                                '<p><b>Designation: </b>' + results[i-1].attributes.designatio + '</p>' +
+                                '<p><b>Latitude: </b>' + results[i-1].attributes.latdecdeg + '</p>' + 
+                                '<p><b>Longitude: </b>' + results[i-1].attributes.londecdeg + '</p>' +
+                                '<p>Abstract: ' + '<a href=' + results[i-1].attributes.abstract + '>' + results[i-1].attributes.l_number + '</a></p>',
+                                '<p>Description: ' + '<a href=' + results[i-1].attributes.description2 + '>' + results[i-1].attributes.l_number + '</a></p>',
         );
     } else if (results[i-1].attributes.layerName === 'Tide Stations') {
         $('#informationdiv').html('<p><b>Tide Stations</b></p>' +
@@ -103,13 +100,13 @@ function queryInfoPanel (results, i) {
                                 '<p><b>MHW (feet): </b>' + results[i-1].attributes.mhw2_ft + '</p>' +
                                 '<p><b>MLW (feet): </b>' + results[i-1].attributes.mlw2_ft + '</p>' +
                                 '<p><b>Station 1: </b>' + results[i-1].attributes.station1 + '</p>' +
-                                '<p><b>Station 2: </b>' + results[i-1].attributes.station2 + '</p>' +
-                                '<p><b>Download Approval Form: </b><a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin=' + results[i-1].attributes.iden + '&mCountyName=' + results[i-1].attributes.cname + '&mQuad=' + replaceWhitespace + '&mhw=' + results[i-1].attributes.mhw2_ft + '&mlw=' + results[i-1].attributes.mlw2_ft + '>here</a></p>'
+                                '<p><b>Station 2: </b>' + results[i-1].attributes.station2 + '</p>' 
                                 );
         if (results[i-1].attributes.status_col === "1") {
             // add a note that says "Non-tidal Call BSM @ 850-2452606"
             $('#informationdiv').append('<p>Non-tidal. Call BSM @ 850-2452606</p>');
         } else if (results[i-1].attributes.status_col === "2") {
+            $('#informationdiv').append('<p><b>Download Approval Form: </b><a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin=' + results[i-1].attributes.iden + '&mCountyName=' + results[i-1].attributes.cname + '&mQuad=' + replaceWhitespace + '&mhw=' + results[i-1].attributes.mhw2_ft + '&mlw=' + results[i-1].attributes.mlw2_ft + '>here</a></p>')
             //then the point has data, fill in the report as you are currently doing
         } else if  (results[i-1].attributes.status_col === "3") {
             //This point needs a study. open: http://www.labins.org/survey_data/water/FlexMap_docs/MHW_Procedures_wo_29_or_88_data_May_2009_with_checklist.pdf

@@ -967,6 +967,23 @@ require([
       dom.byId("viewDiv").style.cursor = "auto";
     }
   }
+
+  // inputs the geometry of the data query feature, and matches to it. 
+  function dataQueryQuerytask (url, geometry) {
+    console.log(url);
+    console.log(geometry);
+    var queryTask = new QueryTask({
+      url: url
+    });
+    var params = new Query({
+      where: '1=1',
+      geometry: geometry,
+      returnGeometry: true,
+      outFields: '*'
+    });
+    console.log(queryTask.execute(params));
+    return queryTask.execute(params);
+  }
                         
 
   //////////////////////////////////
@@ -994,7 +1011,7 @@ require([
     }, {
       featureLayer: {
         url: controlPointsURL + "0", 
-        popupTemplate: NGSpopupTemplate
+        //popupTemplate: NGSpopupTemplate
       },
       searchFields: ["name"],
       suggestionTemplate: "Designation: {name}, County {county}",
@@ -1006,8 +1023,8 @@ require([
     }, {
       featureLayer: {
         url: controlPointsURL + "4",
-        resultGraphicEnabled: true,
-        popupTemplate: tideStationsTemplate
+        resultGraphicEnabled: false,
+        //popupTemplate: tideStationsTemplate
       },
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",
@@ -1018,7 +1035,7 @@ require([
     }, {
       featureLayer: {
         url: controlPointsURL + "5",
-        popupTemplate: tideInterpPointsTemplate
+        //popupTemplate: tideInterpPointsTemplate
       },
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
       suggestionTemplate: "ID: {iden}, County: {cname}",
@@ -1067,7 +1084,7 @@ require([
     }, */{
       featureLayer: {
         url: controlPointsURL + "8",
-        popupTemplate: rMonumentsTemplate
+        //popupTemplate: rMonumentsTemplate
       },
       searchFields: ["monument_name", "county"],
       suggestionTemplate: "R-Monument Name: {monument_name}, County: {county}",
@@ -1078,10 +1095,10 @@ require([
     }, {
       featureLayer: {
         url: controlPointsURL + "9",
-        popupTemplate: erosionControlLineTemplate
+        //popupTemplate: erosionControlLineTemplate
       },
       searchFields: ["ecl_name", "county"],
-      suggestionTemplate: "R-Monument Name: {ecl_name}, County: {county}",
+      suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
       exactMatch: false,
       outFields: ["*"],
       name: "Erosion Control Lines",
@@ -1089,10 +1106,12 @@ require([
     }, {
       featureLayer: {
         url: swfwmdURL,
-        popupTemplate: swfwmdLayerPopupTemplate
+        //popupTemplate: swfwmdLayerPopupTemplate
+        resultGraphicEnabled: false
       },
-      searchFields: ["BENCHMARK_NAME"],
-      suggestionTemplate: "Benchmark Name: {BENCHMARK_NAME}, fileName {FILE_NAME}",
+      searchFields: ["BENCHMARK_NAME", "OBJECTID"],
+      suggestionTemplate: "Benchmark Name: {BENCHMARK_NAME}, File Name: {FILE_NAME}",
+      displayField: "BENCHMARK_NAME",
       exactMatch: false,
       outFields: ["*"],
       name: "Survey Benchmarks",
@@ -1100,8 +1119,8 @@ require([
     }, {
       featureLayer: {
         url: controlPointsURL + "2",
-        resultGraphicEnabled: true,
-        popupTemplate: CCRTemplate
+        //resultGraphicEnabled: true,
+        //popupTemplate: CCRTemplate
       },
       searchFields: ["blmid", "tile_name"],
       displayField: "blmid",
@@ -1113,14 +1132,14 @@ require([
     }, {
       featureLayer: {
         url: controlLinesURL + "1",
-        resultGraphicEnabled: true,
-        popupTemplate: TRSTemplate
+        //resultGraphicEnabled: true,
+        //popupTemplate: TRSTemplate
       },
-      searchFields: ["t_ch", "r_ch", "twnrng"],
-      displayField: "twnrng",
-      suggestionTemplate: "Township/Range: {twnrng}",
+      searchFields: ["twn_ch", "rng_ch", "twnrngsec"],
+      displayField: "twnrngsec",
+      suggestionTemplate: "Township/Range/Section: {twnrngsec}",
       exactMatch: false,
-      outFields: ["t_ch", "r_ch", "twnrng"],
+      outFields: ["twn_ch", "rng_ch", "twnrngsec"],
       name: "Township Range",
       placeholder: "Search by township, range, or township range."
     }],
@@ -1189,20 +1208,6 @@ require([
     dom.byId("mapViewDiv").style.cursor = "wait";
 
     return identifyTask.execute(params);
-  }
-
-  // inputs the geometry of the data query feature, and matches to it. 
-  function dataQueryQuerytask (url, geometry) {
-    var queryTask = new QueryTask({
-      url: url
-    });
-    var params = new Query({
-      where: '1=1',
-      geometry: geometry,
-      returnGeometry: true,
-      outFields: '*'
-    });
-    return queryTask.execute(params);
   }
 
   // data query by text
@@ -1703,29 +1708,27 @@ require([
   searchWidget.on("search-complete", function(event){
     infoPanelData = [];
 
-    var layerName = event.target.activeSource.name;
-    var geometry = event.results["0"].results["0"].feature.geometry;
-    var url = event.results["0"].results["0"].feature.layer.parsedUrl.path;
+    //var layerName = event.target.activeSource.name;
+    // let's make an input that the queryInfoPanel functionw sants to see
+    layerName = event.target.activeSource.name;
+    if (layerName === 'NGS Control Points') {
+      event.results["0"].results["0"].feature.attributes.layerName ='NGS Control Points QueryTask';
+    } else if (layerName === 'Survey Benchmarks') {
+      event.results["0"].results["0"].feature.attributes.layerName = 'Survey Benchmarks';
+    } else {
+      event.results["0"].results["0"].feature.attributes.layerName = layerName;
+    }
+    infoPanelData.push(event.results["0"].results["0"].feature);
+    console.log(infoPanelData);
+    //var extent = event.results[0].results[0];
+    //var url = event.results["0"].results["0"].feature.layer.parsedUrl.path;
       // // general event
-      // console.log(event);
-      // // layer name
-      // console.log(event.target.activeSource.name);
-      // // geometry
-      // console.log(event.results["0"].results["0"].feature.geometry);
-      // // need url to do dataquerytask
-      // console.log(event.results["0"].results["0"].feature.layer.parsedUrl.path);
-
-      // this function is not globally defined, need to fix that
-      dataQueryQuerytask(url, geometry)
-      .then(function (response) {
-        console.log("hello");
-        for (i=0;i<response.features.length;i++) {
-          response.features[i].attributes.layerName = layerName;
-          infoPanelData.push(response.features[i]);
-        }
-        queryInfoPanel(infoPanelData, 1);
-        togglePanel();
-      });
+      // layer name
+    console.log(event.target.activeSource.name);
+    console.log(infoPanelData);
+    queryInfoPanel(infoPanelData, 1);
+    togglePanel();
+     
     });
     
   query("#numinput").on("change", function(e) {

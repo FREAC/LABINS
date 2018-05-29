@@ -992,6 +992,39 @@ var highlightLine = {
     console.log(queryTask.execute(params));
     return queryTask.execute(params);
   }
+
+  // go to first feature of the infopaneldata array
+  function goToFeature (feature) {
+    // Go to the selected parcel
+    if (feature.geometry.type === "polygon") {
+      var ext = feature.geometry.extent;
+      var cloneExt = ext.clone();
+      mapView.goTo({
+        target: feature,
+        extent: cloneExt.expand(1.75)  
+      });
+    // Remove current selection
+      selectionLayer.graphics.removeAll();
+      console.log("it's a polygon");
+      // Highlight the selected parcel
+      highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+      selectionLayer.graphics.add(highlightGraphic);
+    } else if (feature.geometry.type === "point") {
+      console.log("it's a point");
+
+
+    // Remove current selection
+    selectionLayer.graphics.removeAll();
+
+    // Highlight the selected parcel
+    highlightGraphic = new Graphic(feature.geometry, highlightPoint);
+    selectionLayer.graphics.add(highlightGraphic);
+    mapView.goTo({target: 
+      feature.geometry,
+      zoom: 15
+    });
+    }
+}
                         
 
   //////////////////////////////////
@@ -1291,6 +1324,7 @@ var highlightLine = {
     var countyDropdownAfter = document.getElementById('countyQuery');
     // county event listener
     query(countyDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
       resetElements(countyDropdownAfter);
       infoPanelData = [];      
 
@@ -1303,6 +1337,7 @@ var highlightLine = {
             response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
             infoPanelData.push(response.features[i]);
           }
+          goToFeature(infoPanelData[0]);
           queryInfoPanel(infoPanelData, 1);
           togglePanel();
         });
@@ -1313,6 +1348,7 @@ var highlightLine = {
     var quadDropdownAfter = document.getElementById('quadQuery');
 
     query(quadDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
       resetElements(quadDropdownAfter);
       infoPanelData = [];      
 
@@ -1325,6 +1361,7 @@ var highlightLine = {
             response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
             infoPanelData.push(response.features[i]);
           }
+          goToFeature(infoPanelData[0]);
           queryInfoPanel(infoPanelData, 1);
           togglePanel();
         });
@@ -1341,6 +1378,7 @@ var highlightLine = {
 
     var submitAfter = document.getElementById('submitQuery');
     query(submitAfter).on('click', function(e) {
+      clearDiv('informationdiv');
       infoPanelData = [];      
       var textValue = document.getElementById('nameQuery').value;
 
@@ -1350,6 +1388,7 @@ var highlightLine = {
           response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
           infoPanelData.push(response.features[i]);
         }
+        goToFeature(infoPanelData[0]);
         queryInfoPanel(infoPanelData, 1);
         togglePanel();
       });
@@ -1366,6 +1405,7 @@ var highlightLine = {
 
     var submitAfter = document.getElementById('submitQuery');
     query(submitAfter).on('click', function(e) {
+      clearDiv('informationdiv');
       infoPanelData = [];      
       var textValue = document.getElementById('IDQuery').value;
 
@@ -1377,6 +1417,7 @@ var highlightLine = {
           response.features[i].attributes.layerName = 'Certified Corners';
           infoPanelData.push(response.features[i]);
         }
+        goToFeature(infoPanelData[0]);
         queryInfoPanel(infoPanelData, 1);
         togglePanel();
       });
@@ -1394,6 +1435,7 @@ var highlightLine = {
     var countyDropdownAfter = document.getElementById('countyQuery');
 
     query(countyDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
       resetElements(countyDropdownAfter);
       infoPanelData = [];      
 
@@ -1406,6 +1448,7 @@ var highlightLine = {
             response.features[i].attributes.layerName = 'Tide Interpolation Points';
             infoPanelData.push(response.features[i]);
           }
+          goToFeature(infoPanelData[0]);
           queryInfoPanel(infoPanelData, 1);
           togglePanel();
         });
@@ -1416,6 +1459,7 @@ var highlightLine = {
     var quadDropdownAfter = document.getElementById('quadQuery');
 
     query(quadDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
       resetElements(quadDropdownAfter);
       infoPanelData = [];      
 
@@ -1428,6 +1472,7 @@ var highlightLine = {
             response.features[i].attributes.layerName = 'Tide Interpolation Points';
             infoPanelData.push(response.features[i]);
           }
+          goToFeature(infoPanelData[0]);
           queryInfoPanel(infoPanelData, 1);
           togglePanel();
         });
@@ -1438,11 +1483,13 @@ var highlightLine = {
     var textboxAfter = document.getElementById('IDQuery');
     
     query(textboxAfter).on('keypress', function() {
+      clearDiv('informationdiv');
       resetElements(textboxAfter);
     });
 
     var submitAfter = document.getElementById('submitQuery');
     query(submitAfter).on('click', function(e) {
+      clearDiv('informationdiv');
       infoPanelData = [];      
       var textValue = document.getElementById('IDQuery').value;
       textValue = parseInt(textValue);
@@ -1453,6 +1500,7 @@ var highlightLine = {
           response.features[i].attributes.layerName = 'Tide Interpolation Points';
           infoPanelData.push(response.features[i]);
         }
+        goToFeature(infoPanelData[0]);
         queryInfoPanel(infoPanelData, 1);
         togglePanel();
       });
@@ -1471,6 +1519,7 @@ var highlightLine = {
     var countyDropdownAfter = document.getElementById('countyQuery');
 
     query(countyDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
       resetElements(countyDropdownAfter);
       infoPanelData = [];      
 
@@ -1483,6 +1532,7 @@ var highlightLine = {
             response.features[i].attributes.layerName = 'Tide Stations';
             infoPanelData.push(response.features[i]);
           }
+          goToFeature(infoPanelData[0]);
           queryInfoPanel(infoPanelData, 1);
           togglePanel();
         });
@@ -1493,6 +1543,7 @@ var highlightLine = {
     var quadDropdownAfter = document.getElementById('quadQuery');
 
     query(quadDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
       resetElements(quadDropdownAfter);
       infoPanelData = [];      
 
@@ -1505,6 +1556,7 @@ var highlightLine = {
             response.features[i].attributes.layerName = 'Tide Stations';
             infoPanelData.push(response.features[i]);
           }
+          goToFeature(infoPanelData[0]);
           queryInfoPanel(infoPanelData, 1);
           togglePanel();
         });
@@ -1518,6 +1570,7 @@ var highlightLine = {
     
     // clear other elements when keypress happens
     query(inputAfter).on('keypress', function() {
+      clearDiv('informationdiv');
       resetElements(inputAfter);
     });
 
@@ -1532,12 +1585,14 @@ var highlightLine = {
           response.features[i].attributes.layerName = 'Tide Stations';
           infoPanelData.push(response.features[i]);
         }
+        goToFeature(infoPanelData[0]);
         queryInfoPanel(infoPanelData, 1);
         togglePanel();
       });
     });
 
     query(nameButton).on('click', function(e) {
+      clearDiv('informationdiv');
       infoPanelData = [];
       textQueryQuerytask(controlPointsURL + '4', 'name', inputAfter.value)
       .then(function (response) {
@@ -1545,6 +1600,7 @@ var highlightLine = {
           response.features[i].attributes.layerName = 'Tide Stations';
           infoPanelData.push(response.features[i]);
         }
+        goToFeature(infoPanelData[0]);
         queryInfoPanel(infoPanelData, 1);
         togglePanel();
       });
@@ -1564,10 +1620,12 @@ var highlightLine = {
     
     // clear other elements when keypress happens
     query(inputAfter).on('keypress', function() {
+      clearDiv('informationdiv');
       resetElements(inputAfter);
     });
 
     query(countyDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
       resetElements(countyDropdownAfter);
       infoPanelData = [];      
 
@@ -1580,6 +1638,7 @@ var highlightLine = {
             response.features[i].attributes.layerName = 'Erosion Control Line';
             infoPanelData.push(response.features[i]);
           }
+          goToFeature(infoPanelData[0]);
           queryInfoPanel(infoPanelData, 1);
           togglePanel();
         });
@@ -1587,6 +1646,7 @@ var highlightLine = {
     });
 
     query(nameButton).on('click', function(e) {
+      clearDiv('informationdiv');
       infoPanelData = [];
       textQueryQuerytask(controlPointsURL + '9', 'ecl_name', inputAfter.value)
       .then(function (response) {
@@ -1595,6 +1655,7 @@ var highlightLine = {
           response.features[i].attributes.layerName = 'Erosion Control Line';
           infoPanelData.push(response.features[i]);
         }
+        goToFeature(infoPanelData[0]);
         queryInfoPanel(infoPanelData, 1);
         togglePanel();
       });
@@ -1612,6 +1673,7 @@ var highlightLine = {
     
     // clear other elements when keypress happens
     query(inputAfter).on('keypress', function() {
+      clearDiv('informationdiv');
       resetElements(inputAfter);
     });
 
@@ -1623,6 +1685,7 @@ var highlightLine = {
           response.features[i].attributes.layerName = 'Survey Benchmarks';
           infoPanelData.push(response.features[i]);
         }
+        goToFeature(infoPanelData[0]);
         queryInfoPanel(infoPanelData, 1);
         togglePanel();
       });
@@ -1708,6 +1771,7 @@ var highlightLine = {
     togglePanel();     
     });
     
+  
   query("#numinput").on("change", function(e) {
     console.log("target value");
     console.log(e.target.value);

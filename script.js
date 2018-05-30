@@ -1752,11 +1752,8 @@ var highlightLine = {
 
 
   searchWidget.on("search-complete", function(event){
+    
     infoPanelData = [];
-
-    console.log(event);
-    // event.results["0"].source.name
-    //var layerName = event.target.activeSource.name;
 
     if (event.results["0"].source.locator) {
       // let native functionality work
@@ -1771,7 +1768,7 @@ var highlightLine = {
       queryInfoPanel(infoPanelData, 1);
       togglePanel(); 
     }
-    });
+  });
     
   
   query("#numinput").on("change", function(e) {

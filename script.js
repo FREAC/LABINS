@@ -1754,17 +1754,23 @@ var highlightLine = {
   searchWidget.on("search-complete", function(event){
     infoPanelData = [];
 
+    console.log(event);
+    // event.results["0"].source.name
     //var layerName = event.target.activeSource.name;
-    // let's make an input that the queryInfoPanel functionw sants to see
-    var layerName = event.results["0"].source.featureLayer.source.layerDefinition.name;
-    if (layerName === 'NGS Control Points') {
-      event.results["0"].results["0"].feature.attributes.layerName ='NGS Control Points QueryTask';
-    } else {
-      event.results["0"].results["0"].feature.attributes.layerName = layerName;
+
+    if (event.results["0"].source.locator) {
+      // let native functionality work
+    } else {    
+      var layerName = event.results["0"].source.featureLayer.source.layerDefinition.name;
+      if (layerName === 'NGS Control Points') {
+        event.results["0"].results["0"].feature.attributes.layerName ='NGS Control Points QueryTask';
+      } else {
+        event.results["0"].results["0"].feature.attributes.layerName = layerName;
+      }
+      infoPanelData.push(event.results["0"].results["0"].feature);
+      queryInfoPanel(infoPanelData, 1);
+      togglePanel(); 
     }
-    infoPanelData.push(event.results["0"].results["0"].feature);
-    queryInfoPanel(infoPanelData, 1);
-    togglePanel();     
     });
     
   

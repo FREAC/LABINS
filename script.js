@@ -978,8 +978,6 @@ var highlightLine = {
 
   // inputs the geometry of the data query feature, and matches to it. 
   function dataQueryQuerytask (url, geometry) {
-    console.log(url);
-    console.log(geometry);
     var queryTask = new QueryTask({
       url: url
     });
@@ -989,7 +987,6 @@ var highlightLine = {
       returnGeometry: true,
       outFields: '*'
     });
-    console.log(queryTask.execute(params));
     return queryTask.execute(params);
   }
 
@@ -1225,6 +1222,27 @@ var highlightLine = {
 
     return identifyTask.execute(params);
   }
+  // data query by text
+  function multiTextQuerytask (url, attribute, queryStatement, idAttribute, idQueryStatement) {
+
+    var whereStatement;
+
+       whereStatement = "Upper(" + attribute +  ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute +  ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%'";
+
+      //whereStatement = attribute +  ' = ' + "'" + queryStatement + "'";
+    console.log(whereStatement);
+
+    var queryTask = new QueryTask({
+      url: url
+    });
+    var params = new Query({
+      where: whereStatement,
+      returnGeometry: true,
+      // possibly could be limited to return only necessary outfields
+      outFields: '*'
+    });
+    return queryTask.execute(params);
+  }
 
   // data query by text
   function textQueryQuerytask (url, attribute, queryStatement, flag = true) {
@@ -1236,6 +1254,8 @@ var highlightLine = {
       whereStatement = attribute +  ' = ' + "'" + queryStatement + "'";
 
     }
+
+    console.log(whereStatement);
 
     var queryTask = new QueryTask({
       url: url
@@ -1319,7 +1339,7 @@ var highlightLine = {
     addDescript();
     createCountyDropdown();    
     createQuadDropdown();
-    createTextBox('nameQuery', 'Enter name. Example: BG4871');
+    createTextBox('textQuery', 'Enter NGS Name or PID.');
     createSubmit();
 
     var countyDropdownAfter = document.getElementById('countyQuery');
@@ -1370,7 +1390,7 @@ var highlightLine = {
     });
 
     // Textbox Query
-    var textboxAfter = document.getElementById('nameQuery');
+    var textboxAfter = document.getElementById('textQuery');
 
     query(textboxAfter).on('keypress', function() {
       // once typing begins, all of the other elements in the map will reset
@@ -1381,9 +1401,10 @@ var highlightLine = {
     query(submitAfter).on('click', function(e) {
       clearDiv('informationdiv');
       infoPanelData = [];      
-      var textValue = document.getElementById('nameQuery').value;
+      var textValue = document.getElementById('textQuery').value;
 
-      textQueryQuerytask(controlPointsURL + '0', 'pid', textValue)
+      //textQueryQuerytask(controlPointsURL + '0', 'pid', textValue)
+      multiTextQuerytask(controlPointsURL + '0', 'pid', textValue, 'name', textValue)
       .then(function (response) {
         for (i=0;i<response.features.length;i++) {
           response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
@@ -1512,11 +1533,8 @@ var highlightLine = {
     addDescript();
     createCountyDropdown();
     createQuadDropdown();
-    createTextBox('textQuery', 'Enter an ID or Tide Station Name');
-    // createTextBox('nameQuery', 'Example: KINGS FERRY, ST. MARYS');
-    createSubmit('Submit by ID', 'submitIDQuery');
-    createSubmit('Submit by Name', 'submitNameQuery');
-
+    createTextBox('textQuery', 'Enter Tide Station ID or Name');
+    createSubmit();
     var countyDropdownAfter = document.getElementById('countyQuery');
 
     query(countyDropdownAfter).on('change', function(e) {
@@ -1553,6 +1571,7 @@ var highlightLine = {
       .then(function(response) {
         dataQueryQuerytask(controlPointsURL + '4', response)
         .then(function (response) {
+          console.log(response);
           for (i=0;i<response.features.length;i++) {
             response.features[i].attributes.layerName = 'Tide Stations';
             infoPanelData.push(response.features[i]);
@@ -1566,20 +1585,21 @@ var highlightLine = {
 
     // query id and name fields through two buttons
     var inputAfter = document.getElementById('textQuery');
-    var idButton = document.getElementById('submitIDQuery');
-    var nameButton = document.getElementById('submitNameQuery');
-    
+    var submitButton = document.getElementById('submitQuery');
+
     // clear other elements when keypress happens
     query(inputAfter).on('keypress', function() {
       clearDiv('informationdiv');
       resetElements(inputAfter);
     });
 
-    query(idButton).on('click', function(e) {
+    query(submitButton).on('click', function(e) {
       infoPanelData = [];
       var textValue = inputAfter.value.padStart(4, '0');
 
-      textQueryQuerytask(controlPointsURL + '4', 'id', textValue, false)
+      //textQueryQuerytask(controlPointsURL + '4', 'id', textValue, false)
+      multiTextQuerytask(controlPointsURL + '4', 'id', textValue, 'name', textValue)
+
       .then(function (response) {
         console.log(response)
         for (i=0;i<response.features.length;i++) {

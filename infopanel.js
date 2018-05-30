@@ -54,7 +54,6 @@ function queryInfoPanel (results, i) {
                                 );
     } else if (results[i-1].attributes.layerName === 'Parcels') {
         $('#informationdiv').html('<p><b>Parcels</b></p>' +
-                                '<p><b>Parcels</b></p>' + 
                                 '<p><b>Parcel ID:</b> ' + results[i-1].attributes.CO_NO + '</p>' +
                                 '<p><b>Parcel ID:</b> ' + results[i-1].attributes.PARCEL_ID + '</p>' +
                                 '<p><b>City:</b> ' + results[i-1].attributes.OWN_CITY + '</p>' +
@@ -72,6 +71,7 @@ function queryInfoPanel (results, i) {
     } else if (results[i-1].attributes.layerName === 'Tide Stations') {
         $('#informationdiv').html('<p><b>Tide Stations</b></p>' +
                                 '<p><b>Tide Station ID: </b>' + results[i-1].attributes.id + '</p>' +
+                                '<p><b>Tide Station Name: </b>' + results[i-1].attributes.name + '</p>' +
                                 '<p><b>County: </b>' + results[i-1].attributes.countyname + '</p>' +
                                 '<p><b>Quad: </b>' + results[i-1].attributes.quadname + '</p>' + 
                                 '<p><b>Status: </b>' + results[i-1].attributes.status + '</p>' +

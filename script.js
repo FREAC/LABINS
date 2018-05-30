@@ -462,36 +462,6 @@ var highlightLine = {
       //return union;
   }
 
-  // Build select panel for Information Panel 'Filter By Layer' dropdown
-  // Query layerName property of all returned drill down identify Feature
-  function buildUniquePanel () {
-    //empty the filterLayerPanel
-    domConstruct.empty("filterLayerPanel");
-    //console.log('unique layers being built');
-    var uniqueLayerNames = [];
-    for(i = 0; i< infoPanelData.length; i++){  
-      
-      // if layername isn't found within the uniqueLayerNames array,
-      // value of -1 is given, the layername is added to uniqueLayerNames array  
-      if(uniqueLayerNames.indexOf(infoPanelData[i].attributes.layerName) === -1){
-          uniqueLayerNames.push(infoPanelData[i].attributes.layerName);        
-      } 
-    } 
-    // unique layers will always appear in the same order
-    uniqueLayerNames.sort();
-    // Create the placeholder
-    var option = domConstruct.create("option");
-    option.text = "Filter by Layer";
-    dom.byId("filterLayerPanel").add(option);
-
-    // Populate with unique layers
-    uniqueLayerNames.forEach(function (value) {
-      var option = domConstruct.create("option");
-      option.text = value;
-      dom.byId("filterLayerPanel").add(option);
-    });
-  }
-
   // Union geometries of multi polygon features
   function unionGeometries (response) {
     // Array to store polygons in
@@ -1924,70 +1894,7 @@ var highlightLine = {
         });
       }
       }
-      
-
   });
-  
-  // handle the dropdown layer selection
-  // the identifyElements array will hold all of the identifyTask values
-  query("#filterLayerPanel").on("change", function (e) {
-    // intermediary container
-    var infoPanelDataCopy = [];
-
-    //copy to an infopaneldatacopy array
-    for (i=0;i<identifyElements.length;i++) {
-      infoPanelDataCopy.push(identifyElements[i]);
-    }
-    infoPanelData = [];
-
-    console.log(e.target.value);
-    // loop through copy array to check for selected layers
-    for (i=0;i<infoPanelDataCopy.length;i++) {
-      if (infoPanelDataCopy[i].attributes.layerName === e.target.value) {
-        infoPanelData.push(infoPanelDataCopy[i]);
-      }
-    }
-    // if layer changes to "filter by layer", reset everything
-    if (e.target.value === "Filter by Layer") {
-      for (i=0;i<identifyElements.length;i++) {
-        infoPanelData.push(identifyElements[i]);
-      }      
-    }
-
-    if (infoPanelData[0].geometry.type === "polygon") {
-      var ext = infoPanelData[0].geometry.extent;
-      var cloneExt = ext.clone();
-      mapView.goTo({
-        target: infoPanelData[0],
-        extent: cloneExt.expand(1.75)  
-      });
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
-      selectionLayer.graphics.add(highlightGraphic);
-    } else if (infoPanelData[0].geometry.type === "point") {     
-
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightPoint);
-      selectionLayer.graphics.add(highlightGraphic);
-      mapView.goTo({target: 
-        infoPanelData[0].geometry,
-        zoom: 15
-      });
-    }
-
-    
-
-
-    queryInfoPanel(infoPanelData, 1);
-
-  });
-
 
 
 

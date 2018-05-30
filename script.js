@@ -1069,6 +1069,7 @@ var highlightLine = {
       },
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",
+      zoomScale: 100000,
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
@@ -1755,18 +1756,13 @@ var highlightLine = {
 
     //var layerName = event.target.activeSource.name;
     // let's make an input that the queryInfoPanel functionw sants to see
-    layerName = event.target.activeSource.name;
+    var layerName = event.results["0"].source.featureLayer.source.layerDefinition.name;
     if (layerName === 'NGS Control Points') {
       event.results["0"].results["0"].feature.attributes.layerName ='NGS Control Points QueryTask';
     } else {
       event.results["0"].results["0"].feature.attributes.layerName = layerName;
     }
     infoPanelData.push(event.results["0"].results["0"].feature);
-    console.log(infoPanelData);
-    // layer name
-    console.log(event.target.activeSource.name);
-    console.log(infoPanelData);
-
     queryInfoPanel(infoPanelData, 1);
     togglePanel();     
     });

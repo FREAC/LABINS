@@ -1595,13 +1595,12 @@ var highlightLine = {
 
     query(submitButton).on('click', function(e) {
       infoPanelData = [];
-      var textValue = inputAfter.value.padStart(4, '0');
+      var textValue = inputAfter.value;
 
-      //textQueryQuerytask(controlPointsURL + '4', 'id', textValue, false)
+
       multiTextQuerytask(controlPointsURL + '4', 'id', textValue, 'name', textValue)
 
       .then(function (response) {
-        console.log(response)
         for (i=0;i<response.features.length;i++) {
           response.features[i].attributes.layerName = 'Tide Stations';
           infoPanelData.push(response.features[i]);

@@ -1916,7 +1916,7 @@ var highlightLine = {
 
 
 
-  /*
+  
   // LegendLegend
   var legendWidget = new Legend({
     container: "legendDiv",
@@ -1928,21 +1928,21 @@ var highlightLine = {
     container: "layersDiv",
     view: mapView
   });
-*/
 
-  // Add a legend instance to the panel of a
-  // ListItem in a LayerList instance
-  const layerList = new LayerList({
-    container: "legendDiv",
-    view: mapView,
-    listItemCreatedFunction: function(event) {
-      const item = event.item;
-      item.panel = {
-        content: "legend",
-        open: true
-      };
-    }
-  });
+
+  // // Add a legend instance to the panel of a
+  // // ListItem in a LayerList instance
+  // const layerList = new LayerList({
+  //   container: "legendDiv",
+  //   view: mapView,
+  //   listItemCreatedFunction: function(event) {
+  //     const item = event.item;
+  //     item.panel = {
+  //       content: "legend",
+  //       open: true
+  //     };
+  //   }
+  // });
   
   //mapView.ui.add(layerList, "top-right");
 

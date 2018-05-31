@@ -814,6 +814,7 @@ var highlightLine = {
 
   // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("click", function(event) {
+    console.log(mapView.scale);
       if (mapView.scale < minimumDrawScale) {
         console.log(event);
         event.stopPropagation();
@@ -850,6 +851,8 @@ var highlightLine = {
 
   // multi service identifytask
   function executeIdentifyTask(event) {
+
+    var currentScale = mapView.scale;
     infoPanelData = [];
     identifyElements = [];
     promises = [];
@@ -918,6 +921,7 @@ var highlightLine = {
         // Highlight the selected parcel
         highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
         selectionLayer.graphics.add(highlightGraphic);
+
       } else if (infoPanelData[0].geometry.type === "point") {
         console.log("it's a point");
             // Remove current selection
@@ -926,11 +930,18 @@ var highlightLine = {
         // Highlight the selected parcel
         highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightPoint);
         selectionLayer.graphics.add(highlightGraphic);
-        mapView.goTo({target: 
-          infoPanelData[0].geometry,
-          zoom: 15
+        if (mapView.scale > 18055.954822) {
+          mapView.goTo({
+            target: infoPanelData[0].geometry,
+            zoom: 15
+          });
+        } else {
+          mapView.goTo({
+            target: infoPanelData[0].geometry,
+            scale: currentScale
         });
-        }     
+        }
+      }     
       queryInfoPanel(infoPanelData, 1);
       buildUniquePanel();
       //showPopup(identifyElements); 

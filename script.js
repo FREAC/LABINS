@@ -780,7 +780,7 @@ var highlightLine = {
   // Set the parameters for the Identify
   params = new IdentifyParameters();
   params.tolerance = 15;
-  params.layerIds = [2, 0, 1, 4, 5, 9, 6];
+  params.layerIds = [2, 0, 1, 4, 5, 9, 8, 6];
   params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;

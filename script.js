@@ -964,8 +964,10 @@ var highlightLine = {
 
   // go to first feature of the infopaneldata array
   function goToFeature (feature) {
+
+    console.log(feature.geometry.type);
     // Go to the selected parcel
-    if (feature.geometry.type === "polygon") {
+    if (feature.geometry.type === "polygon" || feature.geometry.type === "polyline") {
       var ext = feature.geometry.extent;
       var cloneExt = ext.clone();
       mapView.goTo({
@@ -992,7 +994,7 @@ var highlightLine = {
       feature.geometry,
       zoom: 15
     });
-    }
+  }
 }
                         
 
@@ -1548,6 +1550,7 @@ var highlightLine = {
             response.features[i].attributes.layerName = 'Tide Stations';
             infoPanelData.push(response.features[i]);
           }
+          console.log(infoPanelData);
           goToFeature(infoPanelData[0]);
           queryInfoPanel(infoPanelData, 1);
           togglePanel();
@@ -1583,7 +1586,7 @@ var highlightLine = {
       });
     });
 
-    query(nameButton).on('click', function(e) {
+    query(submitButton).on('click', function(e) {
       clearDiv('informationdiv');
       infoPanelData = [];
       textQueryQuerytask(controlPointsURL + '4', 'name', inputAfter.value)
@@ -1603,9 +1606,9 @@ var highlightLine = {
     addDescript();
     createCountyDropdown();
     createTextBox('textQuery', 'Enter an ECL Name')
-    createSubmit('Submit by Name', 'submitNameQuery');
+    createSubmit();
 
-    var nameButton = document.getElementById('submitNameQuery');
+    var submitButton = document.getElementById('submitQuery');
     var countyDropdownAfter = document.getElementById('countyQuery');
     var inputAfter = document.getElementById('textQuery');
 
@@ -1620,7 +1623,7 @@ var highlightLine = {
       clearDiv('informationdiv');
       resetElements(countyDropdownAfter);
       infoPanelData = [];      
-
+      console.log('grabbing geometry');
       getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
@@ -1637,7 +1640,7 @@ var highlightLine = {
       });
     });
 
-    query(nameButton).on('click', function(e) {
+    query(submitButton).on('click', function(e) {
       clearDiv('informationdiv');
       infoPanelData = [];
       textQueryQuerytask(controlPointsURL + '9', 'ecl_name', inputAfter.value)
@@ -1659,7 +1662,7 @@ var highlightLine = {
     createTextBox('textQuery', 'Enter a Benchmark Name')
     createSubmit('Submit by Name', 'submitNameQuery');
 
-    var nameButton = document.getElementById('submitNameQuery');
+    var submitButton = document.getElementById('submitQuery');
     var inputAfter = document.getElementById('textQuery');
 
     
@@ -1669,7 +1672,7 @@ var highlightLine = {
       resetElements(inputAfter);
     });
 
-    query(nameButton).on('click', function(e) {
+    query(submitButton).on('click', function(e) {
       infoPanelData = [];
       textQueryQuerytask(swfwmdURL, 'BENCHMARK_NAME', inputAfter.value)
       .then(function (response) {

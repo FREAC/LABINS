@@ -755,8 +755,8 @@ var highlightLine = {
     zoomToSectionFeature(townshipRangeSectionURL, type, "sec_ch");
   });
 
-  var queryTownship = dom.byId("selectRange");
-  on(queryTownship, "change", function (e) {
+  var queryRange = dom.byId("selectRange");
+  on(queryRange, "change", function (e) {
     var type = e.target.value;
     zoomToTRFeature(townshipRangeSectionURL, type, "rng_ch");
   });
@@ -874,32 +874,17 @@ var highlightLine = {
           var feature = result.feature;
           var layerName = result.layerName;
           feature.attributes.layerName = layerName;
-          if (layerName === 'USGS Quads') {
-            feature.popupTemplate = quadsIdentifyTemplate;
-          } else if (layerName === 'NGS Control Points') {
-              feature.popupTemplate = NGSIdentifyPopupTemplate;
-          } else if (layerName === 'Parcels') {
-            feature.popupTemplate = parcelsIdentifyTemplate;
-          } else if (layerName === 'Soils June 2012 - Dept. of Agriculture') {
-            feature.popupTemplate = soilsTemplate;
-          } else if (layerName === 'Preliminary NGS Points') {
-            feature.popupTemplate = NGSPreliminaryIdentifypopupTemplate;
-          } else if (layerName === 'Certified Corners') {
-            feature.popupTemplate = CCRTemplate;
-          } else if (layerName === 'Tide Stations') {
-            feature.popupTemplate = tideStationsTemplate;
-          } else if (layerName === 'Tide Interpolation Points') {
-            feature.popupTemplate = tideInterpPointsTemplate;
-          } else if (layerName === 'R-Monuments') {
-            feature.popupTemplate = rMonumentsTemplate;
-          } else if (layerName === 'Erosion Control Line') {
-            feature.popupTemplate = erosionControlLineTemplate;
-          } else if (layerName === 'Survey Benchmarks') {
-            feature.popupTemplate = swfwmdLayerPopupTemplate;
-          }
-          //console.log(identifyElements);
+
+          // only identify the corners that have an image
+          if (layerName != 'Certified Corners') {
           identifyElements.push(feature);
           infoPanelData.push(feature);
+          } else if (layerName === 'Certified Corners') {
+            if (feature.attributes.is_image === 'Y') {
+              infoPanelData.push(feature);
+            } 
+          }
+
 
         });
       })

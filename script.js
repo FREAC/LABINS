@@ -86,26 +86,19 @@ require([
   CalciteMaps,
   CalciteMapsArcGISSupport) {
 
+  var minimumDrawScale = 100000;
 
-  var labinslayerURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Points_3857/MapServer/";
-  var labinsLayer = new MapImageLayer({
-    url: labinslayerURL,
+  var controlPointsURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Points_3857/MapServer/";
+  var controlPointsLayer = new MapImageLayer({
+    url: controlPointsURL,
     title: "LABINS Data",
+    minScale: minimumDrawScale,
     sublayers: [{
       id: 9,
       title: "Erosion Control Line",
       visible: true,
       //popupTemplate: erosionControlLineTemplate,
-      popupEnabled: false,
-      renderer: { 
-        type: "simple", // autocasts as new SimpleRenderer()
-        symbol: {
-          type: "simple-line", // autocasts as new SimpleFillSymbol()
-          style: "none",
-          width: 3,
-          color: "purple"
-        }
-      }
+      popupEnabled: false
     }, {
       id: 8,
       title: "R-Monuments",
@@ -162,18 +155,13 @@ require([
     }]
   });
 
-
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/0";
   var swfwmdLayer = new FeatureLayer({
     url: swfwmdURL,
     title: "SWFWMD Benchmarks",
-    visible: true,
-    //listMode: "hide",
-    //popupTemplate: swfwmdLayerPopupTemplate,
-    popupEnabled: false
-
+    popupEnabled: false,
+    minScale: minimumDrawScale
   });
-
 
   var controlLinesURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/";
   var controlLinesLayer = new MapImageLayer({
@@ -250,6 +238,9 @@ require([
     listMode: "hide"
   });
 
+  var bufferLayer = new GraphicsLayer({
+    listMode: "hide"
+  });
 
   // Symbol that will populate the graphics Layer
   var highlightSymbol = new SimpleFillSymbol(
@@ -269,6 +260,14 @@ require([
     color: [173, 173, 173, 0.52]
 };
 
+var highlightLine = {
+    type: "simple-line",
+    width: 2,
+    color: [255, 0, 0, 1]
+};
+
+
+
   var sectionSym = {
     type: "simple-fill",
     outline: {
@@ -277,7 +276,6 @@ require([
     },
     color: [0, 0, 0, 0]
 };
-
 
   /////////////////////
   // Create the map ///
@@ -288,10 +286,9 @@ require([
     basemap: "topo"
   });
 
-
   var map = new Map({
     basemap: "topo",
-    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, labinsLayer]
+    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, controlPointsLayer, bufferLayer]
   });
 
   /////////////////////////
@@ -363,24 +360,50 @@ require([
     }
   });
 
+  // clears selectionLayer (general feature highlighting) and highlightFeaturesLayer (data query highlighting)
   function clearGraphics() {
     console.log("cleared graphics");
     map.graphics.clear();
-    selectionLayer.graphics.removeAll()
+    selectionLayer.graphics.removeAll();
+    highlightFeaturesLayer.removeAll();
   }
+
+  // reset dropdowns and all inputs that are not equal to the current element. 
+  function resetElements (currentElement) {
+    // if elements are not equal to the current element
+    // then reset to the initial values
+
+    // find all dropdowns
+    $("select").each(function() {
+      if((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
+        this.selectedIndex = 0
+      }
+    },
+    // find all inputs
+     $("input").each(function() {
+       if (this != currentElement) {
+         $(this).val('');
+       }
+     })
+  );
+
+    
+  }
+
 
   /////////////////////////////
   /// Dropdown Select Panel ///
   /////////////////////////////
 
-  function buildSelectPanel(vurl, attribute, zoomParam, panelParam) {
+  // query layer and populate a dropdown
+  function buildSelectPanel(url, attribute, zoomParam, panelParam) {
 
     var task = new QueryTask({
-      url: vurl
+      url: url
     });
 
     var params = new Query({
-      where: "1 = 1 AND " + attribute + " IS NOT NULL",
+      where: attribute + " IS NOT NULL",
       outFields: [attribute],
       returnDistinctValues: true,
       });
@@ -391,17 +414,14 @@ require([
 
     task.execute(params)
       .then(function (response) {
-        //console.log(response.features);
         var features = response.features;
         var values = features.map(function (feature) {
           return feature.attributes[attribute];
         });
-        //console.log(response);
         return values;
 
       })
       .then(function (uniqueValues) {
-        //console.log(uniqueValues);
         uniqueValues.sort();
         uniqueValues.forEach(function (value) {
           var option = domConstruct.create("option");
@@ -413,8 +433,11 @@ require([
 
   // Input location from drop down, zoom to it and highlight
   function zoomToFeature(panelurl, location, attribute) {
-    var multiPolygonGeometries = [];
-    var union = geometryEngine.union(multiPolygonGeometries);
+
+    //var multiPolygonGeometries = [];
+    // union features so that they can be returned as a single geometry
+    //var union = geometryEngine.union(multiPolygonGeometries);
+    
     var task = new QueryTask({
       url: panelurl
     });
@@ -424,45 +447,19 @@ require([
     });
     task.execute(params)
       .then(function (response) {
-        // Go to feature and highlight
+        // Go to extent of features and highlight
         mapView.goTo(response.features);
         selectionLayer.graphics.removeAll();
         graphicArray = [];
+
         for (i=0; i<response.features.length; i++) {
           highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
           graphicArray.push(highlightGraphic);
-          multiPolygonGeometries.push(response.features[i].geometry);
+          //multiPolygonGeometries.push(response.features[i].geometry);
         }
         selectionLayer.graphics.addMany(graphicArray);          
       });
-      console.log(union);
-      return union;
-  }
-
-  // Build select panel for info panel filter dropdown
-  function buildUniquePanel () {
-    console.log("into the build function");
-    var uniqueLayerNames = [];
-    for(i = 0; i< infoPanelData.length; i++){    
-      if(uniqueLayerNames.indexOf(infoPanelData[i].attributes.layerName) === -1){
-          uniqueLayerNames.push(infoPanelData[i].attributes.layerName);        
-      } 
-      //console.log(infoPanelData[i].attributes.layerName);       
-    }
-
-    uniqueLayerNames.sort();
-    domConstruct.empty("filterLayerPanel");
-    // Create the placeholder
-    var option = domConstruct.create("option");
-    option.text = "Filter by Layer";
-    dom.byId("filterLayerPanel").add(option);
-
-    // Populate with unique layers
-    uniqueLayerNames.forEach(function (value) {
-      var option = domConstruct.create("option");
-      option.text = value;
-      dom.byId("filterLayerPanel").add(option);
-    });
+      //return union;
   }
 
   // Union geometries of multi polygon features
@@ -477,73 +474,73 @@ require([
     return union;
   }
 
-  function executeTRSIdentify(response) {
-    console.log(response);
+  // // the identify function that happens when a section is chosen from the Zoom to Feature panel
+  // function executeTRSIdentify(response) {
+  //   console.log(response);
             
-    identifyTask = new IdentifyTask(labinslayerURL);
+  //   identifyTask = new IdentifyTask(controlPointsURL);
 
-    // Set the parameters for the Identify
-    params = new IdentifyParameters();
-    params.tolerance = 3;
-    params.layerIds = [0, 2];
-    params.layerOption = "visible";
-    params.width = mapView.width;
-    params.height = mapView.height;
+  //   // Set the parameters for the Identify
+  //   params = new IdentifyParameters();
+  //   params.tolerance = 3;
+  //   params.layerIds = [0, 2];
+  //   params.layerOption = "all";
+  //   params.width = mapView.width;
+  //   params.height = mapView.height;
   
-    // Set the geometry to the location of the view click
-    params.geometry = response;
-    params.mapExtent = mapView.extent;
-    dom.byId("mapViewDiv").style.cursor = "wait";
+  //   // Set the geometry to the location of the view click
+  //   params.geometry = response;
+  //   params.mapExtent = mapView.extent;
+  //   dom.byId("mapViewDiv").style.cursor = "wait";
 
-    // This function returns a promise that resolves to an array of features
-    // A custom popupTemplate is set for each feature based on the layer it
-    // originates from
-    identifyTask.execute(params).then(function(response) {
-      var results = response.results;
+  //   // This function returns a promise that resolves to an array of features
+  //   // A custom popupTemplate is set for each feature based on the layer it
+  //   // originates from
+  //   identifyTask.execute(params).then(function(response) {
+  //     var results = response.results;
 
-      return [arrayUtils.map(results, function(result) {
+  //     return [arrayUtils.map(results, function(result) {
 
-        var feature = result.feature;
-        var layerName = result.layerName;
+  //       var feature = result.feature;
+  //       var layerName = result.layerName;
 
-        feature.attributes.layerName = layerName;
-        if (layerName === 'Certified Corners') {
-          feature.popupTemplate = CCRTemplate;
-        } else if (layerName === 'NGS Control Points') {
-          feature.popupTemplate = NGSIdentifyPopupTemplate;
-        }
-        //console.log(feature);
-        return feature;
-      }), params.geometry];
-    }).then(showPopup); // Send the array of features to showPopup()
+  //       feature.attributes.layerName = layerName;
+  //       if (layerName === 'Certified Corners') {
+  //         feature.popupTemplate = CCRTemplate;
+  //       } else if (layerName === 'NGS Control Points') {
+  //         feature.popupTemplate = NGSIdentifyPopupTemplate;
+  //       }
+  //       //console.log(feature);
+  //       return feature;
+  //     }), params.geometry];
+  //   }).then(showPopup); // Send the array of features to showPopup()
 
-    // Shows the results of the Identify in a popup once the promise is resolved
-    function showPopup(data) {
-      response = data[0];
-      geometry = data[1];
+  //   // Shows the results of the Identify in a popup once the promise is resolved
+  //   function showPopup(data) {
+  //     response = data[0];
+  //     geometry = data[1];
 
-      if (response.length > 0) {
-        mapView.popup.open({
-          features: response,
-          location: geometry.centroid
-        });
-      }
-      dom.byId("mapViewDiv").style.cursor = "auto";
-    }
-  } 
+  //     if (response.length > 0) {
+  //       mapView.popup.open({
+  //         features: response,
+  //         location: geometry.centroid
+  //       });
+  //     }
+  //     dom.byId("mapViewDiv").style.cursor = "auto";
+  //   }
+  //   return identifyTask.execute(params);
+  // } 
 
+  // when a section feature is chose, a matching TRS combination is queried, highlighted and zoomed to
   function zoomToSectionFeature(panelurl, location, attribute) {
-      
-    // Clear existing bufferElement items each time the zoom to feature runs
-    //bufferElements.length = 0;
 
-    var township = document.getElementById("selectNGSCountyPanel");
+    var township = document.getElementById("selectTownship");
     var strUser = township.options[township.selectedIndex].text;
 
-    var range = document.getElementById("selectNGSCityPanel");
+    var range = document.getElementById("selectRange");
     var rangeUser = range.options[range.selectedIndex].text;
 
-    var section = document.getElementById("selectNGSSectionPanel");
+    var section = document.getElementById("selectSection");
     var sectionUser = section.options[section.selectedIndex].text;
 
 
@@ -560,7 +557,9 @@ require([
         return response;
       })
       .then(createBuffer)
-      .then(executeTRSIdentify)
+      //.then(executeTRSIdentify)
+      .then(executeIdentifyTask)
+      .then(togglePanel);
   }
 
   // Modified zoomToFeature function to zoom once the Township and Range has been chosen
@@ -569,10 +568,10 @@ require([
     multiPolygonGeometries = [];
     var union = geometryEngine.union(multiPolygonGeometries);
 
-    var township = document.getElementById("selectNGSCountyPanel");
+    var township = document.getElementById("selectTownship");
     var strUser = township.options[township.selectedIndex].text;
 
-    var range = document.getElementById("selectNGSCityPanel");
+    var range = document.getElementById("selectRange");
     var rangeUser = range.options[range.selectedIndex].text;
 
 
@@ -603,15 +602,14 @@ require([
    //Input geometry, output buffer
   function createBuffer(response) {
     var bufferGeometry = response.features[0].geometry
-    var buffer = geometryEngine.geodesicBuffer(bufferGeometry, 100, "feet", true);
-    //console.log(typeof buffer);
+    var buffer = geometryEngine.geodesicBuffer(bufferGeometry, 300, "feet", true);
     // add the buffer to the view as a graphic
     var bufferGraphic = new Graphic({
       geometry: buffer,
       symbol: highlightSymbol
     });
-    selectionLayer.graphics.removeAll();
-    selectionLayer.add(bufferGraphic);
+    bufferLayer.graphics.removeAll();
+    bufferLayer.add(bufferGraphic);
     //console.log(bufferGeometry);
     return bufferGeometry;
     //return buffer;
@@ -627,6 +625,7 @@ require([
 
   //Zoom to feature
   query("#selectCountyPanel").on("change", function (e) {
+    resetElements(document.getElementById('selectCountyPanel'));
     return zoomToFeature(controlLinesURL + "4", e.target.value, "ctyname")
   });
 
@@ -635,6 +634,7 @@ require([
 
   //Zoom to feature
   query("#selectQuadPanel").on("change", function (e) {
+    resetElements(document.getElementById('selectQuadPanel'));
     return zoomToFeature(controlLinesURL + "0", e.target.value, "tile_name");
   });
 
@@ -643,6 +643,7 @@ require([
 
   //Zoom to feature
   query("#selectCityPanel").on("change", function (e) {
+    resetElements(document.getElementById('selectCityPanel'));
     return zoomToFeature(controlLinesURL + "3", e.target.value, "name");
   });
 
@@ -652,9 +653,9 @@ require([
   //// Zoom to Township/Section/Range Feature ////
   ////////////////////////////////////////////////
 
-  var townshipSelect = dom.byId("selectNGSCountyPanel");
-  var rangeSelect = dom.byId("selectNGSCityPanel");
-  var sectionSelect = dom.byId("selectNGSSectionPanel");
+  var townshipSelect = dom.byId("selectTownship");
+  var rangeSelect = dom.byId("selectRange");
+  var sectionSelect = dom.byId("selectSection");
 
   mapView.when(function () {
     return townshipRangeSectionLayer.when(function (response) {
@@ -740,7 +741,7 @@ require([
       sectionSelect.remove(j);
     }
 
-    var e = document.getElementById("selectNGSCountyPanel");
+    var e = document.getElementById("selectTownship");
     var strUser = e.options[e.selectedIndex].text;
 
     var selectQuery = new Query();
@@ -751,13 +752,13 @@ require([
     return townshipRangeSectionLayer.queryFeatures(selectQuery).then(addToSelect3);
   });
 
-  var querySection = dom.byId("selectNGSSectionPanel");
+  var querySection = dom.byId("selectSection");
   on(querySection, "change", function (e) {
     var type = e.target.value;
     zoomToSectionFeature(townshipRangeSectionURL, type, "sec_ch");
   });
 
-  var queryTownship = dom.byId("selectNGSCityPanel");
+  var queryTownship = dom.byId("selectRange");
   on(queryTownship, "change", function (e) {
     var type = e.target.value;
     zoomToTRFeature(townshipRangeSectionURL, type, "rng_ch");
@@ -773,28 +774,30 @@ require([
   tasks = [];
   allParams = [];
 
+  tasks.push(new IdentifyTask(controlPointsURL));
   tasks.push(new IdentifyTask(controlLinesURL));
-  tasks.push(new IdentifyTask(labinslayerURL));
   tasks.push(new IdentifyTask('https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/'));
 
   // Set the parameters for the Identify
   params = new IdentifyParameters();
-  params.tolerance = 3;
-  params.layerIds = [0, 2, 5];
+  params.tolerance = 15;
+  params.layerIds = [2, 0, 1, 4, 5, 9, 8, 6];
   params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
   allParams.push(params);
+
   // Set the parameters for the Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [0, 1, 2, 5, 6, 9, 10];
+  params.layerIds = [2, 5, 0];
   params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
   allParams.push(params);
+  
   // Set the parameters for the Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
@@ -812,15 +815,45 @@ require([
 
   // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("click", function(event) {
-      if (mapView.scale < 100000) {
+    console.log(mapView.scale);
+      if (mapView.scale < minimumDrawScale) {
         console.log(event);
         event.stopPropagation();
         executeIdentifyTask(event);
+        togglePanel();
       }  
   });
 
+  // collapse any of the current panels and switch to the identifyResults panel
+  function togglePanel() {
+     
+    $('#allpanelsDiv > div').each(function () {
+      // turn off all panels that are not target
+      if (this.id != 'panelPopup') {
+        this.setAttribute('class', 'panel collapse');
+        this.setAttribute('style', 'height:0px;');
 
+      } else {
+        this.setAttribute('class', 'panel collapse in');
+        this.setAttribute('style', 'height:auto;');
+        $( '#' + this.id + '>div').each(function() {
+          if (this.id === 'collapsePopup') {
+            this.setAttribute('class', 'panel-collapse collapse in');
+            this.setAttribute('style', 'height:auto;');
+          }
+
+        });
+        
+      }
+
+    });
+
+  }
+
+  // multi service identifytask
   function executeIdentifyTask(event) {
+
+    var currentScale = mapView.scale;
     infoPanelData = [];
     identifyElements = [];
     promises = [];
@@ -874,10 +907,45 @@ require([
 
         });
       })
-      console.log(infoPanelData);
+      // determine whether first index of identify 
+      // is a polygon or point then do appropriate highlight and zoom
+      if (infoPanelData[0].geometry.type === "polygon") {
+        var ext = infoPanelData[0].geometry.extent;
+        var cloneExt = ext.clone();
+        mapView.goTo({
+          target: infoPanelData[0],
+          extent: cloneExt.expand(1.75)  
+        });
+      // Remove current selection
+        selectionLayer.graphics.removeAll();
+        console.log("it's a polygon");
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
+        selectionLayer.graphics.add(highlightGraphic);
+
+      } else if (infoPanelData[0].geometry.type === "point") {
+        console.log("it's a point");
+            // Remove current selection
+        selectionLayer.graphics.removeAll();
+
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightPoint);
+        selectionLayer.graphics.add(highlightGraphic);
+        if (mapView.scale > 18055.954822) {
+          mapView.goTo({
+            target: infoPanelData[0].geometry,
+            zoom: 15
+          });
+        } else {
+          mapView.goTo({
+            target: infoPanelData[0].geometry,
+            scale: currentScale
+        });
+        }
+      }     
       queryInfoPanel(infoPanelData, 1);
       buildUniquePanel();
-      showPopup(identifyElements); 
+      //showPopup(identifyElements); 
       
     });
     // Shows the results of the Identify in a popup once the promise is resolved
@@ -887,12 +955,59 @@ require([
           features: response,
           location: event.mapPoint
         });
-      //identifyElements = [];
       }
       dom.byId("viewDiv").style.cursor = "auto";
-      //identifyElements = [];
     }
   }
+
+  // inputs the geometry of the data query feature, and matches to it. 
+  function dataQueryQuerytask (url, geometry) {
+    var queryTask = new QueryTask({
+      url: url
+    });
+    var params = new Query({
+      where: '1=1',
+      geometry: geometry,
+      returnGeometry: true,
+      outFields: '*'
+    });
+    return queryTask.execute(params);
+  }
+
+  // go to first feature of the infopaneldata array
+  function goToFeature (feature) {
+
+    console.log(feature.geometry.type);
+    // Go to the selected parcel
+    if (feature.geometry.type === "polygon" || feature.geometry.type === "polyline") {
+      var ext = feature.geometry.extent;
+      var cloneExt = ext.clone();
+      mapView.goTo({
+        target: feature,
+        extent: cloneExt.expand(1.75)  
+      });
+    // Remove current selection
+      selectionLayer.graphics.removeAll();
+      console.log("it's a polygon");
+      // Highlight the selected parcel
+      highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+      selectionLayer.graphics.add(highlightGraphic);
+    } else if (feature.geometry.type === "point") {
+      console.log("it's a point");
+
+
+    // Remove current selection
+    selectionLayer.graphics.removeAll();
+
+    // Highlight the selected parcel
+    highlightGraphic = new Graphic(feature.geometry, highlightPoint);
+    selectionLayer.graphics.add(highlightGraphic);
+    mapView.goTo({target: 
+      feature.geometry,
+      zoom: 15
+    });
+  }
+}
                         
 
   //////////////////////////////////
@@ -919,140 +1034,673 @@ require([
       minSuggestCharacters: 0
     }, {
       featureLayer: {
-        url: labinslayerURL + "0", 
-        popupTemplate: NGSpopupTemplate
+        url: controlPointsURL + "0", 
       },
       searchFields: ["name"],
       suggestionTemplate: "Designation: {name}, County {county}",
       displayField: "name",
+      zoomScale: 100000,
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
       outFields: ["dec_lat", "dec_long", "pid", "county", "data_srce", "datasheet2", "name"],
       name: "NGS Control Points",
-      placeholder: "Search by PID",
+      placeholder: "Search by Designation",
     }, {
       featureLayer: {
-        url: labinslayerURL + "4",
-        resultGraphicEnabled: true,
-        popupTemplate: tideStationsTemplate
+        url: controlPointsURL + "4",
       },
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",
+      zoomScale: 100000,
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
       outFields: ["*"],
       name: "Tide Stations",
       placeholder: "Search by ID, County Name, or Quad Name",
     }, {
       featureLayer: {
-        url: labinslayerURL + "5",
-        popupTemplate: tideInterpPointsTemplate
+        url: controlPointsURL + "5",
       },
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
       suggestionTemplate: "ID: {iden}, County: {cname}",
       displayField: "iden",
+      zoomScale: 100000,
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
       outFields: ["*"],
       name: "Tide Interpolation Points",
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
-    },/* {
+    },{
       featureLayer: {
-        url: labinslayerURL + "4",
-        popupTemplate: countyTemplate
-      },
-      searchFields: ["fips", "ctyname"],
-      suggestionTemplate: "FIPS Code: {fips}, County Name {ctyname}",
-      displayField: "fips",
-      exactMatch: false,
-      outFields: ["*"],
-      name: "County Boundaries",
-      placeholder: "Search by FIPS ID or County Name",
-      resultSymbol: highlightSymbol
-  }, {
-      featureLayer: {
-        url: labinslayerURL + "0",
-        popupTemplate: quadsTemplate
-      },
-      searchFields: ["tile_name", "quad"],
-      suggestionTemplate: "Quad Name: {tile_name}, Quad Number {quad}",
-      displayField: "tile_name",
-      exactMatch: false,
-      outFields: ["*"],
-      name: "Quads",
-      placeholder: "Search by Quad Name or Quad number",
-    }, {
-      featureLayer: {
-        url: labinslayerURL + "3",
-        popupTemplate: cityLimitsTemplate
-      },
-      searchFields: ["name", "county"],
-      suggestionTemplate: "City Name: {name}, Surrounding County: {county}",
-      displayField: "name",
-      exactMatch: false,
-      outFields: ["*"],
-      name: "City Limits",
-      placeholder: "Search by City Name or Surrounding County",
-    }, */{
-      featureLayer: {
-        url: labinslayerURL + "8",
-        popupTemplate: rMonumentsTemplate
+        url: controlPointsURL + "8",
       },
       searchFields: ["monument_name", "county"],
       suggestionTemplate: "R-Monument Name: {monument_name}, County: {county}",
+      zoomScale: 100000,
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
       outFields: ["*"],
       name: "R-Monuments",
       placeholder: "Search by County Name or R-Monument Name",
     }, {
       featureLayer: {
-        url: labinslayerURL + "9",
-        popupTemplate: erosionControlLineTemplate
+        url: controlPointsURL + "9",
       },
       searchFields: ["ecl_name", "county"],
-      suggestionTemplate: "R-Monument Name: {ecl_name}, County: {county}",
+      suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
+      zoomScale: 150000,
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightLine,
       outFields: ["*"],
       name: "Erosion Control Lines",
       placeholder: "Search by County Name or Town Name",
     }, {
       featureLayer: {
-        url: swfwmdURL,
-        popupTemplate: swfwmdLayerPopupTemplate
+        url: swfwmdURL
       },
       searchFields: ["BENCHMARK_NAME"],
-      suggestionTemplate: "Benchmark Name: {BENCHMARK_NAME}, fileName {FILE_NAME}",
+      suggestionTemplate: "Benchmark Name: {BENCHMARK_NAME}, File Name: {FILE_NAME}",
+      zoomScale: 100000,
+      displayField: "BENCHMARK_NAME",
       exactMatch: false,
-      outFields: ["*"],
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
+      outFields: ["BENCHMARK_NAME", "FILE_NAME"],
       name: "Survey Benchmarks",
       placeholder: "Search by Survey Benchmark name",
     }, {
       featureLayer: {
-        url: labinslayerURL + "2",
-        resultGraphicEnabled: true,
-        popupTemplate: CCRTemplate
+        url: controlPointsURL + "2",
       },
       searchFields: ["blmid", "tile_name"],
       displayField: "blmid",
       suggestionTemplate: "BLMID: {blmid}, Quad Name: {tile_name}",
+      zoomScale: 100000,
       exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
       outFields: ["blmid", "tile_name", "image1", "image2", "objectid"],
       name: "Certified Corners",
       placeholder: "Search by BLMID or Quad Name",
     }, {
       featureLayer: {
-        url: controlLinesURL + "1",
-        resultGraphicEnabled: true,
-        popupTemplate: TRSTemplate
+        url: controlLinesURL + "2",
       },
-      searchFields: ["t_ch", "r_ch", "twnrng"],
-      displayField: "twnrng",
-      suggestionTemplate: "Township/Range: {twnrng}",
+      searchFields: ["twn_ch", "rng_ch", "twnrngsec"],
+      displayField: "twnrngsec",
+      suggestionTemplate: "Township/Range/Section: {twnrngsec}",
+      zoomScale: 50000,
       exactMatch: false,
-      outFields: ["t_ch", "r_ch", "twnrng"],
+      popupOpenOnSelect: false,
+      resultSymbol: highlightSymbol,
+      outFields: ["twn_ch", "rng_ch", "twnrngsec"],
       name: "Township Range",
       placeholder: "Search by township, range, or township range."
     }],
   });
 
   CalciteMapsArcGISSupport.setSearchExpandEvents(searchWidget);
+
+  
+  ////////////////////////////
+  ///// Data Query////////////
+  ////////////////////////////
+
+  // Layer choices to query
+  var layerChoices = ['Select Layer', 'NGS Control Points', 'Certified Corners', 'Tide Interpolation Points', 'Tide Stations', 'Erosion Control Line', 'Survey Benchmarks'];
+
+  for (var i=0;i<layerChoices.length;i++){
+    $('<option/>').val(layerChoices[i]).text(layerChoices[i]).appendTo('#selectLayerDropdown');
+ }
+ query("#selectLayerDropdown").on("change", function(e) {
+  var queriedFeatures = [];
+
+
+//Quad select
+//buildSelectPanel(controlLinesURL + "0", "tile_name", "Zoom to a Quad", "selectQuadPanel");
+  
+  function getGeometry (url, attribute, value) {
+
+    var task = new QueryTask({
+    url: url
+    });
+    var query = new Query();
+    query.returnGeometry = true;
+    //query.outFields = ['*'];
+    query.where = attribute + " = '" + value + "'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+
+    console.log(task.execute(query));
+    return task.execute(query);
+
+    
+    
+    
+
+      // for (i=0; i<results.features.length; i++) {
+      //   multiPolygonGeometries.push(results.features[i]);
+      // }
+
+  }
+
+  // unused, could be removed
+  function dataQueryIdentify (url, response, layers) {
+    console.log(response);
+            
+    identifyTask = new IdentifyTask(url);
+
+    // Set the parameters for the Identify
+    params = new IdentifyParameters();
+    //params.tolerance = 3;
+    params.layerIds = [layers];
+    params.layerOption = "all";
+    params.width = mapView.width;
+    params.height = mapView.height;
+  
+    // Set the geometry to the location of the view click
+    params.geometry = response;
+    params.mapExtent = mapView.extent;
+    dom.byId("mapViewDiv").style.cursor = "wait";
+
+    return identifyTask.execute(params);
+  }
+  // data query by text
+  function multiTextQuerytask (url, attribute, queryStatement, idAttribute, idQueryStatement) {
+
+    var whereStatement;
+
+       whereStatement = "Upper(" + attribute +  ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute +  ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%'";
+
+      //whereStatement = attribute +  ' = ' + "'" + queryStatement + "'";
+    console.log(whereStatement);
+
+    var queryTask = new QueryTask({
+      url: url
+    });
+    var params = new Query({
+      where: whereStatement,
+      returnGeometry: true,
+      // possibly could be limited to return only necessary outfields
+      outFields: '*'
+    });
+    return queryTask.execute(params);
+  }
+
+  // data query by text
+  function textQueryQuerytask (url, attribute, queryStatement, flag = true) {
+
+    var whereStatement;
+    if (typeof queryStatement == 'string' && flag === true) {
+       whereStatement = "Upper(" + attribute +  ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'";
+    } else {
+      whereStatement = attribute +  ' = ' + "'" + queryStatement + "'";
+
+    }
+
+    console.log(whereStatement);
+
+    var queryTask = new QueryTask({
+      url: url
+    });
+    var params = new Query({
+      where: whereStatement,
+      returnGeometry: true,
+      // possibly could be limited to return only necessary outfields
+      outFields: '*'
+    });
+    return queryTask.execute(params);
+  }
+
+  function createCountyDropdown () {
+    var countyDropdown = document.createElement('select');
+    countyDropdown.setAttribute('id', 'countyQuery');
+    countyDropdown.setAttribute('class', 'form-control');
+    document.getElementById('parametersQuery').appendChild(countyDropdown);
+    buildSelectPanel(controlLinesURL + "4", "ctyname", "Select a County", "countyQuery");
+
+
+  }
+
+  function createQuadDropdown () {
+    var quadDropdown = document.createElement('select');
+    quadDropdown.setAttribute('id', 'quadQuery');
+    quadDropdown.setAttribute('class', 'form-control');
+    document.getElementById('parametersQuery').appendChild(quadDropdown);
+    buildSelectPanel(controlLinesURL + "0", "tile_name", "Select a Quad", "quadQuery")
+    
+  }
+
+  function createTextBox (id, placeholder) {
+    var textbox = document.createElement('input');
+    textbox.type = 'text';
+    textbox.setAttribute('id', id);
+    textbox.setAttribute('class', 'form-control');
+    textbox.setAttribute('placeholder', placeholder);
+    textbox.setAttribute('value', '');
+    document.getElementById('parametersQuery').appendChild(textbox);
+  }
+
+  function createSubmit (text = 'Submit', id = 'submitQuery') {
+    var submitButton = document.createElement('BUTTON');
+    submitButton.setAttribute('id', id);
+    submitButton.setAttribute('class', 'btn btn-primary');
+    var t = document.createTextNode(text);
+    submitButton.appendChild(t);
+    document.getElementById('parametersQuery').appendChild(submitButton);
+
+  }
+
+  function createTextDescription (string) {
+    var textDescription = document.createElement("P");
+    var t = document.createTextNode(string);
+    textDescription.appendChild(t);
+    document.getElementById('parametersQuery').appendChild(textDescription);
+  }
+
+  // clear all child nodes from current div
+  function clearDiv (div) {
+    var paramNode = document.getElementById(div);
+    while (paramNode.firstChild) {
+      paramNode.removeChild(paramNode.firstChild);
+    }
+  }
+
+  function addDescript () {
+    $('#parametersQuery').html('<br><p>Filter by the following options: </p><br>');
+  }
+
+  var layerSelection = e.target.value;
+  if (layerSelection === "Select Layer") {
+    //clear div
+    clearDiv();
+
+  } else if (layerSelection === 'NGS Control Points') {
+    // clear the div of the previous input
+    clearDiv('parametersQuery');
+    // add dropdown, input, and submit elements
+    addDescript();
+    createCountyDropdown();    
+    createQuadDropdown();
+    createTextBox('textQuery', 'Enter NGS Name or PID.');
+    createSubmit();
+
+    var countyDropdownAfter = document.getElementById('countyQuery');
+    // county event listener
+    query(countyDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
+      resetElements(countyDropdownAfter);
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(controlPointsURL + '0', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
+            infoPanelData.push(response.features[i]);
+          }
+          goToFeature(infoPanelData[0]);
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+        });
+      });
+    });
+
+    // Query the quad dropdown
+    var quadDropdownAfter = document.getElementById('quadQuery');
+
+    query(quadDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
+      resetElements(quadDropdownAfter);
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(controlPointsURL + '0', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
+            infoPanelData.push(response.features[i]);
+          }
+          goToFeature(infoPanelData[0]);
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+        });
+      });
+    });
+
+    // Textbox Query
+    var textboxAfter = document.getElementById('textQuery');
+
+    query(textboxAfter).on('keypress', function() {
+      // once typing begins, all of the other elements in the map will reset
+      resetElements(textboxAfter);
+    });
+
+    var submitAfter = document.getElementById('submitQuery');
+    query(submitAfter).on('click', function(e) {
+      clearDiv('informationdiv');
+      infoPanelData = [];      
+      var textValue = document.getElementById('textQuery').value;
+
+      //textQueryQuerytask(controlPointsURL + '0', 'pid', textValue)
+      multiTextQuerytask(controlPointsURL + '0', 'pid', textValue, 'name', textValue)
+      .then(function (response) {
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
+          infoPanelData.push(response.features[i]);
+        }
+        goToFeature(infoPanelData[0]);
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });
+
+  } else if (layerSelection === "Certified Corners") {
+    // clear div of previous input
+    clearDiv('parametersQuery');
+    // add input, and submit elements
+    createTextDescription("Example: T28SR22E600200 (or first characters, e.g. t28s)");
+    createTextBox('IDQuery', 'Enter a Certified Corner BLMID.');
+    createSubmit();
+    var textboxAfter = document.getElementById('IDQuery');
+
+    var submitAfter = document.getElementById('submitQuery');
+    query(submitAfter).on('click', function(e) {
+      clearDiv('informationdiv');
+      infoPanelData = [];      
+      var textValue = document.getElementById('IDQuery').value;
+
+      console.log(textValue);
+      textQueryQuerytask(controlPointsURL + '2', 'blmid', textValue)
+      .then(function (response) {
+        console.log(response);
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'Certified Corners';
+          infoPanelData.push(response.features[i]);
+        }
+        goToFeature(infoPanelData[0]);
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });
+
+  } else if (layerSelection === 'Tide Interpolation Points') {
+
+    clearDiv('parametersQuery');
+    addDescript();
+    createCountyDropdown();
+    createQuadDropdown();
+    createTextBox('IDQuery', 'Enter an ID. Example: 1');
+    createSubmit();
+
+    var countyDropdownAfter = document.getElementById('countyQuery');
+
+    query(countyDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
+      resetElements(countyDropdownAfter);
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(controlPointsURL + '5', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'Tide Interpolation Points';
+            infoPanelData.push(response.features[i]);
+          }
+          goToFeature(infoPanelData[0]);
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+        });
+      });
+    });
+
+    // Query the quad dropdown
+    var quadDropdownAfter = document.getElementById('quadQuery');
+
+    query(quadDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
+      resetElements(quadDropdownAfter);
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(controlPointsURL + '5', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'Tide Interpolation Points';
+            infoPanelData.push(response.features[i]);
+          }
+          goToFeature(infoPanelData[0]);
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+        });
+      });
+    });
+
+    // Textbox Query
+    var textboxAfter = document.getElementById('IDQuery');
+    
+    query(textboxAfter).on('keypress', function() {
+      clearDiv('informationdiv');
+      resetElements(textboxAfter);
+    });
+
+    var submitAfter = document.getElementById('submitQuery');
+    query(submitAfter).on('click', function(e) {
+      clearDiv('informationdiv');
+      infoPanelData = [];      
+      var textValue = document.getElementById('IDQuery').value;
+      textValue = parseInt(textValue);
+
+      textQueryQuerytask(controlPointsURL + '5', 'iden', textValue)
+      .then(function (response) {
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'Tide Interpolation Points';
+          infoPanelData.push(response.features[i]);
+        }
+        goToFeature(infoPanelData[0]);
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });
+  
+  } else if (layerSelection === 'Tide Stations') {
+    clearDiv('parametersQuery');
+    addDescript();
+    createCountyDropdown();
+    createQuadDropdown();
+    createTextBox('textQuery', 'Enter Tide Station ID or Name');
+    createSubmit();
+    var countyDropdownAfter = document.getElementById('countyQuery');
+
+    query(countyDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
+      resetElements(countyDropdownAfter);
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(controlPointsURL + '4', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'Tide Stations';
+            infoPanelData.push(response.features[i]);
+          }
+          goToFeature(infoPanelData[0]);
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+        });
+      });
+    });
+
+    // Query the quad dropdown
+    var quadDropdownAfter = document.getElementById('quadQuery');
+
+    query(quadDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
+      resetElements(quadDropdownAfter);
+      infoPanelData = [];      
+
+      getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(controlPointsURL + '4', response)
+        .then(function (response) {
+          console.log(response);
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'Tide Stations';
+            infoPanelData.push(response.features[i]);
+          }
+          console.log(infoPanelData);
+          goToFeature(infoPanelData[0]);
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+        });
+      });
+    });
+
+    // query id and name fields through two buttons
+    var inputAfter = document.getElementById('textQuery');
+    var submitButton = document.getElementById('submitQuery');
+
+    // clear other elements when keypress happens
+    query(inputAfter).on('keypress', function() {
+      clearDiv('informationdiv');
+      resetElements(inputAfter);
+    });
+
+    query(submitButton).on('click', function(e) {
+      infoPanelData = [];
+      var textValue = inputAfter.value;
+
+
+      multiTextQuerytask(controlPointsURL + '4', 'id', textValue, 'name', textValue)
+
+      .then(function (response) {
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'Tide Stations';
+          infoPanelData.push(response.features[i]);
+        }
+        goToFeature(infoPanelData[0]);
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });
+
+    query(submitButton).on('click', function(e) {
+      clearDiv('informationdiv');
+      infoPanelData = [];
+      textQueryQuerytask(controlPointsURL + '4', 'name', inputAfter.value)
+      .then(function (response) {
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'Tide Stations';
+          infoPanelData.push(response.features[i]);
+        }
+        goToFeature(infoPanelData[0]);
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });
+
+  } else if (layerSelection === 'Erosion Control Line') {
+    clearDiv('parametersQuery');
+    addDescript();
+    createCountyDropdown();
+    createTextBox('textQuery', 'Enter an ECL Name')
+    createSubmit();
+
+    var submitButton = document.getElementById('submitQuery');
+    var countyDropdownAfter = document.getElementById('countyQuery');
+    var inputAfter = document.getElementById('textQuery');
+
+    
+    // clear other elements when keypress happens
+    query(inputAfter).on('keypress', function() {
+      clearDiv('informationdiv');
+      resetElements(inputAfter);
+    });
+
+    query(countyDropdownAfter).on('change', function(e) {
+      clearDiv('informationdiv');
+      resetElements(countyDropdownAfter);
+      infoPanelData = [];      
+      console.log('grabbing geometry');
+      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      .then(unionGeometries)
+      .then(function(response) {
+        dataQueryQuerytask(controlPointsURL + '9', response)
+        .then(function (response) {
+          for (i=0;i<response.features.length;i++) {
+            response.features[i].attributes.layerName = 'Erosion Control Line';
+            infoPanelData.push(response.features[i]);
+          }
+          goToFeature(infoPanelData[0]);
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+        });
+      });
+    });
+
+    query(submitButton).on('click', function(e) {
+      clearDiv('informationdiv');
+      infoPanelData = [];
+      textQueryQuerytask(controlPointsURL + '9', 'ecl_name', inputAfter.value)
+      .then(function (response) {
+        console.log(response)
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'Erosion Control Line';
+          infoPanelData.push(response.features[i]);
+        }
+        goToFeature(infoPanelData[0]);
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });
+
+  } else if (layerSelection === 'Survey Benchmarks') {
+    clearDiv('parametersQuery');
+    addDescript();
+    createTextBox('textQuery', 'Enter a Benchmark Name')
+    createSubmit('Submit by Name', 'submitNameQuery');
+
+    var submitButton = document.getElementById('submitQuery');
+    var inputAfter = document.getElementById('textQuery');
+
+    
+    // clear other elements when keypress happens
+    query(inputAfter).on('keypress', function() {
+      clearDiv('informationdiv');
+      resetElements(inputAfter);
+    });
+
+    query(submitButton).on('click', function(e) {
+      infoPanelData = [];
+      textQueryQuerytask(swfwmdURL, 'BENCHMARK_NAME', inputAfter.value)
+      .then(function (response) {
+        for (i=0;i<response.features.length;i++) {
+          response.features[i].attributes.layerName = 'Survey Benchmarks';
+          infoPanelData.push(response.features[i]);
+        }
+        goToFeature(infoPanelData[0]);
+        queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      });
+    });  
+  }
+});
+
+
 
   ////////////////////////////
   ///// Event Listeners //////
@@ -1061,7 +1709,28 @@ require([
 
 
   //// Clickable Links 
-  //NGS link
+
+
+  // Switch to Data Query panel on click
+  query('#gobackBtn').on('click', function() {
+    var identifyPanel = document.getElementById('panelPopup');
+    var identifyStyle = document.getElementById('collapsePopup');
+    var dataQueryPanel = document.getElementById('panelQuery');
+
+    identifyPanel.setAttribute('class', 'panel collapse');
+    identifyPanel.setAttribute('style', 'height:0px;');
+
+    identifyStyle.setAttribute('class', 'panel-collapse collapse');
+    identifyStyle.setAttribute('style', 'height:0px;');
+
+    dataQueryPanel.setAttribute('class', 'panel collapse in');
+    dataQueryPanel.setAttribute('style', 'height:auto;');
+  });
+
+  // switch to identify panel on click
+  query('#goToIdentify').on('click', function(){
+    togglePanel();
+  });
 
   //Basemap panel change
   query("#selectBasemapPanel").on("change", function(e) {
@@ -1071,49 +1740,44 @@ require([
   // Clear all graphics from map  
   on(dom.byId("clearButton"), "click", function(evt){
     selectionLayer.graphics.removeAll(); 
+    bufferLayer.graphics.removeAll();
   });
 
-
-  mapView.popup.on("trigger-action", function (event) {
-    if (event.action.id === "ngsWebsite") {
-      window.open("https://www.ngs.noaa.gov");
-    }
-  });
-
-  //R Monuments link
-  mapView.popup.on("trigger-action", function (event) {
-    if (event.action.id === "rMonuments") {
-      window.open("https://floridadep.gov/water/beach-field-services/content/regional-coastal-monitoring-data");
-    }
-  });
-
-  //Erosion ControlLines Link
-  mapView.popup.on("trigger-action", function (event) {
-    if (event.action.id === "waterBoundaryData") {
-      window.open("http://www.labins.org/survey_data/water/water.cfm");
-    }
-  }); 
-
-  //Custom Zoom to feature
-  mapView.popup.on("trigger-action", function (evt) {
-    if (evt.action.id === "custom-zoom") {
-      selectionLayer.graphics.removeAll();
-      console.log(mapView.popup.selectedFeature);
-      mapView.goTo({
-        target: mapView.popup.selectedFeature.geometry,
-        zoom: 17
-      });
-      highlightGraphic = new Graphic(mapView.popup.selectedFeature.geometry, highlightSymbol);
-      selectionLayer.graphics.add(highlightGraphic);
-    };
-  });
+  // //Custom Zoom to feature
+  // mapView.popup.on("trigger-action", function (evt) {
+  //   if (evt.action.id === "custom-zoom") {
+  //     selectionLayer.graphics.removeAll();
+  //     console.log(mapView.popup.selectedFeature);
+  //     mapView.goTo({
+  //       target: mapView.popup.selectedFeature.geometry,
+  //       zoom: 17
+  //     });
+  //     highlightGraphic = new Graphic(mapView.popup.selectedFeature.geometry, highlightSymbol);
+  //     selectionLayer.graphics.add(highlightGraphic);
+  //   };
+  // });
 
 
   searchWidget.on("search-complete", function(event){
-      console.log(event);
-      // The results are stored in the event Object[]
-    });
+    
+    infoPanelData = [];
 
+    if (event.results["0"].source.locator) {
+      // let native functionality work
+    } else {    
+      var layerName = event.results["0"].source.featureLayer.source.layerDefinition.name;
+      if (layerName === 'NGS Control Points') {
+        event.results["0"].results["0"].feature.attributes.layerName ='NGS Control Points QueryTask';
+      } else {
+        event.results["0"].results["0"].feature.attributes.layerName = layerName;
+      }
+      infoPanelData.push(event.results["0"].results["0"].feature);
+      queryInfoPanel(infoPanelData, 1);
+      togglePanel(); 
+    }
+  });
+    
+  
   query("#numinput").on("change", function(e) {
     console.log("target value");
     console.log(e.target.value);
@@ -1248,70 +1912,7 @@ require([
         });
       }
       }
-      
-
   });
-  
-  // handle the dropdown layer selection
-  // the identifyElements array will hold all of the identifyTask values
-  query("#filterLayerPanel").on("change", function (e) {
-    // intermediary container
-    var infoPanelDataCopy = [];
-
-    //copy to an infopaneldatacopy array
-    for (i=0;i<identifyElements.length;i++) {
-      infoPanelDataCopy.push(identifyElements[i]);
-    }
-    infoPanelData = [];
-
-    console.log(e.target.value);
-    // loop through copy array to check for selected layers
-    for (i=0;i<infoPanelDataCopy.length;i++) {
-      if (infoPanelDataCopy[i].attributes.layerName === e.target.value) {
-        infoPanelData.push(infoPanelDataCopy[i]);
-      }
-    }
-    // if layer changes to "filter by layer", reset everything
-    if (e.target.value === "Filter by Layer") {
-      for (i=0;i<identifyElements.length;i++) {
-        infoPanelData.push(identifyElements[i]);
-      }      
-    }
-
-    if (infoPanelData[0].geometry.type === "polygon") {
-      var ext = infoPanelData[0].geometry.extent;
-      var cloneExt = ext.clone();
-      mapView.goTo({
-        target: infoPanelData[0],
-        extent: cloneExt.expand(1.75)  
-      });
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
-      selectionLayer.graphics.add(highlightGraphic);
-    } else if (infoPanelData[0].geometry.type === "point") {     
-
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightPoint);
-      selectionLayer.graphics.add(highlightGraphic);
-      mapView.goTo({target: 
-        infoPanelData[0].geometry,
-        zoom: 15
-      });
-    }
-
-    
-
-
-    queryInfoPanel(infoPanelData, 1);
-
-  });
-
 
 
 
@@ -1333,7 +1934,7 @@ require([
 
 
 
-  /*
+  
   // LegendLegend
   var legendWidget = new Legend({
     container: "legendDiv",
@@ -1345,21 +1946,21 @@ require([
     container: "layersDiv",
     view: mapView
   });
-*/
 
-  // Add a legend instance to the panel of a
-  // ListItem in a LayerList instance
-  const layerList = new LayerList({
-    container: "legendDiv",
-    view: mapView,
-    listItemCreatedFunction: function(event) {
-      const item = event.item;
-      item.panel = {
-        content: "legend",
-        open: true
-      };
-    }
-  });
+
+  // // Add a legend instance to the panel of a
+  // // ListItem in a LayerList instance
+  // const layerList = new LayerList({
+  //   container: "legendDiv",
+  //   view: mapView,
+  //   listItemCreatedFunction: function(event) {
+  //     const item = event.item;
+  //     item.panel = {
+  //       content: "legend",
+  //       open: true
+  //     };
+  //   }
+  // });
   
   //mapView.ui.add(layerList, "top-right");
 
@@ -1407,28 +2008,6 @@ require([
     console.log("finished");
   });
 */
-locateBtn.on("locate", function(event) {
-  console.log("in")
-var webMerPoint = webMercatorUtils.geographicToWebMercator(event.target.graphic.geometry);
-console.log("params started");
-var params = new BufferParameters({
-  distances: [50],
-  unit: "meters",
-  geodesic: true,
-  //bufferSpatialReference: new SpatialReference({wkid: 3857}),
-  outSpatialReference: view.spatialReference,
-  geometries: [webMerPoint]
-});
-
-  console.log("params completed");
-geometryService.buffer(params).then(function(results){
-  selectionLayer.add(new Graphic({
-     geometry: results[0]
-
-  }));
-  console.log(results)
-});
-});
 
 var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");

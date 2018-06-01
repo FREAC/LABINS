@@ -60,9 +60,10 @@
       </a>
       <ul class="dropdown-menu" role="menu">
 
-        <!--<li><a role="menuitem" tabindex="0" href="#" data-target="#panelLayers" aria-haspopup="true"><span class="glyphicon glyphicon-list"></span> Layers</a></li>-->
         <li><a role="menuitem" data-target="#panelLayer" aria-haspopup="true"><span class="glyphicon glyphicon-flag"></span> Zoom to Feature</a></li>
+        <li><a role="menuitem" data-target="#panelQuery" aria-haspopup="true"><span class="glyphicon glyphicon-flag"></span> Data Query</a></li>
         <li><a role="menuitem" tabindex="0" data-target="#panelPopup" aria-haspopup="true"><span class="glyphicon glyphicon-th-list"></span> Identify Results</a></li>
+        <li><a role="menuitem" tabindex="0" href="#" data-target="#panelLayers" aria-haspopup="true"><span class="glyphicon glyphicon-list"></span> Layers</a></li>
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelLegend" aria-haspopup="true"><span class="glyphicon glyphicon-list-alt"></span> Legend</a></li>
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelBasemaps" aria-haspopup="true"><span class="glyphicon glyphicon-th-large"></span> Basemaps</a></li>
         <li><a role="menuitem" tebindex="0" data-target="#panelInfo" aria-haspopup="true"><span class="glyphicon glyphicon-info-sign"></span> Info</a></li>
@@ -105,7 +106,60 @@
 
   <!-- Panels -->
 
-<div class="calcite-panels calcite-panels-right calcite-text-light calcite-bg-custom panel-group" style="background-color: #0d3b4b">
+<div id="allpanelsDiv" class="calcite-panels calcite-panels-right calcite-text-light calcite-bg-custom panel-group" style="background-color: #0d3b4b">
+
+  <!-- Zoom to Feature Panel -->
+  <div id="panelLayer" class="panel collapse">
+      <div id="headingLayer" class="panel-heading" role="tab">
+        <div class="panel-title">
+          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseLayer" aria-expanded="true" aria-controls="collapseLayer">
+            <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+            <span class="panel-label">Zoom to Feature</span>
+          </a>
+          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelLayer">
+            <span class="esri-icon esri-icon-close" aria-hidden="true"></span>
+          </a>
+        </div>
+      </div>
+      <div id="collapseLayer" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLayer">
+        <div class="panel-body">
+          <li class="dropdown-header" style="color: #DCDCDC"><font size = "3">Zoom to County/City/Quad</font></li>
+          <select id="selectCountyPanel" class="form-control"></select>
+          <select id="selectCityPanel" class="form-control"></select>
+          <select id="selectQuadPanel" class="form-control"></select>
+        </div>
+        <div class="panel-body">
+            <li class="dropdown-header" style="color: #DCDCDC"><font size = "3">Zoom to Township/Range/Section</font></li>
+            <select id="selectTownship" class="form-control"></select>
+            <select id="selectRange" class="form-control"></select>
+            <select id="selectSection" class="form-control"></select>
+        </div>
+      </div>
+  </div>
+  
+  <!-- Data Query -->
+  <div id="panelQuery" class="panel collapse">
+    <div id="headingQuery" class="panel-heading" role="tab">
+    <div class="panel-title">
+        <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseLayer" aria-expanded="true" aria-controls="collapseLayer">
+          <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+          <span class="panel-label">Data Query</span>
+        </a>
+        <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelLayer">
+          <span class="esri-icon esri-icon-close" aria-hidden="true"></span>
+        </a>
+    </div>
+  </div>
+    <div id="dataLayerQuery">
+      <div class="panel-body">
+          <li class="dropdown-header" style="color: #DCDCDC"><font size = "3">Select layer to search</font></li>
+          <select id="selectLayerDropdown" class="form-control"></select>
+          <div id="parametersQuery"></div>
+          <button id="goToIdentify" class="btn btn-primary">Switch to Identify Panel</button>
+      </div>
+    </div>
+    
+  </div>
 
 
   <!-- Info Panel -->
@@ -146,8 +200,8 @@
     </div>
     <div id="collapsePopup" class="panel-collapse" role="tabpanel" aria-labelledby="headingPopup">
       <div class="panel-body">
-        <li class="dropdown-header" style="color: #FFFFFF"><font size="3">Filter by Layer</font></li>
-        <select id="filterLayerPanel" class="form-control" placeholder="Filter By Layer"></select>
+        <!-- <li class="dropdown-header" style="color: #FFFFFF"><font size="3">Filter by Layer</font></li>
+        <select id="filterLayerPanel" class="form-control" placeholder="Filter By Layer"></select> -->
         <p><div id="numberinputdiv">
           <nav class="leader-1">
               <button title="Previous" type="button" class="btn btn-default" id="back">
@@ -162,7 +216,9 @@
           </nav>
       </div></p>
       <p><div id="arraylengthdiv" style="text-align:center;"></div></p>
-        <br>
+        <div id='gobackdiv'>
+          <button id="gobackBtn" class="btn btn-primary">Switch to Data Query</button>
+        </div>
         <p><div id="informationdiv"></div></p>
         <br>
         <p><div id= "arraylengthdiv"></div></p>
@@ -194,34 +250,7 @@
 
     
 
-    <!-- Zoom to Feature Panel -->
-    <div id="panelLayer" class="panel collapse">
-        <div id="headingLayer" class="panel-heading" role="tab">
-          <div class="panel-title">
-            <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseLayer" aria-expanded="true" aria-controls="collapseLayer">
-              <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
-              <span class="panel-label">Zoom to Feature</span>
-            </a>
-            <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelLayer">
-              <span class="esri-icon esri-icon-close" aria-hidden="true"></span>
-            </a>
-          </div>
-        </div>
-        <div id="collapseLayer" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLayer">
-          <div class="panel-body">
-            <li class="dropdown-header" style="color: #DCDCDC"><font size = "3">Zoom to County/City/Quad</font></li>
-            <select id="selectCountyPanel" class="form-control"></select>
-            <select id="selectCityPanel" class="form-control"></select>
-            <select id="selectQuadPanel" class="form-control"></select>
-          </div>
-          <div class="panel-body">
-              <li class="dropdown-header" style="color: #DCDCDC"><font size = "3">Zoom to Township/Range/Section</font></li>
-              <select id="selectNGSCountyPanel" class="form-control"></select>
-              <select id="selectNGSCityPanel" class="form-control"></select>
-              <select id="selectNGSSectionPanel" class="form-control"></select>
-          </div>
-        </div>
-    </div>
+    
 
 
   <!-- Panel - Legend -->

@@ -564,7 +564,6 @@ var highlightLine = {
 
   // Modified zoomToFeature function to zoom once the Township and Range has been chosen
   function zoomToTRFeature(panelurl, location, attribute) {
-    console.log('starting the zoom to TR function')
     multiPolygonGeometries = [];
     var union = geometryEngine.union(multiPolygonGeometries);
 
@@ -659,6 +658,7 @@ var highlightLine = {
 
   mapView.when(function () {
     return townshipRangeSectionLayer.when(function (response) {
+      console.log('loading the township now')
       var townshipQuery = new Query();
       townshipQuery.where = "tdir <> ' '";
       townshipQuery.outFields = ["twn_ch", "tdir"];
@@ -865,7 +865,7 @@ var highlightLine = {
       allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event;
       allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
     }
-
+    console.log('what does the event look like ', event)
     for (i = 0; i < tasks.length; i++) {
       promises.push(tasks[i].execute(allParams[i]));
     }
@@ -873,7 +873,7 @@ var highlightLine = {
     iPromises.then(function (rArray) {
       arrayUtils.map(rArray, function(response){
         var results = response.results;
-        console.log(typeof results);
+        console.log('here are the objects we found in the section',typeof results);
         return arrayUtils.map(results, function(result) {
           var feature = result.feature;
           var layerName = result.layerName;

@@ -837,13 +837,16 @@ var highlightLine = {
             this.setAttribute('class', 'panel-collapse collapse in');
             this.setAttribute('style', 'height:auto;');
           }
-
-        });
-        
+        }); 
       }
-
     });
-
+  }
+  // clear all child nodes from current div
+  function clearDiv (div) {
+    var paramNode = document.getElementById(div);
+    while (paramNode.firstChild) {
+      paramNode.removeChild(paramNode.firstChild);
+    }
   }
 
   // multi service identifytask
@@ -1282,14 +1285,6 @@ var highlightLine = {
     document.getElementById('parametersQuery').appendChild(textDescription);
   }
 
-  // clear all child nodes from current div
-  function clearDiv (div) {
-    var paramNode = document.getElementById(div);
-    while (paramNode.firstChild) {
-      paramNode.removeChild(paramNode.firstChild);
-    }
-  }
-
   function addDescript () {
     $('#parametersQuery').html('<br><p>Filter by the following options: </p><br>');
   }
@@ -1708,6 +1703,27 @@ var highlightLine = {
     dataQueryPanel.setAttribute('style', 'height:auto;');
   });
 
+
+  // Switch panel to zoom to feature panel
+  query('#gotozoom').on('click', function() {
+    var identifyPanel = document.getElementById('panelPopup');
+    var identifyStyle = document.getElementById('collapsePopup');
+    var zoomToFeaturePanel = document.getElementById('panelLayer');
+    var zoomToFeaturePanelBody = document.getElementById('collapseLayer')
+
+    identifyPanel.setAttribute('class', 'panel collapse');
+    identifyPanel.setAttribute('style', 'height:0px;');
+
+    identifyStyle.setAttribute('class', 'panel-collapse collapse');
+    identifyStyle.setAttribute('style', 'height:0px;');
+
+    zoomToFeaturePanel.setAttribute('class', 'panel collapse in');
+    zoomToFeaturePanel.setAttribute('style', 'height:auto;');
+
+    zoomToFeaturePanelBody.setAttribute('class', 'panel collapse in');
+    zoomToFeaturePanelBody.setAttribute('style', 'height:auto;');
+  });
+  
   // switch to identify panel on click
   query('#goToIdentify').on('click', function(){
     togglePanel();
@@ -1722,6 +1738,9 @@ var highlightLine = {
   on(dom.byId("clearButton"), "click", function(evt){
     selectionLayer.graphics.removeAll(); 
     bufferLayer.graphics.removeAll();
+    clearDiv('informationdiv');
+    $('#numinput').val('');
+    $('#arraylengthdiv').html('');
   });
 
   // //Custom Zoom to feature

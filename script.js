@@ -609,9 +609,7 @@ var highlightLine = {
     });
     bufferLayer.graphics.removeAll();
     bufferLayer.add(bufferGraphic);
-    //console.log(bufferGeometry);
-    return bufferGeometry;
-    //return buffer;
+    return buffer;
   }
 
   ///////////////////////
@@ -758,8 +756,8 @@ var highlightLine = {
     zoomToSectionFeature(townshipRangeSectionURL, type, "sec_ch");
   });
 
-  var queryTownship = dom.byId("selectRange");
-  on(queryTownship, "change", function (e) {
+  var queryRange = dom.byId("selectRange");
+  on(queryRange, "change", function (e) {
     var type = e.target.value;
     zoomToTRFeature(townshipRangeSectionURL, type, "rng_ch");
   });
@@ -817,7 +815,6 @@ var highlightLine = {
   mapView.on("click", function(event) {
     console.log(mapView.scale);
       if (mapView.scale < minimumDrawScale) {
-        console.log(event);
         event.stopPropagation();
         executeIdentifyTask(event);
         togglePanel();
@@ -841,13 +838,16 @@ var highlightLine = {
             this.setAttribute('class', 'panel-collapse collapse in');
             this.setAttribute('style', 'height:auto;');
           }
-
-        });
-        
+        }); 
       }
-
     });
-
+  }
+  // clear all child nodes from current div
+  function clearDiv (div) {
+    var paramNode = document.getElementById(div);
+    while (paramNode.firstChild) {
+      paramNode.removeChild(paramNode.firstChild);
+    }
   }
 
   // multi service identifytask
@@ -878,32 +878,17 @@ var highlightLine = {
           var feature = result.feature;
           var layerName = result.layerName;
           feature.attributes.layerName = layerName;
-          if (layerName === 'USGS Quads') {
-            feature.popupTemplate = quadsIdentifyTemplate;
-          } else if (layerName === 'NGS Control Points') {
-              feature.popupTemplate = NGSIdentifyPopupTemplate;
-          } else if (layerName === 'Parcels') {
-            feature.popupTemplate = parcelsIdentifyTemplate;
-          } else if (layerName === 'Soils June 2012 - Dept. of Agriculture') {
-            feature.popupTemplate = soilsTemplate;
-          } else if (layerName === 'Preliminary NGS Points') {
-            feature.popupTemplate = NGSPreliminaryIdentifypopupTemplate;
-          } else if (layerName === 'Certified Corners') {
-            feature.popupTemplate = CCRTemplate;
-          } else if (layerName === 'Tide Stations') {
-            feature.popupTemplate = tideStationsTemplate;
-          } else if (layerName === 'Tide Interpolation Points') {
-            feature.popupTemplate = tideInterpPointsTemplate;
-          } else if (layerName === 'R-Monuments') {
-            feature.popupTemplate = rMonumentsTemplate;
-          } else if (layerName === 'Erosion Control Line') {
-            feature.popupTemplate = erosionControlLineTemplate;
-          } else if (layerName === 'Survey Benchmarks') {
-            feature.popupTemplate = swfwmdLayerPopupTemplate;
-          }
-          //console.log(identifyElements);
+
+          // only identify the corners that have an image
+          if (layerName != 'Certified Corners') {
           identifyElements.push(feature);
           infoPanelData.push(feature);
+          } else if (layerName === 'Certified Corners') {
+            if (feature.attributes.is_image === 'Y') {
+              infoPanelData.push(feature);
+            } 
+          }
+
 
         });
       })
@@ -1299,14 +1284,6 @@ var highlightLine = {
     var t = document.createTextNode(string);
     textDescription.appendChild(t);
     document.getElementById('parametersQuery').appendChild(textDescription);
-  }
-
-  // clear all child nodes from current div
-  function clearDiv (div) {
-    var paramNode = document.getElementById(div);
-    while (paramNode.firstChild) {
-      paramNode.removeChild(paramNode.firstChild);
-    }
   }
 
   function addDescript () {
@@ -1727,6 +1704,27 @@ var highlightLine = {
     dataQueryPanel.setAttribute('style', 'height:auto;');
   });
 
+
+  // Switch panel to zoom to feature panel
+  query('#gotozoom').on('click', function() {
+    var identifyPanel = document.getElementById('panelPopup');
+    var identifyStyle = document.getElementById('collapsePopup');
+    var zoomToFeaturePanel = document.getElementById('panelLayer');
+    var zoomToFeaturePanelBody = document.getElementById('collapseLayer')
+
+    identifyPanel.setAttribute('class', 'panel collapse');
+    identifyPanel.setAttribute('style', 'height:0px;');
+
+    identifyStyle.setAttribute('class', 'panel-collapse collapse');
+    identifyStyle.setAttribute('style', 'height:0px;');
+
+    zoomToFeaturePanel.setAttribute('class', 'panel collapse in');
+    zoomToFeaturePanel.setAttribute('style', 'height:auto;');
+
+    zoomToFeaturePanelBody.setAttribute('class', 'panel collapse in');
+    zoomToFeaturePanelBody.setAttribute('style', 'height:auto;');
+  });
+  
   // switch to identify panel on click
   query('#goToIdentify').on('click', function(){
     togglePanel();
@@ -1741,6 +1739,9 @@ var highlightLine = {
   on(dom.byId("clearButton"), "click", function(evt){
     selectionLayer.graphics.removeAll(); 
     bufferLayer.graphics.removeAll();
+    clearDiv('informationdiv');
+    $('#numinput').val('');
+    $('#arraylengthdiv').html('');
   });
 
   // //Custom Zoom to feature

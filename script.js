@@ -473,7 +473,7 @@ require([
       multiPolygonGeometries.push(response.features[i].geometry);
     }
     var union = geometryEngine.union(multiPolygonGeometries);
-    console.log(union);
+    console.log('unioning of all pieces is complete',union);
     return union;
   }
 
@@ -486,7 +486,7 @@ require([
     params = new IdentifyParameters();
     params.tolerance = 3;
     params.layerIds = [0, 2];
-    params.layerOption = "all";
+    params.layerOption = "visible";
     params.width = mapView.width;
     params.height = mapView.height;
   
@@ -565,6 +565,7 @@ require([
 
   // Modified zoomToFeature function to zoom once the Township and Range has been chosen
   function zoomToTRFeature(panelurl, location, attribute) {
+    console.log('starting the zoom to TR function')
     multiPolygonGeometries = [];
     var union = geometryEngine.union(multiPolygonGeometries);
 
@@ -584,7 +585,7 @@ require([
     });
     task.execute(params)
       .then(function (response) {
-        console.log(response);
+        console.log('here is what we found with this query',response);
         mapView.goTo(response.features);
         selectionLayer.graphics.removeAll();
         graphicArray = [];

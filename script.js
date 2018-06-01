@@ -813,6 +813,8 @@ var highlightLine = {
 
   // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("click", function(event) {
+    mapView.graphics.removeAll();
+    selectionLayer.graphics.removeAll();
     console.log(mapView.scale);
       if (mapView.scale < minimumDrawScale) {
         event.stopPropagation();
@@ -1737,6 +1739,7 @@ var highlightLine = {
 
   // Clear all graphics from map  
   on(dom.byId("clearButton"), "click", function(evt){
+    mapView.graphics.removeAll();
     selectionLayer.graphics.removeAll(); 
     bufferLayer.graphics.removeAll();
     clearDiv('informationdiv');

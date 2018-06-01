@@ -609,9 +609,7 @@ var highlightLine = {
     });
     bufferLayer.graphics.removeAll();
     bufferLayer.add(bufferGraphic);
-    //console.log(bufferGeometry);
-    return bufferGeometry;
-    //return buffer;
+    return buffer;
   }
 
   ///////////////////////
@@ -816,7 +814,6 @@ var highlightLine = {
   mapView.on("click", function(event) {
     console.log(mapView.scale);
       if (mapView.scale < minimumDrawScale) {
-        console.log(event);
         event.stopPropagation();
         executeIdentifyTask(event);
         togglePanel();

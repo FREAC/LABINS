@@ -143,7 +143,7 @@ require([
     }, {
       id: 1,
       title: "Preliminary NGS Points",
-      visible: true,
+      visible: false,
       //popupTemplate: NGSPreliminarypopupTemplate,
       popupEnabled: false
     }, {
@@ -557,9 +557,14 @@ var highlightLine = {
         return response;
       })
       .then(createBuffer)
+      // for now (6/4/2018) lets dont do the identify on the final zoom
+      // part of the problem is the visibility option does not work, it just identifies on ALL layers
+      // the getVisibleLayerIds works, but right now it only executes when the page loads, so that is a
+      // problem when other layers are turned on the getVisible is not reloaded.
+      //
       //.then(executeTRSIdentify)
-      .then(executeIdentifyTask)
-      .then(togglePanel);
+      //.then(executeIdentifyTask)
+      //.then(togglePanel);
   }
 
   // Modified zoomToFeature function to zoom once the Township and Range has been chosen
@@ -644,7 +649,22 @@ var highlightLine = {
     return zoomToFeature(controlLinesURL + "3", e.target.value, "name");
   });
 
-
+// function to find visible layers beacuse the layerOptio:visible does NOT work as of 6/1/18 - SWH
+function getVisibleLayerIds(map, layer){
+  if (layer.sublayers){
+    vis_layers = []
+    for (i = 0; i < layer.sublayers.length; i++) {
+      console.log('vis or not vis for layer ',layer.sublayers.items[i].id,'  ',layer.sublayers.items[i].visible, ' ',layer.sublayers.items[i].title)
+      if (layer.sublayers.items[i].visible) {
+        vis_layers.push(layer.sublayers.items[i].id)
+      }
+    }
+    //return layer.sublayers.filter(sublayer => sublayers.items.visible).map(sublayer => layer.sublayers.items.id);
+    return vis_layers
+  } else {
+    return layer.visible ? [map.allLayers.indexOf(layer)] : [-1];
+  }
+}
 
   ////////////////////////////////////////////////
   //// Zoom to Township/Section/Range Feature ////
@@ -773,20 +793,38 @@ var highlightLine = {
   allParams = [];
 
   tasks.push(new IdentifyTask(controlPointsURL));
-  tasks.push(new IdentifyTask(controlLinesURL));
   tasks.push(new IdentifyTask('https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/'));
-
-  // Set the parameters for the Identify
+  tasks.push(new IdentifyTask(controlLinesURL));
+  
+  // Set the parameters for the Point Identify
   params = new IdentifyParameters();
   params.tolerance = 15;
-  params.layerIds = [2, 0, 1, 4, 5, 9, 8, 6];
+  // see if we can get the visible layers
+  vis_layers = getVisibleLayerIds(map,controlPointsLayer)
+  //console.log('did we get the visible layers ok ', vis_layers)
+  params.layerIds = vis_layers;
+  // Because the this area of code is only executed once when the map loads we cant just use the visible
+  // layers at the time of load.  Need to figure out a place to put this so when the queries (specifically the one a the 
+  // bottom of the section zoom) the getVisibileLayerIds gets called each time the zoom to feature is called.
+  //
+  params.layerOption = "visible";
+  params.layerIds = [2, 0, 4, 5, 9, 8, 6];
+  params.width = mapView.width;
+  params.height = mapView.height;
+  params.returnGeometry = true;
+  allParams.push(params);
+
+  // Set the parameters for the SWFWMD Identify
+  params = new IdentifyParameters();
+  params.tolerance = 3;
+  params.layerIds = [0];
   params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
   allParams.push(params);
 
-  // Set the parameters for the Identify
+  // Set the parameters for the Line / polygon Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
   params.layerIds = [2, 5, 0];
@@ -796,15 +834,7 @@ var highlightLine = {
   params.returnGeometry = true;
   allParams.push(params);
   
-  // Set the parameters for the Identify
-  params = new IdentifyParameters();
-  params.tolerance = 3;
-  params.layerIds = [0];
-  params.layerOption = "visible";
-  params.width = mapView.width;
-  params.height = mapView.height;
-  params.returnGeometry = true;
-  allParams.push(params);
+
 
 
   var identifyElements = [];
@@ -854,7 +884,10 @@ var highlightLine = {
 
   // multi service identifytask
   function executeIdentifyTask(event) {
-
+    console.log('starting the executeIdentifyTask function')
+    // first get the visible layers because that option doesnt work
+    //vis_layers = getVisibleLayerIds(map,controlPointsLayer)
+    //params.layerIds = vis_layers;
     var currentScale = mapView.scale;
     infoPanelData = [];
     identifyElements = [];
@@ -866,25 +899,34 @@ var highlightLine = {
     } else {
       allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event;
       allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
+      //allParams[0].layerIds = allParams[1].layerIds = allParams[2].layerIds = vis_layers;
+      
     }
     console.log('what does the event look like ', event)
     for (i = 0; i < tasks.length; i++) {
+      console.log('what is this doing--- ', allParams[i])
       promises.push(tasks[i].execute(allParams[i]));
     }
     var iPromises = new all(promises);
     iPromises.then(function (rArray) {
       arrayUtils.map(rArray, function(response){
         var results = response.results;
-        console.log('here are the objects we found in the section',typeof results);
+        console.log('here are the objects we found in the section', results);
         return arrayUtils.map(results, function(result) {
           var feature = result.feature;
           var layerName = result.layerName;
+          console.log('the feature is ', feature, '  and the layer name is ', layerName)
+          console.log('all of the results look like this ', results)
           feature.attributes.layerName = layerName;
 
           // only identify the corners that have an image
           if (layerName != 'Certified Corners') {
-          identifyElements.push(feature);
-          infoPanelData.push(feature);
+            if (layerName === 'Township-Range-Section') {
+              // Do nothing
+            } else {
+              identifyElements.push(feature);
+              infoPanelData.push(feature);
+            }
           } else if (layerName === 'Certified Corners') {
             if (feature.attributes.is_image === 'Y') {
               infoPanelData.push(feature);
@@ -1184,7 +1226,7 @@ var highlightLine = {
     params = new IdentifyParameters();
     //params.tolerance = 3;
     params.layerIds = [layers];
-    params.layerOption = "all";
+    params.layerOption = "visible";
     params.width = mapView.width;
     params.height = mapView.height;
   

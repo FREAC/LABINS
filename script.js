@@ -534,6 +534,7 @@ var highlightLine = {
   // when a section feature is chose, a matching TRS combination is queried, highlighted and zoomed to
   function zoomToSectionFeature(panelurl, location, attribute) {
 
+
     var township = document.getElementById("selectTownship");
     var strUser = township.options[township.selectedIndex].text;
 
@@ -553,8 +554,20 @@ var highlightLine = {
     });
     task.execute(params)
       .then(function (response) {
-        mapView.goTo(response.features);
-        return response;
+        console.log(response);
+        var multiPolygonGeometries = [];
+        for (i=0; i<response.features.length; i++) {
+          multiPolygonGeometries.push(response.features[i].geometry);
+        }
+        var union = geometryEngine.union(multiPolygonGeometries);
+        console.log(union);
+        var ext = union.extent;
+        var cloneExt = ext.clone();
+        mapView.goTo({
+          target: union,
+          extent: cloneExt.expand(1.75)  
+        });
+        return union;
       })
       .then(createBuffer)
       // for now (6/4/2018) lets dont do the identify on the final zoom
@@ -591,6 +604,7 @@ var highlightLine = {
         console.log('here is what we found with this query',response);
         mapView.goTo(response.features);
         selectionLayer.graphics.removeAll();
+        bufferLayer.graphics.removeAll();
         graphicArray = [];
         for (i=0; i<response.features.length; i++) {
           highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
@@ -605,7 +619,8 @@ var highlightLine = {
 
    //Input geometry, output buffer
   function createBuffer(response) {
-    var bufferGeometry = response.features[0].geometry
+    var bufferGeometry = response;
+    // var bufferGeometry = response.features[0].geometry
     var buffer = geometryEngine.geodesicBuffer(bufferGeometry, 300, "feet", true);
     // add the buffer to the view as a graphic
     var bufferGraphic = new Graphic({

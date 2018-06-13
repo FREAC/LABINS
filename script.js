@@ -158,7 +158,7 @@ require([
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/0";
   var swfwmdLayer = new FeatureLayer({
     url: swfwmdURL,
-    title: "SWFWMD Benchmarks",
+    title: "SWFWMD Survey Benchmarks",
     popupEnabled: false,
     minScale: minimumDrawScale
   });
@@ -166,6 +166,7 @@ require([
   var controlLinesURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/";
   var controlLinesLayer = new MapImageLayer({
     url: controlLinesURL,
+    title: "Other Base Layers",
     sublayers: [{
       id: 9,
       title: "Soils June 2012 - Dept. of Agriculture",
@@ -1015,7 +1016,16 @@ function getVisibleLayerIds(map, layer){
       returnGeometry: true,
       outFields: '*'
     });
-    return queryTask.execute(params);
+
+    queryTask.execute(params)
+    .then(function(response) {
+      console.log(response);
+      if (response.features.length != 0) {
+        return queryTask.execute(params);
+      } else {
+        console.log('No features found.');
+      }
+    });
   }
 
   // go to first feature of the infopaneldata array
@@ -1156,7 +1166,7 @@ function getVisibleLayerIds(map, layer){
       resultSymbol: highlightPoint,
       outFields: ["BENCHMARK_NAME", "FILE_NAME"],
       name: "Survey Benchmarks",
-      placeholder: "Search by Survey Benchmark name",
+      placeholder: "Benchmark Name Example: CYP016",
     }, {
       featureLayer: {
         url: controlPointsURL + "2",
@@ -1257,7 +1267,12 @@ function getVisibleLayerIds(map, layer){
 
     var whereStatement;
 
-       whereStatement = "Upper(" + attribute +  ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute +  ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%'";
+    if (queryStatement != '' || idQueryStatement !='') {
+      whereStatement = "Upper(" + attribute +  ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute +  ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%'";
+    } else {
+      console.log('No features found.');
+    }
+
 
       //whereStatement = attribute +  ' = ' + "'" + queryStatement + "'";
     console.log(whereStatement);
@@ -1278,11 +1293,14 @@ function getVisibleLayerIds(map, layer){
   function textQueryQuerytask (url, attribute, queryStatement, flag = true) {
 
     var whereStatement;
-    if (typeof queryStatement == 'string' && flag === true) {
-       whereStatement = "Upper(" + attribute +  ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'";
+    if (queryStatement != '') {
+      if (typeof queryStatement == 'string' && flag === true) {
+        whereStatement = "Upper(" + attribute +  ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'";
+     } else {
+       whereStatement = attribute +  ' = ' + "'" + queryStatement + "'";
+     }
     } else {
-      whereStatement = attribute +  ' = ' + "'" + queryStatement + "'";
-
+      console.log('No features found');
     }
 
     console.log(whereStatement);
@@ -1707,7 +1725,7 @@ function getVisibleLayerIds(map, layer){
   } else if (layerSelection === 'Survey Benchmarks') {
     clearDiv('parametersQuery');
     addDescript();
-    createTextBox('textQuery', 'Enter a Benchmark Name')
+    createTextBox('textQuery', 'Benchmark Name Example: CYP016')
     createSubmit('Submit by Name', 'submitNameQuery');
 
     var submitButton = document.getElementById('submitQuery');

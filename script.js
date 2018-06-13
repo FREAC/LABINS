@@ -158,7 +158,7 @@ require([
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/0";
   var swfwmdLayer = new FeatureLayer({
     url: swfwmdURL,
-    title: "SWFWMD Benchmarks",
+    title: "SWFWMD Survey Benchmarks",
     popupEnabled: false,
     minScale: minimumDrawScale
   });

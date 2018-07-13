@@ -167,6 +167,7 @@ require([
   var controlLinesLayer = new MapImageLayer({
     url: controlLinesURL,
     title: "Other Base Layers",
+    minScale: minimumDrawScale,
     sublayers: [{
       id: 9,
       title: "Soils June 2012 - Dept. of Agriculture",
@@ -176,17 +177,17 @@ require([
     }, {
       id: 8,
       title: "Hi-Res Imagery Grid: State Plane East",
-      visible: false,
+      visible: true,
       popupEnabled: false
     },{
       id: 7,
       title: "Hi-Res Imagery Grid: State Plane North",
-      visible: false,
+      visible: true,
       popupEnabled: false
     }, {
       id: 6,
       title: "Hi-Res Imagery Grid: State Plane West",
-      visible: false,
+      visible: true,
       popupEnabled: false
     }, {
       id: 5,
@@ -843,7 +844,7 @@ function getVisibleLayerIds(map, layer){
   // Set the parameters for the Line / polygon Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [2, 5, 0];
+  params.layerIds = [2, 5, 0, 8, 7, 6];
   params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;

@@ -149,11 +149,10 @@ function queryInfoPanel (results, i) {
         
     } else if (results[i-1].attributes.layerName === 'Township-Range-Section') {
         $('#informationdiv').html('<p><b>Section Lines</b> </p>' + 
-                                '<p><b>Township-Range-Section: </b>' + results[i-1].attributes.twnrngsec + '</p>'
+                                '<p><b>Township-Range-Section: </b>' + results[i-1].attributes.twnrngsec + '</p>' +
+                                '<a target="_blank" href=http://www.labins.org/survey_data/landrecords/landrecords.cfm?town1=' + results[i-1].attributes.tr_dissolve.substring(0,2) + '&town2=' + results[i-1].attributes.tr_dissolve.substring(2,3) + '&range1='  + results[i-1].attributes.tr_dissolve.substring(3,5) + '&range2=' + results[i-1].attributes.tr_dissolve.substring(5,6) + '>' + 'Original GLO Survey Plats and Field Notes for this township' + '</a>'
                                 );
-    }
-    
-    else if (results[i-1].attributes.layerName === 'Certified Corners') {
+    } else if (results[i-1].attributes.layerName === 'Certified Corners') {
         $('#informationdiv').html('<p><b>Certified Corners</b></p>' + 
                                 '<p><b>BLMID: </b>' + results[i-1].attributes.blmid + '</p>' +
                                 '<p><b>Quad Name: </b>' + results[i-1].attributes.tile_name + '</p>'

@@ -818,8 +818,8 @@ function getVisibleLayerIds(map, layer){
   params.tolerance = 15;
   // see if we can get the visible layers
   vis_layers = getVisibleLayerIds(map,controlPointsLayer)
-  //console.log('did we get the visible layers ok ', vis_layers)
-  params.layerIds = vis_layers;
+  console.log('did we get the visible layers ok ', vis_layers)
+  //params.layerIds = vis_layers;
   // Because the this area of code is only executed once when the map loads we cant just use the visible
   // layers at the time of load.  Need to figure out a place to put this so when the queries (specifically the one a the 
   // bottom of the section zoom) the getVisibileLayerIds gets called each time the zoom to feature is called.
@@ -844,7 +844,7 @@ function getVisibleLayerIds(map, layer){
   // Set the parameters for the Line / polygon Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [2, 5, 0, 8, 7, 6];
+  params.layerIds = [5, 0, 8, 7, 6, 2];
   params.layerOption = "visible";
   params.width = mapView.width;
   params.height = mapView.height;
@@ -938,12 +938,13 @@ function getVisibleLayerIds(map, layer){
 
           // only identify the corners that have an image
           if (layerName != 'Certified Corners') {
-            if (layerName === 'Township-Range-Section') {
-              // Do nothing
-            } else {
+            // We want to show Original GLO survey plats and field notes now
+            // if (layerName === 'Township-Range-Section') {
+            //   // Do nothing
+            // } else {
               identifyElements.push(feature);
               infoPanelData.push(feature);
-            }
+            // }
           } else if (layerName === 'Certified Corners') {
             if (feature.attributes.is_image === 'Y') {
               infoPanelData.push(feature);

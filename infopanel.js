@@ -28,6 +28,18 @@ function queryInfoPanel (results, i) {
                                 '<p><b>Flooding Frequency ‐ Maximum:</b> ' + results[i-1].attributes.flodfreqma + '</p>' +
                                 '<p><b>Description:</b> ' + results[i-1].attributes.descript + '</p>',       
                                 );
+    } else if (results[i-1].attributes.layerName === 'Hi-Res Imagery Grid State Plane West') {
+        $('#informationdiv').html('<p>Hi-Res Imagery Grid State Plane West<b></b></p>' +
+                                '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=W&gridid=' + results[i-1].attributes.spw_id + '>' + 'Hi resolution images for ' + results[i-1].attributes.spw_id +'</a>'
+                                );
+    } else if (results[i-1].attributes.layerName === 'Hi-Res Imagery Grid State Plane East') {
+        $('#informationdiv').html('<p>Hi-Res Imagery Grid State Plane East<b></b></p>' +
+                                '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=E&gridid=' + results[i-1].attributes.spe_id + '>' + 'Hi resolution images for ' + results[i-1].attributes.spe_id +'</a>'
+                                );
+    } else if (results[i-1].attributes.layerName === 'Hi-Res Imagery Grid State Plane North') {
+        $('#informationdiv').html('<p>Hi-Res Imagery Grid State Plane North<b></b></p>' +
+                                '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i-1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i-1].attributes.spn_id +'</a>'
+                                );
     } else if (results[i-1].attributes.layerName === 'NGS Control Points') {
         $('#informationdiv').html('<p><b>NGS Control Points</b></p>' +
                                 'Control Point Name: ' + results[i-1].attributes.NAME + '</p>' +

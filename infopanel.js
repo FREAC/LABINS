@@ -150,7 +150,8 @@ function queryInfoPanel (results, i) {
     } else if (results[i-1].attributes.layerName === 'Township-Range-Section') {
         $('#informationdiv').html('<p><b>Section Lines</b> </p>' + 
                                 '<p><b>Township-Range-Section: </b>' + results[i-1].attributes.twnrngsec + '</p>' +
-                                '<a target="_blank" href=http://www.labins.org/survey_data/landrecords/landrecords.cfm?town1=' + results[i-1].attributes.tr_dissolve.substring(0,2) + '&town2=' + results[i-1].attributes.tr_dissolve.substring(2,3) + '&range1='  + results[i-1].attributes.tr_dissolve.substring(3,5) + '&range2=' + results[i-1].attributes.tr_dissolve.substring(5,6) + '>' + 'Original GLO Survey Plats and Field Notes for this township' + '</a>'
+                                '<a target="_blank" href=http://www.labins.org/survey_data/landrecords/landrecords.cfm?town1=' + results[i-1].attributes.tr_dissolve.substring(0,2) + '&town2=' + results[i-1].attributes.tr_dissolve.substring(2,3) + '&range1='  + results[i-1].attributes.tr_dissolve.substring(3,5) + '&range2=' + results[i-1].attributes.tr_dissolve.substring(5,6) + '>' + 'Original GLO Survey Plats and Field Notes' + '</a>' +
+                                '<a target="_blank" href=http://199.73.242.221/Oculus/servlet/shell?command=hitlist&[catalog=6]&[entityType=any]&[searchBy=profile]&[profile=BSM+Office+Files]&[sortBy=Creator]&{STR+Coordinates=%20LK%20S029%20' + results[i-1].attributes.twnrngsec.substring(0,4) + '%20' + results[i-1].attributes.twnrngsec.substring(4,7) + '}>' + 'Oculus Database - DEP Use Only' + '</a>'
                                 );
     } else if (results[i-1].attributes.layerName === 'Certified Corners') {
         $('#informationdiv').html('<p><b>Certified Corners</b></p>' + 

@@ -147,11 +147,11 @@ function queryInfoPanel (results, i) {
                                 '<p>More Information: </b><a target="_blank" href=http://ftp.labins.org/swfwmd/SWFWMD_control_2013/' + replaceWhitespace + '>' + results[i-1].attributes.FILE_NAME + '</a></p>'
                                 );
         
-    } else if (results[i-1].attributes.layerName === 'Township-Range-Section') {
+    } else if (results[i-1].attributes.layerName === 'Section-Township-Range') {
         $('#informationdiv').html('<p><b>Section Lines</b> </p>' + 
-                                '<p><b>Township-Range-Section: </b>' + results[i-1].attributes.twnrngsec + '</p>' +
-                                '<a target="_blank" href=http://www.labins.org/survey_data/landrecords/landrecords.cfm?town1=' + results[i-1].attributes.tr_dissolve.substring(0,2) + '&town2=' + results[i-1].attributes.tr_dissolve.substring(2,3) + '&range1='  + results[i-1].attributes.tr_dissolve.substring(3,5) + '&range2=' + results[i-1].attributes.tr_dissolve.substring(5,6) + '>' + 'Original GLO Survey Plats and Field Notes' + '</a>' +
-                                '<a target="_blank" href=http://199.73.242.221/Oculus/servlet/shell?command=hitlist&[catalog=6]&[entityType=any]&[searchBy=profile]&[profile=BSM+Office+Files]&[sortBy=Creator]&{STR+Coordinates=%20LK%20S029%20' + results[i-1].attributes.twnrngsec.substring(0,4) + '%20' + results[i-1].attributes.twnrngsec.substring(4,7) + '}>' + 'Oculus Database - DEP Use Only' + '</a>'
+                                '<p><b>Section-Township-Range: </b>' + results[i-1].attributes.twnrngsec.substring(8,) + ' ' + results[i-1].attributes.twnrngsec.substring(1,4) + ' ' + results[i-1].attributes.twnrngsec.substring(5,8) + '</p>' +
+                                '<p><a target="_blank" href=http://www.labins.org/survey_data/landrecords/landrecords.cfm?town1=' + results[i-1].attributes.tr_dissolve.substring(0,2) + '&town2=' + results[i-1].attributes.tr_dissolve.substring(2,3) + '&range1='  + results[i-1].attributes.tr_dissolve.substring(3,5) + '&range2=' + results[i-1].attributes.tr_dissolve.substring(5,6) + '>' + 'Original GLO Survey Plats and Field Notes' + '</a></p>' +
+                                '<p><a target="_blank" href=http://199.73.242.221/Oculus/servlet/shell?command=hitlist&[catalog=6]&[entityType=any]&[searchBy=profile]&[profile=BSM+Office+Files]&[sortBy=Creator]&{STR+Coordinates=%20LK%20S0' + results[i-1].attributes.tr_dissolve.substring(0,2) + '%20' + results[i-1].attributes.twnrngsec.substring(0,4) + '%20' + results[i-1].attributes.twnrngsec.substring(4,8) + '}>' + 'Oculus Database - DEP Use Only' + '</a></p>'
                                 );
     } else if (results[i-1].attributes.layerName === 'Certified Corners') {
         $('#informationdiv').html('<p><b>Certified Corners</b></p>' + 

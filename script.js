@@ -975,10 +975,12 @@ function getVisibleLayerIds(map, layer){
       if (infoPanelData[0].geometry.type === "polygon") {
         var ext = infoPanelData[0].geometry.extent;
         var cloneExt = ext.clone();
-        mapView.goTo({
-          target: infoPanelData[0],
-          extent: cloneExt.expand(1.75)  
-        });
+        if (infoPanelData[0].attributes.layerName !== 'USGS Quads') {
+          mapView.goTo({
+            target: infoPanelData[0],
+            extent: cloneExt.expand(1.75)  
+          });
+        }
       // Remove current selection
         selectionLayer.graphics.removeAll();
         console.log("it's a polygon");
@@ -1891,11 +1893,13 @@ function getVisibleLayerIds(map, layer){
     if (infoPanelData[indexVal].geometry.type === "polygon") {
       var ext = infoPanelData[indexVal].geometry.extent;
       var cloneExt = ext.clone();
-      mapView.goTo({
-        target: infoPanelData[indexVal],
-        extent: cloneExt.expand(1.75)  
-      });
-    // Remove current selection
+      if (infoPanelData[indexVal].attributes.layerName !== 'USGS Quads') {
+        mapView.goTo({
+          target: infoPanelData[indexVal],
+          extent: cloneExt.expand(1.75)  
+        });
+      }  
+      // Remove current selection
       selectionLayer.graphics.removeAll();
       console.log("it's a polygon");
       // Highlight the selected parcel
@@ -1938,10 +1942,12 @@ function getVisibleLayerIds(map, layer){
       if (infoPanelData[indexVal].geometry.type === "polygon") {
         var ext = infoPanelData[indexVal].geometry.extent;
         var cloneExt = ext.clone();
-        mapView.goTo({
-          target: infoPanelData[indexVal],
-          extent: cloneExt.expand(1.75)  
-        });
+        if (infoPanelData[indexVal].attributes.layerName !== 'USGS Quads') {
+          mapView.goTo({
+            target: infoPanelData[indexVal],
+            extent: cloneExt.expand(1.75)  
+          });
+        }
         // Remove current selection
         selectionLayer.graphics.removeAll();
         console.log("it's a polygon");
@@ -1983,10 +1989,13 @@ function getVisibleLayerIds(map, layer){
       if (infoPanelData[indexVal].geometry.type === "polygon") {
         var ext = infoPanelData[indexVal].geometry.extent;
         var cloneExt = ext.clone();
-        mapView.goTo({
-          target: infoPanelData[indexVal],
-          extent: cloneExt.expand(1.75)  
-        });
+        if (infoPanelData[indexVal].attributes.layerName !== 'USGS Quads') {
+          mapView.goTo({
+            target: infoPanelData[indexVal],
+            extent: cloneExt.expand(1.75)  
+          });
+        }
+
         // Remove current selection
         selectionLayer.graphics.removeAll();
         console.log("it's a polygon");

@@ -214,8 +214,24 @@ require([
     }, {
       id: 1,
       title: "Township-Range",
-      visible: false,
-      popupEnabled: false
+      visible: true,
+      popupEnabled: false,
+      labelsVisible: true,
+      labelingInfo: [{
+        //labelExpression: "[SUBSTRING(tr_dissolve, 0, 3)]",
+        //labelExpression: "[" + 'SUBSTR("tr_dissolve" 0, 3)' + "]",
+        labelExpression: "[tr_dissolve]",
+        labelPlacement: "always-horizontal",
+        symbol: {
+          type: "text", // autocasts as new TextSymbol()
+          color: [0, 0, 255, 1],
+          haloColor: [255, 255, 255],
+          haloSize: 2,
+          font: {
+            size: 11
+          }
+        }
+      }]
     }, {
       id: 0,
       title: "USGS Quads",

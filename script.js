@@ -915,11 +915,37 @@ function getVisibleLayerIds(map, layer){
     }
   }
 
+
+  function checkVisibility (layerWidget) {
+    console.log(layerWidget);
+    for (var i=0; i < layerWidget.operationalItems.items.length; i++) {
+      //console.log(layerWidget.operationalItems.items[i]);
+      if (layerWidget.operationalItems.items[i].visible != false) {
+            //iterate through sublayers
+        for (var j=0; j < layerWidget.operationalItems.items[i].children.items.length; j++) {
+          console.log(layerWidget.operationalItems.items[i].children.items[j]);
+          if (layerWidget.operationalItems.items[i].children.items[j].visible != false) {
+          visibleLayers.push(layerWidget.operationalItems.items[i].children.items[j].title);
+          }
+        }
+      }
+      //console.log(layerWidget.operationalItems.items[i]);
+    }
+  }
+
+
   // multi service identifytask
   function executeIdentifyTask(event) {
     console.log('starting the executeIdentifyTask function')
     // first get the visible layers because that option doesnt work
     //vis_layers = getVisibleLayerIds(map,controlPointsLayer)
+
+    // Determine visibility
+    visibleLayers = [];
+    checkVisibility(layerWidget);
+
+    console.log(visibleLayers);
+    console.log(layerWidget);
     //params.layerIds = vis_layers;
     var currentScale = mapView.scale;
     infoPanelData = [];
@@ -951,9 +977,11 @@ function getVisibleLayerIds(map, layer){
           console.log('the feature is ', feature, '  and the layer name is ', layerName)
           console.log('all of the results look like this ', results)
           feature.attributes.layerName = layerName;
-
+          var layerVisibility = result.feature.visible
+          console.log(feature, ' is ', layerVisibility);
           // only identify the corners that have an image
           if (layerName != 'Certified Corners') {
+            console.log(layerName);
             // We want to show Original GLO survey plats and field notes now
             // if (layerName === 'Township-Range-Section') {
             //   // Do nothing

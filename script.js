@@ -840,8 +840,8 @@ function getVisibleLayerIds(map, layer){
   // layers at the time of load.  Need to figure out a place to put this so when the queries (specifically the one a the 
   // bottom of the section zoom) the getVisibileLayerIds gets called each time the zoom to feature is called.
   //
-  params.layerOption = "visible";
-  params.layerIds = [2, 0, 4, 5, 9, 8, 6];
+  params.layerOption = "all";
+  params.layerIds;
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
@@ -850,8 +850,8 @@ function getVisibleLayerIds(map, layer){
   // Set the parameters for the SWFWMD Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [0];
-  params.layerOption = "visible";
+  params.layerIds;
+  params.layerOption = "all";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
@@ -860,8 +860,8 @@ function getVisibleLayerIds(map, layer){
   // Set the parameters for the Line / polygon Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [5, 0, 8, 7, 6, 2];
-  params.layerOption = "visible";
+  params.layerIds;
+  params.layerOption = "all";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
@@ -917,20 +917,27 @@ function getVisibleLayerIds(map, layer){
 
 
   function checkVisibility (layerWidget) {
+    var tempVis = []
     console.log(layerWidget);
     for (var i=0; i < layerWidget.operationalItems.items.length; i++) {
       //console.log(layerWidget.operationalItems.items[i]);
       if (layerWidget.operationalItems.items[i].visible != false) {
             //iterate through sublayers
         for (var j=0; j < layerWidget.operationalItems.items[i].children.items.length; j++) {
-          console.log(layerWidget.operationalItems.items[i].children.items[j]);
+          //console.log(layerWidget.operationalItems.items[i].children.items[j]);
           if (layerWidget.operationalItems.items[i].children.items[j].visible != false) {
-          visibleLayers.push(layerWidget.operationalItems.items[i].children.items[j].title);
+            console.log(layerWidget.operationalItems.items[i].children.items[j].layer.title);
+            tempVis.push(layerWidget.operationalItems.items[i].children.items[j].layer.id);
           }
         }
+        console.log(tempVis);
+        allParams[i].layerIds = tempVis;
       }
+      console.log("end of layer");
+      tempVis = [];
       //console.log(layerWidget.operationalItems.items[i]);
     }
+    console.log('visibility checked.');
   }
 
 
@@ -941,10 +948,8 @@ function getVisibleLayerIds(map, layer){
     //vis_layers = getVisibleLayerIds(map,controlPointsLayer)
 
     // Determine visibility
-    visibleLayers = [];
     checkVisibility(layerWidget);
 
-    console.log(visibleLayers);
     console.log(layerWidget);
     //params.layerIds = vis_layers;
     var currentScale = mapView.scale;
@@ -963,11 +968,13 @@ function getVisibleLayerIds(map, layer){
     }
     console.log('what does the event look like ', event)
     for (i = 0; i < tasks.length; i++) {
+      console.log(tasks[i]);
       console.log('what is this doing--- ', allParams[i])
       promises.push(tasks[i].execute(allParams[i]));
     }
     var iPromises = new all(promises);
     iPromises.then(function (rArray) {
+      console.log('rArray is ', rArray);
       arrayUtils.map(rArray, function(response){
         var results = response.results;
         console.log('here are the objects we found in the section', results);
@@ -977,8 +984,6 @@ function getVisibleLayerIds(map, layer){
           console.log('the feature is ', feature, '  and the layer name is ', layerName)
           console.log('all of the results look like this ', results)
           feature.attributes.layerName = layerName;
-          var layerVisibility = result.feature.visible
-          console.log(feature, ' is ', layerVisibility);
           // only identify the corners that have an image
           if (layerName != 'Certified Corners') {
             console.log(layerName);
@@ -1296,7 +1301,7 @@ function getVisibleLayerIds(map, layer){
     // Set the parameters for the Identify
     params = new IdentifyParameters();
     //params.tolerance = 3;
-    params.layerIds = [layers];
+    //params.layerIds = [layers];
     params.layerOption = "visible";
     params.width = mapView.width;
     params.height = mapView.height;

@@ -153,6 +153,15 @@ function queryInfoPanel (results, i) {
                                 '<p><a target="_blank" href=http://www.labins.org/survey_data/landrecords/landrecords.cfm?town1=' + results[i-1].attributes.tr_dissolve.substring(0,2) + '&town2=' + results[i-1].attributes.tr_dissolve.substring(2,3) + '&range1='  + results[i-1].attributes.tr_dissolve.substring(3,5) + '&range2=' + results[i-1].attributes.tr_dissolve.substring(5,6) + '>' + 'Original GLO Survey Plats and Field Notes' + '</a></p>' +
                                 '<p><a target="_blank" href=http://199.73.242.221/Oculus/servlet/shell?command=hitlist&[catalog=6]&[entityType=any]&[searchBy=profile]&[profile=BSM+Office+Files]&[sortBy=Creator]&{STR+Coordinates=%20LK%20S0' + results[i-1].attributes.tr_dissolve.substring(0,2) + '%20' + results[i-1].attributes.twnrngsec.substring(0,4) + '%20' + results[i-1].attributes.twnrngsec.substring(4,8) + '}>' + 'Oculus Database - DEP Use Only' + '</a></p>'
                                 );
+    } else if (results[i-1].attributes.layerName === 'Township-Range') {
+        $('#informationdiv').html('<p><b>Township-Range Lines</b> </p>' + 
+                                '<p><b>Township-Range: </b>' + results[i-1].attributes.tr_dissolve.substring(0,3) + ' ' + results[i-1].attributes.tr_dissolve.substring(3,) + '</p>'
+                                );
+    } else if (results[i-1].attributes.layerName === 'Geographic Names') {
+        $('#informationdiv').html('<p><b>Geographic Names</b> </p>' + 
+                                '<p><b>Feature Name: </b>' + results[i-1].attributes.feature_na + '</p>' +
+                                '<p><b>Feature Class: </b>' + results[i-1].attributes.feature_cl + '</p>'
+                                );
     } else if (results[i-1].attributes.layerName === 'Certified Corners') {
         $('#informationdiv').html('<p><b>Certified Corners</b></p>' + 
                                 '<p><b>BLMID: </b>' + results[i-1].attributes.blmid + '</p>' +

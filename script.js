@@ -155,12 +155,17 @@ require([
     }]
   });
 
-  var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/0";
-  var swfwmdLayer = new FeatureLayer({
+  var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/";
+  var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
     title: "SWFWMD Survey Benchmarks",
-    popupEnabled: false,
-    minScale: minimumDrawScale
+    minScale: minimumDrawScale,
+    sublayers: [{
+      id: 0,
+      title: "Survey Benchmarks",
+      visible: true,
+      popupEnabled: false
+    }]
   });
 
   var controlLinesURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/";
@@ -826,15 +831,17 @@ function getVisibleLayerIds(map, layer){
   allParams = [];
 
   tasks.push(new IdentifyTask(controlPointsURL));
-  tasks.push(new IdentifyTask('https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/'));
+  // tasks.push(new IdentifyTask(swfwmdURL));
   tasks.push(new IdentifyTask(controlLinesURL));
-  
+  tasks.push(new IdentifyTask(swfwmdURL));
+
+
   // Set the parameters for the Point Identify
   params = new IdentifyParameters();
   params.tolerance = 15;
   // see if we can get the visible layers
-  vis_layers = getVisibleLayerIds(map,controlPointsLayer)
-  console.log('did we get the visible layers ok ', vis_layers)
+  //vis_layers = getVisibleLayerIds(map,controlPointsLayer)
+  //console.log('did we get the visible layers ok ', vis_layers)
   //params.layerIds = vis_layers;
   // Because the this area of code is only executed once when the map loads we cant just use the visible
   // layers at the time of load.  Need to figure out a place to put this so when the queries (specifically the one a the 
@@ -933,6 +940,7 @@ function getVisibleLayerIds(map, layer){
         console.log(tempVis);
         allParams[i].layerIds = tempVis;
       }
+      console.log("allParams ", i, " are ", allParams[i].layerIds);
       console.log("end of layer");
       tempVis = [];
       //console.log(layerWidget.operationalItems.items[i]);
@@ -948,8 +956,14 @@ function getVisibleLayerIds(map, layer){
     //vis_layers = getVisibleLayerIds(map,controlPointsLayer)
 
     // Determine visibility
+
     checkVisibility(layerWidget);
 
+    console.log("updated allParams ", 0, " is ", allParams[0].layerIds )
+    
+    console.log("updated allParams ", 1, " is ", allParams[1].layerIds )
+
+    console.log("updated allParams ", 2, " is ", allParams[2].layerIds )
     console.log(layerWidget);
     //params.layerIds = vis_layers;
     var currentScale = mapView.scale;
@@ -974,6 +988,7 @@ function getVisibleLayerIds(map, layer){
     }
     var iPromises = new all(promises);
     iPromises.then(function (rArray) {
+      console.log('iPromises is ', iPromises);
       console.log('rArray is ', rArray);
       arrayUtils.map(rArray, function(response){
         var results = response.results;

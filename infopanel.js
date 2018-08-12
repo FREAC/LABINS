@@ -28,6 +28,18 @@ function queryInfoPanel (results, i) {
                                 '<p><b>Flooding Frequency ‐ Maximum:</b> ' + results[i-1].attributes.flodfreqma + '</p>' +
                                 '<p><b>Description:</b> ' + results[i-1].attributes.descript + '</p>',       
                                 );
+    } else if (results[i-1].attributes.layerName === 'Hi-Res Imagery Grid State Plane West') {
+        $('#informationdiv').html('<p>Hi-Res Imagery Grid State Plane West<b></b></p>' +
+                                '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=W&gridid=' + results[i-1].attributes.spw_id + '>' + 'Hi resolution images for ' + results[i-1].attributes.spw_id +'</a>'
+                                );
+    } else if (results[i-1].attributes.layerName === 'Hi-Res Imagery Grid State Plane East') {
+        $('#informationdiv').html('<p>Hi-Res Imagery Grid State Plane East<b></b></p>' +
+                                '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=E&gridid=' + results[i-1].attributes.spe_id + '>' + 'Hi resolution images for ' + results[i-1].attributes.spe_id +'</a>'
+                                );
+    } else if (results[i-1].attributes.layerName === 'Hi-Res Imagery Grid State Plane North') {
+        $('#informationdiv').html('<p>Hi-Res Imagery Grid State Plane North<b></b></p>' +
+                                '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i-1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i-1].attributes.spn_id +'</a>'
+                                );
     } else if (results[i-1].attributes.layerName === 'NGS Control Points') {
         $('#informationdiv').html('<p><b>NGS Control Points</b></p>' +
                                 'Control Point Name: ' + results[i-1].attributes.NAME + '</p>' +
@@ -137,11 +149,20 @@ function queryInfoPanel (results, i) {
         
     } else if (results[i-1].attributes.layerName === 'Township-Range-Section') {
         $('#informationdiv').html('<p><b>Section Lines</b> </p>' + 
-                                '<p><b>Township-Range-Section: </b>' + results[i-1].attributes.twnrngsec + '</p>'
+                                '<p><b>Section-Township-Range: </b>' + results[i-1].attributes.twnrngsec.substring(8,) + ' ' + results[i-1].attributes.twnrngsec.substring(1,4) + ' ' + results[i-1].attributes.twnrngsec.substring(5,8) + '</p>' +
+                                '<p><a target="_blank" href=http://www.labins.org/survey_data/landrecords/landrecords.cfm?town1=' + results[i-1].attributes.tr_dissolve.substring(0,2) + '&town2=' + results[i-1].attributes.tr_dissolve.substring(2,3) + '&range1='  + results[i-1].attributes.tr_dissolve.substring(3,5) + '&range2=' + results[i-1].attributes.tr_dissolve.substring(5,6) + '>' + 'Original GLO Survey Plats and Field Notes' + '</a></p>' +
+                                '<p><a target="_blank" href=http://199.73.242.221/Oculus/servlet/shell?command=hitlist&[catalog=6]&[entityType=any]&[searchBy=profile]&[profile=BSM+Office+Files]&[sortBy=Creator]&{STR+Coordinates=%20LK%20S0' + results[i-1].attributes.tr_dissolve.substring(0,2) + '%20' + results[i-1].attributes.twnrngsec.substring(0,4) + '%20' + results[i-1].attributes.twnrngsec.substring(4,8) + '}>' + 'Oculus Database - DEP Use Only' + '</a></p>'
                                 );
-    }
-    
-    else if (results[i-1].attributes.layerName === 'Certified Corners') {
+    } else if (results[i-1].attributes.layerName === 'Township-Range') {
+        $('#informationdiv').html('<p><b>Township-Range Lines</b> </p>' + 
+                                '<p><b>Township-Range: </b>' + results[i-1].attributes.tr_dissolve.substring(0,3) + ' ' + results[i-1].attributes.tr_dissolve.substring(3,) + '</p>'
+                                );
+    } else if (results[i-1].attributes.layerName === 'Geographic Names') {
+        $('#informationdiv').html('<p><b>Geographic Names</b> </p>' + 
+                                '<p><b>Feature Name: </b>' + results[i-1].attributes.feature_na + '</p>' +
+                                '<p><b>Feature Class: </b>' + results[i-1].attributes.feature_cl + '</p>'
+                                );
+    } else if (results[i-1].attributes.layerName === 'Certified Corners') {
         $('#informationdiv').html('<p><b>Certified Corners</b></p>' + 
                                 '<p><b>BLMID: </b>' + results[i-1].attributes.blmid + '</p>' +
                                 '<p><b>Quad Name: </b>' + results[i-1].attributes.tile_name + '</p>'

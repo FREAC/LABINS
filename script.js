@@ -155,18 +155,24 @@ require([
     }]
   });
 
-  var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/0";
-  var swfwmdLayer = new FeatureLayer({
+  var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/";
+  var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
     title: "SWFWMD Survey Benchmarks",
-    popupEnabled: false,
-    minScale: minimumDrawScale
+    minScale: minimumDrawScale,
+    sublayers: [{
+      id: 0,
+      title: "Survey Benchmarks",
+      visible: true,
+      popupEnabled: false
+    }]
   });
 
   var controlLinesURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/";
   var controlLinesLayer = new MapImageLayer({
     url: controlLinesURL,
     title: "Other Base Layers",
+    minScale: minimumDrawScale,
     sublayers: [{
       id: 9,
       title: "Soils June 2012 - Dept. of Agriculture",
@@ -176,17 +182,17 @@ require([
     }, {
       id: 8,
       title: "Hi-Res Imagery Grid: State Plane East",
-      visible: false,
+      visible: true,
       popupEnabled: false
     },{
       id: 7,
       title: "Hi-Res Imagery Grid: State Plane North",
-      visible: false,
+      visible: true,
       popupEnabled: false
     }, {
       id: 6,
       title: "Hi-Res Imagery Grid: State Plane West",
-      visible: false,
+      visible: true,
       popupEnabled: false
     }, {
       id: 5,
@@ -213,8 +219,24 @@ require([
     }, {
       id: 1,
       title: "Township-Range",
-      visible: false,
-      popupEnabled: false
+      visible: true,
+      popupEnabled: false,
+      labelsVisible: true,
+      labelingInfo: [{
+        //labelExpression: "[SUBSTRING(tr_dissolve, 0, 3)]",
+        //labelExpression: "[" + 'SUBSTR("tr_dissolve" 0, 3)' + "]",
+        labelExpression: "[tr_dissolve]",
+        labelPlacement: "always-horizontal",
+        symbol: {
+          type: "text", // autocasts as new TextSymbol()
+          color: [0, 0, 255, 1],
+          haloColor: [255, 255, 255],
+          haloSize: 2,
+          font: {
+            size: 11
+          }
+        }
+      }]
     }, {
       id: 0,
       title: "USGS Quads",
@@ -809,22 +831,24 @@ function getVisibleLayerIds(map, layer){
   allParams = [];
 
   tasks.push(new IdentifyTask(controlPointsURL));
-  tasks.push(new IdentifyTask('https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/'));
+  // tasks.push(new IdentifyTask(swfwmdURL));
   tasks.push(new IdentifyTask(controlLinesURL));
-  
+  tasks.push(new IdentifyTask(swfwmdURL));
+
+
   // Set the parameters for the Point Identify
   params = new IdentifyParameters();
   params.tolerance = 15;
   // see if we can get the visible layers
-  vis_layers = getVisibleLayerIds(map,controlPointsLayer)
+  //vis_layers = getVisibleLayerIds(map,controlPointsLayer)
   //console.log('did we get the visible layers ok ', vis_layers)
-  params.layerIds = vis_layers;
+  //params.layerIds = vis_layers;
   // Because the this area of code is only executed once when the map loads we cant just use the visible
   // layers at the time of load.  Need to figure out a place to put this so when the queries (specifically the one a the 
   // bottom of the section zoom) the getVisibileLayerIds gets called each time the zoom to feature is called.
   //
-  params.layerOption = "visible";
-  params.layerIds = [2, 0, 4, 5, 9, 8, 6];
+  params.layerOption = "all";
+  params.layerIds;
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
@@ -833,8 +857,8 @@ function getVisibleLayerIds(map, layer){
   // Set the parameters for the SWFWMD Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [0];
-  params.layerOption = "visible";
+  params.layerIds;
+  params.layerOption = "all";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
@@ -843,8 +867,8 @@ function getVisibleLayerIds(map, layer){
   // Set the parameters for the Line / polygon Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [2, 5, 0];
-  params.layerOption = "visible";
+  params.layerIds;
+  params.layerOption = "all";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
@@ -898,11 +922,49 @@ function getVisibleLayerIds(map, layer){
     }
   }
 
+
+  function checkVisibility (layerWidget) {
+    var tempVis = []
+    console.log(layerWidget);
+    for (var i=0; i < layerWidget.operationalItems.items.length; i++) {
+      //console.log(layerWidget.operationalItems.items[i]);
+      if (layerWidget.operationalItems.items[i].visible != false) {
+            //iterate through sublayers
+        for (var j=0; j < layerWidget.operationalItems.items[i].children.items.length; j++) {
+          //console.log(layerWidget.operationalItems.items[i].children.items[j]);
+          if (layerWidget.operationalItems.items[i].children.items[j].visible != false) {
+            console.log(layerWidget.operationalItems.items[i].children.items[j].layer.title);
+            tempVis.push(layerWidget.operationalItems.items[i].children.items[j].layer.id);
+          }
+        }
+        console.log(tempVis);
+        allParams[i].layerIds = tempVis;
+      }
+      console.log("allParams ", i, " are ", allParams[i].layerIds);
+      console.log("end of layer");
+      tempVis = [];
+      //console.log(layerWidget.operationalItems.items[i]);
+    }
+    console.log('visibility checked.');
+  }
+
+
   // multi service identifytask
   function executeIdentifyTask(event) {
     console.log('starting the executeIdentifyTask function')
     // first get the visible layers because that option doesnt work
     //vis_layers = getVisibleLayerIds(map,controlPointsLayer)
+
+    // Determine visibility
+
+    checkVisibility(layerWidget);
+
+    console.log("updated allParams ", 0, " is ", allParams[0].layerIds )
+    
+    console.log("updated allParams ", 1, " is ", allParams[1].layerIds )
+
+    console.log("updated allParams ", 2, " is ", allParams[2].layerIds )
+    console.log(layerWidget);
     //params.layerIds = vis_layers;
     var currentScale = mapView.scale;
     infoPanelData = [];
@@ -920,11 +982,14 @@ function getVisibleLayerIds(map, layer){
     }
     console.log('what does the event look like ', event)
     for (i = 0; i < tasks.length; i++) {
+      console.log(tasks[i]);
       console.log('what is this doing--- ', allParams[i])
       promises.push(tasks[i].execute(allParams[i]));
     }
     var iPromises = new all(promises);
     iPromises.then(function (rArray) {
+      console.log('iPromises is ', iPromises);
+      console.log('rArray is ', rArray);
       arrayUtils.map(rArray, function(response){
         var results = response.results;
         console.log('here are the objects we found in the section', results);
@@ -934,15 +999,16 @@ function getVisibleLayerIds(map, layer){
           console.log('the feature is ', feature, '  and the layer name is ', layerName)
           console.log('all of the results look like this ', results)
           feature.attributes.layerName = layerName;
-
           // only identify the corners that have an image
           if (layerName != 'Certified Corners') {
-            if (layerName === 'Township-Range-Section') {
-              // Do nothing
-            } else {
+            console.log(layerName);
+            // We want to show Original GLO survey plats and field notes now
+            // if (layerName === 'Township-Range-Section') {
+            //   // Do nothing
+            // } else {
               identifyElements.push(feature);
               infoPanelData.push(feature);
-            }
+            // }
           } else if (layerName === 'Certified Corners') {
             if (feature.attributes.is_image === 'Y') {
               infoPanelData.push(feature);
@@ -1250,7 +1316,7 @@ function getVisibleLayerIds(map, layer){
     // Set the parameters for the Identify
     params = new IdentifyParameters();
     //params.tolerance = 3;
-    params.layerIds = [layers];
+    //params.layerIds = [layers];
     params.layerOption = "visible";
     params.width = mapView.width;
     params.height = mapView.height;
@@ -1873,11 +1939,13 @@ function getVisibleLayerIds(map, layer){
     if (infoPanelData[indexVal].geometry.type === "polygon") {
       var ext = infoPanelData[indexVal].geometry.extent;
       var cloneExt = ext.clone();
-      mapView.goTo({
-        target: infoPanelData[indexVal],
-        extent: cloneExt.expand(1.75)  
-      });
-    // Remove current selection
+      if (infoPanelData[indexVal].attributes.layerName !== 'USGS Quads') {
+        mapView.goTo({
+          target: infoPanelData[indexVal],
+          extent: cloneExt.expand(1.75)  
+        });
+      }  
+      // Remove current selection
       selectionLayer.graphics.removeAll();
       console.log("it's a polygon");
       // Highlight the selected parcel
@@ -1969,6 +2037,7 @@ function getVisibleLayerIds(map, layer){
           target: infoPanelData[indexVal],
           extent: cloneExt.expand(1.75)  
         });
+
         // Remove current selection
         selectionLayer.graphics.removeAll();
         console.log("it's a polygon");

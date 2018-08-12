@@ -1085,7 +1085,6 @@ function getVisibleLayerIds(map, layer){
     
     return queryTask.execute(params)
     .then(function(response) {
-      console.log('query HELLO');
       console.log(response);
       if (response.features.length > 0) {
         return queryTask.execute(params);

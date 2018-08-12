@@ -1082,14 +1082,16 @@ function getVisibleLayerIds(map, layer){
       returnGeometry: true,
       outFields: '*'
     });
-
-    queryTask.execute(params)
+    
+    return queryTask.execute(params)
     .then(function(response) {
+      console.log('query HELLO');
       console.log(response);
-      if (response.features.length != 0) {
+      if (response.features.length > 0) {
         return queryTask.execute(params);
       } else {
         console.log('No features found.');
+        clearDiv('arraylengthdiv');
       }
     });
   }

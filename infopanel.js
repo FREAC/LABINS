@@ -46,7 +46,7 @@ function queryInfoPanel (results, i) {
                                 '<p>Latitude, Longitude: ' + results[i-1].attributes.DEC_LAT + ', ' +  results[i-1].attributes.DEC_LONG + '</p>' +
                                 '<p>County: ' + results[i-1].attributes.COUNTY + '</p>' + 
                                 '<p>PID: ' + results[i-1].attributes.PID + '</p>' + 
-                                '<p>Datasheet: ' + '<a target="_blank" href=' + results[i-1].attributes.DATASHEET2 + '>' + results[i-1].attributes.PID +'</a></p>',
+                                '<p>Datasheet: ' + '<a target="_blank" href=' + results[i-1].attributes.DATA_SRCE + '>' + results[i-1].attributes.PID +'</a></p>',
                                 );
     } else if (results[i-1].attributes.layerName === 'NGS Control Points QueryTask') {
         $('#informationdiv').html('<p><b>NGS Control Points</b></p>' +

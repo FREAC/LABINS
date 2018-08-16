@@ -1795,7 +1795,7 @@ function getVisibleLayerIds(map, layer){
     createTextBox('textQuery', 'Benchmark Name Example: CYP016')
     createSubmit('Submit by Name', 'submitNameQuery');
 
-    var submitButton = document.getElementById('submitQuery');
+    var submitButton = document.getElementById('submitNameQuery');
     var inputAfter = document.getElementById('textQuery');
 
     
@@ -1807,7 +1807,7 @@ function getVisibleLayerIds(map, layer){
 
     query(submitButton).on('click', function(e) {
       infoPanelData = [];
-      textQueryQuerytask(swfwmdURL, 'BENCHMARK_NAME', inputAfter.value)
+      textQueryQuerytask(swfwmdURL + '/0', 'BENCHMARK_NAME', inputAfter.value)
       .then(function (response) {
         for (i=0;i<response.features.length;i++) {
           response.features[i].attributes.layerName = 'Survey Benchmarks';

@@ -66,7 +66,7 @@ function queryInfoPanel (results, i) {
                                 );
     } else if (results[i-1].attributes.layerName === 'Parcels') {
         $('#informationdiv').html('<p><b>Parcels</b></p>' +
-                                '<p><b>Parcel ID:</b> ' + results[i-1].attributes.CO_NO + '</p>' +
+                                '<p><b>County ID:</b> ' + results[i-1].attributes.CO_NO + '</p>' +
                                 '<p><b>Parcel ID:</b> ' + results[i-1].attributes.PARCEL_ID + '</p>' +
                                 '<p><b>City:</b> ' + results[i-1].attributes.OWN_CITY + '</p>' +
                                 '<p><b>State:</b> ' + results[i-1].attributes.OWN_STATE + '</p>' +

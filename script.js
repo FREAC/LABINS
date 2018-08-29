@@ -888,6 +888,9 @@ function getVisibleLayerIds(map, layer){
     console.log(mapView.scale);
       if (mapView.scale < minimumDrawScale) {
         event.stopPropagation();
+        clearDiv('informationdiv');
+        document.getElementById('numinput').value = "";
+        clearDiv('arraylengthdiv');
         executeIdentifyTask(event);
         togglePanel();
       }  

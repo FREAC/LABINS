@@ -6,7 +6,6 @@ function queryInfoPanel (results, i) {
                                 '<b>Quad Name:</b> ' + results[i-1].attributes.tile_name + '</p>' + 
                                 '<b> Quad Number: </b>' + results[i-1].attributes.q_902_83_i + '</p>' +
                                 '<p><b>Latitude, Longitude:</b> ' + results[i-1].attributes.latitude + ', ' + results[i-1].attributes.longitude + '</p>' +
-                                '<p><b>County:</b> ' + results[i-1].attributes.quad + '</p>' + 
                                 '<p><b>Layer Name:</b> ' + results[i-1].attributes.layerName + '</p>' 
                                 );
     } else if (results[i-1].attributes.layerName === 'County Boundaries') {
@@ -68,8 +67,7 @@ function queryInfoPanel (results, i) {
         $('#informationdiv').html('<p><b>Parcels</b></p>' +
                                 '<p><b>County ID:</b> ' + results[i-1].attributes.CO_NO + '</p>' +
                                 '<p><b>Parcel ID:</b> ' + results[i-1].attributes.PARCEL_ID + '</p>' +
-                                '<p><b>City:</b> ' + results[i-1].attributes.OWN_CITY + '</p>' +
-                                '<p><b>State:</b> ' + results[i-1].attributes.OWN_STATE + '</p>' +
+                                '<p><b>City:</b> ' + results[i-1].attributes.PHY_CITY + '</p>' +
                                 '<p><b>Address:</b> ' + results[i-1].attributes.PHY_ADDR1 + '</p>'
                                 );
     } else if (results[i-1].attributes.layerName === 'Preliminary NGS Points') {

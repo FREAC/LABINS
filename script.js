@@ -939,9 +939,14 @@ function getVisibleLayerIds(map, layer){
         }
         console.log(tempVis);
         allParams[i].layerIds = tempVis;
+        console.log(allParams[i].layerIds);
       }
       console.log("allParams ", i, " are ", allParams[i].layerIds);
       console.log("end of layer");
+      if (allParams[i].layerIds.length == 0) {
+        console.log("allParams are empty: Look! ", allParams[i].layerIds)
+        allParams[i].layerIds = [-1];
+      }
       tempVis = [];
       //console.log(layerWidget.operationalItems.items[i]);
     }

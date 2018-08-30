@@ -7,7 +7,8 @@ function queryInfoPanel (results, i) {
                                     '<b>Quad Name:</b> ' + results[i-1].attributes.tile_name + '<br>' +
                                     '<b> Quad Number: </b>' + results[i-1].attributes.q_902_83_i + '<br>' +
                                     '<b>Latitude, Longitude:</b> ' + results[i-1].attributes.latitude + ', ' + results[i-1].attributes.longitude + '<br>' +
-                                    '<b>Layer Name:</b> ' + results[i-1].attributes.layerName 
+                                    '<b>Layer Name:</b> ' + results[i-1].attributes.layerName + '<br>' +
+                                    '<button id= "' + 'infoPanelZoom' + '" class="btn btn-primary">Zoom to Feature</button>'
                                     );
         } else if (results[i-1].attributes.layerName === 'County Boundaries') {
             $('#informationdiv').append('<p style= "font-size: 15px"><b>County Boundaries</b></p>' + 

@@ -1061,7 +1061,7 @@ function getVisibleLayerIds(map, layer){
             scale: currentScale
         });
         }
-      }     
+      }    
       queryInfoPanel(infoPanelData, 1);
       buildUniquePanel();
       //showPopup(identifyElements); 

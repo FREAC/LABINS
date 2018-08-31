@@ -2071,7 +2071,42 @@ function getVisibleLayerIds(map, layer){
       }
   });
 
+  // set up alert for dynamically created zoom to feature buttons
+  $(document).on('click', "button[name='zoom']", function () {
+    
+          
+      // Go to the selected parcel
+      if (infoPanelData[this.id-1].geometry.type === "polygon") {
+        console.log('its a polygon');
+        var ext = infoPanelData[this.id-1].geometry.extent;
+        var cloneExt = ext.clone();
+        mapView.goTo({
+          target: infoPanelData[this.id-1],
+          extent: cloneExt.expand(1.75)  
+        });
 
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
+        console.log("it's a polygon");
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(infoPanelData[this.id-1].geometry, highlightSymbol);
+        selectionLayer.graphics.add(highlightGraphic);
+      } else if (infoPanelData[this.id-1].geometry.type === "point") {
+        console.log("it's a point");
+
+       
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
+
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(infoPanelData[this.id-1].geometry, highlightPoint);
+        selectionLayer.graphics.add(highlightGraphic);
+        mapView.goTo({target: 
+          infoPanelData[this.id-1].geometry,
+          zoom: 15
+        });
+      }
+  });
 
   /////////////
   // Widgets //

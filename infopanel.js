@@ -1,14 +1,13 @@
 function queryInfoPanel (results, i) {
     console.log(results);
     // Set append templates for information panel
-    for (var i = 1; i < results.length+1; i++) {
+    for (var i = 1; i <= results.length; i++) {
         if (results[i-1].attributes.layerName === 'USGS Quads') {
             $('#informationdiv').append('<p style= "font-size: 15px"><b>USGS Quads</b></p>' + 
                                     '<b>Quad Name:</b> ' + results[i-1].attributes.tile_name + '<br>' +
                                     '<b> Quad Number: </b>' + results[i-1].attributes.q_902_83_i + '<br>' +
                                     '<b>Latitude, Longitude:</b> ' + results[i-1].attributes.latitude + ', ' + results[i-1].attributes.longitude + '<br>' +
-                                    '<b>Layer Name:</b> ' + results[i-1].attributes.layerName + '<br>' +
-                                    '<button id= "' + 'infoPanelZoom' + '" class="btn btn-primary">Zoom to Feature</button>'
+                                    '<b>Layer Name:</b> ' + results[i-1].attributes.layerName + '<br>'
                                     );
         } else if (results[i-1].attributes.layerName === 'County Boundaries') {
             $('#informationdiv').append('<p style= "font-size: 15px"><b>County Boundaries</b></p>' + 
@@ -31,15 +30,15 @@ function queryInfoPanel (results, i) {
                                     );
         } else if (results[i-1].attributes.layerName === 'Hi-Res Imagery Grid State Plane West') {
             $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery Grid State Plane West<b></b></p>' +
-                                    '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=W&gridid=' + results[i-1].attributes.spw_id + '>' + 'Hi resolution images for ' + results[i-1].attributes.spw_id +'</a>'
+                                    '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=W&gridid=' + results[i-1].attributes.spw_id + '>' + 'Hi resolution images for ' + results[i-1].attributes.spw_id +'</a><br>'
                                     );
         } else if (results[i-1].attributes.layerName === 'Hi-Res Imagery Grid State Plane East') {
             $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery Grid State Plane East</b></p>' +
-                                    '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=E&gridid=' + results[i-1].attributes.spe_id + '>' + 'Hi resolution images for ' + results[i-1].attributes.spe_id +'</a>'
+                                    '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=E&gridid=' + results[i-1].attributes.spe_id + '>' + 'Hi resolution images for ' + results[i-1].attributes.spe_id +'</a><br>'
                                     );
         } else if (results[i-1].attributes.layerName === 'Hi-Res Imagery Grid State Plane North') {
             $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery Grid State Plane North</b></p>' +
-                                    '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i-1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i-1].attributes.spn_id +'</a>'
+                                    '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i-1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i-1].attributes.spn_id +'</a><br>'
                                     );
         } else if (results[i-1].attributes.layerName === 'NGS Control Points') {
             $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
@@ -177,15 +176,15 @@ function queryInfoPanel (results, i) {
                 
             }
         }
-        $('#informationdiv').append('<hr>')
-        
+        $('#informationdiv').append('<br>');
+        $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
+        $('#informationdiv').append('<hr>');
+   
     }
-    currentIndex = i-1;
-    console.log(i);
-    //$('#numinput').val(parseInt(i));
+        //$('#numinput').val(parseInt(i));
     if (i == 1) {
     $('#arraylengthdiv').html((parseInt(i-1)) + ' feature found.');
     } else {
         $('#arraylengthdiv').html((parseInt(i-1)) + ' features found. ');
-    }
+    }   
 }

@@ -210,7 +210,18 @@ require([
       title: "City Limits",
       visible: false,
       //cityLimitsTemplate,
-      popupEnabled: false
+      popupEnabled: false,
+      renderer: {
+        type: "simple", 
+        symbol: {
+          type: "simple-fill",
+          style: "none",
+          outline: {
+            style: "dash",
+            width: 1.25
+          }
+        } 
+      },
     }, {
       id: 2,
       title: "Township-Range-Section",

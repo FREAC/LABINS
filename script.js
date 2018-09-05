@@ -1303,29 +1303,29 @@ function getVisibleLayerIds(map, layer){
 
 //Quad select
 //buildSelectPanel(controlLinesURL + "0", "tile_name", "Zoom to a Quad", "selectQuadPanel");
+
+function getGeometry (url, attribute, value) {
+
+  var task = new QueryTask({
+  url: url
+  });
+  var query = new Query();
+  query.returnGeometry = true;
+  //query.outFields = ['*'];
+  query.where = attribute + " = '" + value + "'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+
+  console.log(task.execute(query));
+  return task.execute(query);
+
   
-  function getGeometry (url, attribute, value) {
+  
+  
 
-    var task = new QueryTask({
-    url: url
-    });
-    var query = new Query();
-    query.returnGeometry = true;
-    //query.outFields = ['*'];
-    query.where = attribute + " = '" + value + "'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+    // for (i=0; i<results.features.length; i++) {
+    //   multiPolygonGeometries.push(results.features[i]);
+    // }
 
-    console.log(task.execute(query));
-    return task.execute(query);
-
-    
-    
-    
-
-      // for (i=0; i<results.features.length; i++) {
-      //   multiPolygonGeometries.push(results.features[i]);
-      // }
-
-  }
+}  
 
   // unused, could be removed
   function dataQueryIdentify (url, response, layers) {
@@ -1403,22 +1403,22 @@ function getVisibleLayerIds(map, layer){
     return queryTask.execute(params);
   }
 
-  function createCountyDropdown () {
+  function createCountyDropdown (attributeURL, countyAttribute) {
     var countyDropdown = document.createElement('select');
     countyDropdown.setAttribute('id', 'countyQuery');
     countyDropdown.setAttribute('class', 'form-control');
     document.getElementById('parametersQuery').appendChild(countyDropdown);
-    buildSelectPanel(controlLinesURL + "4", "ctyname", "Select a County", "countyQuery");
+    buildSelectPanel(attributeURL, countyAttribute, "Select a County", "countyQuery");
 
 
   }
 
-  function createQuadDropdown () {
+  function createQuadDropdown (attributeURL, quadAttribute) {
     var quadDropdown = document.createElement('select');
     quadDropdown.setAttribute('id', 'quadQuery');
     quadDropdown.setAttribute('class', 'form-control');
     document.getElementById('parametersQuery').appendChild(quadDropdown);
-    buildSelectPanel(controlLinesURL + "0", "tile_name", "Select a Quad", "quadQuery")
+    buildSelectPanel(attributeURL, quadAttribute, "Select a Quad", "quadQuery")
     
   }
 
@@ -1463,8 +1463,8 @@ function getVisibleLayerIds(map, layer){
     clearDiv('parametersQuery');
     // add dropdown, input, and submit elements
     addDescript();
-    createCountyDropdown();    
-    createQuadDropdown();
+    createCountyDropdown(controlPointsURL + '0', 'county');    
+    createQuadDropdown(controlPointsURL + '0', 'quad');
     createTextBox('textQuery', 'Enter NGS Name or PID.');
     createSubmit();
 
@@ -1575,8 +1575,8 @@ function getVisibleLayerIds(map, layer){
 
     clearDiv('parametersQuery');
     addDescript();
-    createCountyDropdown();
-    createQuadDropdown();
+    createCountyDropdown(controlPointsURL + '5', 'cname');
+    createQuadDropdown(controlPointsURL + '5', 'tile_name');
     createTextBox('IDQuery', 'Enter an ID. Example: 1');
     createSubmit();
 
@@ -1657,8 +1657,8 @@ function getVisibleLayerIds(map, layer){
   } else if (layerSelection === 'Tide Stations') {
     clearDiv('parametersQuery');
     addDescript();
-    createCountyDropdown();
-    createQuadDropdown();
+    createCountyDropdown(controlPointsURL + '4', 'countyname');
+    createQuadDropdown(controlPointsURL + '4', 'quadname');
     createTextBox('textQuery', 'Enter Tide Station ID or Name');
     createSubmit();
     var countyDropdownAfter = document.getElementById('countyQuery');
@@ -1756,7 +1756,7 @@ function getVisibleLayerIds(map, layer){
   } else if (layerSelection === 'Erosion Control Line') {
     clearDiv('parametersQuery');
     addDescript();
-    createCountyDropdown();
+    createCountyDropdown(controlPointsURL + '9', 'county');
     createTextBox('textQuery', 'Enter an ECL Name')
     createSubmit();
 

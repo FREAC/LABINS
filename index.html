@@ -68,6 +68,7 @@
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelBasemaps" aria-haspopup="true"><span class="glyphicon glyphicon-th-large"></span> Basemaps</a></li>
         <li><a role="menuitem" tebindex="0" data-target="#panelInfo" aria-haspopup="true"><span class="glyphicon glyphicon-info-sign"></span> Info</a></li>
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelPrint" aria-haspopup="true"><span class="glyphicon glyphicon-print"></span> Print</a></li>
+        <li><a role="menuitem" tabindex="0" href="#" data-target="#panelBookmarks" aria-haspopup="true"><span class="glyphicon glyphicon-bookmark"></span> Bookmarks</a></li>
         <li><a role="menuitem" tabindex="0" href="#" id="calciteToggleNavbar" aria-haspopup="true"><span class="glyphicon glyphicon-fullscreen"></span> Toggle Navigation Bar</a></li>
       </ul>
     </div>
@@ -304,6 +305,26 @@
         </div>
       </div>
     </div>
+
+    <!-- Panel Bookmarks -->
+      
+    <div id="panelBookmarks" class="panel collapse">
+      <div id="headingBookmarks" class="panel-heading" role="tab">
+        <div class="panel-title">
+          <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseBookmarks" aria-expanded="true" aria-controls="collapseBookmarks">
+            <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
+            <span class="panel-label">Bookmarks</span>
+          </a> 
+          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelBookmarks">
+            <span class="esri-icon esri-icon-close" aria-hidden="true"></span>
+          </a>  
+        </div>
+      </div>
+      <div id="collapseBookmarks" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingBookmarks">
+        <div id="bookmarks" class="panel-body" style="text-align: justify">
+        </div>
+    </div>
+</div>
 
 </div>
 

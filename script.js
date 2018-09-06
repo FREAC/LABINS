@@ -459,7 +459,7 @@ var highlightLine = {
         uniqueValues.sort();
         uniqueValues.forEach(function (value) {
           var option = domConstruct.create("option");
-          option.text = value;
+          option.text = value.toUpperCase();
           dom.byId(panelParam).add(option);
         });
       });
@@ -1305,6 +1305,8 @@ function getVisibleLayerIds(map, layer){
 //buildSelectPanel(controlLinesURL + "0", "tile_name", "Zoom to a Quad", "selectQuadPanel");
 
 function getGeometry (url, attribute, value) {
+  var value = value.replace(/ *\([^)]*\) */g, "")
+  console.log(value);
 
   var task = new QueryTask({
   url: url
@@ -1312,7 +1314,7 @@ function getGeometry (url, attribute, value) {
   var query = new Query();
   query.returnGeometry = true;
   //query.outFields = ['*'];
-  query.where = attribute + " = '" + value + "'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+  query.where = attribute + " LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
 
   console.log(task.execute(query));
   return task.execute(query);
@@ -1475,7 +1477,7 @@ function getGeometry (url, attribute, value) {
       resetElements(countyDropdownAfter);
       infoPanelData = [];      
 
-      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
         dataQueryQuerytask(controlPointsURL + '0', response)
@@ -1585,9 +1587,10 @@ function getGeometry (url, attribute, value) {
     query(countyDropdownAfter).on('change', function(e) {
       clearDiv('informationdiv');
       resetElements(countyDropdownAfter);
-      infoPanelData = [];      
+      infoPanelData = [];
+      console.log(e.target.value);      
 
-      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
         dataQueryQuerytask(controlPointsURL + '5', response)
@@ -1668,7 +1671,7 @@ function getGeometry (url, attribute, value) {
       resetElements(countyDropdownAfter);
       infoPanelData = [];      
 
-      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
         dataQueryQuerytask(controlPointsURL + '4', response)
@@ -1776,7 +1779,7 @@ function getGeometry (url, attribute, value) {
       resetElements(countyDropdownAfter);
       infoPanelData = [];      
       console.log('grabbing geometry');
-      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
         dataQueryQuerytask(controlPointsURL + '9', response)

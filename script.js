@@ -481,6 +481,7 @@ var highlightLine = {
     });
     task.execute(params)
       .then(function (response) {
+        console.log(response);
         // Go to extent of features and highlight
         mapView.goTo(response.features);
         selectionLayer.graphics.removeAll();
@@ -677,7 +678,7 @@ var highlightLine = {
   //Zoom to feature
   query("#selectCountyPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCountyPanel'));
-    return zoomToFeature(controlLinesURL + "4", e.target.value, "ctyname")
+    return zoomToFeature(controlLinesURL + "4", e.target.value, "ucname")
   });
 
   //Build Quad Dropdown panel

@@ -174,7 +174,7 @@
         basemap: "gray"
       });
 
-      var view = new MapView({
+      var mapView = new MapView({
         container: "viewDiv",
         map: map,
         center: [-119.4179, 36.7783],
@@ -346,7 +346,7 @@
       function bookmarkEvent(evt) {
         if (domClass.contains(evt.target, "esriAddBookmark")) {
           var bmTable = dojoQuery(".esriBookmarkTable")[0];
-          var item = domConstruct.toDom('<div class="esriBookmarkItem" data-fromuser="true" data-extent="' + view.extent.xmin + ',' + view.extent.ymin + ',' + view.extent.xmax + ',' + view.extent.ymax + ',' + view.extent.spatialReference.wkid +
+          var item = domConstruct.toDom('<div class="esriBookmarkItem" data-fromuser="true" data-extent="' + mapView.extent.xmin + ',' + mapView.extent.ymin + ',' + mapView.extent.xmax + ',' + mapView.extent.ymax + ',' + mapView.extent.spatialReference.wkid +
             '"><div class="esriBookmarkLabel">New Bookmark</div><div title="Remove" class="esriBookmarkRemoveImage"></div><div title="Edit" class="esriBookmarkEditImage"></div></div>');
 
           domConstruct.place(item, bmTable, "last");
@@ -360,7 +360,7 @@
               domConstruct.destroy(editItem);
               sExt = {
                 name: editItem.value,
-                extent: view.extent
+                extent: mapView.extent
               }
               extents.push(sExt);
               var stringifedExtents = JSON.stringify(extents);
@@ -377,7 +377,7 @@
         }
 
         var extArr = evt.target.dataset.extent.split(",");
-        view.goTo(new Extent({
+        mapView.goTo(new Extent({
           xmin: extArr[0],
           ymin: extArr[1],
           xmax: extArr[2],

@@ -507,7 +507,7 @@ var highlightLine = {
           if (domClass.contains(evt.target, "esriAddBookmark")) {
             var bmTable = query(".esriBookmarkTable")[0];
             var item = domConstruct.toDom('<div class="esriBookmarkItem" data-fromuser="true" data-extent="' + mapView.extent.xmin + ',' + mapView.extent.ymin + ',' + mapView.extent.xmax + ',' + mapView.extent.ymax + ',' + mapView.extent.spatialReference.wkid +
-              '"><div class="esriBookmarkLabel">New Bookmark</div><div title="Remove" class="esriBookmarkRemoveImage"></div><div title="Edit" class="esriBookmarkEditImage"></div></div>');
+              '"><div class="esriBookmarkLabel"></div><div title="Remove" class="esriBookmarkRemoveImage"></div><div title="Edit" class="esriBookmarkEditImage"></div></div>');
   
             domConstruct.place(item, bmTable, "last");
             var output = domGeom.position(item, true);

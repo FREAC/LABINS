@@ -371,42 +371,16 @@ var highlightLine = {
         var bookmarkJSON = {
           first: {
             "extent": {
-              "xmin": -12975151.579395358,
-              "ymin": 3993919.9969406975,
-              "xmax": -12964144.647322308,
-              "ymax": 4019507.292159126,
+              "xmin": -9382178.056935968,
+              "ymin": 3559339.642506011,
+              "xmax": -9381031.501511535,
+              "ymax": 3559579.702548002,
               "spatialReference": {
                 "wkid": 102100,
                 "latestWkid": 3857
               }
             },
-            "name": "Palm Springs, CA"
-          },
-          second: {
-            "extent": {
-              "xmin": -13052123.666878553,
-              "ymin": 4024962.9850527253,
-              "xmax": -13041116.734805504,
-              "ymax": 4050550.280271154,
-              "spatialReference": {
-                "wkid": 102100,
-                "latestWkid": 3857
-              }
-            },
-            "name": "Redlands, California"
-          },
-          third: {
-            "extent": {
-              "xmin": -13048836.874662295,
-              "ymin": 3844839.127898948,
-              "xmax": -13037829.942589246,
-              "ymax": 3870426.4231173764,
-              "spatialReference": {
-                "wkid": 102100,
-                "latestWkid": 3857
-              }
-            },
-            "name": "San Diego, CA"
+            "name": "Florida Prime Meridian"
           },
         };
   
@@ -549,6 +523,7 @@ var highlightLine = {
                   extent: mapView.extent
                 }
                 extents.push(sExt);
+                console.log(sExt);
                 var stringifedExtents = JSON.stringify(extents);
                 localStorage.setItem("myBookmarks", stringifedExtents);
               }

@@ -166,7 +166,8 @@ function queryInfoPanel (results, i) {
         } else if (results[i-1].attributes.layerName === 'Certified Corners') {
             $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' + 
                                     '<b>BLMID: </b>' + results[i-1].attributes.blmid + '<br>' +
-                                    '<b>Quad Name: </b>' + results[i-1].attributes.tile_name + '<br>'
+                                    '<b>Quad Name: </b>' + results[i-1].attributes.tile_name + '<br>' +
+                                    '<b>PDF: </b><a target="_blank" href=' + results[i-1].attributes.pdf + '>'+ results[i-1].attributes.pdf.substring(44,55)  + '</a><br>'
                                     );
             //console.log(results[i-1].attributes.image1);
             for (var prop in results[i-1].attributes) {

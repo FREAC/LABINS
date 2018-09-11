@@ -1331,6 +1331,7 @@ function getVisibleLayerIds(map, layer){
         return queryTask.execute(params);
       } else {
         console.log('No features found.');
+        $("#informationdiv").append("No features found.");
         clearDiv('arraylengthdiv');
       }
     });
@@ -1596,7 +1597,18 @@ function getGeometry (url, attribute, value) {
       // possibly could be limited to return only necessary outfields
       outFields: '*'
     });
-    return queryTask.execute(params);
+    return queryTask.execute(params)
+    .then(function(response) {
+      console.log(response);
+      if (response.features.length > 0) {
+        return queryTask.execute(params);
+      } else {
+        togglePanel();
+        console.log('No features found.');
+        $('#informationdiv').append("No features found.");
+        clearDiv('arraylengthdiv');
+      }
+    });
   }
 
   // data query by text
@@ -1624,7 +1636,18 @@ function getGeometry (url, attribute, value) {
       // possibly could be limited to return only necessary outfields
       outFields: '*'
     });
-    return queryTask.execute(params);
+    return queryTask.execute(params)
+    .then(function(response) {
+      console.log(response);
+      if (response.features.length > 0) {
+        return queryTask.execute(params);
+      } else {
+        togglePanel();
+        console.log('No features found.');
+        $('#informationdiv').append("No features found.");
+        clearDiv('arraylengthdiv');
+      }
+    });;
   }
 
   function createCountyDropdown (attributeURL, countyAttribute) {

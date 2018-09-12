@@ -23,6 +23,7 @@ require([
   "esri/geometry/SpatialReference",
 
   // Widgets
+  "esri/widgets/CoordinateConversion",
   "esri/widgets/BasemapGallery",
   "esri/widgets/Search",
   "esri/widgets/Legend",
@@ -79,6 +80,7 @@ require([
   webMercatorUtils,
   BufferParameters,
   SpatialReference,
+  CoordinateConversion,
   Basemaps,
   Search,
   Legend,
@@ -2440,6 +2442,12 @@ function getGeometry (url, attribute, value) {
   });
   mapView.ui.add(locateBtn, "top-left");
 
+  //Coordinates widget
+  var ccWidget = new CoordinateConversion({
+    container: "coordinatesDiv",
+    view: mapView
+  });
+  
   // Fires after the user's location has been found
   /*locateBtn.on("locate", function(event) {
     var bufferGeometry = event.target.graphic.geometry;

@@ -68,6 +68,7 @@
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelBasemaps" aria-haspopup="true"><span class="glyphicon glyphicon-th-large"></span> Basemaps</a></li>
         <li><a role="menuitem" tebindex="0" data-target="#panelInfo" aria-haspopup="true"><span class="glyphicon glyphicon-info-sign"></span> Info</a></li>
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelPrint" aria-haspopup="true"><span class="glyphicon glyphicon-print"></span> Print</a></li>
+        <li><a role="menuitem" tabindex="0" href="#" data-target="#panelCoordinates" aria-haspopup="true"><span class="glyphicon glyphicon-map-marker"></span> Coordinates</a></li>
         <li><a role="menuitem" tabindex="0" href="#" data-target="#panelBookmarks" aria-haspopup="true"><span class="glyphicon glyphicon-bookmark"></span> Personal Bookmarks</a></li>
         <li><a role="menuitem" tabindex="0" href="#" id="calciteToggleNavbar" aria-haspopup="true"><span class="glyphicon glyphicon-fullscreen"></span> Toggle Navigation Bar</a></li>
       </ul>
@@ -306,27 +307,43 @@
       </div>
     </div>
 
+    <!-- Panel Coordinates -->
+
+  <div id="panelCoordinates" class="panel collapse">
+    <div id="headingCoordinates" class="panel-heading" role="tab">
+      <div class="panel-title">
+        <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseCoordinates" aria-expanded="false" aria-controls="collapseCoordinates"><span class="glyphicon glyphicon-list" aria-hidden="true"></span><span class="panel-label">Coordinates</span></a> 
+        <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelCoordinates"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a> 
+      </div>
+    </div>
+    <div id="collapseCoordinates" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingCoordinates">
+      <div class="panel-body">            
+        <div id="coordinatesDiv"></div>
+      </div>
+    </div>
+  </div>
+
     <!-- Panel Bookmarks -->
       
-    <div id="panelBookmarks" class="panel collapse">
-      <div id="headingBookmarks" class="panel-heading" role="tab">
-        <div class="panel-title">
-          <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseBookmarks" aria-expanded="true" aria-controls="collapseBookmarks">
-            <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
-            <span class="panel-label">Personal Bookmarks</span>
-            <span class="glyphicon glyphicon-info-sign" title="Note: if browsing history is cleared, bookmarks will be lost" aria-hidden="false">
-            </span>
-          </a> 
-          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelBookmarks">
-            <span class="esri-icon esri-icon-close" aria-hidden="true"></span>
-          </a>  
-        </div>
+  <div id="panelBookmarks" class="panel collapse">
+    <div id="headingBookmarks" class="panel-heading" role="tab">
+      <div class="panel-title">
+        <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseBookmarks" aria-expanded="true" aria-controls="collapseBookmarks">
+          <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
+          <span class="panel-label">Personal Bookmarks</span>
+          <span class="glyphicon glyphicon-info-sign" title="Note: if browsing history is cleared, bookmarks will be lost" aria-hidden="false">
+          </span>
+        </a> 
+        <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelBookmarks">
+          <span class="esri-icon esri-icon-close" aria-hidden="true"></span>
+        </a>  
       </div>
-      <div id="collapseBookmarks" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingBookmarks">
-        <div id="bookmarksDiv" class="panel-body" style="text-align: justify">
-        </div>
     </div>
-</div>
+    <div id="collapseBookmarks" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingBookmarks">
+      <div id="bookmarksDiv" class="panel-body" style="text-align: justify">
+      </div>
+    </div>
+  </div>
 
 </div>
 

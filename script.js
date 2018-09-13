@@ -2157,6 +2157,18 @@ function getGeometry (url, attribute, value) {
     $('#numinput').val('');
     $('#arraylengthdiv').html('');
   });
+  
+  // dynamically add and remove coordinates widget
+  var coordStatus;
+  on(dom.byId("coordButton"), "click", function(evt) {
+    if (coordStatus != 1) {
+    mapView.ui.add(ccWidget, "bottom-left");
+    coordStatus = 1;
+    } else {
+      mapView.ui.remove(ccWidget);
+      coordStatus = 0;
+    }
+  });
 
   // //Custom Zoom to feature
   // mapView.popup.on("trigger-action", function (evt) {
@@ -2447,6 +2459,7 @@ function getGeometry (url, attribute, value) {
     container: "coordinatesDiv",
     view: mapView
   });
+  //mapView.ui.add(ccWidget, "bottom-left");
   
   // Fires after the user's location has been found
   /*locateBtn.on("locate", function(event) {
@@ -2470,5 +2483,8 @@ function getGeometry (url, attribute, value) {
 
 var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
+  
+var coordBtn = document.getElementById("coordButton");
+  mapView.ui.add(coordBtn, "top-left");
   
 });

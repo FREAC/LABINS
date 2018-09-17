@@ -131,6 +131,11 @@ background-color: #0d3b4b
   height: 32px;
 }
 
+#coordButton {
+  width: 32px;
+  height: 32px;
+}
+
 /*
 Print Widget
 */
@@ -361,17 +366,4 @@ Bookmark Styles
   content: "";
   display: table;
   clear: both;
-}
-
-/*
-Coordinates
-*/
-
-.esri-coordinate-conversion__row {
-  background-color: #0d3b4b;
-  color: white;
-}
-
-.esri-coordinate-conversion__display:hover {
-  background-color: #4a6c78;
 }

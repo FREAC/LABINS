@@ -6,6 +6,7 @@ require([
   "esri/layers/FeatureLayer",
   "esri/tasks/QueryTask",
   "esri/tasks/support/Query",
+  "esri/request",
   "esri/geometry/geometryEngine",
   "esri/geometry/Extent",
   "esri/layers/GraphicsLayer",
@@ -64,6 +65,7 @@ require([
   FeatureLayer,
   QueryTask,
   Query,
+  esriRequest,
   geometryEngine,
   Extent,
   GraphicsLayer,
@@ -164,7 +166,8 @@ require([
     }]
   });
 
-  var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer";
+  var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
+  //var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/"; //nonworking url
   var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
     title: "SWFWMD Survey Benchmarks",
@@ -1062,24 +1065,50 @@ function getVisibleLayerIds(map, layer){
 
   tasks = [];
   allParams = [];
+  var serviceURLs = [controlPointsURL, controlLinesURL, swfwmdURL];
 
-  tasks.push(new IdentifyTask(controlPointsURL));
-  // tasks.push(new IdentifyTask(swfwmdURL));
-  tasks.push(new IdentifyTask(controlLinesURL));
-  tasks.push(new IdentifyTask(swfwmdURL));
+  //Find online services
+  function checkService(url) {
+    var requestHandler = esriRequest(url, {
+      query: {
+        f: 'json'
+      },
+      responseType: 'json'
+    }).then(function(response){
+      console.log(response)
+    });
+  }
+
+  for (i=0; i<serviceURLs.length; i++) {
+    checkService(serviceURLs[i])
+  }
+
+  // for (i=0; i<serviceURLs.length; i++) {
+  //   esriRequest(serviceURLs[i], {
+  //     query: {
+  //       f: 'json'
+  //     },
+  //     responseType: "json"
+  //   }).then(function(response){
+  //     // The service is good to go
+  //     console.log("url response", response.url);
+  //     tasks.push(new IdentifyTask(response.url));
+  //   });
+  // }
+
+  // console.log(tasks);
+
+  //  tasks.push(new IdentifyTask(controlPointsURL));
+  // // tasks.push(new IdentifyTask(swfwmdURL));
+  //  tasks.push(new IdentifyTask(controlLinesURL));
+  //  tasks.push(new IdentifyTask(swfwmdURL));
+
+  //  console.log(tasks);
 
 
   // Set the parameters for the Point Identify
   params = new IdentifyParameters();
   params.tolerance = 15;
-  // see if we can get the visible layers
-  //vis_layers = getVisibleLayerIds(map,controlPointsLayer)
-  //console.log('did we get the visible layers ok ', vis_layers)
-  //params.layerIds = vis_layers;
-  // Because the this area of code is only executed once when the map loads we cant just use the visible
-  // layers at the time of load.  Need to figure out a place to put this so when the queries (specifically the one a the 
-  // bottom of the section zoom) the getVisibileLayerIds gets called each time the zoom to feature is called.
-  //
   params.layerOption = "all";
   params.layerIds;
   params.width = mapView.width;

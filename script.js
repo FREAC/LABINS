@@ -35,6 +35,7 @@ require([
   "esri/widgets/Locate",
   "esri/core/watchUtils",
   "dojo/_base/array",
+  "dojo/Deferred",
   "dojo/on",
   "dojo/dom",
   "dojo/dom-class",
@@ -90,7 +91,7 @@ require([
   ScaleBar,
   Home,
   Locate,
-  watchUtils, arrayUtils, on, dom, domClass, all, domConstruct, domGeom, keys, JSON, lang, query, Color,
+  watchUtils, arrayUtils, Deferred, on, dom, domClass, all, domConstruct, domGeom, keys, JSON, lang, query, Color,
   Collapse,
   Dropdown,
   CalciteMaps,
@@ -1066,22 +1067,37 @@ function getVisibleLayerIds(map, layer){
   tasks = [];
   allParams = [];
   var serviceURLs = [controlPointsURL, controlLinesURL, swfwmdURL];
+  var workingServiceURLS = [];
+  var serviceData;
+
+  var servicePromise = fetch(controlPointsURL);
+  servicePromise.then(function(results) {
+    console.log(results);
+  });
 
   //Find online services
   function checkService(url) {
-    var requestHandler = esriRequest(url, {
+    esriRequest(url, {
       query: {
         f: 'json'
       },
       responseType: 'json'
     }).then(function(response){
-      console.log(response)
+      console.log(response.url);
+      gotData(response.url)
+      if(serviceData) {
+      return workingServiceURLS.push(response.url)
+      }
     });
   }
 
-  for (i=0; i<serviceURLs.length; i++) {
-    checkService(serviceURLs[i])
-  }
+
+
+  
+
+
+
+  // console.log(workingServiceURLS);
 
   // for (i=0; i<serviceURLs.length; i++) {
   //   esriRequest(serviceURLs[i], {

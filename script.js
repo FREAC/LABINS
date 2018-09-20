@@ -168,7 +168,7 @@ require([
   });
 
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
-  //var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/"; //nonworking url
+  // var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/"; //nonworking url
   var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
     title: "SWFWMD Survey Benchmarks",
@@ -1069,57 +1069,38 @@ function getVisibleLayerIds(map, layer){
   var serviceURLs = [controlPointsURL, controlLinesURL, swfwmdURL];
   var workingServiceURLS = [];
   var serviceData;
-
-  var servicePromise = fetch(controlPointsURL);
-  servicePromise.then(function(results) {
-    console.log(results);
-  });
-
-  //Find online services
-  function checkService(url) {
-    esriRequest(url, {
+  var promiseArray = [];
+  
+  //Find online services and restrict identify to this
+  function checkService (url) {
+    promiseArray.push(esriRequest(url, {
       query: {
         f: 'json'
       },
       responseType: 'json'
-    }).then(function(response){
-      console.log(response.url);
-      gotData(response.url)
-      if(serviceData) {
-      return workingServiceURLS.push(response.url)
-      }
-    });
+    }));
   }
-
-
-
-  
-
-
-
-  // console.log(workingServiceURLS);
-
-  // for (i=0; i<serviceURLs.length; i++) {
-  //   esriRequest(serviceURLs[i], {
-  //     query: {
-  //       f: 'json'
-  //     },
-  //     responseType: "json"
-  //   }).then(function(response){
-  //     // The service is good to go
-  //     console.log("url response", response.url);
-  //     tasks.push(new IdentifyTask(response.url));
-  //   });
-  // }
-
-  // console.log(tasks);
-
-  //  tasks.push(new IdentifyTask(controlPointsURL));
-  // // tasks.push(new IdentifyTask(swfwmdURL));
-  //  tasks.push(new IdentifyTask(controlLinesURL));
-  //  tasks.push(new IdentifyTask(swfwmdURL));
-
-  //  console.log(tasks);
+  for (var i=0; i<serviceURLs.length; i++) {    
+    checkService(serviceURLs[i]);      
+  }
+  var workingServicesURLsObj = {urls : []};
+  var wrappedPromiseArray = promiseArray.map(promise => {
+    if (promise) {
+      return new Promise((resolve, reject) => {
+        promise.then(resolve).catch(resolve);
+      });
+    }
+  });
+  Promise.all(wrappedPromiseArray).then(function(values) {
+    // console.log(values);
+    for(var i = 0; i < values.length; i++) {
+      if(values[i].url != undefined)
+        workingServicesURLsObj.urls.push(new IdentifyTask(values[i].url));
+    }   
+  });
+  console.log("working Service URls"); 
+  tasks = workingServicesURLsObj.urls
+  console.log(tasks);  
 
 
   // Set the parameters for the Point Identify
@@ -1161,6 +1142,7 @@ function getVisibleLayerIds(map, layer){
 
   // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("click", function(event) {
+    console.log(workingServiceURLS);
     mapView.graphics.removeAll();
     selectionLayer.graphics.removeAll();
     console.log(mapView.scale);

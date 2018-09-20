@@ -6,6 +6,7 @@ require([
   "esri/layers/FeatureLayer",
   "esri/tasks/QueryTask",
   "esri/tasks/support/Query",
+  "esri/request",
   "esri/geometry/geometryEngine",
   "esri/geometry/Extent",
   "esri/layers/GraphicsLayer",
@@ -34,6 +35,7 @@ require([
   "esri/widgets/Locate",
   "esri/core/watchUtils",
   "dojo/_base/array",
+  "dojo/Deferred",
   "dojo/on",
   "dojo/dom",
   "dojo/dom-class",
@@ -64,6 +66,7 @@ require([
   FeatureLayer,
   QueryTask,
   Query,
+  esriRequest,
   geometryEngine,
   Extent,
   GraphicsLayer,
@@ -88,7 +91,7 @@ require([
   ScaleBar,
   Home,
   Locate,
-  watchUtils, arrayUtils, on, dom, domClass, all, domConstruct, domGeom, keys, JSON, lang, query, Color,
+  watchUtils, arrayUtils, Deferred, on, dom, domClass, all, domConstruct, domGeom, keys, JSON, lang, query, Color,
   Collapse,
   Dropdown,
   CalciteMaps,
@@ -164,7 +167,8 @@ require([
     }]
   });
 
-  var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer";
+  var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
+  // var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/"; //nonworking url
   var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
     title: "SWFWMD Survey Benchmarks",
@@ -1062,24 +1066,44 @@ function getVisibleLayerIds(map, layer){
 
   tasks = [];
   allParams = [];
-
-  tasks.push(new IdentifyTask(controlPointsURL));
-  // tasks.push(new IdentifyTask(swfwmdURL));
-  tasks.push(new IdentifyTask(controlLinesURL));
-  tasks.push(new IdentifyTask(swfwmdURL));
+  var serviceURLs = [controlPointsURL, controlLinesURL, swfwmdURL];
+  var promiseArray = [];
+  
+  //Find online services and restrict identify to this
+  function checkService (url) {
+    promiseArray.push(esriRequest(url, {
+      query: {
+        f: 'json'
+      },
+      responseType: 'json'
+    }));
+  }
+  for (var i=0; i<serviceURLs.length; i++) {    
+    checkService(serviceURLs[i]);      
+  }
+  var workingServicesURLsObj = {urls : []};
+  var wrappedPromiseArray = promiseArray.map(promise => {
+    if (promise) {
+      return new Promise((resolve, reject) => {
+        promise.then(resolve).catch(resolve);
+      });
+    }
+  });
+  Promise.all(wrappedPromiseArray).then(function(values) {
+    // console.log(values);
+    for(var i = 0; i < values.length; i++) {
+      if(values[i].url != undefined)
+        workingServicesURLsObj.urls.push(new IdentifyTask(values[i].url));
+    }   
+  });
+  console.log("working Service URls"); 
+  tasks = workingServicesURLsObj.urls
+  console.log(tasks);  
 
 
   // Set the parameters for the Point Identify
   params = new IdentifyParameters();
   params.tolerance = 15;
-  // see if we can get the visible layers
-  //vis_layers = getVisibleLayerIds(map,controlPointsLayer)
-  //console.log('did we get the visible layers ok ', vis_layers)
-  //params.layerIds = vis_layers;
-  // Because the this area of code is only executed once when the map loads we cant just use the visible
-  // layers at the time of load.  Need to figure out a place to put this so when the queries (specifically the one a the 
-  // bottom of the section zoom) the getVisibileLayerIds gets called each time the zoom to feature is called.
-  //
   params.layerOption = "all";
   params.layerIds;
   params.width = mapView.width;

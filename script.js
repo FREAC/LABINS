@@ -1067,8 +1067,6 @@ function getVisibleLayerIds(map, layer){
   tasks = [];
   allParams = [];
   var serviceURLs = [controlPointsURL, controlLinesURL, swfwmdURL];
-  var workingServiceURLS = [];
-  var serviceData;
   var promiseArray = [];
   
   //Find online services and restrict identify to this
@@ -1142,7 +1140,6 @@ function getVisibleLayerIds(map, layer){
 
   // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("click", function(event) {
-    console.log(workingServiceURLS);
     mapView.graphics.removeAll();
     selectionLayer.graphics.removeAll();
     console.log(mapView.scale);

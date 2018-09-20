@@ -6,7 +6,9 @@ require([
   "esri/layers/FeatureLayer",
   "esri/tasks/QueryTask",
   "esri/tasks/support/Query",
+  "esri/request",
   "esri/geometry/geometryEngine",
+  "esri/geometry/Extent",
   "esri/layers/GraphicsLayer",
   "esri/Graphic",
   "esri/tasks/IdentifyTask",
@@ -22,6 +24,7 @@ require([
   "esri/geometry/SpatialReference",
 
   // Widgets
+  "esri/widgets/CoordinateConversion",
   "esri/widgets/BasemapGallery",
   "esri/widgets/Search",
   "esri/widgets/Legend",
@@ -33,10 +36,16 @@ require([
   "esri/widgets/Locate",
   "esri/core/watchUtils",
   "dojo/_base/array",
+  "dojo/Deferred",
   "dojo/on",
   "dojo/dom",
+  "dojo/dom-class",
   "dojo/promise/all",
   "dojo/dom-construct",
+  "dojo/dom-geometry",
+  "dojo/keys",
+  "dojo/json",
+  "dojo/_base/lang",
   "dojo/query",
   "dojo/_base/Color",
 
@@ -51,13 +60,16 @@ require([
   "calcite-maps/calcitemaps-arcgis-support-v0.6",
 
   "dojo/domReady!"
-], function (Map,
+], function (
+  Map,
   MapView,
   MapImageLayer,
   FeatureLayer,
   QueryTask,
   Query,
+  esriRequest,
   geometryEngine,
+  Extent,
   GraphicsLayer,
   Graphic,
   IdentifyTask,
@@ -71,6 +83,7 @@ require([
   webMercatorUtils,
   BufferParameters,
   SpatialReference,
+  CoordinateConversion,
   Basemaps,
   Search,
   Legend,
@@ -80,13 +93,14 @@ require([
   ScaleBar,
   Home,
   Locate,
-  watchUtils, arrayUtils, on, dom, all, domConstruct, query, Color,
+  watchUtils, arrayUtils, Deferred, on, dom, domClass, all, domConstruct, domGeom, keys, JSON, lang, query, Color,
   Collapse,
   Dropdown,
   CalciteMaps,
   CalciteMapsArcGISSupport) {
 
   var minimumDrawScale = 100000;
+  var extents = [];
 
   var controlPointsURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Points_3857/MapServer/";
   var controlPointsLayer = new MapImageLayer({
@@ -155,18 +169,25 @@ require([
     }]
   });
 
-  var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/0";
-  var swfwmdLayer = new FeatureLayer({
+  var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
+  // var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/"; //nonworking url
+  var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
     title: "SWFWMD Survey Benchmarks",
-    popupEnabled: false,
-    minScale: minimumDrawScale
+    minScale: minimumDrawScale,
+    sublayers: [{
+      id: 0,
+      title: "Survey Benchmarks",
+      visible: true,
+      popupEnabled: false
+    }]
   });
 
   var controlLinesURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/";
   var controlLinesLayer = new MapImageLayer({
     url: controlLinesURL,
     title: "Other Base Layers",
+    minScale: minimumDrawScale,
     sublayers: [{
       id: 9,
       title: "Soils June 2012 - Dept. of Agriculture",
@@ -176,17 +197,17 @@ require([
     }, {
       id: 8,
       title: "Hi-Res Imagery Grid: State Plane East",
-      visible: false,
+      visible: true,
       popupEnabled: false
     },{
       id: 7,
       title: "Hi-Res Imagery Grid: State Plane North",
-      visible: false,
+      visible: true,
       popupEnabled: false
     }, {
       id: 6,
       title: "Hi-Res Imagery Grid: State Plane West",
-      visible: false,
+      visible: true,
       popupEnabled: false
     }, {
       id: 5,
@@ -204,7 +225,18 @@ require([
       title: "City Limits",
       visible: false,
       //cityLimitsTemplate,
-      popupEnabled: false
+      popupEnabled: false,
+      renderer: {
+        type: "simple", 
+        symbol: {
+          type: "simple-fill",
+          style: "none",
+          outline: {
+            style: "dash",
+            width: 1.25
+          }
+        } 
+      },
     }, {
       id: 2,
       title: "Township-Range-Section",
@@ -213,8 +245,24 @@ require([
     }, {
       id: 1,
       title: "Township-Range",
-      visible: false,
-      popupEnabled: false
+      visible: true,
+      popupEnabled: false,
+      labelsVisible: true,
+      labelingInfo: [{
+        //labelExpression: "[SUBSTRING(tr_dissolve, 0, 3)]",
+        //labelExpression: "[" + 'SUBSTR("tr_dissolve" 0, 3)' + "]",
+        labelExpression: "[tr_dissolve]",
+        labelPlacement: "always-horizontal",
+        symbol: {
+          type: "text", // autocasts as new TextSymbol()
+          color: [0, 0, 255, 1],
+          haloColor: [255, 255, 255],
+          haloSize: 2,
+          font: {
+            size: 11
+          }
+        }
+      }]
     }, {
       id: 0,
       title: "USGS Quads",
@@ -325,6 +373,218 @@ var highlightLine = {
 
   var extentDiv = dom.byId("extentDiv");
 
+        // Bookmark data objects
+        var bookmarkJSON = {
+          first: {
+            "extent": {
+              "xmin": -9382178.056935968,
+              "ymin": 3559339.642506011,
+              "xmax": -9381031.501511535,
+              "ymax": 3559579.702548002,
+              "spatialReference": {
+                "wkid": 102100,
+                "latestWkid": 3857
+              }
+            },
+            "name": "Florida Prime Meridian"
+          },
+        };
+  
+  
+        function initBookmarksWidget() {
+          var bmDiv = dom.byId("bookmarksDiv");
+          domClass.add(bmDiv, "bookmark-container");
+          var bookmarksdiv = domConstruct.create("div", {
+            class: "esriBookmarks"
+          }, bmDiv);
+          var bmlistdiv = domConstruct.create("div", {
+            class: "esriBookmarkList",
+            style: {
+              width: '250px'
+            }
+          }, bookmarksdiv);
+          var bmTable = domConstruct.create("div", {
+            class: "esriBookmarkTable"
+          }, bmlistdiv);
+          var bmadditemdiv = domConstruct.create("div", {
+            class: "esriBookmarkItem esriAddBookmark"
+          }, bookmarksdiv);
+          var addbmlabeldiv = domConstruct.create("div", {
+            class: "esriBookmarkLabel",
+            innerHTML: "Add Bookmark"
+          },bmadditemdiv);
+          on(bmadditemdiv, "click", bookmarkEvent);
+          on(bmadditemdiv, "mouseover", addMouseOverClass);
+          on(bmadditemdiv, "mouseout", removeMouseOverClass);
+  
+          //process the bookmarkJSON
+          Object.keys(bookmarkJSON).forEach(function (bookmark){
+            var bmName = bookmarkJSON[bookmark].name || "Bookmark " + (index + 1).toString();
+            var theExtent = Extent.fromJSON(bookmarkJSON[bookmark].extent);
+            var bmTable = query(".esriBookmarkTable")[0];
+            var item = domConstruct.toDom('<div class="esriBookmarkItem" data-fromuser="false" data-extent="' + theExtent.xmin + ',' + theExtent.ymin + ',' + theExtent.xmax + ',' + theExtent.ymax + ',' + theExtent.spatialReference.wkid +
+              '"><div class="esriBookmarkLabel">' + bmName + '</div><div title="Remove" class="esriBookmarkRemoveImage"></div><div title="Edit" class="esriBookmarkEditImage"></div></div>');
+            domConstruct.place(item, bmTable, "last");
+            on(query(".esriBookmarkRemoveImage", item)[0], "click", removeBookmark);
+            on(query(".esriBookmarkEditImage", item)[0], "click", editBookmark);
+            on(item, "click", bookmarkEvent);
+            on(item, "mouseover", addMouseOverClass);
+            on(item, "mouseout", removeMouseOverClass);
+            bookmarkJSON[bookmark];
+          });
+  
+          //process the local storage bookmarks
+          readBookmarks();
+        }
+  
+        initBookmarksWidget();
+  
+        function addMouseOverClass(evt) {
+          evt.stopPropagation();
+          domClass.add(evt.currentTarget, "esriBookmarkHighlight");
+        }
+  
+        function removeMouseOverClass(evt) {
+          evt.stopPropagation();
+          domClass.remove(evt.currentTarget, "esriBookmarkHighlight");
+        }
+  
+        function removeBookmark(evt) {
+          evt.stopPropagation();
+          var bmItem = evt.target.parentNode;
+  
+          var bmEditItem = query(".esriBookmarkEditBox")[0];
+          if (bmEditItem) {
+            domConstruct.destroy(bmEditItem);
+          }
+          domConstruct.destroy(bmItem);
+  
+          setTimeout(writeCurrentBookmarks, 200);
+        }
+  
+        function writeCurrentBookmarks() {
+          extents = [];
+          var bmTable = query(".esriBookmarkTable")[0];
+          var bookMarkItems = query(".esriBookmarkItem", bmTable);
+          bookMarkItems.forEach(function(item) {
+            if(item.dataset.fromuser){
+              var extArr = item.dataset.extent.split(",");
+              var theExt = new Extent({
+                xmin: extArr[0],
+                ymin: extArr[1],
+                xmax: extArr[2],
+                ymax: extArr[3],
+                spatialReference: {
+                  wkid: parseInt(extArr[4])
+                }
+              });
+              var sExt = {
+                extent: theExt,
+                name: query(".esriBookmarkLabel", item)[0].innerHTML
+              }
+              extents.push(sExt);
+            }
+          });
+          var stringifedExtents = JSON.stringify(extents);
+          localStorage.setItem("myBookmarks", stringifedExtents);
+        }
+  
+        function editBookmark(evt) {
+          evt.stopPropagation();
+          var bmItem = evt.target.parentNode;
+          var bmItemName = query(".esriBookmarkLabel", bmItem)[0].innerHTML;
+          var output = domGeom.position(bmItem, true);
+          var editItem = domConstruct.toDom('<input class="esriBookmarkEditBox" style="top: ' + (output.y + 1) + 'px; left: ' + output.x + 'px;">');
+          editItem.value = bmItemName;
+          var bmTable = query(".esriBookmarkTable")[0];
+          domConstruct.place(editItem, bmTable);
+          on(editItem, "keypress", function(evt) {
+            var charOrCode = evt.charCode || evt.keyCode
+            if (charOrCode === keys.ENTER) {
+              query(".esriBookmarkLabel", bmItem)[0].innerHTML = editItem.value;
+              domConstruct.destroy(editItem);
+              writeCurrentBookmarks();
+            }
+          });
+          editItem.focus();
+        }
+  
+        function bookmarkEvent(evt) {
+          if (domClass.contains(evt.target, "esriAddBookmark")) {
+            var bmTable = query(".esriBookmarkTable")[0];
+            var item = domConstruct.toDom('<div class="esriBookmarkItem" data-fromuser="true" data-extent="' + mapView.extent.xmin + ',' + mapView.extent.ymin + ',' + mapView.extent.xmax + ',' + mapView.extent.ymax + ',' + mapView.extent.spatialReference.wkid +
+              '"><div class="esriBookmarkLabel"></div><div title="Remove" class="esriBookmarkRemoveImage"></div><div title="Edit" class="esriBookmarkEditImage"></div></div>');
+  
+            domConstruct.place(item, bmTable, "last");
+            var output = domGeom.position(item, true);
+            var editItem = domConstruct.toDom('<input class="esriBookmarkEditBox" style="top: ' + (output.y + 1) + 'px; left: ' + output.x + 'px;">');
+            domConstruct.place(editItem, bmTable);
+            on(editItem, "keypress", function(evt) {
+              var charOrCode = evt.charCode || evt.keyCode
+              if (charOrCode === keys.ENTER) {
+                query(".esriBookmarkLabel", item)[0].innerHTML = editItem.value;
+                domConstruct.destroy(editItem);
+                sExt = {
+                  name: editItem.value,
+                  extent: mapView.extent
+                }
+                extents.push(sExt);
+                console.log(sExt);
+                var stringifedExtents = JSON.stringify(extents);
+                localStorage.setItem("myBookmarks", stringifedExtents);
+              }
+            });
+            on(query(".esriBookmarkRemoveImage", item)[0], "click", removeBookmark);
+            on(query(".esriBookmarkEditImage", item)[0], "click", editBookmark);
+            on(item, "click", bookmarkEvent);
+            on(item, "mouseover", addMouseOverClass);
+            on(item, "mouseout", removeMouseOverClass);
+            editItem.focus();
+            return;
+          }
+  
+          var extArr = evt.target.dataset.extent.split(",");
+          mapView.goTo(new Extent({
+            xmin: extArr[0],
+            ymin: extArr[1],
+            xmax: extArr[2],
+            ymax: extArr[3],
+            spatialReference: {
+              wkid: parseInt(extArr[4])
+            }
+          }), {
+            duration: 2000
+          });
+        }
+  
+        function readBookmarks() {
+          try {
+            if (!localStorage.getItem("myBookmarks")) {
+              return;
+            }
+            var extentArray = JSON.parse(localStorage.getItem("myBookmarks"));
+            if (!extentArray) {
+              return;
+            }
+            extentArray.map(function(extentJSON, index) {
+              var bmName = extentJSON.name || "Bookmark " + (index + 1).toString();
+              var theExtent = Extent.fromJSON(extentJSON.extent);
+              extents.push(extentJSON);
+              var bmTable = query(".esriBookmarkTable")[0];
+              var item = domConstruct.toDom('<div class="esriBookmarkItem" data-fromuser="true" data-extent="' + theExtent.xmin + ',' + theExtent.ymin + ',' + theExtent.xmax + ',' + theExtent.ymax + ',' + theExtent.spatialReference.wkid +
+                '"><div class="esriBookmarkLabel">' + bmName + '</div><div title="Remove" class="esriBookmarkRemoveImage"></div><div title="Edit" class="esriBookmarkEditImage"></div></div>');
+              domConstruct.place(item, bmTable, "last");
+              on(query(".esriBookmarkRemoveImage", item)[0], "click", removeBookmark);
+              on(query(".esriBookmarkEditImage", item)[0], "click", editBookmark);
+              on(item, "click", bookmarkEvent);
+              on(item, "mouseover", addMouseOverClass);
+              on(item, "mouseout", removeMouseOverClass);
+            })
+          } catch (e) {
+            console.warn("Could not parse bookmark JSON", e.message);
+          }
+        }
+
   overView.when(function () {
     // Update the overview extent whenever the MapView or SceneView extent changes
     mapView.watch("extent", updateOverviewExtent);
@@ -426,7 +686,7 @@ var highlightLine = {
         uniqueValues.sort();
         uniqueValues.forEach(function (value) {
           var option = domConstruct.create("option");
-          option.text = value;
+          option.text = value.toUpperCase();
           dom.byId(panelParam).add(option);
         });
       });
@@ -448,6 +708,7 @@ var highlightLine = {
     });
     task.execute(params)
       .then(function (response) {
+        console.log(response);
         // Go to extent of features and highlight
         mapView.goTo(response.features);
         selectionLayer.graphics.removeAll();
@@ -644,7 +905,7 @@ var highlightLine = {
   //Zoom to feature
   query("#selectCountyPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCountyPanel'));
-    return zoomToFeature(controlLinesURL + "4", e.target.value, "ctyname")
+    return zoomToFeature(controlLinesURL + "4", e.target.value, "ucname")
   });
 
   //Build Quad Dropdown panel
@@ -807,24 +1068,46 @@ function getVisibleLayerIds(map, layer){
 
   tasks = [];
   allParams = [];
-
-  tasks.push(new IdentifyTask(controlPointsURL));
-  tasks.push(new IdentifyTask('https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/'));
-  tasks.push(new IdentifyTask(controlLinesURL));
+  var serviceURLs = [controlPointsURL, controlLinesURL, swfwmdURL];
+  var promiseArray = [];
   
+  //Find online services and restrict identify to this
+  function checkService (url) {
+    promiseArray.push(esriRequest(url, {
+      query: {
+        f: 'json'
+      },
+      responseType: 'json'
+    }));
+  }
+  for (var i=0; i<serviceURLs.length; i++) {    
+    checkService(serviceURLs[i]);      
+  }
+  var workingServicesURLsObj = {urls : []};
+  var wrappedPromiseArray = promiseArray.map(promise => {
+    if (promise) {
+      return new Promise((resolve, reject) => {
+        promise.then(resolve).catch(resolve);
+      });
+    }
+  });
+  Promise.all(wrappedPromiseArray).then(function(values) {
+    // console.log(values);
+    for(var i = 0; i < values.length; i++) {
+      if(values[i].url != undefined)
+        workingServicesURLsObj.urls.push(new IdentifyTask(values[i].url));
+    }   
+  });
+  console.log("working Service URls"); 
+  tasks = workingServicesURLsObj.urls
+  console.log(tasks);  
+
+
   // Set the parameters for the Point Identify
   params = new IdentifyParameters();
   params.tolerance = 15;
-  // see if we can get the visible layers
-  vis_layers = getVisibleLayerIds(map,controlPointsLayer)
-  //console.log('did we get the visible layers ok ', vis_layers)
-  params.layerIds = vis_layers;
-  // Because the this area of code is only executed once when the map loads we cant just use the visible
-  // layers at the time of load.  Need to figure out a place to put this so when the queries (specifically the one a the 
-  // bottom of the section zoom) the getVisibileLayerIds gets called each time the zoom to feature is called.
-  //
-  params.layerOption = "visible";
-  params.layerIds = [2, 0, 4, 5, 9, 8, 6];
+  params.layerOption = "all";
+  params.layerIds;
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
@@ -833,8 +1116,8 @@ function getVisibleLayerIds(map, layer){
   // Set the parameters for the SWFWMD Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [0];
-  params.layerOption = "visible";
+  params.layerIds;
+  params.layerOption = "all";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
@@ -843,8 +1126,8 @@ function getVisibleLayerIds(map, layer){
   // Set the parameters for the Line / polygon Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
-  params.layerIds = [2, 5, 0];
-  params.layerOption = "visible";
+  params.layerIds;
+  params.layerOption = "all";
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
@@ -864,6 +1147,9 @@ function getVisibleLayerIds(map, layer){
     console.log(mapView.scale);
       if (mapView.scale < minimumDrawScale) {
         event.stopPropagation();
+        clearDiv('informationdiv');
+        //document.getElementById('numinput').value = "";
+        clearDiv('arraylengthdiv');
         executeIdentifyTask(event);
         togglePanel();
       }  
@@ -898,11 +1184,54 @@ function getVisibleLayerIds(map, layer){
     }
   }
 
+
+  function checkVisibility (layerWidget) {
+    var tempVis = []
+    console.log(layerWidget);
+    for (var i=0; i < layerWidget.operationalItems.items.length; i++) {
+      //console.log(layerWidget.operationalItems.items[i]);
+      if (layerWidget.operationalItems.items[i].visible != false) {
+            //iterate through sublayers
+        for (var j=0; j < layerWidget.operationalItems.items[i].children.items.length; j++) {
+          //console.log(layerWidget.operationalItems.items[i].children.items[j]);
+          if (layerWidget.operationalItems.items[i].children.items[j].visible != false) {
+            console.log(layerWidget.operationalItems.items[i].children.items[j].layer.title);
+            tempVis.push(layerWidget.operationalItems.items[i].children.items[j].layer.id);
+          }
+        }
+        console.log(tempVis);
+        allParams[i].layerIds = tempVis;
+        console.log(allParams[i].layerIds);
+      }
+      console.log("allParams ", i, " are ", allParams[i].layerIds);
+      console.log("end of layer");
+      if (allParams[i].layerIds.length == 0) {
+        console.log("allParams are empty: Look! ", allParams[i].layerIds)
+        allParams[i].layerIds = [-1];
+      }
+      tempVis = [];
+      //console.log(layerWidget.operationalItems.items[i]);
+    }
+    console.log('visibility checked.');
+  }
+
+
   // multi service identifytask
   function executeIdentifyTask(event) {
     console.log('starting the executeIdentifyTask function')
     // first get the visible layers because that option doesnt work
     //vis_layers = getVisibleLayerIds(map,controlPointsLayer)
+
+    // Determine visibility
+
+    checkVisibility(layerWidget);
+
+    console.log("updated allParams ", 0, " is ", allParams[0].layerIds )
+    
+    console.log("updated allParams ", 1, " is ", allParams[1].layerIds )
+
+    console.log("updated allParams ", 2, " is ", allParams[2].layerIds )
+    console.log(layerWidget);
     //params.layerIds = vis_layers;
     var currentScale = mapView.scale;
     infoPanelData = [];
@@ -920,11 +1249,14 @@ function getVisibleLayerIds(map, layer){
     }
     console.log('what does the event look like ', event)
     for (i = 0; i < tasks.length; i++) {
+      console.log(tasks[i]);
       console.log('what is this doing--- ', allParams[i])
       promises.push(tasks[i].execute(allParams[i]));
     }
     var iPromises = new all(promises);
     iPromises.then(function (rArray) {
+      console.log('iPromises is ', iPromises);
+      console.log('rArray is ', rArray);
       arrayUtils.map(rArray, function(response){
         var results = response.results;
         console.log('here are the objects we found in the section', results);
@@ -934,15 +1266,16 @@ function getVisibleLayerIds(map, layer){
           console.log('the feature is ', feature, '  and the layer name is ', layerName)
           console.log('all of the results look like this ', results)
           feature.attributes.layerName = layerName;
-
           // only identify the corners that have an image
           if (layerName != 'Certified Corners') {
-            if (layerName === 'Township-Range-Section') {
-              // Do nothing
-            } else {
+            console.log(layerName);
+            // We want to show Original GLO survey plats and field notes now
+            // if (layerName === 'Township-Range-Section') {
+            //   // Do nothing
+            // } else {
               identifyElements.push(feature);
               infoPanelData.push(feature);
-            }
+            // }
           } else if (layerName === 'Certified Corners') {
             if (feature.attributes.is_image === 'Y') {
               infoPanelData.push(feature);
@@ -987,7 +1320,7 @@ function getVisibleLayerIds(map, layer){
             scale: currentScale
         });
         }
-      }     
+      }    
       queryInfoPanel(infoPanelData, 1);
       buildUniquePanel();
       //showPopup(identifyElements); 
@@ -1016,14 +1349,16 @@ function getVisibleLayerIds(map, layer){
       returnGeometry: true,
       outFields: '*'
     });
-
-    queryTask.execute(params)
+    
+    return queryTask.execute(params)
     .then(function(response) {
       console.log(response);
-      if (response.features.length != 0) {
+      if (response.features.length > 0) {
         return queryTask.execute(params);
       } else {
         console.log('No features found.');
+        $("#informationdiv").append("No features found.");
+        clearDiv('arraylengthdiv');
       }
     });
   }
@@ -1217,29 +1552,31 @@ function getVisibleLayerIds(map, layer){
 
 //Quad select
 //buildSelectPanel(controlLinesURL + "0", "tile_name", "Zoom to a Quad", "selectQuadPanel");
+
+function getGeometry (url, attribute, value) {
+  var value = value.replace(/ *\([^)]*\) */g, "")
+  console.log(value);
+
+  var task = new QueryTask({
+  url: url
+  });
+  var query = new Query();
+  query.returnGeometry = true;
+  //query.outFields = ['*'];
+  query.where = attribute + " LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+
+  console.log(task.execute(query));
+  return task.execute(query);
+
   
-  function getGeometry (url, attribute, value) {
+  
+  
 
-    var task = new QueryTask({
-    url: url
-    });
-    var query = new Query();
-    query.returnGeometry = true;
-    //query.outFields = ['*'];
-    query.where = attribute + " = '" + value + "'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+    // for (i=0; i<results.features.length; i++) {
+    //   multiPolygonGeometries.push(results.features[i]);
+    // }
 
-    console.log(task.execute(query));
-    return task.execute(query);
-
-    
-    
-    
-
-      // for (i=0; i<results.features.length; i++) {
-      //   multiPolygonGeometries.push(results.features[i]);
-      // }
-
-  }
+}  
 
   // unused, could be removed
   function dataQueryIdentify (url, response, layers) {
@@ -1250,7 +1587,7 @@ function getVisibleLayerIds(map, layer){
     // Set the parameters for the Identify
     params = new IdentifyParameters();
     //params.tolerance = 3;
-    params.layerIds = [layers];
+    //params.layerIds = [layers];
     params.layerOption = "visible";
     params.width = mapView.width;
     params.height = mapView.height;
@@ -1286,7 +1623,18 @@ function getVisibleLayerIds(map, layer){
       // possibly could be limited to return only necessary outfields
       outFields: '*'
     });
-    return queryTask.execute(params);
+    return queryTask.execute(params)
+    .then(function(response) {
+      console.log(response);
+      if (response.features.length > 0) {
+        return queryTask.execute(params);
+      } else {
+        togglePanel();
+        console.log('No features found.');
+        $('#informationdiv').append("No features found.");
+        clearDiv('arraylengthdiv');
+      }
+    });
   }
 
   // data query by text
@@ -1314,25 +1662,36 @@ function getVisibleLayerIds(map, layer){
       // possibly could be limited to return only necessary outfields
       outFields: '*'
     });
-    return queryTask.execute(params);
+    return queryTask.execute(params)
+    .then(function(response) {
+      console.log(response);
+      if (response.features.length > 0) {
+        return queryTask.execute(params);
+      } else {
+        togglePanel();
+        console.log('No features found.');
+        $('#informationdiv').append("No features found.");
+        clearDiv('arraylengthdiv');
+      }
+    });;
   }
 
-  function createCountyDropdown () {
+  function createCountyDropdown (attributeURL, countyAttribute) {
     var countyDropdown = document.createElement('select');
     countyDropdown.setAttribute('id', 'countyQuery');
     countyDropdown.setAttribute('class', 'form-control');
     document.getElementById('parametersQuery').appendChild(countyDropdown);
-    buildSelectPanel(controlLinesURL + "4", "ctyname", "Select a County", "countyQuery");
+    buildSelectPanel(attributeURL, countyAttribute, "Select a County", "countyQuery");
 
 
   }
 
-  function createQuadDropdown () {
+  function createQuadDropdown (attributeURL, quadAttribute) {
     var quadDropdown = document.createElement('select');
     quadDropdown.setAttribute('id', 'quadQuery');
     quadDropdown.setAttribute('class', 'form-control');
     document.getElementById('parametersQuery').appendChild(quadDropdown);
-    buildSelectPanel(controlLinesURL + "0", "tile_name", "Select a Quad", "quadQuery")
+    buildSelectPanel(attributeURL, quadAttribute, "Select a Quad", "quadQuery")
     
   }
 
@@ -1377,8 +1736,8 @@ function getVisibleLayerIds(map, layer){
     clearDiv('parametersQuery');
     // add dropdown, input, and submit elements
     addDescript();
-    createCountyDropdown();    
-    createQuadDropdown();
+    createCountyDropdown(controlPointsURL + '0', 'county');    
+    createQuadDropdown(controlPointsURL + '0', 'quad');
     createTextBox('textQuery', 'Enter NGS Name or PID.');
     createSubmit();
 
@@ -1389,7 +1748,7 @@ function getVisibleLayerIds(map, layer){
       resetElements(countyDropdownAfter);
       infoPanelData = [];      
 
-      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
         dataQueryQuerytask(controlPointsURL + '0', response)
@@ -1489,8 +1848,8 @@ function getVisibleLayerIds(map, layer){
 
     clearDiv('parametersQuery');
     addDescript();
-    createCountyDropdown();
-    createQuadDropdown();
+    createCountyDropdown(controlPointsURL + '5', 'cname');
+    createQuadDropdown(controlPointsURL + '5', 'tile_name');
     createTextBox('IDQuery', 'Enter an ID. Example: 1');
     createSubmit();
 
@@ -1499,9 +1858,10 @@ function getVisibleLayerIds(map, layer){
     query(countyDropdownAfter).on('change', function(e) {
       clearDiv('informationdiv');
       resetElements(countyDropdownAfter);
-      infoPanelData = [];      
+      infoPanelData = [];
+      console.log(e.target.value);      
 
-      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
         dataQueryQuerytask(controlPointsURL + '5', response)
@@ -1571,8 +1931,8 @@ function getVisibleLayerIds(map, layer){
   } else if (layerSelection === 'Tide Stations') {
     clearDiv('parametersQuery');
     addDescript();
-    createCountyDropdown();
-    createQuadDropdown();
+    createCountyDropdown(controlPointsURL + '4', 'countyname');
+    createQuadDropdown(controlPointsURL + '4', 'quadname');
     createTextBox('textQuery', 'Enter Tide Station ID or Name');
     createSubmit();
     var countyDropdownAfter = document.getElementById('countyQuery');
@@ -1582,7 +1942,7 @@ function getVisibleLayerIds(map, layer){
       resetElements(countyDropdownAfter);
       infoPanelData = [];      
 
-      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
         dataQueryQuerytask(controlPointsURL + '4', response)
@@ -1670,7 +2030,7 @@ function getVisibleLayerIds(map, layer){
   } else if (layerSelection === 'Erosion Control Line') {
     clearDiv('parametersQuery');
     addDescript();
-    createCountyDropdown();
+    createCountyDropdown(controlPointsURL + '9', 'county');
     createTextBox('textQuery', 'Enter an ECL Name')
     createSubmit();
 
@@ -1690,7 +2050,7 @@ function getVisibleLayerIds(map, layer){
       resetElements(countyDropdownAfter);
       infoPanelData = [];      
       console.log('grabbing geometry');
-      getGeometry(controlLinesURL + '4', 'ctyname', e.target.value)
+      getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
       .then(unionGeometries)
       .then(function(response) {
         dataQueryQuerytask(controlPointsURL + '9', response)
@@ -1728,7 +2088,7 @@ function getVisibleLayerIds(map, layer){
     createTextBox('textQuery', 'Benchmark Name Example: CYP016')
     createSubmit('Submit by Name', 'submitNameQuery');
 
-    var submitButton = document.getElementById('submitQuery');
+    var submitButton = document.getElementById('submitNameQuery');
     var inputAfter = document.getElementById('textQuery');
 
     
@@ -1740,7 +2100,7 @@ function getVisibleLayerIds(map, layer){
 
     query(submitButton).on('click', function(e) {
       infoPanelData = [];
-      textQueryQuerytask(swfwmdURL, 'BENCHMARK_NAME', inputAfter.value)
+      textQueryQuerytask(swfwmdURL + '/0', 'BENCHMARK_NAME', inputAfter.value)
       .then(function (response) {
         for (i=0;i<response.features.length;i++) {
           response.features[i].attributes.layerName = 'Survey Benchmarks';
@@ -1821,6 +2181,18 @@ function getVisibleLayerIds(map, layer){
     $('#numinput').val('');
     $('#arraylengthdiv').html('');
   });
+  
+  // dynamically add and remove coordinates widget
+  var coordStatus;
+  on(dom.byId("coordButton"), "click", function(evt) {
+    if (coordStatus != 1) {
+    mapView.ui.add(ccWidget, "bottom-left");
+    coordStatus = 1;
+    } else {
+      mapView.ui.remove(ccWidget);
+      coordStatus = 0;
+    }
+  });
 
   // //Custom Zoom to feature
   // mapView.popup.on("trigger-action", function (evt) {
@@ -1873,11 +2245,13 @@ function getVisibleLayerIds(map, layer){
     if (infoPanelData[indexVal].geometry.type === "polygon") {
       var ext = infoPanelData[indexVal].geometry.extent;
       var cloneExt = ext.clone();
-      mapView.goTo({
-        target: infoPanelData[indexVal],
-        extent: cloneExt.expand(1.75)  
-      });
-    // Remove current selection
+      if (infoPanelData[indexVal].attributes.layerName !== 'USGS Quads') {
+        mapView.goTo({
+          target: infoPanelData[indexVal],
+          extent: cloneExt.expand(1.75)  
+        });
+      }  
+      // Remove current selection
       selectionLayer.graphics.removeAll();
       console.log("it's a polygon");
       // Highlight the selected parcel
@@ -1969,6 +2343,7 @@ function getVisibleLayerIds(map, layer){
           target: infoPanelData[indexVal],
           extent: cloneExt.expand(1.75)  
         });
+
         // Remove current selection
         selectionLayer.graphics.removeAll();
         console.log("it's a polygon");
@@ -1993,7 +2368,42 @@ function getVisibleLayerIds(map, layer){
       }
   });
 
+  // set up alert for dynamically created zoom to feature buttons
+  $(document).on('click', "button[name='zoom']", function () {
+    
+          
+      // Go to the selected parcel
+      if (infoPanelData[this.id-1].geometry.type === "polygon") {
+        console.log('its a polygon');
+        var ext = infoPanelData[this.id-1].geometry.extent;
+        var cloneExt = ext.clone();
+        mapView.goTo({
+          target: infoPanelData[this.id-1],
+          extent: cloneExt.expand(1.75)  
+        });
 
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
+        console.log("it's a polygon");
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(infoPanelData[this.id-1].geometry, highlightSymbol);
+        selectionLayer.graphics.add(highlightGraphic);
+      } else if (infoPanelData[this.id-1].geometry.type === "point") {
+        console.log("it's a point");
+
+       
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
+
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(infoPanelData[this.id-1].geometry, highlightPoint);
+        selectionLayer.graphics.add(highlightGraphic);
+        mapView.goTo({target: 
+          infoPanelData[this.id-1].geometry,
+          zoom: 15
+        });
+      }
+  });
 
   /////////////
   // Widgets //
@@ -2068,6 +2478,13 @@ function getVisibleLayerIds(map, layer){
   });
   mapView.ui.add(locateBtn, "top-left");
 
+  //Coordinates widget
+  var ccWidget = new CoordinateConversion({
+    container: "coordinatesDiv",
+    view: mapView
+  });
+  //mapView.ui.add(ccWidget, "bottom-left");
+  
   // Fires after the user's location has been found
   /*locateBtn.on("locate", function(event) {
     var bufferGeometry = event.target.graphic.geometry;
@@ -2090,5 +2507,8 @@ function getVisibleLayerIds(map, layer){
 
 var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
+  
+var coordBtn = document.getElementById("coordButton");
+  mapView.ui.add(coordBtn, "top-left");
   
 });

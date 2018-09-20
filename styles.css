@@ -131,6 +131,11 @@ background-color: #0d3b4b
   height: 32px;
 }
 
+#coordButton {
+  width: 32px;
+  height: 32px;
+}
+
 /*
 Print Widget
 */
@@ -225,3 +230,140 @@ Info Panel
   -webkit-box-shadow: inset 0 0 6px rgba(13,59,75,1); 
 }
 */
+
+/*
+Change color of link text
+*/
+
+.calcite-panels.calcite-text-light a {
+  color: #7fc4ff;
+}
+
+/*
+Bookmark Styles
+*/
+
+.bookmark-container {
+  position: relative;
+  background: #0d3b4b;
+  box-sizing: border-box;
+}
+
+.esriBookmarks {
+  width: 100%;
+  position: relative;
+}
+
+.esriBookmarkTable {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.esriBookmarkItem {
+  padding: 5px 10px;
+  width: 100%;
+  border: 1px solid transparent;
+  height: 36px;
+  cursor: pointer;
+}
+
+.esriBookmarkLabel {
+  pointer-events: none;
+  position: relative;
+  float: left;
+  overflow: hidden;
+  line-height: 26px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: left;
+  vertical-align: middle;
+  margin-left: 0;
+  user-select: none;
+}
+
+.esriBookmarkHighlight {
+  background-color: #315866
+}
+
+*,
+*:before,
+*:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.esriAddBookmark {
+  color: #ffffff;
+}
+
+.esriBookmarkEditBox {
+  position: fixed;
+  font-size: 14px;
+  height: 34px;
+  width: 200px;
+  z-index: 999;
+  padding: 0;
+  margin: 0 10px;
+  border: 0;
+  border-bottom: 1px solid #007ac2;
+  background: #fff
+}
+
+.esriBookmarkEditBox:focus {
+  outline: none
+}
+
+.esriBookmarkRemoveImage,
+.esriBookmarkEditImage {
+  float: right;
+  width: 30px;
+  cursor: pointer;
+  font-family: "CalciteWebCoreIcons";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  text-indent: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 26px;
+  text-align: center;
+}
+
+.esriBookmarkItem:before {
+  float: left;
+  font-family: "CalciteWebCoreIcons";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  text-indent: 0;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+  color: inherit;
+  line-height: 26px;
+  margin-right: 5px;
+}
+
+.esriBookmarkRemoveImage:before {
+  content: "\e600";
+}
+
+.esriBookmarkEditImage:before {
+  content: "\e61b";
+}
+
+.esriAddBookmark:before {
+  content: "\e620";
+}
+
+.esriBookmarkItem:after {
+  content: "";
+  display: table;
+  clear: both;
+}

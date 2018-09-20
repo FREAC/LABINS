@@ -24,6 +24,7 @@ require([
   "esri/geometry/SpatialReference",
 
   // Widgets
+  "esri/widgets/CoordinateConversion",
   "esri/widgets/BasemapGallery",
   "esri/widgets/Search",
   "esri/widgets/Legend",
@@ -82,6 +83,7 @@ require([
   webMercatorUtils,
   BufferParameters,
   SpatialReference,
+  CoordinateConversion,
   Basemaps,
   Search,
   Legend,
@@ -2179,6 +2181,18 @@ function getGeometry (url, attribute, value) {
     $('#numinput').val('');
     $('#arraylengthdiv').html('');
   });
+  
+  // dynamically add and remove coordinates widget
+  var coordStatus;
+  on(dom.byId("coordButton"), "click", function(evt) {
+    if (coordStatus != 1) {
+    mapView.ui.add(ccWidget, "bottom-left");
+    coordStatus = 1;
+    } else {
+      mapView.ui.remove(ccWidget);
+      coordStatus = 0;
+    }
+  });
 
   // //Custom Zoom to feature
   // mapView.popup.on("trigger-action", function (evt) {
@@ -2464,6 +2478,13 @@ function getGeometry (url, attribute, value) {
   });
   mapView.ui.add(locateBtn, "top-left");
 
+  //Coordinates widget
+  var ccWidget = new CoordinateConversion({
+    container: "coordinatesDiv",
+    view: mapView
+  });
+  //mapView.ui.add(ccWidget, "bottom-left");
+  
   // Fires after the user's location has been found
   /*locateBtn.on("locate", function(event) {
     var bufferGeometry = event.target.graphic.geometry;
@@ -2486,5 +2507,8 @@ function getGeometry (url, attribute, value) {
 
 var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
+  
+var coordBtn = document.getElementById("coordButton");
+  mapView.ui.add(coordBtn, "top-left");
   
 });

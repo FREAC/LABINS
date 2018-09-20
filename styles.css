@@ -131,6 +131,11 @@ background-color: #0d3b4b
   height: 32px;
 }
 
+#coordButton {
+  width: 32px;
+  height: 32px;
+}
+
 /*
 Print Widget
 */

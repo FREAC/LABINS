@@ -25,6 +25,7 @@ require([
 
   // Widgets
   "esri/widgets/CoordinateConversion",
+  "esri/widgets/CoordinateConversion/CoordinateConversionViewModel",
   "esri/widgets/BasemapGallery",
   "esri/widgets/Search",
   "esri/widgets/Legend",
@@ -84,6 +85,7 @@ require([
   BufferParameters,
   SpatialReference,
   CoordinateConversion,
+  CoordinateVM,
   Basemaps,
   Search,
   Legend,
@@ -2192,6 +2194,20 @@ require([
     if (coordStatus != 1) {
       mapView.ui.add(ccWidget, "bottom-left");
       coordStatus = 1;
+      console.log(ccWidget);
+      console.log(ccWidget.conversions);
+      console.log(ccWidget.formats);
+      console.log(ccWidgetVM);
+
+      function configureWidget() {
+        for (i = 0; i < ccWidget.formats.items.length; i++) {
+          if (ccWidget.formats.items[i].name == "ddm") {
+            //ccWidget.conversions.items.push(ccWidget.formats.items[i]);
+            var ddmClone = ccWidget.conversions.items[0];
+          }
+        }
+      }
+      // configureWidget();
     } else {
       mapView.ui.remove(ccWidget);
       coordStatus = 0;
@@ -2484,9 +2500,16 @@ require([
 
   //Coordinates widget
   var ccWidget = new CoordinateConversion({
-    container: "coordinatesDiv",
+    container: "mapView",
     view: mapView
   });
+
+  var ccWidgetVM = new CoordinateVM({
+    container: "mapView",
+    view: mapView,
+    // conversions: ['usng', 'xy']
+  });
+
   //mapView.ui.add(ccWidget, "bottom-left");
 
   // Fires after the user's location has been found

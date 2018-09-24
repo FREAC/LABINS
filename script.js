@@ -13,7 +13,6 @@ require([
   "esri/Graphic",
   "esri/tasks/IdentifyTask",
   "esri/tasks/support/IdentifyParameters",
-  "esri/widgets/Popup/PopupViewModel",
   "esri/symbols/SimpleFillSymbol",
   "esri/symbols/SimpleLineSymbol",
   "esri/renderers/SimpleRenderer",
@@ -75,7 +74,6 @@ require([
   Graphic,
   IdentifyTask,
   IdentifyParameters,
-  PopupVM,
   SimpleFillSymbol,
   SimpleLineSymbol,
   SimpleRenderer,
@@ -2501,13 +2499,12 @@ require([
   //Coordinates widget
   var ccWidget = new CoordinateConversion({
     container: "mapView",
-    view: mapView
+    view: mapView,
   });
 
   var ccWidgetVM = new CoordinateVM({
     container: "mapView",
     view: mapView,
-    // conversions: ['usng', 'xy']
   });
 
   //mapView.ui.add(ccWidget, "bottom-left");

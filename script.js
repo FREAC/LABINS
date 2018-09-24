@@ -9,6 +9,7 @@ require([
   "esri/request",
   "esri/geometry/geometryEngine",
   "esri/geometry/Extent",
+  "esri/geometry/Point",
   "esri/layers/GraphicsLayer",
   "esri/Graphic",
   "esri/tasks/IdentifyTask",
@@ -24,7 +25,8 @@ require([
 
   // Widgets
   "esri/widgets/CoordinateConversion",
-  "esri/widgets/CoordinateConversion/CoordinateConversionViewModel",
+  "esri/widgets/CoordinateConversion/support/Format",
+  "esri/widgets/CoordinateConversion/support/Conversion",
   "esri/widgets/BasemapGallery",
   "esri/widgets/Search",
   "esri/widgets/Legend",
@@ -70,6 +72,7 @@ require([
   esriRequest,
   geometryEngine,
   Extent,
+  Point,
   GraphicsLayer,
   Graphic,
   IdentifyTask,
@@ -83,7 +86,8 @@ require([
   BufferParameters,
   SpatialReference,
   CoordinateConversion,
-  CoordinateVM,
+  Format,
+  Conversion,
   Basemaps,
   Search,
   Legend,
@@ -647,9 +651,9 @@ require([
         }
       })
     );
-
-
   }
+
+
 
 
   /////////////////////////////
@@ -2190,22 +2194,119 @@ require([
   var coordStatus;
   on(dom.byId("coordButton"), "click", function (evt) {
     if (coordStatus != 1) {
+      //mapView.ui.add(ccWidget, "bottom-left");
       mapView.ui.add(ccWidget, "bottom-left");
-      coordStatus = 1;
-      console.log(ccWidget);
-      console.log(ccWidget.conversions);
-      console.log(ccWidget.formats);
-      console.log(ccWidgetVM);
 
-      function configureWidget() {
-        for (i = 0; i < ccWidget.formats.items.length; i++) {
-          if (ccWidget.formats.items[i].name == "ddm") {
-            //ccWidget.conversions.items.push(ccWidget.formats.items[i]);
-            var ddmClone = ccWidget.conversions.items[0];
+
+      // Regular expression to find a number
+      var numberSearchPattern = /-?\d+[\.]?\d*/;
+
+      var statePlaneEastFL = new Format({
+        name: 'FSP E',
+        conversionInfo: {
+          spatialReference: new SpatialReference({
+            wkid: 2881
+          }),
+          reverseConvert: function (string, format) {
+            var parts = string.split(",")
+            return new Point({
+              x: parseFloat(parts[0]),
+              y: parseFloat(parts[1]),
+              spatialReference: {
+                wkid: 2881
+              }
+            });
           }
-        }
-      }
-      // configureWidget();
+        },
+        coordinateSegments: [{
+          alias: "X",
+          description: "easting",
+          searchPattern: numberSearchPattern
+        }, {
+          alias: "Y",
+          description: "northing",
+          searchPattern: numberSearchPattern
+        }],
+        defaultPattern: "X, Y"
+      });
+
+      ccWidget.formats.add(statePlaneEastFL);
+
+      var statePlaneWestFL = new Format({
+        name: 'FSP W',
+        conversionInfo: {
+          spatialReference: new SpatialReference({
+            wkid: 2882
+          }),
+          reverseConvert: function (string, format) {
+            var parts = string.split(",")
+            return new Point({
+              x: parseFloat(parts[0]),
+              y: parseFloat(parts[1]),
+              spatialReference: {
+                wkid: 2882
+              }
+            });
+          }
+        },
+        coordinateSegments: [{
+          alias: "X",
+          description: "easting",
+          searchPattern: numberSearchPattern
+        }, {
+          alias: "Y",
+          description: "northing",
+          searchPattern: numberSearchPattern
+        }],
+        defaultPattern: "X, Y"
+      });
+
+      ccWidget.formats.add(statePlaneWestFL);
+
+      var statePlaneNorthFL = new Format({
+        name: 'FSP N',
+        conversionInfo: {
+          spatialReference: new SpatialReference({
+            wkid: 2883
+          }),
+          reverseConvert: function (string, format) {
+            var parts = string.split(",")
+            return new Point({
+              x: parseFloat(parts[0]),
+              y: parseFloat(parts[1]),
+              spatialReference: {
+                wkid: 2883
+              }
+            });
+          }
+        },
+        coordinateSegments: [{
+          alias: "X",
+          description: "easting",
+          searchPattern: numberSearchPattern
+        }, {
+          alias: "Y",
+          description: "northing",
+          searchPattern: numberSearchPattern
+        }],
+        defaultPattern: "X, Y"
+      });
+
+      ccWidget.formats.add(statePlaneNorthFL);
+
+      // Add the two custom formats to the top of the widget's display
+      ccWidget.conversions.splice(0, 0,
+        new Conversion({
+          format: statePlaneEastFL
+        }),
+        new Conversion({
+          format: statePlaneWestFL
+        }),
+        new Conversion({
+          format: statePlaneNorthFL
+        })
+      );
+      coordStatus = 1;
     } else {
       mapView.ui.remove(ccWidget);
       coordStatus = 0;
@@ -2498,14 +2599,9 @@ require([
 
   //Coordinates widget
   var ccWidget = new CoordinateConversion({
-    container: "mapView",
-    view: mapView,
+    view: mapView
   });
 
-  var ccWidgetVM = new CoordinateVM({
-    container: "mapView",
-    view: mapView,
-  });
 
   //mapView.ui.add(ccWidget, "bottom-left");
 

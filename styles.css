@@ -112,6 +112,10 @@ body,
   background-color: #0d3b4b;
 }
 
+.esri-widget__header {
+  color: #ffffff;
+}
+
 #searchWidgetDiv-suggest-menu:hover {
   background-color: #0d3b4b;
 }

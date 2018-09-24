@@ -26,7 +26,7 @@
     <script>
         require([
             "esri/Map",
-            "esri/views/SceneView",
+            "esri/views/MapView",
             "esri/widgets/CoordinateConversion",
             "esri/widgets/CoordinateConversion/support/Format",
             "esri/widgets/CoordinateConversion/support/Conversion",
@@ -36,31 +36,21 @@
 
             "dojo/domReady!"
         ], function (
-            Map, SceneView, CoordinateConversion, Format, Conversion,
+            Map, MapView, CoordinateConversion, Format, Conversion,
             Point, webMercatorUtils, SpatialReference
         ) {
 
             var map = new Map({
                 basemap: "hybrid",
-                ground: "world-elevation"
             });
 
-            var view = new SceneView({
+            var view = new MapView({
                 container: "viewDiv",
                 map: map,
                 // Clip the view to the extent covered by
                 // by NAD 1983 HARN StatePlane California I
-                clippingArea: {
-                    xmin: -124.45,
-                    xmax: -119.99,
-                    ymax: 43.01,
-                    ymin: 39.59
-                },
-                center: {
-                    x: -122.22,
-                    y: 41.3
-                },
-                zoom: 10,
+                center: [-82.28, 27.8],
+                zoom: 7,
                 viewingMode: "local"
             });
 
@@ -177,13 +167,78 @@
 
             ccWidget.formats.add(statePlaneEastFL);
 
+            var statePlaneWestFL = new Format({
+                name: 'FSP W',
+                conversionInfo: {
+                    spatialReference: new SpatialReference({
+                        wkid: 2882
+                    }),
+                    reverseConvert: function (string, format) {
+                        var parts = string.split(",")
+                        return new Point({
+                            x: parseFloat(parts[0]),
+                            y: parseFloat(parts[1]),
+                            spatialReference: {
+                                wkid: 2882
+                            }
+                        });
+                    }
+                },
+                coordinateSegments: [{
+                    alias: "X",
+                    description: "easting",
+                    searchPattern: numberSearchPattern
+                }, {
+                    alias: "Y",
+                    description: "northing",
+                    searchPattern: numberSearchPattern
+                }],
+                defaultPattern: "X, Y"
+            });
+
+            ccWidget.formats.add(statePlaneWestFL);
+
+            var statePlaneNorthFL = new Format({
+                name: 'FSP W',
+                conversionInfo: {
+                    spatialReference: new SpatialReference({
+                        wkid: 2883
+                    }),
+                    reverseConvert: function (string, format) {
+                        var parts = string.split(",")
+                        return new Point({
+                            x: parseFloat(parts[0]),
+                            y: parseFloat(parts[1]),
+                            spatialReference: {
+                                wkid: 2883
+                            }
+                        });
+                    }
+                },
+                coordinateSegments: [{
+                    alias: "X",
+                    description: "easting",
+                    searchPattern: numberSearchPattern
+                }, {
+                    alias: "Y",
+                    description: "northing",
+                    searchPattern: numberSearchPattern
+                }],
+                defaultPattern: "X, Y"
+            });
+
+            ccWidget.formats.add(statePlaneNorthFL);
+
             // Add the two custom formats to the top of the widget's display
             ccWidget.conversions.splice(0, 0,
                 new Conversion({
-                    format: newFormat
+                    format: statePlaneEastFL
                 }),
                 new Conversion({
-                    format: statePlaneEastFL
+                    format: statePlaneWestFL
+                }),
+                new Conversion({
+                    format: statePlaneNorthFL
                 })
             );
         });

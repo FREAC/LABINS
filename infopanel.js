@@ -139,7 +139,7 @@ function queryInfoPanel(results, i) {
                 '<b>ECL Name: </b>' + results[i - 1].attributes.ecl_name + '<br>' +
                 '<b>MHW: </b>' + results[i - 1].attributes.mhw + '<br>' +
                 '<b>Location: </b>' + results[i - 1].attributes.location + '<br>' +
-                '<b>Download Information: </b>' + '<a target="_blank" href=http://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i - 1].attributes.mhw + '.pdf&fileType=MAP>' + results[i - 1].attributes.pdf1 + '</a><br>'
+                '<b>Download Information: </b>' + '<a target="_blank" href=http://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i - 1].attributes.mhw + '.pdf&fileType=MAP>' + results[i - 1].attributes.mhw + '.pdf</a><br>'
             );
         } else if (results[i - 1].attributes.layerName === 'Survey Benchmarks') {
             var replaceWhitespace = results[i - 1].attributes.FILE_NAME.replace(" ", "%20");

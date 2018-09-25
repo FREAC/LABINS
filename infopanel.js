@@ -188,6 +188,6 @@ function queryInfoPanel(results, i) {
     if (i == 1) {
         $('#arraylengthdiv').html((parseInt(i - 1)) + ' feature found.');
     } else {
-        $('#arraylengthdiv').html((parseInt(i - 1)) + ' features found. ');
+        $('#infoSpan').html('Information Panel - ' + (parseInt(i - 1)) + ' features found. ');
     }
 }

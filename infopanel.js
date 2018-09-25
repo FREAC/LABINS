@@ -28,16 +28,16 @@ function queryInfoPanel(results, i) {
                 '<b>Flooding Frequency ‐ Maximum:</b> ' + results[i - 1].attributes.flodfreqma + '<br>' +
                 '<b>Description:</b> ' + results[i - 1].attributes.descript + '<br>',
             );
-        } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery - State Plane West') {
+        } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane West') {
             $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane West<b></b></p>' +
                 '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=W&gridid=' + results[i - 1].attributes.spw_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spw_id + '</a><br>'
             );
-        } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery State Plane East') {
+        } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane East') {
             $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane East</b></p>' +
                 '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=E&gridid=' + results[i - 1].attributes.spe_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spe_id + '</a><br>'
             );
-        } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery - State Plane North') {
-            $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery Grid State Plane North</b></p>' +
+        } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane North') {
+            $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane North</b></p>' +
                 '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
             );
         } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {

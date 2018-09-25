@@ -2188,6 +2188,7 @@ require([
     clearDiv('informationdiv');
     $('#numinput').val('');
     $('#arraylengthdiv').html('');
+    $('#infoSpan').html('Information Panel');
   });
 
   // dynamically add and remove coordinates widget

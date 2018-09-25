@@ -1656,7 +1656,7 @@ require([
           whereStatement = attribute + ' = ' + "'" + queryStatement + "'";
         }
       } else {
-        console.log('No features found');
+        console.log('No features found.');
       }
 
       console.log(whereStatement);
@@ -1672,7 +1672,7 @@ require([
       });
       return queryTask.execute(params)
         .then(function (response) {
-          console.log(response);
+          console.log('response length ', response.features.length);
           if (response.features.length > 0) {
             return queryTask.execute(params);
           } else {
@@ -2020,20 +2020,20 @@ require([
           });
       });
 
-      query(submitButton).on('click', function (e) {
-        clearDiv('informationdiv');
-        infoPanelData = [];
-        textQueryQuerytask(controlPointsURL + '4', 'name', inputAfter.value)
-          .then(function (response) {
-            for (i = 0; i < response.features.length; i++) {
-              response.features[i].attributes.layerName = 'Tide Stations';
-              infoPanelData.push(response.features[i]);
-            }
-            goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
-            togglePanel();
-          });
-      });
+      // query(submitButton).on('click', function (e) {
+      //   clearDiv('informationdiv');
+      //   infoPanelData = [];
+      //   textQueryQuerytask(controlPointsURL + '4', 'name', inputAfter.value)
+      //     .then(function (response) {
+      //       for (i = 0; i < response.features.length; i++) {
+      //         response.features[i].attributes.layerName = 'Tide Stations';
+      //         infoPanelData.push(response.features[i]);
+      //       }
+      //       goToFeature(infoPanelData[0]);
+      //       queryInfoPanel(infoPanelData, 1);
+      //       togglePanel();
+      //     });
+      // });
 
     } else if (layerSelection === 'Erosion Control Line') {
       clearDiv('parametersQuery');
@@ -2493,8 +2493,8 @@ require([
 
 
     // Go to the selected parcel
-    if (infoPanelData[this.id - 1].geometry.type === "polygon") {
-      console.log('its a polygon');
+    if (infoPanelData[this.id - 1].geometry.type === "polygon" || infoPanelData[this.id - 1].geometry.type === "polyline") {
+      console.log('its a polygon or a polyline');
       var ext = infoPanelData[this.id - 1].geometry.extent;
       var cloneExt = ext.clone();
       mapView.goTo({

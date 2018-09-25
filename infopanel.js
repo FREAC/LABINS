@@ -28,15 +28,15 @@ function queryInfoPanel(results, i) {
                 '<b>Flooding Frequency ‐ Maximum:</b> ' + results[i - 1].attributes.flodfreqma + '<br>' +
                 '<b>Description:</b> ' + results[i - 1].attributes.descript + '<br>',
             );
-        } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane West') {
-            $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery Grid State Plane West<b></b></p>' +
+        } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery - State Plane West') {
+            $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane West<b></b></p>' +
                 '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=W&gridid=' + results[i - 1].attributes.spw_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spw_id + '</a><br>'
             );
-        } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane East') {
-            $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery Grid State Plane East</b></p>' +
+        } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery State Plane East') {
+            $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane East</b></p>' +
                 '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=E&gridid=' + results[i - 1].attributes.spe_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spe_id + '</a><br>'
             );
-        } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane North') {
+        } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery - State Plane North') {
             $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery Grid State Plane North</b></p>' +
                 '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
             );
@@ -149,13 +149,13 @@ function queryInfoPanel(results, i) {
             );
 
         } else if (results[i - 1].attributes.layerName === 'Township-Range-Section') {
-            $('#informationdiv').append('<p style= "font-size: 15px"><b>Section Lines</b> </p>' +
+            $('#informationdiv').append('<p style= "font-size: 15px"><b>GLO</b> </p>' +
                 '<b>Section-Township-Range: </b>' + results[i - 1].attributes.twnrngsec.substring(8, ) + ' ' + results[i - 1].attributes.twnrngsec.substring(1, 4) + ' ' + results[i - 1].attributes.twnrngsec.substring(5, 8) + '<br>' +
                 '<a target="_blank" href=http://www.labins.org/survey_data/landrecords/landrecords.cfm?town1=' + results[i - 1].attributes.tr_dissolve.substring(0, 2) + '&town2=' + results[i - 1].attributes.tr_dissolve.substring(2, 3) + '&range1=' + results[i - 1].attributes.tr_dissolve.substring(3, 5) + '&range2=' + results[i - 1].attributes.tr_dissolve.substring(5, 6) + '>' + 'Original GLO Survey Plats and Field Notes' + '</a><br>' +
                 '<a target="_blank" href=http://199.73.242.221/Oculus/servlet/shell?command=hitlist&[catalog=6]&[entityType=any]&[searchBy=profile]&[profile=BSM+Office+Files]&[sortBy=Creator]&{STR+Coordinates=%20LK%20S0' + results[i - 1].attributes.tr_dissolve.substring(0, 2) + '%20' + results[i - 1].attributes.twnrngsec.substring(0, 4) + '%20' + results[i - 1].attributes.twnrngsec.substring(4, 8) + '}>' + 'Oculus Database - DEP Use Only' + '</a><br>'
             );
         } else if (results[i - 1].attributes.layerName === 'Township-Range') {
-            $('#informationdiv').append('<p style= "font-size: 15px"><b>Township-Range Lines</b> </p>' +
+            $('#informationdiv').append('<p style= "font-size: 15px"><b>Township</b> </p>' +
                 '<b>Township-Range: </b>' + results[i - 1].attributes.tr_dissolve.substring(0, 3) + ' ' + results[i - 1].attributes.tr_dissolve.substring(3, ) + '<br>'
             );
         } else if (results[i - 1].attributes.layerName === 'Geographic Names') {

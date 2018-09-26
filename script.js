@@ -1314,13 +1314,20 @@ require([
 
       // determine whether first index of identify 
       // is a polygon or point then do appropriate highlight and zoom
-      if (infoPanelData[0].geometry.type === "polygon") {
+      if (infoPanelData[0].geometry.type === "polygon" || infoPanelData[0].geometry.type === "polyline") {
         var ext = infoPanelData[0].geometry.extent;
         var cloneExt = ext.clone();
-        mapView.goTo({
-          target: infoPanelData[0],
-          extent: cloneExt.expand(1.75)
-        });
+        if (mapView.extent.height < ext.height || mapView.extent.width < ext.width) {
+          // no zoom, continue to next block
+          // the map will not zoom out
+        } else {
+          // the map zooms to extent of polygon
+          mapView.goTo({
+            target: infoPanelData[0],
+            extent: cloneExt.expand(1.75)
+          });
+
+        }
         // Remove current selection
         selectionLayer.graphics.removeAll();
         console.log("it's a polygon");

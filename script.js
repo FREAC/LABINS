@@ -1308,7 +1308,6 @@ require([
           });
         })
       } else {
-        console.log("there ain't no features dummy");
         $("#infoSpan").html("Information Panel - 0 features found.")
       }
 

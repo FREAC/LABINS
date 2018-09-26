@@ -1318,7 +1318,7 @@ require([
         var ext = infoPanelData[0].geometry.extent;
         var cloneExt = ext.clone();
         if (mapView.extent.height < ext.height || mapView.extent.width < ext.width) {
-          // no zoom, continue to next block
+          // no zoom, continue to next block 
           // the map will not zoom out
         } else {
           // the map zooms to extent of polygon

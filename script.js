@@ -356,7 +356,7 @@ require([
       bottom: 0
     },
     center: [-82.28, 27.8],
-    zoom: 7,
+    zoom: 13,
     constraints: {
       rotationEnabled: false
     }
@@ -1259,38 +1259,59 @@ require([
       console.log('what is this doing--- ', allParams[i])
       promises.push(tasks[i].execute(allParams[i]));
     }
+
+    // create promises for each service to be checked for features
     var iPromises = new all(promises);
     iPromises.then(function (rArray) {
       console.log('iPromises is ', iPromises);
       console.log('rArray is ', rArray);
-      arrayUtils.map(rArray, function (response) {
-        var results = response.results;
-        console.log('here are the objects we found in the section', results);
-        return arrayUtils.map(results, function (result) {
-          var feature = result.feature;
-          var layerName = result.layerName;
-          console.log('the feature is ', feature, '  and the layer name is ', layerName)
-          console.log('all of the results look like this ', results)
-          feature.attributes.layerName = layerName;
-          // only identify the corners that have an image
-          if (layerName != 'Certified Corners') {
-            console.log(layerName);
-            // We want to show Original GLO survey plats and field notes now
-            // if (layerName === 'Township-Range-Section') {
-            //   // Do nothing
-            // } else {
-            identifyElements.push(feature);
-            infoPanelData.push(feature);
-            // }
-          } else if (layerName === 'Certified Corners') {
-            if (feature.attributes.is_image === 'Y') {
+
+      var isArrayEmpty = 0
+      rArray.forEach(function (element) {
+        console.log(element.results.length);
+        isArrayEmpty += element.results.length;
+      });
+
+      console.log(isArrayEmpty);
+
+      // convert each response to response.results if returned array not empty
+      if (isArrayEmpty > 0) {
+        arrayUtils.map(rArray, function (response) {
+          console.log(response);
+          var results = response.results;
+          console.log('results yo');
+          console.log('here are the objects we found in the section', results);
+          // for each resulting array, find the feature and layername to pass to queryinfopanel function
+          return arrayUtils.map(results, function (result) {
+            console.log(results);
+            var feature = result.feature;
+            var layerName = result.layerName;
+            console.log('the feature is ', feature, '  and the layer name is ', layerName)
+            console.log('all of the results look like this ', results)
+            feature.attributes.layerName = layerName;
+            // only identify the corners that have an image
+            if (layerName != 'Certified Corners') {
+              console.log(layerName);
+              // We want to show Original GLO survey plats and field notes now
+              // if (layerName === 'Township-Range-Section') {
+              //   // Do nothing
+              // } else {
+              identifyElements.push(feature);
               infoPanelData.push(feature);
+              // }
+              // only push Certified Corners with an image
+            } else if (layerName === 'Certified Corners') {
+              if (feature.attributes.is_image === 'Y') {
+                infoPanelData.push(feature);
+              }
             }
-          }
+          });
+        })
+      } else {
+        console.log("there ain't no features dummy");
+        $("#infoSpan").html("Information Panel - 0 features found.")
+      }
 
-
-        });
-      })
       // determine whether first index of identify 
       // is a polygon or point then do appropriate highlight and zoom
       if (infoPanelData[0].geometry.type === "polygon") {
@@ -1638,6 +1659,7 @@ require([
             return queryTask.execute(params);
           } else {
             togglePanel();
+            $('#infoSpan').html("Information Panel - 0 features found.")
             console.log('No features found.');
             $('#informationdiv').append("No features found.");
             clearDiv('arraylengthdiv');
@@ -2010,6 +2032,7 @@ require([
         multiTextQuerytask(controlPointsURL + '4', 'id', textValue, 'name', textValue)
 
           .then(function (response) {
+            clearDiv('informationdiv');
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Tide Stations';
               infoPanelData.push(response.features[i]);

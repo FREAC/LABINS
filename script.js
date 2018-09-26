@@ -1308,6 +1308,7 @@ require([
           });
         })
       } else {
+        // reflect that no features were found
         $("#infoSpan").html("Information Panel - 0 features found.")
       }
 

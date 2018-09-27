@@ -1317,6 +1317,7 @@ require([
       if (infoPanelData[0].geometry.type === "polygon" || infoPanelData[0].geometry.type === "polyline") {
         var ext = infoPanelData[0].geometry.extent;
         var cloneExt = ext.clone();
+        // This introduces logic to control zooming depending on if the current extent is closer or farther than resulting polygon or polyline
         if (mapView.extent.height < ext.height || mapView.extent.width < ext.width) {
           // no zoom, continue to next block 
           // the map will not zoom out
@@ -1326,8 +1327,8 @@ require([
             target: infoPanelData[0],
             extent: cloneExt.expand(1.75)
           });
-
         }
+        // ^ End logic for zoom control
         // Remove current selection
         selectionLayer.graphics.removeAll();
         console.log("it's a polygon");

@@ -2579,7 +2579,8 @@ require([
 
   // LegendLegend
   var legendWidget = new Legend({
-    container: "legendDiv",
+    // container: "legendDiv",
+    container: document.createElement("div"),
     view: mapView
   });
 
@@ -2617,7 +2618,7 @@ require([
   var scaleBar = new ScaleBar({
     view: mapView
   });
-  mapView.ui.add(scaleBar, "bottom-left");
+  //mapView.ui.add(scaleBar, "bottom-left");
 
 
   // Home
@@ -2636,9 +2637,13 @@ require([
     view: mapView
   });
 
-  var botLeftExpand = new Expand({
-
-  })
+  var legendExpand = new Expand({
+    view: mapView,
+    content: legendWidget.domNode,
+    expandIconClass: "esri-icon-layers",
+    group: "left"
+  });
+  mapView.ui.add([legendExpand], "bottom-left");
 
 
   //mapView.ui.add(ccWidget, "bottom-left");

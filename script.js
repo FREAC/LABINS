@@ -2635,7 +2635,8 @@ require([
 
   //Coordinates widget
   var ccWidget = new CoordinateConversion({
-    view: mapView
+    view: mapView,
+    container: document.createElement("div"),
   });
 
   var legendExpand = new Expand({
@@ -2651,6 +2652,15 @@ require([
     expandIconClass: "esri-icon-layer-list",
     group: "left"
   });
+
+  var coordExpand = new Expand({
+    view: mapView,
+    content: ccWidget.domNode,
+    expandIconClass: "esri-icon-map-pin",
+    // group: "left"
+  });
+
+  mapView.ui.add(coordExpand, "top-left");
 
   mapView.ui.add([legendExpand, layerExpand], "bottom-left");
 

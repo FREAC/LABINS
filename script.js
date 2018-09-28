@@ -36,6 +36,7 @@ require([
   "esri/widgets/ScaleBar",
   "esri/widgets/Home",
   "esri/widgets/Locate",
+  "esri/widgets/Expand",
   "esri/core/watchUtils",
   "dojo/_base/array",
   "dojo/Deferred",
@@ -97,6 +98,7 @@ require([
   ScaleBar,
   Home,
   Locate,
+  Expand,
   watchUtils, arrayUtils, Deferred, on, dom, domClass, all, domConstruct, domGeom, keys, JSON, lang, query, Color,
   Collapse,
   Dropdown,
@@ -2222,129 +2224,6 @@ require([
     $('#infoSpan').html('Information Panel');
   });
 
-  // dynamically add and remove coordinates widget
-  var coordStatus;
-  on(dom.byId("coordButton"), "click", function (evt) {
-    if (coordStatus != 1) {
-      //mapView.ui.add(ccWidget, "bottom-left");
-      mapView.ui.add(ccWidget, "bottom-left");
-
-
-      // Regular expression to find a number
-      var numberSearchPattern = /-?\d+[\.]?\d*/;
-
-      var statePlaneEastFL = new Format({
-        name: 'FSP E',
-        conversionInfo: {
-          spatialReference: new SpatialReference({
-            wkid: 2881
-          }),
-          reverseConvert: function (string, format) {
-            var parts = string.split(",")
-            return new Point({
-              x: parseFloat(parts[0]),
-              y: parseFloat(parts[1]),
-              spatialReference: {
-                wkid: 2881
-              }
-            });
-          }
-        },
-        coordinateSegments: [{
-          alias: "X",
-          description: "easting",
-          searchPattern: numberSearchPattern
-        }, {
-          alias: "Y",
-          description: "northing",
-          searchPattern: numberSearchPattern
-        }],
-        defaultPattern: "X, Y"
-      });
-
-      ccWidget.formats.add(statePlaneEastFL);
-
-      var statePlaneWestFL = new Format({
-        name: 'FSP W',
-        conversionInfo: {
-          spatialReference: new SpatialReference({
-            wkid: 2882
-          }),
-          reverseConvert: function (string, format) {
-            var parts = string.split(",")
-            return new Point({
-              x: parseFloat(parts[0]),
-              y: parseFloat(parts[1]),
-              spatialReference: {
-                wkid: 2882
-              }
-            });
-          }
-        },
-        coordinateSegments: [{
-          alias: "X",
-          description: "easting",
-          searchPattern: numberSearchPattern
-        }, {
-          alias: "Y",
-          description: "northing",
-          searchPattern: numberSearchPattern
-        }],
-        defaultPattern: "X, Y"
-      });
-
-      ccWidget.formats.add(statePlaneWestFL);
-
-      var statePlaneNorthFL = new Format({
-        name: 'FSP N',
-        conversionInfo: {
-          spatialReference: new SpatialReference({
-            wkid: 2883
-          }),
-          reverseConvert: function (string, format) {
-            var parts = string.split(",")
-            return new Point({
-              x: parseFloat(parts[0]),
-              y: parseFloat(parts[1]),
-              spatialReference: {
-                wkid: 2883
-              }
-            });
-          }
-        },
-        coordinateSegments: [{
-          alias: "X",
-          description: "easting",
-          searchPattern: numberSearchPattern
-        }, {
-          alias: "Y",
-          description: "northing",
-          searchPattern: numberSearchPattern
-        }],
-        defaultPattern: "X, Y"
-      });
-
-      ccWidget.formats.add(statePlaneNorthFL);
-
-      // Add the two custom formats to the top of the widget's display
-      ccWidget.conversions.splice(0, 0,
-        new Conversion({
-          format: statePlaneEastFL
-        }),
-        new Conversion({
-          format: statePlaneWestFL
-        }),
-        new Conversion({
-          format: statePlaneNorthFL
-        })
-      );
-      coordStatus = 1;
-    } else {
-      mapView.ui.remove(ccWidget);
-      coordStatus = 0;
-    }
-  });
-
   // //Custom Zoom to feature
   // mapView.popup.on("trigger-action", function (evt) {
   //   if (evt.action.id === "custom-zoom") {
@@ -2577,13 +2456,15 @@ require([
 
   // LegendLegend
   var legendWidget = new Legend({
-    container: "legendDiv",
+    // container: "legendDiv",
+    container: document.createElement("div"),
     view: mapView
   });
 
   // LayerList
   var layerWidget = new LayerList({
-    container: "layersDiv",
+    // container: "layersDiv",
+    container: document.createElement("div"),
     view: mapView
   });
 
@@ -2615,7 +2496,7 @@ require([
   var scaleBar = new ScaleBar({
     view: mapView
   });
-  mapView.ui.add(scaleBar, "bottom-left");
+  //mapView.ui.add(scaleBar, "bottom-left");
 
 
   // Home
@@ -2631,8 +2512,143 @@ require([
 
   //Coordinates widget
   var ccWidget = new CoordinateConversion({
-    view: mapView
+    view: mapView,
+    container: document.createElement("div"),
   });
+
+  // Regular expression to find a number
+  var numberSearchPattern = /-?\d+[\.]?\d*/;
+
+  var statePlaneEastFL = new Format({
+    name: 'FSP E',
+    conversionInfo: {
+      spatialReference: new SpatialReference({
+        wkid: 2881
+      }),
+      reverseConvert: function (string, format) {
+        var parts = string.split(",")
+        return new Point({
+          x: parseFloat(parts[0]),
+          y: parseFloat(parts[1]),
+          spatialReference: {
+            wkid: 2881
+          }
+        });
+      }
+    },
+    coordinateSegments: [{
+      alias: "X",
+      description: "easting",
+      searchPattern: numberSearchPattern
+    }, {
+      alias: "Y",
+      description: "northing",
+      searchPattern: numberSearchPattern
+    }],
+    defaultPattern: "X, Y"
+  });
+
+  ccWidget.formats.add(statePlaneEastFL);
+
+  var statePlaneWestFL = new Format({
+    name: 'FSP W',
+    conversionInfo: {
+      spatialReference: new SpatialReference({
+        wkid: 2882
+      }),
+      reverseConvert: function (string, format) {
+        var parts = string.split(",")
+        return new Point({
+          x: parseFloat(parts[0]),
+          y: parseFloat(parts[1]),
+          spatialReference: {
+            wkid: 2882
+          }
+        });
+      }
+    },
+    coordinateSegments: [{
+      alias: "X",
+      description: "easting",
+      searchPattern: numberSearchPattern
+    }, {
+      alias: "Y",
+      description: "northing",
+      searchPattern: numberSearchPattern
+    }],
+    defaultPattern: "X, Y"
+  });
+
+  ccWidget.formats.add(statePlaneWestFL);
+
+  var statePlaneNorthFL = new Format({
+    name: 'FSP N',
+    conversionInfo: {
+      spatialReference: new SpatialReference({
+        wkid: 2883
+      }),
+      reverseConvert: function (string, format) {
+        var parts = string.split(",")
+        return new Point({
+          x: parseFloat(parts[0]),
+          y: parseFloat(parts[1]),
+          spatialReference: {
+            wkid: 2883
+          }
+        });
+      }
+    },
+    coordinateSegments: [{
+      alias: "X",
+      description: "easting",
+      searchPattern: numberSearchPattern
+    }, {
+      alias: "Y",
+      description: "northing",
+      searchPattern: numberSearchPattern
+    }],
+    defaultPattern: "X, Y"
+  });
+
+  ccWidget.formats.add(statePlaneNorthFL);
+
+  // Add the two custom formats to the top of the widget's display
+  ccWidget.conversions.splice(0, 0,
+    new Conversion({
+      format: statePlaneEastFL
+    }),
+    new Conversion({
+      format: statePlaneWestFL
+    }),
+    new Conversion({
+      format: statePlaneNorthFL
+    })
+  );
+
+  var legendExpand = new Expand({
+    view: mapView,
+    content: legendWidget.domNode,
+    expandIconClass: "esri-icon-layers",
+    group: "left"
+  });
+
+  var layerExpand = new Expand({
+    view: mapView,
+    content: layerWidget.domNode,
+    expandIconClass: "esri-icon-layer-list",
+    group: "left"
+  });
+
+  var coordExpand = new Expand({
+    view: mapView,
+    content: ccWidget.domNode,
+    expandIconClass: "esri-icon-map-pin",
+    group: "left"
+  });
+
+  mapView.ui.add(coordExpand, "top-left");
+
+  mapView.ui.add([legendExpand, layerExpand], "bottom-left");
 
 
   //mapView.ui.add(ccWidget, "bottom-left");
@@ -2659,8 +2675,5 @@ require([
 
   var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
-
-  var coordBtn = document.getElementById("coordButton");
-  mapView.ui.add(coordBtn, "top-left");
 
 });

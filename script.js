@@ -2586,7 +2586,8 @@ require([
 
   // LayerList
   var layerWidget = new LayerList({
-    container: "layersDiv",
+    // container: "layersDiv",
+    container: document.createElement("div"),
     view: mapView
   });
 
@@ -2643,7 +2644,15 @@ require([
     expandIconClass: "esri-icon-layers",
     group: "left"
   });
-  mapView.ui.add([legendExpand], "bottom-left");
+
+  var layerExpand = new Expand({
+    view: mapView,
+    content: layerWidget.domNode,
+    expandIconClass: "esri-icon-layer-list",
+    group: "left"
+  });
+
+  mapView.ui.add([legendExpand, layerExpand], "bottom-left");
 
 
   //mapView.ui.add(ccWidget, "bottom-left");

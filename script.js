@@ -36,6 +36,7 @@ require([
   "esri/widgets/ScaleBar",
   "esri/widgets/Home",
   "esri/widgets/Locate",
+  "esri/widgets/Expand",
   "esri/core/watchUtils",
   "dojo/_base/array",
   "dojo/Deferred",
@@ -97,6 +98,7 @@ require([
   ScaleBar,
   Home,
   Locate,
+  Expand,
   watchUtils, arrayUtils, Deferred, on, dom, domClass, all, domConstruct, domGeom, keys, JSON, lang, query, Color,
   Collapse,
   Dropdown,
@@ -2633,6 +2635,10 @@ require([
   var ccWidget = new CoordinateConversion({
     view: mapView
   });
+
+  var botLeftExpand = new Expand({
+
+  })
 
 
   //mapView.ui.add(ccWidget, "bottom-left");

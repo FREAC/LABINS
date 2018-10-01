@@ -1572,7 +1572,7 @@ require([
       minSuggestCharacters: 0
     }, {
       featureLayer: {
-        url: controlPointsURL + '0',
+        url: labinsURL + '0',
       },
       searchFields: ["name"],
       suggestionTemplate: "Designation: {name}, County {county}",
@@ -1586,7 +1586,7 @@ require([
       placeholder: "Search by Designation",
     }, {
       featureLayer: {
-        url: controlPointsURL + '4',
+        url: labinsURL + '3',
       },
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",
@@ -1653,7 +1653,7 @@ require([
       placeholder: "Benchmark Name Example: CYP016",
     }, {
       featureLayer: {
-        url: controlPointsURL + "2",
+        url: labinsURL + '2',
       },
       searchFields: ["blmid", "tile_name"],
       displayField: "blmid",
@@ -1886,8 +1886,8 @@ require([
       clearDiv('parametersQuery');
       // add dropdown, input, and submit elements
       addDescript();
-      createCountyDropdown(controlPointsURL + '0', 'county');
-      createQuadDropdown(controlPointsURL + '0', 'quad');
+      createCountyDropdown(labinsURL + '0', 'county');
+      createQuadDropdown(labinsURL + '0', 'quad');
       createTextBox('textQuery', 'Enter NGS Name or PID.');
       createSubmit();
 
@@ -1901,7 +1901,7 @@ require([
         getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '0', response)
+            dataQueryQuerytask(labinsURL + '0', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
@@ -1925,7 +1925,7 @@ require([
         getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '0', response)
+            dataQueryQuerytask(labinsURL + '0', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
@@ -1953,7 +1953,7 @@ require([
         var textValue = document.getElementById('textQuery').value;
 
         //textQueryQuerytask(controlPointsURL + '0', 'pid', textValue)
-        multiTextQuerytask(controlPointsURL + '0', 'pid', textValue, 'name', textValue)
+        multiTextQuerytask(labinsURL + '0', 'pid', textValue, 'name', textValue)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
@@ -1981,7 +1981,7 @@ require([
         var textValue = document.getElementById('IDQuery').value;
 
         console.log(textValue);
-        textQueryQuerytask(controlPointsURL + '2', 'blmid', textValue)
+        textQueryQuerytask(labinsURL + '2', 'blmid', textValue)
           .then(function (response) {
             console.log(response);
             for (i = 0; i < response.features.length; i++) {
@@ -2081,8 +2081,8 @@ require([
     } else if (layerSelection === 'Tide Stations') {
       clearDiv('parametersQuery');
       addDescript();
-      createCountyDropdown(controlPointsURL + '4', 'countyname');
-      createQuadDropdown(controlPointsURL + '4', 'quadname');
+      createCountyDropdown(labinsURL + '3', 'countyname');
+      createQuadDropdown(labinsURL + '3', 'quadname');
       createTextBox('textQuery', 'Enter Tide Station ID or Name');
       createSubmit();
       var countyDropdownAfter = document.getElementById('countyQuery');
@@ -2095,7 +2095,7 @@ require([
         getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '4', response)
+            dataQueryQuerytask(labinsURL + '3', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Tide Stations';
@@ -2119,7 +2119,7 @@ require([
         getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '4', response)
+            dataQueryQuerytask(labinsURL + '3', response)
               .then(function (response) {
                 console.log(response);
                 for (i = 0; i < response.features.length; i++) {
@@ -2149,7 +2149,7 @@ require([
         var textValue = inputAfter.value;
 
 
-        multiTextQuerytask(controlPointsURL + '4', 'id', textValue, 'name', textValue)
+        multiTextQuerytask(labinsURL + '3', 'id', textValue, 'name', textValue)
 
           .then(function (response) {
             clearDiv('informationdiv');
@@ -2166,7 +2166,7 @@ require([
       // query(submitButton).on('click', function (e) {
       //   clearDiv('informationdiv');
       //   infoPanelData = [];
-      //   textQueryQuerytask(controlPointsURL + '4', 'name', inputAfter.value)
+      //   textQueryQuerytask(labinsURL + '3', 'name', inputAfter.value)
       //     .then(function (response) {
       //       for (i = 0; i < response.features.length; i++) {
       //         response.features[i].attributes.layerName = 'Tide Stations';

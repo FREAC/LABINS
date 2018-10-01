@@ -108,6 +108,129 @@ require([
   var minimumDrawScale = 100000;
   var extents = [];
 
+  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer";
+  var labinsLayer = new MapImageLayer({
+    url: labinsURL,
+    minScale: minimumDrawScale,
+    sublayers: [{
+      id: 17,
+      title: "Soils June 2012 - Dept. of Agriculture",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 16,
+      title: "Hi-Res Imagery Grid State Plane East",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 15,
+      title: "Hi-Res Imagery Grid: State Plane North",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 14,
+      title: "Hi-Res Imagery Grid: State Plane West",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 13,
+      title: "Parcels",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 12,
+      title: "City Limits",
+      visible: false,
+      popupEnabled: false,
+      renderer: {
+        type: "simple",
+        symbol: {
+          type: "simple-fill",
+          style: "none",
+          outline: {
+            style: "dash",
+            width: 1.25
+          }
+        }
+      }
+    }, {
+      id: 11,
+      title: "Township-Range-Section",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 10,
+      title: "Township-Range",
+      visible: true,
+      popupEnabled: false,
+      labelsVisible: true,
+      // Set label specs for township-range
+      labelingInfo: [{
+        labelExpression: "[tr_dissolve]",
+        labelPlacement: "always-horizontal",
+        symbol: {
+          type: "text", // autocasts as new TextSymbol()
+          color: [0, 0, 255, 1],
+          haloColor: [255, 255, 255],
+          haloSize: 2,
+          font: {
+            size: 11
+          }
+        }
+      }]
+    }, {
+      id: 9,
+      title: "USGS Quads",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 8,
+      title: "Erosion Control Line",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 7,
+      title: "R-Monuments",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 6,
+      title: "CCR with Images",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 5,
+      title: "Geographic Names",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 4,
+      title: "Tide Interpolation Points",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 3,
+      title: "Tide Stations",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 2,
+      title: "Certified Corners",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 1,
+      title: "Preliminary NGS Points",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 0,
+      title: "NGS Control Points",
+      visible: true,
+      popupEnabled: false
+    }]
+  });
+
   var controlPointsURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Points_3857/MapServer/";
   var controlPointsLayer = new MapImageLayer({
     url: controlPointsURL,
@@ -219,7 +342,6 @@ require([
       id: 5,
       title: "Parcels",
       visible: false,
-      //popupTemplate: parcelTemplate,
       popupEnabled: false
     }, {
       id: 4,

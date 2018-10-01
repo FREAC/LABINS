@@ -1462,7 +1462,7 @@ require([
       minSuggestCharacters: 0
     }, {
       featureLayer: {
-        url: controlPointsURL + "0",
+        url: controlPointsURL + '0',
       },
       searchFields: ["name"],
       suggestionTemplate: "Designation: {name}, County {county}",
@@ -1476,7 +1476,7 @@ require([
       placeholder: "Search by Designation",
     }, {
       featureLayer: {
-        url: controlPointsURL + "4",
+        url: controlPointsURL + '4',
       },
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",

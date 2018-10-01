@@ -108,7 +108,7 @@ require([
   var minimumDrawScale = 100000;
   var extents = [];
 
-  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer";
+  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/";
   var labinsLayer = new MapImageLayer({
     url: labinsURL,
     minScale: minimumDrawScale,
@@ -465,7 +465,7 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, controlPointsLayer, bufferLayer]
+    layers: [labinsLayer, swfwmdLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
   });
 
   /////////////////////////
@@ -1195,8 +1195,9 @@ require([
   var identifyTask, params;
 
   tasks = [];
-  allParams = [];
-  var serviceURLs = [controlPointsURL, controlLinesURL, swfwmdURL];
+  var allParams = [];
+  // var serviceURLs = [controlPointsURL, controlLinesURL, swfwmdURL];
+  var serviceURLs = [swfwmdURL, labinsURL];
   var promiseArray = [];
 
   //Find online services and restrict identify to this
@@ -1233,9 +1234,9 @@ require([
   console.log(tasks);
 
 
-  // Set the parameters for the Point Identify
+  // Set the parameters for the labins Identify
   params = new IdentifyParameters();
-  params.tolerance = 15;
+  params.tolerance = 10;
   params.layerOption = "all";
   params.layerIds;
   params.width = mapView.width;
@@ -1253,22 +1254,9 @@ require([
   params.returnGeometry = true;
   allParams.push(params);
 
-  // Set the parameters for the Line / polygon Identify
-  params = new IdentifyParameters();
-  params.tolerance = 3;
-  params.layerIds;
-  params.layerOption = "all";
-  params.width = mapView.width;
-  params.height = mapView.height;
-  params.returnGeometry = true;
-  allParams.push(params);
-
-
-
 
   var identifyElements = [];
   var infoPanelData = [];
-  var currentIndex;
 
   // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("click", function (event) {
@@ -1316,20 +1304,23 @@ require([
 
 
   function checkVisibility(layerWidget) {
+    console.log('checking visibility');
     var tempVis = []
     console.log(layerWidget);
     for (var i = 0; i < layerWidget.operationalItems.items.length; i++) {
-      //console.log(layerWidget.operationalItems.items[i]);
+      console.log(layerWidget.operationalItems.items[i]);
       if (layerWidget.operationalItems.items[i].visible != false) {
+        console.log(layerWidget.operationalItems.items[i]);
         //iterate through sublayers
         for (var j = 0; j < layerWidget.operationalItems.items[i].children.items.length; j++) {
           //console.log(layerWidget.operationalItems.items[i].children.items[j]);
           if (layerWidget.operationalItems.items[i].children.items[j].visible != false) {
-            console.log(layerWidget.operationalItems.items[i].children.items[j].layer.title);
+            //console.log(layerWidget.operationalItems.items[i].children.items[j].layer.title);
             tempVis.push(layerWidget.operationalItems.items[i].children.items[j].layer.id);
           }
         }
         console.log(tempVis);
+        console.log(allParams[i]);
         allParams[i].layerIds = tempVis;
         console.log(allParams[i].layerIds);
       }
@@ -1360,8 +1351,7 @@ require([
 
     console.log("updated allParams ", 1, " is ", allParams[1].layerIds)
 
-    console.log("updated allParams ", 2, " is ", allParams[2].layerIds)
-    console.log(layerWidget);
+    //console.log(layerWidget);
     //params.layerIds = vis_layers;
     var currentScale = mapView.scale;
     infoPanelData = [];
@@ -1369,13 +1359,11 @@ require([
     promises = [];
     // Set the geometry to the location of the view click
     if (event.type === "click") {
-      allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event.mapPoint;
-      allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
+      allParams[0].geometry = allParams[1].geometry = event.mapPoint;
+      allParams[0].mapExtent = allParams[1].mapExtent = mapView.extent;
     } else {
-      allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event;
-      allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
-      //allParams[0].layerIds = allParams[1].layerIds = allParams[2].layerIds = vis_layers;
-
+      allParams[0].geometry = allParams[1].geometry = event;
+      allParams[0].mapExtent = allParams[1].mapExtent = mapView.extent;
     }
     console.log('what does the event look like ', event)
     for (i = 0; i < tasks.length; i++) {

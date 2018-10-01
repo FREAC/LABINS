@@ -189,8 +189,6 @@ require([
     }]
   });
 
-  console.log("I am adding a comment");
-
   var controlLinesURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/";
   var controlLinesLayer = new MapImageLayer({
     url: controlLinesURL,

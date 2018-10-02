@@ -1046,12 +1046,12 @@ require([
   });
 
   //Build City Dropdown panel
-  buildSelectPanel(controlLinesURL + "3", "name", "Zoom to a City", "selectCityPanel");
+  buildSelectPanel(labinsURL + '12', "name", "Zoom to a City", "selectCityPanel");
 
   //Zoom to feature
   query("#selectCityPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCityPanel'));
-    return zoomToFeature(controlLinesURL + "3", e.target.value, "name");
+    return zoomToFeature(labinsURL + '12', e.target.value, "name");
   });
 
   // function to find visible layers beacuse the layerOptio:visible does NOT work as of 6/1/18 - SWH

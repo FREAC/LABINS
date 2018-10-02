@@ -108,13 +108,17 @@ require([
   var minimumDrawScale = 100000;
   var extents = [];
 
-  var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/0"
-  var countyBoundariesLayer = new FeatureLayer({
+  var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/";
+  var countyBoundariesLayer = new MapImageLayer({
     url: countyBoundariesURL,
     title: "County Boundaries",
-    visible: false,
-    //listMode: "show",
-    popupEnabled: false
+    minScale: minimumDrawScale,
+    sublayers: [{
+      id: 0,
+      title: "County Boundaries",
+      visible: false,
+      popupEnabled: false
+    }]
   });
 
   var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/";
@@ -474,7 +478,7 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    layers: [labinsLayer, swfwmdLayer, countyBoundariesLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
+    layers: [countyBoundariesLayer, labinsLayer, swfwmdLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
   });
 
   /////////////////////////
@@ -1264,6 +1268,17 @@ require([
   allParams.push(params);
 
 
+  // Set the parameters for the County Boundaries Identify
+  params = new IdentifyParameters();
+  params.tolerance = 3;
+  params.layerIds;
+  params.layerOption = "all";
+  params.width = mapView.width;
+  params.height = mapView.height;
+  params.returnGeometry = true;
+  allParams.push(params);
+
+
   var identifyElements = [];
   var infoPanelData = [];
 
@@ -1368,11 +1383,11 @@ require([
     promises = [];
     // Set the geometry to the location of the view click
     if (event.type === "click") {
-      allParams[0].geometry = allParams[1].geometry = event.mapPoint;
-      allParams[0].mapExtent = allParams[1].mapExtent = mapView.extent;
+      allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event.mapPoint;
+      allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
     } else {
-      allParams[0].geometry = allParams[1].geometry = event;
-      allParams[0].mapExtent = allParams[1].mapExtent = mapView.extent;
+      allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event;
+      allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
     }
     console.log('what does the event look like ', event)
     for (i = 0; i < tasks.length; i++) {

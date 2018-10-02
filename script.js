@@ -1037,12 +1037,12 @@ require([
   });
 
   //Build Quad Dropdown panel
-  buildSelectPanel(controlLinesURL + "0", "tile_name", "Zoom to a Quad", "selectQuadPanel");
+  buildSelectPanel(labinsURL + '9', "tile_name", "Zoom to a Quad", "selectQuadPanel");
 
   //Zoom to feature
   query("#selectQuadPanel").on("change", function (e) {
     resetElements(document.getElementById('selectQuadPanel'));
-    return zoomToFeature(controlLinesURL + "0", e.target.value, "tile_name");
+    return zoomToFeature(labinsURL + '9', e.target.value, "tile_name");
   });
 
   //Build City Dropdown panel
@@ -1700,7 +1700,7 @@ require([
 
 
     //Quad select
-    //buildSelectPanel(controlLinesURL + "0", "tile_name", "Zoom to a Quad", "selectQuadPanel");
+    //buildSelectPanel(labinsURL + '9', "tile_name", "Zoom to a Quad", "selectQuadPanel");
 
     function getGeometry(url, attribute, value) {
       var value = value.replace(/ *\([^)]*\) */g, "")

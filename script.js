@@ -1922,7 +1922,7 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '9', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '0', response)
@@ -2035,7 +2035,7 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '9', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)
@@ -2116,7 +2116,7 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '9', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)

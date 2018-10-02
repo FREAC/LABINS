@@ -1613,7 +1613,7 @@ require([
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
     }, {
       featureLayer: {
-        url: controlPointsURL + "8",
+        url: labinsURL + '7',
       },
       searchFields: ["monument_name", "county"],
       suggestionTemplate: "R-Monument Name: {monument_name}, County: {county}",

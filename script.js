@@ -1667,7 +1667,7 @@ require([
       placeholder: "Search by BLMID or Quad Name",
     }, {
       featureLayer: {
-        url: controlLinesURL + "2",
+        url: labinsURL + '11',
       },
       searchFields: ["twn_ch", "rng_ch", "twnrngsec"],
       displayField: "twnrngsec",

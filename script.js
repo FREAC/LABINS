@@ -108,6 +108,15 @@ require([
   var minimumDrawScale = 100000;
   var extents = [];
 
+  var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/0"
+  var countyBoundariesLayer = new FeatureLayer({
+    url: countyBoundariesURL,
+    title: "County Boundaries",
+    visible: false,
+    //listMode: "show",
+    popupEnabled: false
+  });
+
   var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/";
   var labinsLayer = new MapImageLayer({
     url: labinsURL,
@@ -465,7 +474,7 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    layers: [labinsLayer, swfwmdLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
+    layers: [labinsLayer, swfwmdLayer, countyBoundariesLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
   });
 
   /////////////////////////
@@ -1028,12 +1037,12 @@ require([
 
 
   // Build County Drop Down
-  buildSelectPanel(controlLinesURL + "4", "ctyname", "Zoom to a County", "selectCountyPanel");
+  buildSelectPanel(controlLinesURL + '4', "ctyname", "Zoom to a County", "selectCountyPanel");
 
   //Zoom to feature
   query("#selectCountyPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCountyPanel'));
-    return zoomToFeature(controlLinesURL + "4", e.target.value, "ucname")
+    return zoomToFeature(controlLinesURL + '4', e.target.value, "ucname")
   });
 
   //Build Quad Dropdown panel
@@ -2765,23 +2774,23 @@ require([
 
   // Fires after the user's location has been found
   /*locateBtn.on("locate", function(event) {
-    var bufferGeometry = event.target.graphic.geometry;
-    var buffer = geometryEngine.buffer(bufferGeometry, 50, "feet", false)
+      var bufferGeometry = event.target.graphic.geometry;
+      var buffer = geometryEngine.buffer(bufferGeometry, 50, "feet", false)
 
-    console.log(bufferGeometry);
-    console.log(buffer);
-    var bufferGraphic = new Graphic({
-      geometry: buffer,
-      symbol: highlightSymbol
+      console.log(bufferGeometry);
+      console.log(buffer);
+      var bufferGraphic = new Graphic({
+        geometry: buffer,
+        symbol: highlightSymbol
+      });
+      selectionLayer.graphics.removeAll();
+      selectionLayer.add(bufferGraphic);
+
+      console.log(selectionLayer.graphics.items[0].geometry);
+      executeIdentifyTask(buffer);
+      console.log("finished");
     });
-    selectionLayer.graphics.removeAll();
-    selectionLayer.add(bufferGraphic);
-
-    console.log(selectionLayer.graphics.items[0].geometry);
-    executeIdentifyTask(buffer);
-    console.log("finished");
-  });
-*/
+  */
 
   var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");

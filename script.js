@@ -1599,7 +1599,7 @@ require([
       placeholder: "Search by ID, County Name, or Quad Name",
     }, {
       featureLayer: {
-        url: controlPointsURL + "5",
+        url: labinsURL + '4',
       },
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
       suggestionTemplate: "ID: {iden}, County: {cname}",
@@ -1998,8 +1998,8 @@ require([
 
       clearDiv('parametersQuery');
       addDescript();
-      createCountyDropdown(controlPointsURL + '5', 'cname');
-      createQuadDropdown(controlPointsURL + '5', 'tile_name');
+      createCountyDropdown(labinsURL + '4', 'cname');
+      createQuadDropdown(labinsURL + '4', 'tile_name');
       createTextBox('IDQuery', 'Enter an ID. Example: 1');
       createSubmit();
 
@@ -2014,7 +2014,7 @@ require([
         getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '5', response)
+            dataQueryQuerytask(labinsURL + '4', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Tide Interpolation Points';
@@ -2038,7 +2038,7 @@ require([
         getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '5', response)
+            dataQueryQuerytask(labinsURL + '4', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Tide Interpolation Points';
@@ -2066,7 +2066,7 @@ require([
         var textValue = document.getElementById('IDQuery').value;
         textValue = parseInt(textValue);
 
-        textQueryQuerytask(controlPointsURL + '5', 'iden', textValue)
+        textQueryQuerytask(labinsURL + '4', 'iden', textValue)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Tide Interpolation Points';

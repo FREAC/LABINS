@@ -1626,7 +1626,7 @@ require([
       placeholder: "Search by County Name or R-Monument Name",
     }, {
       featureLayer: {
-        url: controlPointsURL + "9",
+        url: labinsURL + '8',
       },
       searchFields: ["ecl_name", "county"],
       suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
@@ -2181,7 +2181,7 @@ require([
     } else if (layerSelection === 'Erosion Control Line') {
       clearDiv('parametersQuery');
       addDescript();
-      createCountyDropdown(controlPointsURL + '9', 'county');
+      createCountyDropdown(labinsURL + '8', 'county');
       createTextBox('textQuery', 'Enter an ECL Name')
       createSubmit();
 
@@ -2204,7 +2204,7 @@ require([
         getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '9', response)
+            dataQueryQuerytask(labinsURL + '8', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Erosion Control Line';
@@ -2220,7 +2220,7 @@ require([
       query(submitButton).on('click', function (e) {
         clearDiv('informationdiv');
         infoPanelData = [];
-        textQueryQuerytask(controlPointsURL + '9', 'ecl_name', inputAfter.value)
+        textQueryQuerytask(labinsURL + '8', 'ecl_name', inputAfter.value)
           .then(function (response) {
             console.log(response)
             for (i = 0; i < response.features.length; i++) {

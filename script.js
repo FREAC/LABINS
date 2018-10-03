@@ -327,6 +327,7 @@ require([
     layers: [countyBoundariesLayer, labinsLayer, swfwmdLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
   });
 
+
   /////////////////////////
   // Create the MapView ///
   /////////////////////////
@@ -2436,19 +2437,48 @@ require([
 
 
 
-  // LegendLegend
-  var legendWidget = new Legend({
-    // container: "legendDiv",
-    container: document.createElement("div"),
-    view: mapView
-  });
 
-  // LayerList
-  var layerWidget = new LayerList({
-    // container: "layersDiv",
-    container: document.createElement("div"),
-    view: mapView
-  });
+  if (screen.availWidth < 769) {
+    // LegendLegend
+    var legendWidget = new Legend({
+      container: "legendDiv",
+      view: mapView
+    });
+
+    // LayerList
+    var layerWidget = new LayerList({
+      container: "layersDiv",
+      view: mapView
+    });
+  } else {
+    // LegendLegend
+    var legendWidget = new Legend({
+      // container: "legendDiv",
+      container: document.createElement("div"),
+      view: mapView
+    });
+
+    // LayerList
+    var layerWidget = new LayerList({
+      // container: "layersDiv",
+      container: document.createElement("div"),
+      view: mapView
+    });
+
+    var legendExpand = new Expand({
+      view: mapView,
+      content: legendWidget.domNode,
+      expandIconClass: "esri-icon-layers",
+      group: "left"
+    });
+
+    var layerExpand = new Expand({
+      view: mapView,
+      content: layerWidget.domNode,
+      expandIconClass: "esri-icon-layer-list",
+      group: "left"
+    });
+  }
 
 
   // // Add a legend instance to the panel of a
@@ -2606,20 +2636,6 @@ require([
       format: statePlaneNorthFL
     })
   );
-
-  var legendExpand = new Expand({
-    view: mapView,
-    content: legendWidget.domNode,
-    expandIconClass: "esri-icon-layers",
-    group: "left"
-  });
-
-  var layerExpand = new Expand({
-    view: mapView,
-    content: layerWidget.domNode,
-    expandIconClass: "esri-icon-layer-list",
-    group: "left"
-  });
 
   var coordExpand = new Expand({
     view: mapView,

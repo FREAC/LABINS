@@ -65,6 +65,14 @@ body,
   z-index: 2;
 }
 
+#layersMenuID {
+  display: none;
+}
+
+#legendMenuID {
+  display: none;
+}
+
 
 @media only screen and (max-width: 1026px) {
   #overviewDiv {
@@ -73,6 +81,15 @@ body,
 
   #extentDiv {
     display: none;
+  }
+
+
+  #layersMenuID {
+    display: block;
+  }
+
+  #legendMenuID {
+    display: block;
   }
 }
 

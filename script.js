@@ -244,75 +244,8 @@ require([
     }]
   });
 
-  var controlPointsURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Points_3857/MapServer/";
-  var controlPointsLayer = new MapImageLayer({
-    url: controlPointsURL,
-    title: "LABINS Data",
-    minScale: minimumDrawScale,
-    sublayers: [{
-      id: 9,
-      title: "Erosion Control Line",
-      visible: true,
-      //popupTemplate: erosionControlLineTemplate,
-      popupEnabled: false
-    }, {
-      id: 8,
-      title: "R-Monuments",
-      visible: true,
-      //popupTemplate: rMonumentsTemplate,
-      popupEnabled: false
-    }, {
-      id: 7,
-      title: "CCR with Images",
-      visible: false,
-      //popupTemplate: CCRTemplate,
-      popupEnabled: false
-    }, {
-      id: 6,
-      title: "Geographic Names",
-      visible: false,
-      //popupTemplate: geonamesTemplate,
-      popupEnabled: false
-    }, {
-      id: 5,
-      title: "Tide Interpolation Points",
-      visible: true,
-      //popupTemplate: tideInterpPointsTemplate
-      popupEnabled: false
-    }, {
-      id: 4,
-      title: "Tide Stations",
-      visible: true,
-      //popupTemplate: tideStationsTemplate
-      popupEnabled: false
-    }, {
-      id: 3,
-      title: "Certified Corner (BLMID) Labels",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 2,
-      title: "Certified Corners",
-      visible: true,
-      //popupTemplate: certifiedCornersTemplate,
-      popupEnabled: false
-    }, {
-      id: 1,
-      title: "Preliminary NGS Points",
-      visible: false,
-      //popupTemplate: NGSPreliminarypopupTemplate,
-      popupEnabled: false
-    }, {
-      id: 0,
-      title: "NGS Control Points",
-      visible: true,
-      //popupTemplate: NGSpopupTemplate,
-      popupEnabled: false
-    }]
-  });
 
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
-  // var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/"; //nonworking url
   var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
     title: "SWFWMD Survey Benchmarks",
@@ -325,95 +258,8 @@ require([
     }]
   });
 
-  var controlLinesURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/";
-  var controlLinesLayer = new MapImageLayer({
-    url: controlLinesURL,
-    title: "Other Base Layers",
-    minScale: minimumDrawScale,
-    sublayers: [{
-      id: 9,
-      title: "Soils June 2012 - Dept. of Agriculture",
-      visible: false,
-      //popupTemplate: soilsTemplate
-      popupEnabled: false
-    }, {
-      id: 8,
-      title: "Hi-Res Imagery Grid: State Plane East",
-      visible: true,
-      popupEnabled: false
-    }, {
-      id: 7,
-      title: "Hi-Res Imagery Grid: State Plane North",
-      visible: true,
-      popupEnabled: false
-    }, {
-      id: 6,
-      title: "Hi-Res Imagery Grid: State Plane West",
-      visible: true,
-      popupEnabled: false
-    }, {
-      id: 5,
-      title: "Parcels",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 4,
-      title: "County Boundaries",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 3,
-      title: "City Limits",
-      visible: false,
-      //cityLimitsTemplate,
-      popupEnabled: false,
-      renderer: {
-        type: "simple",
-        symbol: {
-          type: "simple-fill",
-          style: "none",
-          outline: {
-            style: "dash",
-            width: 1.25
-          }
-        }
-      },
-    }, {
-      id: 2,
-      title: "Township-Range-Section",
-      visible: true,
-      popupEnabled: false
-    }, {
-      id: 1,
-      title: "Township-Range",
-      visible: true,
-      popupEnabled: false,
-      labelsVisible: true,
-      labelingInfo: [{
-        //labelExpression: "[SUBSTRING(tr_dissolve, 0, 3)]",
-        //labelExpression: "[" + 'SUBSTR("tr_dissolve" 0, 3)' + "]",
-        labelExpression: "[tr_dissolve]",
-        labelPlacement: "always-horizontal",
-        symbol: {
-          type: "text", // autocasts as new TextSymbol()
-          color: [0, 0, 255, 1],
-          haloColor: [255, 255, 255],
-          haloSize: 2,
-          font: {
-            size: 11
-          }
-        }
-      }]
-    }, {
-      id: 0,
-      title: "USGS Quads",
-      visible: false,
-      popupEnabled: false
-    }]
-  });
-
   // Layers needed for dependent dropdowns
-  var townshipRangeSectionURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/2"
+  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/11"
   var townshipRangeSectionLayer = new FeatureLayer({
     url: townshipRangeSectionURL,
     outFields: ["twn_ch", "rng_ch", "sec_ch"],
@@ -1211,7 +1057,6 @@ require([
 
   tasks = [];
   var allParams = [];
-  // var serviceURLs = [controlPointsURL, controlLinesURL, swfwmdURL];
   var serviceURLs = [swfwmdURL, labinsURL];
   var promiseArray = [];
 
@@ -1367,7 +1212,6 @@ require([
   function executeIdentifyTask(event) {
     console.log('starting the executeIdentifyTask function')
     // first get the visible layers because that option doesnt work
-    //vis_layers = getVisibleLayerIds(map,controlPointsLayer)
 
     // Determine visibility
 
@@ -1981,7 +1825,6 @@ require([
         infoPanelData = [];
         var textValue = document.getElementById('textQuery').value;
 
-        //textQueryQuerytask(controlPointsURL + '0', 'pid', textValue)
         multiTextQuerytask(labinsURL + '0', 'pid', textValue, 'name', textValue)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {

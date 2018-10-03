@@ -2477,25 +2477,135 @@ require([
       content: layerWidget.domNode,
       expandIconClass: "esri-icon-layer-list",
       group: "left"
+
     });
+
+    mapView.ui.add([legendExpand, layerExpand], "bottom-left");
+
+    //Coordinates widget
+    var ccWidget = new CoordinateConversion({
+      view: mapView,
+      container: document.createElement("div"),
+    });
+
+    // Regular expression to find a number
+    var numberSearchPattern = /-?\d+[\.]?\d*/;
+
+    var statePlaneEastFL = new Format({
+      name: 'FSP E',
+      conversionInfo: {
+        spatialReference: new SpatialReference({
+          wkid: 2881
+        }),
+        reverseConvert: function (string, format) {
+          var parts = string.split(",")
+          return new Point({
+            x: parseFloat(parts[0]),
+            y: parseFloat(parts[1]),
+            spatialReference: {
+              wkid: 2881
+            }
+          });
+        }
+      },
+      coordinateSegments: [{
+        alias: "X",
+        description: "easting",
+        searchPattern: numberSearchPattern
+      }, {
+        alias: "Y",
+        description: "northing",
+        searchPattern: numberSearchPattern
+      }],
+      defaultPattern: "X, Y"
+    });
+
+    ccWidget.formats.add(statePlaneEastFL);
+
+    var statePlaneWestFL = new Format({
+      name: 'FSP W',
+      conversionInfo: {
+        spatialReference: new SpatialReference({
+          wkid: 2882
+        }),
+        reverseConvert: function (string, format) {
+          var parts = string.split(",")
+          return new Point({
+            x: parseFloat(parts[0]),
+            y: parseFloat(parts[1]),
+            spatialReference: {
+              wkid: 2882
+            }
+          });
+        }
+      },
+      coordinateSegments: [{
+        alias: "X",
+        description: "easting",
+        searchPattern: numberSearchPattern
+      }, {
+        alias: "Y",
+        description: "northing",
+        searchPattern: numberSearchPattern
+      }],
+      defaultPattern: "X, Y"
+    });
+
+    ccWidget.formats.add(statePlaneWestFL);
+
+    var statePlaneNorthFL = new Format({
+      name: 'FSP N',
+      conversionInfo: {
+        spatialReference: new SpatialReference({
+          wkid: 2883
+        }),
+        reverseConvert: function (string, format) {
+          var parts = string.split(",")
+          return new Point({
+            x: parseFloat(parts[0]),
+            y: parseFloat(parts[1]),
+            spatialReference: {
+              wkid: 2883
+            }
+          });
+        }
+      },
+      coordinateSegments: [{
+        alias: "X",
+        description: "easting",
+        searchPattern: numberSearchPattern
+      }, {
+        alias: "Y",
+        description: "northing",
+        searchPattern: numberSearchPattern
+      }],
+      defaultPattern: "X, Y"
+    });
+
+    ccWidget.formats.add(statePlaneNorthFL);
+
+    // Add the two custom formats to the top of the widget's display
+    ccWidget.conversions.splice(0, 0,
+      new Conversion({
+        format: statePlaneEastFL
+      }),
+      new Conversion({
+        format: statePlaneWestFL
+      }),
+      new Conversion({
+        format: statePlaneNorthFL
+      })
+    );
+
+    var coordExpand = new Expand({
+      view: mapView,
+      content: ccWidget.domNode,
+      expandIconClass: "esri-icon-map-pin",
+      group: "left"
+    });
+
+    mapView.ui.add(coordExpand, "top-left");
   }
-
-
-  // // Add a legend instance to the panel of a
-  // // ListItem in a LayerList instance
-  // const layerList = new LayerList({
-  //   container: "legendDiv",
-  //   view: mapView,
-  //   listItemCreatedFunction: function(event) {
-  //     const item = event.item;
-  //     item.panel = {
-  //       content: "legend",
-  //       open: true
-  //     };
-  //   }
-  // });
-
-  //mapView.ui.add(layerList, "top-right");
 
   // Print
   var printWidget = new Print({
@@ -2521,132 +2631,6 @@ require([
     view: mapView
   });
   mapView.ui.add(locateBtn, "top-left");
-
-  //Coordinates widget
-  var ccWidget = new CoordinateConversion({
-    view: mapView,
-    container: document.createElement("div"),
-  });
-
-  // Regular expression to find a number
-  var numberSearchPattern = /-?\d+[\.]?\d*/;
-
-  var statePlaneEastFL = new Format({
-    name: 'FSP E',
-    conversionInfo: {
-      spatialReference: new SpatialReference({
-        wkid: 2881
-      }),
-      reverseConvert: function (string, format) {
-        var parts = string.split(",")
-        return new Point({
-          x: parseFloat(parts[0]),
-          y: parseFloat(parts[1]),
-          spatialReference: {
-            wkid: 2881
-          }
-        });
-      }
-    },
-    coordinateSegments: [{
-      alias: "X",
-      description: "easting",
-      searchPattern: numberSearchPattern
-    }, {
-      alias: "Y",
-      description: "northing",
-      searchPattern: numberSearchPattern
-    }],
-    defaultPattern: "X, Y"
-  });
-
-  ccWidget.formats.add(statePlaneEastFL);
-
-  var statePlaneWestFL = new Format({
-    name: 'FSP W',
-    conversionInfo: {
-      spatialReference: new SpatialReference({
-        wkid: 2882
-      }),
-      reverseConvert: function (string, format) {
-        var parts = string.split(",")
-        return new Point({
-          x: parseFloat(parts[0]),
-          y: parseFloat(parts[1]),
-          spatialReference: {
-            wkid: 2882
-          }
-        });
-      }
-    },
-    coordinateSegments: [{
-      alias: "X",
-      description: "easting",
-      searchPattern: numberSearchPattern
-    }, {
-      alias: "Y",
-      description: "northing",
-      searchPattern: numberSearchPattern
-    }],
-    defaultPattern: "X, Y"
-  });
-
-  ccWidget.formats.add(statePlaneWestFL);
-
-  var statePlaneNorthFL = new Format({
-    name: 'FSP N',
-    conversionInfo: {
-      spatialReference: new SpatialReference({
-        wkid: 2883
-      }),
-      reverseConvert: function (string, format) {
-        var parts = string.split(",")
-        return new Point({
-          x: parseFloat(parts[0]),
-          y: parseFloat(parts[1]),
-          spatialReference: {
-            wkid: 2883
-          }
-        });
-      }
-    },
-    coordinateSegments: [{
-      alias: "X",
-      description: "easting",
-      searchPattern: numberSearchPattern
-    }, {
-      alias: "Y",
-      description: "northing",
-      searchPattern: numberSearchPattern
-    }],
-    defaultPattern: "X, Y"
-  });
-
-  ccWidget.formats.add(statePlaneNorthFL);
-
-  // Add the two custom formats to the top of the widget's display
-  ccWidget.conversions.splice(0, 0,
-    new Conversion({
-      format: statePlaneEastFL
-    }),
-    new Conversion({
-      format: statePlaneWestFL
-    }),
-    new Conversion({
-      format: statePlaneNorthFL
-    })
-  );
-
-  var coordExpand = new Expand({
-    view: mapView,
-    content: ccWidget.domNode,
-    expandIconClass: "esri-icon-map-pin",
-    group: "left"
-  });
-
-  mapView.ui.add(coordExpand, "top-left");
-
-  mapView.ui.add([legendExpand, layerExpand], "bottom-left");
 
 
   //mapView.ui.add(ccWidget, "bottom-left");

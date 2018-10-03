@@ -827,7 +827,7 @@ require([
         uniqueValues.sort();
         uniqueValues.forEach(function (value) {
           var option = domConstruct.create("option");
-          option.text = value.toUpperCase();
+          option.text = value; //.toUpperCase();
           dom.byId(panelParam).add(option);
         });
       });
@@ -835,6 +835,7 @@ require([
 
   // Input location from drop down, zoom to it and highlight
   function zoomToFeature(panelurl, location, attribute) {
+    console.log(location);
 
     //var multiPolygonGeometries = [];
     // union features so that they can be returned as a single geometry
@@ -867,6 +868,7 @@ require([
 
   // Union geometries of multi polygon features
   function unionGeometries(response) {
+    console.log(response);
     // Array to store polygons in
     var multiPolygonGeometries = [];
     for (i = 0; i < response.features.length; i++) {
@@ -1041,12 +1043,12 @@ require([
 
 
   // Build County Drop Down
-  buildSelectPanel(controlLinesURL + '4', "ctyname", "Zoom to a County", "selectCountyPanel");
+  buildSelectPanel(countyBoundariesURL + '0', 'tigername', "Zoom to a County", "selectCountyPanel");
 
   //Zoom to feature
   query("#selectCountyPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCountyPanel'));
-    return zoomToFeature(controlLinesURL + '4', e.target.value, "ucname")
+    return zoomToFeature(countyBoundariesURL + '0', e.target.value, 'tigername')
   });
 
   //Build Quad Dropdown panel
@@ -1375,8 +1377,9 @@ require([
 
     console.log("updated allParams ", 1, " is ", allParams[1].layerIds)
 
+    console.log("updated allParams ", 1, " is ", allParams[1].layerIds)
+
     //console.log(layerWidget);
-    //params.layerIds = vis_layers;
     var currentScale = mapView.scale;
     infoPanelData = [];
     identifyElements = [];
@@ -1727,6 +1730,8 @@ require([
     //buildSelectPanel(labinsURL + '9', "tile_name", "Zoom to a Quad", "selectQuadPanel");
 
     function getGeometry(url, attribute, value) {
+      console.log(value.toUpperCase());
+      // creates Title Casing
       var value = value.replace(/ *\([^)]*\) */g, "")
       console.log(value);
 
@@ -1736,7 +1741,7 @@ require([
       var query = new Query();
       query.returnGeometry = true;
       //query.outFields = ['*'];
-      query.where = attribute + " LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+      query.where = attribute + " LIKE '" + value /*.toUpperCase()*/ + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
 
       console.log(task.execute(query));
       return task.execute(query);
@@ -1922,7 +1927,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '0', response)
@@ -2035,7 +2040,7 @@ require([
         infoPanelData = [];
         console.log(e.target.value);
 
-        getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)
@@ -2116,7 +2121,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
@@ -2225,7 +2230,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
         console.log('grabbing geometry');
-        getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '8', response)

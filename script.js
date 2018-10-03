@@ -108,129 +108,52 @@ require([
   var minimumDrawScale = 100000;
   var extents = [];
 
-  var controlPointsURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Points_3857/MapServer/";
-  var controlPointsLayer = new MapImageLayer({
-    url: controlPointsURL,
-    title: "LABINS Data",
+  var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/";
+  var countyBoundariesLayer = new MapImageLayer({
+    url: countyBoundariesURL,
+    title: "County Boundaries",
     minScale: minimumDrawScale,
     sublayers: [{
-      id: 9,
-      title: "Erosion Control Line",
-      visible: true,
-      //popupTemplate: erosionControlLineTemplate,
-      popupEnabled: false
-    }, {
-      id: 8,
-      title: "R-Monuments",
-      visible: true,
-      //popupTemplate: rMonumentsTemplate,
-      popupEnabled: false
-    }, {
-      id: 7,
-      title: "CCR with Images",
-      visible: false,
-      //popupTemplate: CCRTemplate,
-      popupEnabled: false
-    }, {
-      id: 6,
-      title: "Geographic Names",
-      visible: false,
-      //popupTemplate: geonamesTemplate,
-      popupEnabled: false
-    }, {
-      id: 5,
-      title: "Tide Interpolation Points",
-      visible: true,
-      //popupTemplate: tideInterpPointsTemplate
-      popupEnabled: false
-    }, {
-      id: 4,
-      title: "Tide Stations",
-      visible: true,
-      //popupTemplate: tideStationsTemplate
-      popupEnabled: false
-    }, {
-      id: 3,
-      title: "Certified Corner (BLMID) Labels",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 2,
-      title: "Certified Corners",
-      visible: true,
-      //popupTemplate: certifiedCornersTemplate,
-      popupEnabled: false
-    }, {
-      id: 1,
-      title: "Preliminary NGS Points",
-      visible: false,
-      //popupTemplate: NGSPreliminarypopupTemplate,
-      popupEnabled: false
-    }, {
       id: 0,
-      title: "NGS Control Points",
-      visible: true,
-      //popupTemplate: NGSpopupTemplate,
+      title: "County Boundaries",
+      visible: false,
       popupEnabled: false
     }]
   });
 
-  var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
-  // var swfwmdURL = "https://www25.swfwmd.state.fl.us/ArcGIS/rest/services/AGOServices/AGOSurveyBM/MapServer/"; //nonworking url
-  var swfwmdLayer = new MapImageLayer({
-    url: swfwmdURL,
-    title: "SWFWMD Survey Benchmarks",
+  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/";
+  var labinsLayer = new MapImageLayer({
+    url: labinsURL,
     minScale: minimumDrawScale,
     sublayers: [{
-      id: 0,
-      title: "Survey Benchmarks",
-      visible: true,
-      popupEnabled: false
-    }]
-  });
-
-  var controlLinesURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/";
-  var controlLinesLayer = new MapImageLayer({
-    url: controlLinesURL,
-    title: "Other Base Layers",
-    minScale: minimumDrawScale,
-    sublayers: [{
-      id: 9,
+      id: 17,
       title: "Soils June 2012 - Dept. of Agriculture",
       visible: false,
-      //popupTemplate: soilsTemplate
       popupEnabled: false
     }, {
-      id: 8,
-      title: "Hi-Res Imagery Grid: State Plane East",
+      id: 16,
+      title: "Hi-Res Imagery Grid State Plane East",
       visible: true,
       popupEnabled: false
     }, {
-      id: 7,
+      id: 15,
       title: "Hi-Res Imagery Grid: State Plane North",
       visible: true,
       popupEnabled: false
     }, {
-      id: 6,
+      id: 14,
       title: "Hi-Res Imagery Grid: State Plane West",
       visible: true,
       popupEnabled: false
     }, {
-      id: 5,
+      id: 13,
       title: "Parcels",
       visible: false,
-      //popupTemplate: parcelTemplate,
       popupEnabled: false
     }, {
-      id: 4,
-      title: "County Boundaries",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 3,
+      id: 12,
       title: "City Limits",
       visible: false,
-      //cityLimitsTemplate,
       popupEnabled: false,
       renderer: {
         type: "simple",
@@ -242,21 +165,20 @@ require([
             width: 1.25
           }
         }
-      },
+      }
     }, {
-      id: 2,
+      id: 11,
       title: "Township-Range-Section",
       visible: true,
       popupEnabled: false
     }, {
-      id: 1,
+      id: 10,
       title: "Township-Range",
       visible: true,
       popupEnabled: false,
       labelsVisible: true,
+      // Set label specs for township-range
       labelingInfo: [{
-        //labelExpression: "[SUBSTRING(tr_dissolve, 0, 3)]",
-        //labelExpression: "[" + 'SUBSTR("tr_dissolve" 0, 3)' + "]",
         labelExpression: "[tr_dissolve]",
         labelPlacement: "always-horizontal",
         symbol: {
@@ -270,15 +192,74 @@ require([
         }
       }]
     }, {
-      id: 0,
+      id: 9,
       title: "USGS Quads",
       visible: false,
+      popupEnabled: false
+    }, {
+      id: 8,
+      title: "Erosion Control Line",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 7,
+      title: "R-Monuments",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 6,
+      title: "CCR with Images",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 5,
+      title: "Geographic Names",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 4,
+      title: "Tide Interpolation Points",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 3,
+      title: "Tide Stations",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 2,
+      title: "Certified Corners",
+      visible: true,
+      popupEnabled: false
+    }, {
+      id: 1,
+      title: "Preliminary NGS Points",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 0,
+      title: "NGS Control Points",
+      visible: true,
+      popupEnabled: false
+    }]
+  });
+
+
+  var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
+  var swfwmdLayer = new MapImageLayer({
+    url: swfwmdURL,
+    title: "SWFWMD Survey Benchmarks",
+    minScale: minimumDrawScale,
+    sublayers: [{
+      id: 0,
+      title: "Survey Benchmarks",
+      visible: true,
       popupEnabled: false
     }]
   });
 
   // Layers needed for dependent dropdowns
-  var townshipRangeSectionURL = "https://admin205.ispa.fsu.edu/arcgis/rest/services/LABINS/Control_Lines_3857/MapServer/2"
+  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/11"
   var townshipRangeSectionLayer = new FeatureLayer({
     url: townshipRangeSectionURL,
     outFields: ["twn_ch", "rng_ch", "sec_ch"],
@@ -343,7 +324,7 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    layers: [swfwmdLayer, controlLinesLayer, townshipRangeSectionLayer, selectionLayer, controlPointsLayer, bufferLayer]
+    layers: [countyBoundariesLayer, labinsLayer, swfwmdLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
   });
 
   /////////////////////////
@@ -692,7 +673,7 @@ require([
         uniqueValues.sort();
         uniqueValues.forEach(function (value) {
           var option = domConstruct.create("option");
-          option.text = value.toUpperCase();
+          option.text = value; //.toUpperCase();
           dom.byId(panelParam).add(option);
         });
       });
@@ -700,6 +681,7 @@ require([
 
   // Input location from drop down, zoom to it and highlight
   function zoomToFeature(panelurl, location, attribute) {
+    console.log(location);
 
     //var multiPolygonGeometries = [];
     // union features so that they can be returned as a single geometry
@@ -732,6 +714,7 @@ require([
 
   // Union geometries of multi polygon features
   function unionGeometries(response) {
+    console.log(response);
     // Array to store polygons in
     var multiPolygonGeometries = [];
     for (i = 0; i < response.features.length; i++) {
@@ -906,30 +889,30 @@ require([
 
 
   // Build County Drop Down
-  buildSelectPanel(controlLinesURL + "4", "ctyname", "Zoom to a County", "selectCountyPanel");
+  buildSelectPanel(countyBoundariesURL + '0', 'tigername', "Zoom to a County", "selectCountyPanel");
 
   //Zoom to feature
   query("#selectCountyPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCountyPanel'));
-    return zoomToFeature(controlLinesURL + "4", e.target.value, "ucname")
+    return zoomToFeature(countyBoundariesURL + '0', e.target.value, 'tigername')
   });
 
   //Build Quad Dropdown panel
-  buildSelectPanel(controlLinesURL + "0", "tile_name", "Zoom to a Quad", "selectQuadPanel");
+  buildSelectPanel(labinsURL + '9', "tile_name", "Zoom to a Quad", "selectQuadPanel");
 
   //Zoom to feature
   query("#selectQuadPanel").on("change", function (e) {
     resetElements(document.getElementById('selectQuadPanel'));
-    return zoomToFeature(controlLinesURL + "0", e.target.value, "tile_name");
+    return zoomToFeature(labinsURL + '9', e.target.value, "tile_name");
   });
 
   //Build City Dropdown panel
-  buildSelectPanel(controlLinesURL + "3", "name", "Zoom to a City", "selectCityPanel");
+  buildSelectPanel(labinsURL + '12', "name", "Zoom to a City", "selectCityPanel");
 
   //Zoom to feature
   query("#selectCityPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCityPanel'));
-    return zoomToFeature(controlLinesURL + "3", e.target.value, "name");
+    return zoomToFeature(labinsURL + '12', e.target.value, "name");
   });
 
   // function to find visible layers beacuse the layerOptio:visible does NOT work as of 6/1/18 - SWH
@@ -1073,8 +1056,8 @@ require([
   var identifyTask, params;
 
   tasks = [];
-  allParams = [];
-  var serviceURLs = [controlPointsURL, controlLinesURL, swfwmdURL];
+  var allParams = [];
+  var serviceURLs = [swfwmdURL, labinsURL];
   var promiseArray = [];
 
   //Find online services and restrict identify to this
@@ -1111,9 +1094,9 @@ require([
   console.log(tasks);
 
 
-  // Set the parameters for the Point Identify
+  // Set the parameters for the labins Identify
   params = new IdentifyParameters();
-  params.tolerance = 15;
+  params.tolerance = 10;
   params.layerOption = "all";
   params.layerIds;
   params.width = mapView.width;
@@ -1131,7 +1114,8 @@ require([
   params.returnGeometry = true;
   allParams.push(params);
 
-  // Set the parameters for the Line / polygon Identify
+
+  // Set the parameters for the County Boundaries Identify
   params = new IdentifyParameters();
   params.tolerance = 3;
   params.layerIds;
@@ -1142,11 +1126,8 @@ require([
   allParams.push(params);
 
 
-
-
   var identifyElements = [];
   var infoPanelData = [];
-  var currentIndex;
 
   // On a double click, execute identifyTask once the map is within the minimum scale
   mapView.on("click", function (event) {
@@ -1194,20 +1175,23 @@ require([
 
 
   function checkVisibility(layerWidget) {
+    console.log('checking visibility');
     var tempVis = []
     console.log(layerWidget);
     for (var i = 0; i < layerWidget.operationalItems.items.length; i++) {
-      //console.log(layerWidget.operationalItems.items[i]);
+      console.log(layerWidget.operationalItems.items[i]);
       if (layerWidget.operationalItems.items[i].visible != false) {
+        console.log(layerWidget.operationalItems.items[i]);
         //iterate through sublayers
         for (var j = 0; j < layerWidget.operationalItems.items[i].children.items.length; j++) {
           //console.log(layerWidget.operationalItems.items[i].children.items[j]);
           if (layerWidget.operationalItems.items[i].children.items[j].visible != false) {
-            console.log(layerWidget.operationalItems.items[i].children.items[j].layer.title);
+            //console.log(layerWidget.operationalItems.items[i].children.items[j].layer.title);
             tempVis.push(layerWidget.operationalItems.items[i].children.items[j].layer.id);
           }
         }
         console.log(tempVis);
+        console.log(allParams[i]);
         allParams[i].layerIds = tempVis;
         console.log(allParams[i].layerIds);
       }
@@ -1228,7 +1212,6 @@ require([
   function executeIdentifyTask(event) {
     console.log('starting the executeIdentifyTask function')
     // first get the visible layers because that option doesnt work
-    //vis_layers = getVisibleLayerIds(map,controlPointsLayer)
 
     // Determine visibility
 
@@ -1238,9 +1221,9 @@ require([
 
     console.log("updated allParams ", 1, " is ", allParams[1].layerIds)
 
-    console.log("updated allParams ", 2, " is ", allParams[2].layerIds)
-    console.log(layerWidget);
-    //params.layerIds = vis_layers;
+    console.log("updated allParams ", 1, " is ", allParams[1].layerIds)
+
+    //console.log(layerWidget);
     var currentScale = mapView.scale;
     infoPanelData = [];
     identifyElements = [];
@@ -1252,8 +1235,6 @@ require([
     } else {
       allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event;
       allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
-      //allParams[0].layerIds = allParams[1].layerIds = allParams[2].layerIds = vis_layers;
-
     }
     console.log('what does the event look like ', event)
     for (i = 0; i < tasks.length; i++) {
@@ -1462,7 +1443,7 @@ require([
       minSuggestCharacters: 0
     }, {
       featureLayer: {
-        url: controlPointsURL + "0",
+        url: labinsURL + '0',
       },
       searchFields: ["name"],
       suggestionTemplate: "Designation: {name}, County {county}",
@@ -1476,7 +1457,7 @@ require([
       placeholder: "Search by Designation",
     }, {
       featureLayer: {
-        url: controlPointsURL + "4",
+        url: labinsURL + '3',
       },
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",
@@ -1489,7 +1470,7 @@ require([
       placeholder: "Search by ID, County Name, or Quad Name",
     }, {
       featureLayer: {
-        url: controlPointsURL + "5",
+        url: labinsURL + '4',
       },
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
       suggestionTemplate: "ID: {iden}, County: {cname}",
@@ -1503,7 +1484,7 @@ require([
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
     }, {
       featureLayer: {
-        url: controlPointsURL + "8",
+        url: labinsURL + '7',
       },
       searchFields: ["monument_name", "county"],
       suggestionTemplate: "R-Monument Name: {monument_name}, County: {county}",
@@ -1516,7 +1497,7 @@ require([
       placeholder: "Search by County Name or R-Monument Name",
     }, {
       featureLayer: {
-        url: controlPointsURL + "9",
+        url: labinsURL + '8',
       },
       searchFields: ["ecl_name", "county"],
       suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
@@ -1543,7 +1524,7 @@ require([
       placeholder: "Benchmark Name Example: CYP016",
     }, {
       featureLayer: {
-        url: controlPointsURL + "2",
+        url: labinsURL + '2',
       },
       searchFields: ["blmid", "tile_name"],
       displayField: "blmid",
@@ -1557,7 +1538,7 @@ require([
       placeholder: "Search by BLMID or Quad Name",
     }, {
       featureLayer: {
-        url: controlLinesURL + "2",
+        url: labinsURL + '11',
       },
       searchFields: ["twn_ch", "rng_ch", "twnrngsec"],
       displayField: "twnrngsec",
@@ -1590,9 +1571,11 @@ require([
 
 
     //Quad select
-    //buildSelectPanel(controlLinesURL + "0", "tile_name", "Zoom to a Quad", "selectQuadPanel");
+    //buildSelectPanel(labinsURL + '9', "tile_name", "Zoom to a Quad", "selectQuadPanel");
 
     function getGeometry(url, attribute, value) {
+      console.log(value.toUpperCase());
+      // creates Title Casing
       var value = value.replace(/ *\([^)]*\) */g, "")
       console.log(value);
 
@@ -1602,7 +1585,7 @@ require([
       var query = new Query();
       query.returnGeometry = true;
       //query.outFields = ['*'];
-      query.where = attribute + " LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+      query.where = attribute + " LIKE '" + value /*.toUpperCase()*/ + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
 
       console.log(task.execute(query));
       return task.execute(query);
@@ -1776,8 +1759,8 @@ require([
       clearDiv('parametersQuery');
       // add dropdown, input, and submit elements
       addDescript();
-      createCountyDropdown(controlPointsURL + '0', 'county');
-      createQuadDropdown(controlPointsURL + '0', 'quad');
+      createCountyDropdown(labinsURL + '0', 'county');
+      createQuadDropdown(labinsURL + '0', 'quad');
       createTextBox('textQuery', 'Enter NGS Name or PID.');
       createSubmit();
 
@@ -1788,10 +1771,10 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '0', response)
+            dataQueryQuerytask(labinsURL + '0', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
@@ -1812,10 +1795,10 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '9', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '0', response)
+            dataQueryQuerytask(labinsURL + '0', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
@@ -1842,8 +1825,7 @@ require([
         infoPanelData = [];
         var textValue = document.getElementById('textQuery').value;
 
-        //textQueryQuerytask(controlPointsURL + '0', 'pid', textValue)
-        multiTextQuerytask(controlPointsURL + '0', 'pid', textValue, 'name', textValue)
+        multiTextQuerytask(labinsURL + '0', 'pid', textValue, 'name', textValue)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
@@ -1871,7 +1853,7 @@ require([
         var textValue = document.getElementById('IDQuery').value;
 
         console.log(textValue);
-        textQueryQuerytask(controlPointsURL + '2', 'blmid', textValue)
+        textQueryQuerytask(labinsURL + '2', 'blmid', textValue)
           .then(function (response) {
             console.log(response);
             for (i = 0; i < response.features.length; i++) {
@@ -1888,8 +1870,8 @@ require([
 
       clearDiv('parametersQuery');
       addDescript();
-      createCountyDropdown(controlPointsURL + '5', 'cname');
-      createQuadDropdown(controlPointsURL + '5', 'tile_name');
+      createCountyDropdown(labinsURL + '4', 'cname');
+      createQuadDropdown(labinsURL + '4', 'tile_name');
       createTextBox('IDQuery', 'Enter an ID. Example: 1');
       createSubmit();
 
@@ -1901,10 +1883,10 @@ require([
         infoPanelData = [];
         console.log(e.target.value);
 
-        getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '5', response)
+            dataQueryQuerytask(labinsURL + '4', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Tide Interpolation Points';
@@ -1925,10 +1907,10 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '9', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '5', response)
+            dataQueryQuerytask(labinsURL + '4', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Tide Interpolation Points';
@@ -1956,7 +1938,7 @@ require([
         var textValue = document.getElementById('IDQuery').value;
         textValue = parseInt(textValue);
 
-        textQueryQuerytask(controlPointsURL + '5', 'iden', textValue)
+        textQueryQuerytask(labinsURL + '4', 'iden', textValue)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Tide Interpolation Points';
@@ -1971,8 +1953,8 @@ require([
     } else if (layerSelection === 'Tide Stations') {
       clearDiv('parametersQuery');
       addDescript();
-      createCountyDropdown(controlPointsURL + '4', 'countyname');
-      createQuadDropdown(controlPointsURL + '4', 'quadname');
+      createCountyDropdown(labinsURL + '3', 'countyname');
+      createQuadDropdown(labinsURL + '3', 'quadname');
       createTextBox('textQuery', 'Enter Tide Station ID or Name');
       createSubmit();
       var countyDropdownAfter = document.getElementById('countyQuery');
@@ -1982,10 +1964,10 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '4', response)
+            dataQueryQuerytask(labinsURL + '3', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Tide Stations';
@@ -2006,10 +1988,10 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(controlLinesURL + '0', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '9', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '4', response)
+            dataQueryQuerytask(labinsURL + '3', response)
               .then(function (response) {
                 console.log(response);
                 for (i = 0; i < response.features.length; i++) {
@@ -2039,7 +2021,7 @@ require([
         var textValue = inputAfter.value;
 
 
-        multiTextQuerytask(controlPointsURL + '4', 'id', textValue, 'name', textValue)
+        multiTextQuerytask(labinsURL + '3', 'id', textValue, 'name', textValue)
 
           .then(function (response) {
             clearDiv('informationdiv');
@@ -2056,7 +2038,7 @@ require([
       // query(submitButton).on('click', function (e) {
       //   clearDiv('informationdiv');
       //   infoPanelData = [];
-      //   textQueryQuerytask(controlPointsURL + '4', 'name', inputAfter.value)
+      //   textQueryQuerytask(labinsURL + '3', 'name', inputAfter.value)
       //     .then(function (response) {
       //       for (i = 0; i < response.features.length; i++) {
       //         response.features[i].attributes.layerName = 'Tide Stations';
@@ -2071,7 +2053,7 @@ require([
     } else if (layerSelection === 'Erosion Control Line') {
       clearDiv('parametersQuery');
       addDescript();
-      createCountyDropdown(controlPointsURL + '9', 'county');
+      createCountyDropdown(labinsURL + '8', 'county');
       createTextBox('textQuery', 'Enter an ECL Name')
       createSubmit();
 
@@ -2091,10 +2073,10 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
         console.log('grabbing geometry');
-        getGeometry(controlLinesURL + '4', 'ucname', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(controlPointsURL + '9', response)
+            dataQueryQuerytask(labinsURL + '8', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Erosion Control Line';
@@ -2110,7 +2092,7 @@ require([
       query(submitButton).on('click', function (e) {
         clearDiv('informationdiv');
         infoPanelData = [];
-        textQueryQuerytask(controlPointsURL + '9', 'ecl_name', inputAfter.value)
+        textQueryQuerytask(labinsURL + '8', 'ecl_name', inputAfter.value)
           .then(function (response) {
             console.log(response)
             for (i = 0; i < response.features.length; i++) {
@@ -2655,23 +2637,23 @@ require([
 
   // Fires after the user's location has been found
   /*locateBtn.on("locate", function(event) {
-    var bufferGeometry = event.target.graphic.geometry;
-    var buffer = geometryEngine.buffer(bufferGeometry, 50, "feet", false)
+      var bufferGeometry = event.target.graphic.geometry;
+      var buffer = geometryEngine.buffer(bufferGeometry, 50, "feet", false)
 
-    console.log(bufferGeometry);
-    console.log(buffer);
-    var bufferGraphic = new Graphic({
-      geometry: buffer,
-      symbol: highlightSymbol
+      console.log(bufferGeometry);
+      console.log(buffer);
+      var bufferGraphic = new Graphic({
+        geometry: buffer,
+        symbol: highlightSymbol
+      });
+      selectionLayer.graphics.removeAll();
+      selectionLayer.add(bufferGraphic);
+
+      console.log(selectionLayer.graphics.items[0].geometry);
+      executeIdentifyTask(buffer);
+      console.log("finished");
     });
-    selectionLayer.graphics.removeAll();
-    selectionLayer.add(bufferGraphic);
-
-    console.log(selectionLayer.graphics.items[0].geometry);
-    executeIdentifyTask(buffer);
-    console.log("finished");
-  });
-*/
+  */
 
   var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");

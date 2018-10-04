@@ -124,32 +124,37 @@ require([
   var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/";
   var labinsLayer = new MapImageLayer({
     url: labinsURL,
-    minScale: minimumDrawScale,
+    //minScale: minimumDrawScale,
     sublayers: [{
       id: 17,
       title: "Soils June 2012 - Dept. of Agriculture",
       visible: false,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 16,
       title: "Hi-Res Imagery Grid State Plane East",
       visible: true,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 15,
       title: "Hi-Res Imagery Grid: State Plane North",
       visible: true,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 14,
       title: "Hi-Res Imagery Grid: State Plane West",
       visible: true,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 13,
       title: "Parcels",
       visible: false,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 12,
       title: "City Limits",
@@ -165,12 +170,14 @@ require([
             width: 1.25
           }
         }
-      }
+      },
+      minScale: minimumDrawScale
     }, {
       id: 11,
       title: "Township-Range-Section",
       visible: true,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 10,
       title: "Township-Range",
@@ -190,57 +197,68 @@ require([
             size: 11
           }
         }
-      }]
+      }],
+      minScale: minimumDrawScale
     }, {
       id: 9,
       title: "USGS Quads",
       visible: false,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 8,
       title: "Erosion Control Line",
+      minScale: 4000000,
       visible: true,
       popupEnabled: false
     }, {
       id: 7,
       title: "R-Monuments",
       visible: true,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 6,
       title: "CCR with Images",
       visible: false,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 5,
       title: "Geographic Names",
       visible: false,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 4,
       title: "Tide Interpolation Points",
       visible: true,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 3,
       title: "Tide Stations",
       visible: true,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 2,
       title: "Certified Corners",
       visible: true,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 1,
       title: "Preliminary NGS Points",
       visible: false,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 0,
       title: "NGS Control Points",
       visible: true,
-      popupEnabled: false
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }]
   });
 

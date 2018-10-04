@@ -1107,7 +1107,7 @@ require([
 
   // Set the parameters for the SWFWMD Identify
   params = new IdentifyParameters();
-  params.tolerance = 3;
+  params.tolerance = 10;
   params.layerIds;
   params.layerOption = "all";
   params.width = mapView.width;

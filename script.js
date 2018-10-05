@@ -2487,18 +2487,22 @@ require([
       view: mapView,
       content: legendWidget.domNode,
       expandIconClass: "esri-icon-layers",
-      group: "left"
+      group: "left",
+      container: "legendBtn",
+      expandTooltip: "Legend"
     });
 
     var layerExpand = new Expand({
       view: mapView,
       content: layerWidget.domNode,
       expandIconClass: "esri-icon-layer-list",
-      group: "left"
-
+      group: "left",
+      container: "layersBtn",
+      expandTooltip: "Layerlist"
     });
 
-    mapView.ui.add([legendExpand, layerExpand], "bottom-left");
+    // mapView.ui.add([scaleBar, "topbar"], "bottom-left");
+    //mapView.ui.add([legendExpand, layerExpand], "bottom-left");
 
     //Coordinates widget
     var ccWidget = new CoordinateConversion({
@@ -2636,7 +2640,9 @@ require([
   var scaleBar = new ScaleBar({
     view: mapView
   });
-  //mapView.ui.add(scaleBar, "bottom-left");
+  // mapView.ui.add(scaleBar, "bottom-left");
+  mapView.ui.add(["topbar", scaleBar], "bottom-left");
+
 
 
   // Home

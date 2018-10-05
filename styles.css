@@ -25,6 +25,19 @@ body,
   width: 100%;
 }
 
+#topbar {
+  background: #fff;
+  padding: 5px;
+}
+
+.esri-ui-bottom-left {
+  align-items: flex-start;
+}
+
+.esri-scale-bar {
+  padding: 5px;
+}
+
 .esri-popup .esri-popup-header .esri-title {
   font-size: 18px;
   font-weight: bolder;
@@ -85,11 +98,11 @@ body,
 
 
   #layersMenuID {
-    display: block;
+    display: flex;
   }
 
   #legendMenuID {
-    display: block;
+    display: flex;
   }
 }
 

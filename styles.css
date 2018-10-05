@@ -25,11 +25,6 @@ body,
   width: 100%;
 }
 
-#topbar {
-  background: #fff;
-  padding: 5px;
-}
-
 .esri-ui-bottom-left {
   align-items: flex-start;
 }
@@ -84,6 +79,11 @@ body,
 
 #legendMenuID {
   display: none;
+}
+
+#topbar {
+  background: #315866;
+  padding: 8px;
 }
 
 

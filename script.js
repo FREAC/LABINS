@@ -2501,7 +2501,18 @@ require([
       expandTooltip: "Layerlist"
     });
 
-    // mapView.ui.add([scaleBar, "topbar"], "bottom-left");
+    var expandBar = document.getElementById("expandBar");
+
+    var expandTray = new Expand({
+      view: mapView,
+      content: expandBar,
+      // expandIconClass: "esri-icon-layers",
+      group: "left",
+      container: "expandTray",
+      expandTooltip: "Measurement tools"
+    });
+
+    // mapView.ui.add([scaleBar, "bottombar"], "bottom-left");
     //mapView.ui.add([legendExpand, layerExpand], "bottom-left");
 
     //Coordinates widget
@@ -2641,7 +2652,7 @@ require([
     view: mapView
   });
   // mapView.ui.add(scaleBar, "bottom-left");
-  mapView.ui.add(["topbar", scaleBar], "bottom-left");
+  mapView.ui.add(["bottombar", scaleBar], "bottom-left");
 
 
 

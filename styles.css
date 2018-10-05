@@ -81,7 +81,12 @@ body,
   display: none;
 }
 
-#topbar {
+#bottombar {
+  background: #315866;
+  padding: 8px;
+}
+
+#expandBar {
   background: #315866;
   padding: 8px;
 }

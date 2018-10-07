@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Update FeatureLayer using applyEdits() - 4.9</title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/css/main.css">
+    <script src="https://js.arcgis.com/4.9/"></script>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        .buttonTray {
+            background: #fff;
+            font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            line-height: 1.5em;
+            overflow: auto;
+            padding: 5px 5px;
+            width: 70px;
+            display: flex;
+        }
+    </style>
+
+    <script>
+        require([
+                "esri/Map",
+                "esri/views/MapView",
+                "esri/layers/FeatureLayer",
+                "esri/widgets/Expand",
+                "esri/widgets/Home",
+                "esri/widgets/Locate",
+            ],
+            function (
+                Map, MapView, FeatureLayer, Expand, Home, Locate
+            ) {
+
+                let editFeature, highlight, featureForm, editArea, attributeEditing, updateInstructionDiv;
+
+                const featureLayer = new FeatureLayer({
+                    url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/IncidentsReport/FeatureServer/0",
+                    outFields: ["*"],
+                    popupEnabled: false,
+                    id: "incidentsLayer"
+                });
+
+                const map = new Map({
+                    basemap: "dark-gray",
+                    layers: [featureLayer]
+                });
+
+                const view = new MapView({
+                    container: "viewDiv",
+                    map: map,
+                    center: [-117.18, 34.06],
+                    zoom: 15
+                });
+
+                editArea = document.getElementById("editArea");
+
+
+                var home = new Home({
+                    container: "homeDiv",
+                    view: view
+                });
+
+                var locate = new Locate({
+                    container: "locateDiv",
+                    view: view
+                });
+
+                // Expand widget for the editArea div.
+                const editExpand = new Expand({
+                    expandIconClass: "esri-icon-edit",
+                    expandTooltip: "Expand Edit",
+                    expanded: true,
+                    view: view,
+                    content: editArea
+                });
+
+                view.ui.add(editExpand, "top-right");
+            });
+    </script>
+</head>
+
+<body>
+    <div id="editArea" class="buttonTray">
+        <div id="homeDiv" style="display: flex"></div>
+        <div id="locateDiv" style="display: flex"></div>
+    </div>
+    <div id="viewDiv"></div>
+</body>
+
+</html>

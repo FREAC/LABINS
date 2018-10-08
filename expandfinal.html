@@ -43,7 +43,7 @@
                 Map, MapView, FeatureLayer, Expand, Home, Locate
             ) {
 
-                let editFeature, highlight, featureForm, editArea, attributeEditing, updateInstructionDiv;
+                let editFeature, highlight, featureForm, buttonTray, attributeEditing, updateInstructionDiv;
 
                 const featureLayer = new FeatureLayer({
                     url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/IncidentsReport/FeatureServer/0",
@@ -64,7 +64,7 @@
                     zoom: 15
                 });
 
-                editArea = document.getElementById("editArea");
+                buttonTray = document.getElementById("buttonTray");
 
 
                 var home = new Home({
@@ -77,13 +77,13 @@
                     view: view
                 });
 
-                // Expand widget for the editArea div.
+                // Expand widget for the buttonTray div.
                 const editExpand = new Expand({
                     expandIconClass: "esri-icon-edit",
                     expandTooltip: "Expand Edit",
                     expanded: true,
                     view: view,
-                    content: editArea
+                    content: buttonTray
                 });
 
                 view.ui.add(editExpand, "top-right");
@@ -92,7 +92,7 @@
 </head>
 
 <body>
-    <div id="editArea" class="buttonTray">
+    <div id="buttonTray" class="buttonTray">
         <div id="homeDiv" style="display: flex"></div>
         <div id="locateDiv" style="display: flex"></div>
     </div>

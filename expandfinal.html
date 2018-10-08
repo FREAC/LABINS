@@ -38,9 +38,10 @@
                 "esri/widgets/Expand",
                 "esri/widgets/Home",
                 "esri/widgets/Locate",
+                "esri/widgets/Legend"
             ],
             function (
-                Map, MapView, FeatureLayer, Expand, Home, Locate
+                Map, MapView, FeatureLayer, Expand, Home, Locate, Legend
             ) {
 
                 let editFeature, highlight, featureForm, buttonTray, attributeEditing, updateInstructionDiv;
@@ -77,6 +78,11 @@
                     view: view
                 });
 
+                var legend = new Legend({
+                    view: view,
+
+                });
+
                 // Expand widget for the buttonTray div.
                 const editExpand = new Expand({
                     expandIconClass: "esri-icon-edit",
@@ -95,6 +101,7 @@
     <div id="buttonTray" class="buttonTray">
         <div id="homeDiv" style="display: flex"></div>
         <div id="locateDiv" style="display: flex"></div>
+        <button id="legendBtn" class="esri-widget--button">Button</button>
     </div>
     <div id="viewDiv"></div>
 </body>

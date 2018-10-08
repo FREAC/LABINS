@@ -342,7 +342,7 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    layers: [countyBoundariesLayer, labinsLayer, swfwmdLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
+    layers: [swfwmdLayer, countyBoundariesLayer, labinsLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
   });
 
 
@@ -2513,7 +2513,7 @@ require([
     });
 
     // mapView.ui.add([scaleBar, "bottombar"], "bottom-left");
-    //mapView.ui.add([legendExpand, layerExpand], "bottom-left");
+    mapView.ui.add([legendExpand, layerExpand], "bottom-left");
 
     //Coordinates widget
     var ccWidget = new CoordinateConversion({
@@ -2652,7 +2652,7 @@ require([
     view: mapView
   });
   // mapView.ui.add(scaleBar, "bottom-left");
-  mapView.ui.add(["bottombar", scaleBar], "bottom-left");
+  mapView.ui.add([scaleBar], "bottom-left");
 
 
 

@@ -25,7 +25,7 @@
             line-height: 1.5em;
             overflow: auto;
             padding: 5px 5px;
-            width: 70px;
+            width: 105px;
             display: flex;
         }
     </style>
@@ -38,9 +38,11 @@
                 "esri/widgets/Expand",
                 "esri/widgets/Home",
                 "esri/widgets/Locate",
+                "esri/widgets/Legend",
+                "dojo/on"
             ],
             function (
-                Map, MapView, FeatureLayer, Expand, Home, Locate
+                Map, MapView, FeatureLayer, Expand, Home, Locate, Legend, on
             ) {
 
                 let editFeature, highlight, featureForm, buttonTray, attributeEditing, updateInstructionDiv;
@@ -77,16 +79,34 @@
                     view: view
                 });
 
+                var legend = new Legend({
+                    //container: "legendDiv",
+                    view: view
+                });
+
                 // Expand widget for the buttonTray div.
                 const editExpand = new Expand({
                     expandIconClass: "esri-icon-edit",
                     expandTooltip: "Expand Edit",
                     expanded: true,
                     view: view,
-                    content: buttonTray
+                    content: buttonTray,
+                    group: "left"
                 });
 
-                view.ui.add(editExpand, "top-right");
+                view.ui.add(editExpand, "bottom-left");
+                var legendStatus;
+                on(document.getElementById("legendBtn"), 'click', function (e) {
+                    console.log(legendStatus);
+                    if (legendStatus !== 1) {
+                        view.ui.add(legend, 'bottom-left');
+                        legendStatus = 1;
+                    } else {
+                        view.ui.remove(legend);
+                        legendStatus = 0;
+                    }
+                });
+
             });
     </script>
 </head>
@@ -95,6 +115,10 @@
     <div id="buttonTray" class="buttonTray">
         <div id="homeDiv" style="display: flex"></div>
         <div id="locateDiv" style="display: flex"></div>
+        <!-- <div id="legendDiv" style="display: flex"></div> -->
+        <div id="legendDiv" style="display:flex;">
+            <button id="legendBtn" class="btn-clear esri-icon-drag-horizontal" style="background-color: #fff"></button>
+        </div>
     </div>
     <div id="viewDiv"></div>
 </body>

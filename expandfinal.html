@@ -79,16 +79,22 @@
                     view: view
                 });
 
-                var legend = new Legend({
+                var legend = new Legend({ <<
+                    << << < HEAD
                     //container: "legendDiv",
-                    view: view
+                    view: view ===
+                        === =
+                        view: view,
+
+                    >>>
+                    >>> > 5170 d4b14377597a9b1beb0c0be158d945f61f4d
                 });
 
                 // Expand widget for the buttonTray div.
                 const editExpand = new Expand({
                     expandIconClass: "esri-icon-edit",
                     expandTooltip: "Expand Edit",
-                    expanded: true,
+                    expanded: false,
                     view: view,
                     content: buttonTray,
                     group: "left"
@@ -115,10 +121,14 @@
     <div id="buttonTray" class="buttonTray">
         <div id="homeDiv" style="display: flex"></div>
         <div id="locateDiv" style="display: flex"></div>
-        <!-- <div id="legendDiv" style="display: flex"></div> -->
-        <div id="legendDiv" style="display:flex;">
-            <button id="legendBtn" class="btn-clear esri-icon-drag-horizontal" style="background-color: #fff"></button>
-        </div>
+        <<<<<<< HEAD <!-- <div id="legendDiv" style="display: flex">
+    </div> -->
+    <div id="legendDiv" style="display:flex;">
+        <button id="legendBtn" class="btn-clear esri-icon-drag-horizontal" style="background-color: #fff"></button>
+    </div>
+    =======
+    <button id="legendBtn" class="esri-widget--button">Button</button>
+    >>>>>>> 5170d4b14377597a9b1beb0c0be158d945f61f4d
     </div>
     <div id="viewDiv"></div>
 </body>

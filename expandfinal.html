@@ -25,11 +25,16 @@
             line-height: 1.5em;
             overflow: auto;
             padding: 5px 5px;
-            width: 105px;
+            width: 140px;
             display: flex;
         }
 
         .esri-legend {
+            bottom: 60px;
+            position: relative;
+        }
+
+        .esri-layer-list {
             bottom: 60px;
             position: relative;
         }
@@ -44,10 +49,11 @@
                 "esri/widgets/Home",
                 "esri/widgets/Locate",
                 "esri/widgets/Legend",
+                "esri/widgets/LayerList",
                 "dojo/on"
             ],
             function (
-                Map, MapView, FeatureLayer, Expand, Home, Locate, Legend, on
+                Map, MapView, FeatureLayer, Expand, Home, Locate, Legend, LayerList, on
             ) {
 
                 let editFeature, highlight, featureForm, buttonTray, attributeEditing, updateInstructionDiv;
@@ -89,6 +95,10 @@
                     view: view
                 });
 
+                var layerList = new LayerList({
+                    view: view
+                });
+
                 // Expand widget for the buttonTray div.
                 const editExpand = new Expand({
                     expandIconClass: "esri-icon-edit",
@@ -100,15 +110,33 @@
                 });
 
                 view.ui.add(editExpand, "bottom-left");
+
+                // create a listener for legend button press (and to check if panel is open already)
                 var legendStatus;
                 on(document.getElementById("legendBtn"), 'click', function (e) {
-                    console.log(legendStatus);
                     if (legendStatus !== 1) {
+                        view.ui.remove(layerList);
+                        layerStatus = 0;
                         view.ui.add(legend, 'bottom-left');
                         legendStatus = 1;
                     } else {
                         view.ui.remove(legend);
                         legendStatus = 0;
+                    }
+                    console.log(legendStatus);
+                });
+
+                var layerStatus
+                on(document.getElementById("layerBtn"), 'click', function (e) {
+                    console.log(layerStatus);
+                    if (layerStatus !== 1) {
+                        view.ui.remove(legend);
+                        legendStatus = 0;
+                        view.ui.add(layerList, 'bottom-left');
+                        layerStatus = 1;
+                    } else {
+                        view.ui.remove(layerList);
+                        layerStatus = 0;
                     }
                 });
 
@@ -122,11 +150,16 @@
         <div id="locateDiv" style="display: flex"></div>
         <!-- <div id="legendDiv" style="display: flex">
     </div> -->
+        <!-- Div to hold legend button -->
         <div id="legendDiv" style="display:flex;">
             <button id="legendBtn" class="btn-clear esri-icon-drag-horizontal" style="background-color: #fff"></button>
         </div>
+        <!-- Div to hold layerlist button -->
+        <div id="layerDiv" style="display:flex;">
+            <button id="layerBtn" class="btn-clear esri-icon-layers" style="background-color: #fff"></button>
+        </div>
 
-        <button id="legendBtn" class="esri-widget--button">Button</button>
+        <!-- <button id="legendBtn" class="esri-widget--button">Button</button> -->
     </div>
     <div id="viewDiv"></div>
 </body>

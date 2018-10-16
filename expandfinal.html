@@ -29,9 +29,22 @@
             display: flex;
         }
 
-        .esri-legend {
+        /* .esri-legend {
             bottom: 60px;
             position: relative;
+        } */
+        #legendPanel {
+            bottom: 60px;
+            position: relative;
+            display: none;
+        }
+
+        #legendClose {
+            width: 32px;
+            height: 32px;
+            position: relative;
+            left: 250px;
+            margin-bottom: 20px
         }
 
         .esri-layer-list {
@@ -92,8 +105,9 @@
                 console.log(locate);
 
                 var legend = new Legend({
-                    //container: "legendDiv",
+                    container: "legendPanel",
                     view: view
+
                 });
 
                 var layerList = new LayerList({
@@ -111,6 +125,15 @@
                     group: "left"
                 });
 
+                function addCloseBtn(id, targetID) {
+                    console.log("I added a button")
+                    let target = document.getElementById(targetID);
+                    let button = document.createElement("button");
+                    console.log(target);
+                    button.setAttribute("id", id)
+                    button.setAttribute("class", "icon-ui-close")
+                }
+
                 view.ui.add(editExpand, "bottom-left");
 
                 // create a listener for legend button press (and to check if panel is open already)
@@ -120,6 +143,7 @@
                         view.ui.remove(layerList);
                         layerStatus = 0;
                         view.ui.add(legend, 'bottom-left');
+                        document.getElementById("legendPanel").style.display = "flex"
                         legendStatus = 1;
                     } else {
                         view.ui.remove(legend);
@@ -136,6 +160,7 @@
                         view.ui.remove(legend);
                         legendStatus = 0;
                         view.ui.add(layerList, 'bottom-left');
+
                         layerStatus = 1;
                     } else {
                         view.ui.remove(layerList);
@@ -143,19 +168,22 @@
                     }
                 });
 
-                let content = document.getElementsByClassName("esri-expand__panel");
-                let expandButtons = content.getElementsByClassName("esri-widget--button");
-                editExpand.on("click", function (e) {
-                    console.log('expand button clicked')
-                    view.ui.remove(legend);
-                    view.ui.remove(layerList);
-                });
+                // let content = document.getElementsByClassName("esri-expand__panel");
+                // let expandButtons = content.getElementsByClassName("esri-widget--button");
+                // editExpand.on("click", function (e) {
+                //     console.log('expand button clicked')
+                //     view.ui.remove(legend);
+                //     view.ui.remove(layerList);
+                // });
 
             });
     </script>
 </head>
 
 <body>
+    <div id="legendPanel" style="display: none">
+        <button id="legendClose" class="icon-ui-close">X</button>
+    </div>
     <div id="buttonTray" class="buttonTray">
         <div id="homeDiv" style="display: flex"></div>
         <div id="locateDiv" style="display: flex"></div>

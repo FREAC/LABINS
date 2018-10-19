@@ -1121,6 +1121,7 @@ require([
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
+  params.returnFieldName = true;
   allParams.push(params);
 
   // Set the parameters for the SWFWMD Identify
@@ -1131,6 +1132,7 @@ require([
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
+  params.returnFieldName = true;
   allParams.push(params);
 
 
@@ -1142,6 +1144,7 @@ require([
   params.width = mapView.width;
   params.height = mapView.height;
   params.returnGeometry = true;
+  params.returnFieldName = true;
   allParams.push(params);
 
 
@@ -1281,7 +1284,6 @@ require([
         arrayUtils.map(rArray, function (response) {
           console.log(response);
           var results = response.results;
-          console.log('results yo');
           console.log('here are the objects we found in the section', results);
           // for each resulting array, find the feature and layername to pass to queryinfopanel function
           return arrayUtils.map(results, function (result) {
@@ -1594,8 +1596,8 @@ require([
 
     function getGeometry(url, attribute, value) {
       console.log(value.toUpperCase());
-      // creates Title Casing
-      var value = value.replace(/ *\([^)]*\) */g, "")
+      // modifies value to remove portions of the string in parentheses and makes title case?
+      value = value.replace(/ *\([^)]*\) */g, "")
       console.log(value);
 
       var task = new QueryTask({
@@ -1790,7 +1792,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'Upper(tigername)', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '0', response)
@@ -2651,8 +2653,8 @@ require([
   var scaleBar = new ScaleBar({
     view: mapView
   });
-  // mapView.ui.add(scaleBar, "bottom-left");
-  mapView.ui.add(["bottombar", scaleBar], "bottom-left");
+  mapView.ui.add(scaleBar, "bottom-left");
+  //mapView.ui.add(["bottombar", scaleBar], "bottom-left");
 
 
 

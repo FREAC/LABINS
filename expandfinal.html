@@ -93,26 +93,49 @@
                 buttonTray = document.getElementById("buttonTray");
 
 
-                var home = new Home({
+                const home = new Home({
                     container: "homeDiv",
                     view: view
                 });
 
-                var locate = new Locate({
+                const locate = new Locate({
                     container: "locateDiv",
                     view: view
                 });
                 console.log(locate);
 
-                var legend = new Legend({
+                const legend = new Legend({
                     container: "legendPanel",
                     view: view
 
                 });
 
-                var layerList = new LayerList({
-                    view: view
+                const layerList = new LayerList({
+                    view: view,
+                    listItemCreatedFunction: function (event) {
+                        const item = event.item;
+                        if (item.layer.type != "group") {
+                            item.panel = {
+                                content: "legend",
+                                open: true
+                            }
+                        }
+                    }
                 });
+
+                // const layerList = new LayerList({
+                //     view: view,
+                //     listItemCreatedFunction: function (event) {
+                //         const item = event.item;
+                //         if (item.layer.type != "group") { // don't show legend twice
+                //             item.panel = {
+                //                 content: "legend",
+                //                 open: true
+                //             };
+                //         }
+                //     }
+                // });
+                // view.ui.add(layerList, "top-right");
 
                 // Expand widget for the buttonTray div.
                 const editExpand = new Expand({
@@ -182,7 +205,7 @@
 
 <body>
     <div id="legendPanel" style="display: none">
-        <button id="legendClose" class="icon-ui-close">X</button>
+        <!-- <button id="legendClose" class="icon-ui-close">X</button> -->
     </div>
     <div id="buttonTray" class="buttonTray">
         <div id="homeDiv" style="display: flex"></div>

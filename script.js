@@ -1596,7 +1596,7 @@ require([
 
     function getGeometry(url, attribute, value) {
       console.log(value.toUpperCase());
-      // modifies value to remove portions of the string in parentheses and makes title case?
+      // modifies value to remove portions of the string in parentheses
       value = value.replace(/ *\([^)]*\) */g, "")
       console.log(value);
 

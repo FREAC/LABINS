@@ -43,13 +43,22 @@ function queryInfoPanel(results, i) {
                     '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
+                console.log('looking at control points');
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
-                    'Control Point Name: ' + results[i - 1].attributes.NAME + '<br>' +
-                    'Latitude, Longitude: ' + results[i - 1].attributes.DEC_LAT + ', ' + results[i - 1].attributes.DEC_LONG + '<br>' +
-                    'County: ' + results[i - 1].attributes.COUNTY + '<br>' +
-                    'PID: ' + results[i - 1].attributes.PID + '<br>' +
-                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.DATA_SRCE + '>' + results[i - 1].attributes.PID + '</a><br>',
+                    'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
+                    'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +
+                    'County: ' + results[i - 1].attributes.county + '<br>' +
+                    'PID: ' + results[i - 1].attributes.pid + '<br>' +
+                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.data_srce + '>' + results[i - 1].attributes.pid + '</a><br>',
                 );
+                // } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
+                //     $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
+                //         'Control Point Name: ' + results[i - 1].attributes.NAME + '<br>' +
+                //         'Latitude, Longitude: ' + results[i - 1].attributes.DEC_LAT + ', ' + results[i - 1].attributes.DEC_LONG + '<br>' +
+                //         'County: ' + results[i - 1].attributes.COUNTY + '<br>' +
+                //         'PID: ' + results[i - 1].attributes.PID + '<br>' +
+                //         'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.DATA_SRCE + '>' + results[i - 1].attributes.PID + '</a><br>',
+                //     );
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
                     'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
@@ -166,10 +175,11 @@ function queryInfoPanel(results, i) {
                     '<b>Feature Class: </b>' + results[i - 1].attributes.feature_cl + '<br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Certified Corners') {
+                console.log("found the corners");
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
                     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
-                    '<b>PDF: </b><a target="_blank" href=' + results[i - 1].attributes.PDF + '>' + results[i - 1].attributes.PDF.substring(44, 55) + '</a><br>'
+                    '<b>PDF: </b><a target="_blank" href=' + results[i - 1].attributes.pdf + '>' + results[i - 1].attributes.pdf.substring(44, 55) + '</a><br>'
                 );
                 //console.log(results[i-1].attributes.image1);
                 for (var prop in results[i - 1].attributes) {

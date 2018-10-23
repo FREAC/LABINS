@@ -109,6 +109,10 @@ body,
   #legendMenuID {
     display: flex;
   }
+
+  .calcite-title-sub {
+    display: none;
+  }
 }
 
 

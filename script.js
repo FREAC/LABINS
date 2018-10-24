@@ -2489,7 +2489,7 @@ require([
       // if layerlist status != 1, add it to the map
       if (layerlistStatus != 1) {
         mapView.ui.remove(scaleBar);
-        document.getElementById("layersDiv").setAttribute("style", "margin-left:40px");
+        document.getElementById("layersDiv");
         mapView.ui.add([layerWidget, scaleBar], "bottom-left");
         layerlistStatus = 1;
         console.log(layerlistStatus)
@@ -2506,7 +2506,7 @@ require([
       // mapView.ui.add(legendWidget, "bottom-left");
       if (legendStatus != 1) {
         mapView.ui.remove(scaleBar);
-        document.getElementById("legendDiv").setAttribute("style", "margin-left:40px");
+        document.getElementById("legendDiv");
         mapView.ui.add([legendWidget, scaleBar], "bottom-left");
         legendStatus = 1;
         console.log(legendStatus)

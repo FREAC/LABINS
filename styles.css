@@ -73,6 +73,18 @@ body,
   z-index: 2;
 }
 
+/* set styles for legend */
+
+#legendDiv {
+  margin-left: 40px;
+  overflow: auto;
+}
+
+#layersDiv {
+  margin-left: 40px;
+  overflow: auto;
+}
+
 #layersMenuID {
   display: none;
 }

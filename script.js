@@ -2471,48 +2471,96 @@ require([
       view: mapView
     });
   } else {
-    // LegendLegend
+
     var legendWidget = new Legend({
-      // container: "legendDiv",
-      container: document.createElement("div"),
+      container: "legendDiv",
       view: mapView
     });
 
     // LayerList
     var layerWidget = new LayerList({
-      // container: "layersDiv",
-      container: document.createElement("div"),
+      container: "layersDiv",
       view: mapView
     });
 
-    var legendExpand = new Expand({
-      view: mapView,
-      content: legendWidget.domNode,
-      expandIconClass: "esri-icon-layers",
-      group: "left",
-      container: "legendBtn",
-      expandTooltip: "Legend"
+    // status to watch if layerlist is on
+    var layerlistStatus;
+    on(dom.byId("desktopLayerlist"), "click", function (evt) {
+      // if layerlist status != 1, add it to the map
+      if (layerlistStatus != 1) {
+        mapView.ui.remove(scaleBar);
+        mapView.ui.add([layerWidget, scaleBar], "bottom-left");
+        layerlistStatus = 1;
+        console.log(layerlistStatus)
+      } else {
+        mapView.ui.remove(layerWidget);
+        layerlistStatus = 0;
+        console.log(layerlistStatus)
+      }
     });
 
-    var layerExpand = new Expand({
-      view: mapView,
-      content: layerWidget.domNode,
-      expandIconClass: "esri-icon-layer-list",
-      group: "left",
-      container: "layersBtn",
-      expandTooltip: "Layerlist"
+    var legendStatus;
+    on(dom.byId("desktopLegend"), "click", function (evt) {
+      // if legend status != 1, add it to the map
+      // mapView.ui.add(legendWidget, "bottom-left");
+      if (legendStatus != 1) {
+        mapView.ui.remove(scaleBar);
+        mapView.ui.add([legendWidget, scaleBar], "bottom-left");
+        legendStatus = 1;
+        console.log(legendStatus)
+      } else {
+        mapView.ui.remove(legendWidget);
+        legendStatus = 0;
+        console.log(legendStatus)
+      }
     });
 
-    var expandBar = document.getElementById("expandBar");
 
-    var expandTray = new Expand({
-      view: mapView,
-      content: expandBar,
-      // expandIconClass: "esri-icon-layers",
-      group: "left",
-      container: "expandTray",
-      expandTooltip: "Measurement tools"
-    });
+    // EXPAND BAR taken out in favor or tabs at top
+
+
+    // // LegendLegend
+    // var legendWidget = new Legend({
+    //   // container: "legendDiv",
+    //   container: document.createElement("div"),
+    //   view: mapView
+    // });
+
+    // // LayerList
+    // var layerWidget = new LayerList({
+    //   // container: "layersDiv",
+    //   container: document.createElement("div"),
+    //   view: mapView
+    // });
+
+    // var legendExpand = new Expand({
+    //   view: mapView,
+    //   content: legendWidget.domNode,
+    //   expandIconClass: "esri-icon-layers",
+    //   group: "left",
+    //   container: "legendBtn",
+    //   expandTooltip: "Legend"
+    // });
+
+    // var layerExpand = new Expand({
+    //   view: mapView,
+    //   content: layerWidget.domNode,
+    //   expandIconClass: "esri-icon-layer-list",
+    //   group: "left",
+    //   container: "layersBtn",
+    //   expandTooltip: "Layerlist"
+    // });
+
+    // var expandBar = document.getElementById("expandBar");
+
+    // var expandTray = new Expand({
+    //   view: mapView,
+    //   content: expandBar,
+    //   // expandIconClass: "esri-icon-layers",
+    //   group: "left",
+    //   container: "expandTray",
+    //   expandTooltip: "Measurement tools"
+    // });
 
     // mapView.ui.add([scaleBar, "bottombar"], "bottom-left");
     //mapView.ui.add([legendExpand, layerExpand], "bottom-left");

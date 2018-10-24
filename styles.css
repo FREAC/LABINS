@@ -85,6 +85,10 @@ body,
   overflow: auto;
 }
 
+.esri-widget__heading {
+  color: white;
+}
+
 #layersMenuID {
   display: none;
 }
@@ -124,6 +128,18 @@ body,
 
   .calcite-title-sub {
     display: none;
+  }
+
+  #legendDiv {
+    margin-left: 5px;
+    margin-right: 5px;
+    overflow: auto;
+  }
+
+  #layersDiv {
+    margin-left: 0px;
+    margin-right: 5px;
+    overflow: auto;
   }
 }
 

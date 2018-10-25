@@ -156,6 +156,21 @@ body,
   color: #f6f8f8;
 }
 
+.esri-menu li:hover,
+.esri-menu li:focus {
+  background-color: #315866;
+}
+
+.esri-menu li {
+  background-color: #0d3b4b;
+  color: #ffffff;
+}
+
+.esri-menu,
+.esri-header {
+  background-color: #315866;
+}
+
 .navbar {
   background-color: #0d3b4b
 }

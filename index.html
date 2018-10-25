@@ -92,14 +92,19 @@
       <span class="calcite-title-sub hidden-xs">Land Boundary Information System: Online Information and Maps for the
         State of Florida</span>
     </div>
-    <!-- Search -->
+    <!-- Search/Legend/LayerList -->
     <ul class="nav navbar-nav calcite-nav">
-      <li class="active"><a id="desktopLayerlist" class="hidden-xs hidden-sm" href="#" aria-controls="Layerlist"
-          aria-expanded="true" role="tab" data-toggle="tab" data-tooltip="tip" title="Layerlist" data-placement="bottom">Layerlist</a></li>
+      <li class><a id="desktopLayerlist" class="hidden-xs hidden-sm" href="#" aria-controls="Layerlist" aria-expanded="true"
+          role="tab" data-toggle="tab" data-tooltip="tip" title="Layerlist" data-placement="bottom">Layerlist</a></li>
       <li><a id="desktopLegend" class="hidden-xs hidden-sm" href="#" aria-controls="Legend" role="tab" data-toggle="tab"
           data-tooltip="tip" title="Legend" data-placement="bottom">Legend</a></li>
-      <li>
+      <!-- <li>
         <div class="calcite-navbar-search calcite-search-expander">
+          <div id="searchWidgetDiv"></div>
+        </div>
+      </li> -->
+      <li>
+        <div class="calcite-navbar-search hidden-xs hidden-sm calcite-text-dark">
           <div id="searchWidgetDiv"></div>
         </div>
       </li>
@@ -272,8 +277,6 @@
 
     <!-- Panel - Basemaps -->
 
-    <!-- Panel - Basemaps -->
-
     <div id="panelBasemaps" class="panel collapse">
       <div id="headingBasemaps" class="panel-heading" role="tab">
         <div class="panel-title">
@@ -291,10 +294,6 @@
         </div>
       </div>
     </div>
-
-
-
-
 
 
     <!-- Panel - Legend -->

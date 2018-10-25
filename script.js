@@ -1442,10 +1442,11 @@ require([
   //// Search Widget Text Search ///
   //////////////////////////////////
 
-  // Search - add to navbar
   var searchWidget = new Search({
     container: "searchWidgetDiv",
     view: mapView,
+    enableInfoWindow: false,
+    popupEnabled: false,
     allPlaceholder: "Text search for NGS, DEP, and SWFWMD Data",
     sources: [{
       locator: new Locator({
@@ -2458,7 +2459,7 @@ require([
 
 
 
-  if (screen.availWidth < 769) {
+  if (screen.availWidth < 992) {
     // LegendLegend
     var legendWidget = new Legend({
       container: "legendDiv",
@@ -2470,6 +2471,10 @@ require([
       container: "layersDiv",
       view: mapView
     });
+
+    mapView.ui.add(searchWidget, "top-right");
+
+
   } else {
 
     var legendWidget = new Legend({

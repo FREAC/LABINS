@@ -85,6 +85,26 @@ body,
   overflow: auto;
 }
 
+/* style the layers widget */
+#layersDiv li {
+  background-color: #0d3b4b;
+}
+
+.esri-layer-list__item--invisible-at-scale,
+.esri-layer-list__item-title,
+.esri-layer-list__item-toggle-icon,
+.esri-layer-list__child-toggle {
+  color: white !important;
+}
+
+.esri-menu .esri-header {
+  background-color: #315866
+}
+
+.esri-layer-list {
+  background-color: #315866;
+}
+
 .esri-widget__heading {
   color: white;
 }

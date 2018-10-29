@@ -1,39 +1,65 @@
 [htmlpreview](https://htmlpreview.github.io/?https://github.com/FREAC/LABINS/blob/alter-layerlegend-menuitem-visibility/index.html)
 
-## Welcome to GitHub Pages
 
-You can use the [editor on GitHub](https://github.com/FREAC/LABINS/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+# Table of Contents
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+- [Main Menu](#main-menu)
+  * [Zoom to Feature](#zoom-to-feature)
+    + [Sub-sub-heading](#sub-sub-heading)
+  * [Data Query](#data-query)
+  * [Identify Results](#identify-results)
+  * [Legend](#legend)
+  * [Basemaps](#basemaps)
+  * [Print](#print)
+  * [Toggle Navigation Bar](#toggle-navigation-bar)
 
-### Markdown
+- [Accessory Functionality](#accessory-functionality)
+  * [Search Bar](#search-bar)
+    + [Sub-sub-heading](#sub-sub-heading)
+  * [Overview Map](#overview-map)
+  * [Home Button](#identify-results)
+  * [Clear Button](#clear-button)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
-```markdown
-Syntax highlighted code block
+# Heading levels
 
-# Header 1
-## Header 2
-### Header 3
+> This is a fixture to test heading levels
 
-- Bulleted
-- List
+<!-- toc -->
 
-1. Numbered
-2. List
+## Main Menu
 
-**Bold** and _Italic_ and `Code` text
+This is an h1 heading
 
-[Link](url) and ![Image](src)
-```
+### Zoom to Feature
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+This is the zoom to feature description.
+This is an h2 heading
 
-### Jekyll Themes
+#### Sub-sub-heading
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/FREAC/LABINS/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+This is an h3 heading
 
-### Support or Contact
+## Accessory Functionality
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+This is an h1 heading
+
+### Sub-heading
+
+This is an h2 heading
+
+#### Sub-sub-heading
+
+This is an h3 heading
+
+## Heading
+
+This is an h1 heading
+
+### Sub-heading
+
+This is an h2 heading
+
+#### Sub-sub-heading
+
+This is an h3 heading

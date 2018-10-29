@@ -1,7 +1,7 @@
 [htmlpreview](https://htmlpreview.github.io/?https://github.com/FREAC/LABINS/blob/alter-layerlegend-menuitem-visibility/index.html)
 
 
-# LABINS ## (Land Area Boundary Information System)
+# LABINS (Land Area Boundary Information System)
 
 - [Table of Contents](#main-menu)
   * [Zoom to Feature](#zoom-to-feature)
@@ -33,8 +33,11 @@ This is an h1 heading
 
 ### Zoom to Feature
 
-This is the zoom to feature description.
-This is an h2 heading
+The user is able to zoom to different features within the map.
+The different placed that a user can zoom to are:
+- County
+- Quad
+- Township/Section/Range
 
 #### Sub-sub-heading
 

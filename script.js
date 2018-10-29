@@ -1607,7 +1607,7 @@ require([
       var query = new Query();
       query.returnGeometry = true;
       //query.outFields = ['*'];
-      query.where = attribute + " LIKE '" + value /*.toUpperCase()*/ + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+      query.where = "Upper(" + attribute + ") LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
 
       console.log(task.execute(query));
       return task.execute(query);
@@ -2095,7 +2095,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
         console.log('grabbing geometry');
-        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'uc_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '8', response)

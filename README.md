@@ -1,9 +1,10 @@
 [htmlpreview](https://htmlpreview.github.io/?https://github.com/FREAC/LABINS/blob/alter-layerlegend-menuitem-visibility/index.html)
 
 
-# Table of Contents
+# LABINS
+## (Land Area Boundary Information System)
 
-- [Main Menu](#main-menu)
+- [Table of Contents](#main-menu)
   * [Zoom to Feature](#zoom-to-feature)
     + [Sub-sub-heading](#sub-sub-heading)
   * [Data Query](#data-query)

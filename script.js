@@ -1986,7 +1986,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
@@ -2095,7 +2095,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
         console.log('grabbing geometry');
-        getGeometry(countyBoundariesURL + '0', 'uc_name', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '8', response)

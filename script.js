@@ -1905,7 +1905,7 @@ require([
         infoPanelData = [];
         console.log(e.target.value);
 
-        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)

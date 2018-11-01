@@ -21,9 +21,6 @@
   * [Clear Button](#clear-button)
 
 
-# Heading levels
-
-> This is a fixture to test heading levels
 
 <!-- toc -->
 

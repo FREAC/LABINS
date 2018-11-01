@@ -1,9 +1,10 @@
-
-html, body, #viewDiv {
-    padding: 0;
-    margin: 0;
-    height: 100%;
-    width: 100%;
+html,
+body,
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
 }
 
 
@@ -15,11 +16,21 @@ body {
 }
 
 
-html, body, #viewDiv {
-padding: 0;
-margin: 0;
-height: 100%;
-width: 100%;
+html,
+body,
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.esri-ui-bottom-left {
+  align-items: flex-start;
+}
+
+.esri-scale-bar {
+  padding: 5px;
 }
 
 .esri-popup .esri-popup-header .esri-title {
@@ -30,6 +41,7 @@ width: 100%;
 .esri-popup .esri-popup-body .esri-popup-content {
   font-size: 14px;
 }
+
 .esri-ui-top-left {
   top: 100;
   left: 500;
@@ -38,7 +50,7 @@ width: 100%;
 
 .esri-icon-erase {
   position: absolute;
-  
+
   transform: translate(-50%, -50%);
   width: 8px;
   height: 16px;
@@ -61,32 +73,126 @@ width: 100%;
   z-index: 2;
 }
 
+/* set styles for legend */
 
-@media only screen and (max-width: 1026px) { 
-  #overviewDiv { 
-    display: none; 
-  } 
+#legendDiv {
+  margin-left: 40px;
+  overflow: auto;
+}
+
+#layersDiv {
+  margin-left: 40px;
+  overflow: auto;
+}
+
+/* style the layers widget */
+#layersDiv li {
+  background-color: #0d3b4b;
+}
+
+.esri-layer-list__item--invisible-at-scale,
+.esri-layer-list__item-title,
+.esri-layer-list__item-toggle-icon,
+.esri-layer-list__child-toggle {
+  color: white !important;
+}
+
+.esri-menu .esri-header {
+  background-color: #315866
+}
+
+.esri-layer-list {
+  background-color: #315866;
+}
+
+.esri-widget__heading {
+  color: white;
+}
+
+#layersMenuID {
+  display: none;
+}
+
+#legendMenuID {
+  display: none;
+}
+
+#bottombar {
+  background: #315866;
+  padding: 8px;
+}
+
+#expandBar {
+  background: #315866;
+  padding: 8px;
+}
+
+
+@media only screen and (max-width: 1026px) {
+  #overviewDiv {
+    display: none;
+  }
+
   #extentDiv {
     display: none;
+  }
+
+
+  #layersMenuID {
+    display: flex;
+  }
+
+  #legendMenuID {
+    display: flex;
+  }
+
+  .calcite-title-sub {
+    display: none;
+  }
+
+  #legendDiv {
+    margin-left: 5px;
+    margin-right: 5px;
+    overflow: auto;
+  }
+
+  #layersDiv {
+    margin-left: 0px;
+    margin-right: 5px;
+    overflow: auto;
   }
 }
 
 
 .switch {
-position: relative;
-display: inline-block;
-width: 100px;
-height: 25px;
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 25px;
 }
 
 #searchWidgetDiv-suggest-menu {
-background-color: #0d3b4b;
-color: #f6f8f8;
+  background-color: #0d3b4b;
+  color: #f6f8f8;
+}
+
+.esri-menu li:hover,
+.esri-menu li:focus {
+  background-color: #315866;
+}
+
+.esri-menu li {
+  background-color: #0d3b4b;
+  color: #ffffff;
+}
+
+.esri-menu,
+.esri-header {
+  background-color: #315866;
 }
 
 .navbar {
-background-color: #0d3b4b
-
+  background-color: #0d3b4b
 }
 
 .esri-legend__message {
@@ -94,9 +200,13 @@ background-color: #0d3b4b
   color: #f6f8f8;
 }
 
+h3.esri-widget__heading {
+  color: white;
+}
+
 
 .esri-legend__service {
-  background-color:#0d3b4b;
+  background-color: #0d3b4b;
   color: white;
 }
 
@@ -106,6 +216,10 @@ background-color: #0d3b4b
 
 .esri-header {
   background-color: #0d3b4b;
+}
+
+.esri-widget__header {
+  color: #ffffff;
 }
 
 #searchWidgetDiv-suggest-menu:hover {
@@ -124,16 +238,28 @@ background-color: #0d3b4b
   background-color: #315866;
 }
 
-
-
 #clearButton {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
 }
 
 #coordButton {
+  color: #333333;
   width: 32px;
   height: 32px;
+  margin: 0 auto;
+  padding: 0;
+  display: inline-block;
+  text-align: center;
+}
+
+.esri-coordinate-conversion__mode-toggle {
+  display: none;
+}
+
+.esri-coordinate-conversion__heading,
+.esri-widget__heading {
+  color: #4e4e4e;
 }
 
 /*
@@ -156,6 +282,7 @@ Print Widget
 .esri-print__author-info-container {
   color: #000000;
 }
+
 .esri-print__copyright-info-container {
   color: #000000;
 }
@@ -187,6 +314,7 @@ Print Widget
 .esri-print__form-section-container {
   color: #ffffff;
 }
+
 /*
 Popup Styling
 .esri-popup__feature-buttons .esri-popup__actions {

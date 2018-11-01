@@ -2691,7 +2691,8 @@ require([
       view: mapView,
       content: ccWidget.domNode,
       expandIconClass: "esri-icon-map-pin",
-      group: "left"
+      collapseTooltip: "Coordinates",
+      group: "left",
     });
 
     mapView.ui.add(coordExpand, "top-left");

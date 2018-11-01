@@ -1607,7 +1607,7 @@ require([
       var query = new Query();
       query.returnGeometry = true;
       //query.outFields = ['*'];
-      query.where = attribute + " LIKE '" + value /*.toUpperCase()*/ + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+      query.where = "Upper(" + attribute + ") LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
 
       console.log(task.execute(query));
       return task.execute(query);
@@ -1793,7 +1793,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '0', 'Upper(tigername)', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'Upper(name)', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '0', response)
@@ -1905,7 +1905,7 @@ require([
         infoPanelData = [];
         console.log(e.target.value);
 
-        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)
@@ -1986,7 +1986,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
@@ -2095,7 +2095,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
         console.log('grabbing geometry');
-        getGeometry(countyBoundariesURL + '0', 'tigername', e.target.value)
+        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '8', response)

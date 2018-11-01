@@ -50,11 +50,11 @@ This tool will only zoom to the boundary polygons of the feature selected. **No 
 
 Select layer to query:
 
-![dataquery-selectlayer](docs/images/dataquery-selectlayer.jpg)
+![dataquery-selectlayer](docs/images/dataquery-selectlayer.JPG)
 
 Select field from which to return all data:
 
-![dataquery-selectattribute](docs/images/dataquery-selectattribute.jpg)
+![dataquery-selectattribute](docs/images/dataquery-selectattribute.JPG)
 
 ## Accessory Functionality
 

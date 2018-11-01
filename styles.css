@@ -200,6 +200,10 @@ body,
   color: #f6f8f8;
 }
 
+h3.esri-widget__heading {
+  color: white;
+}
+
 
 .esri-legend__service {
   background-color: #0d3b4b;

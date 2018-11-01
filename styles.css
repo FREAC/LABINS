@@ -249,6 +249,15 @@ body,
   text-align: center;
 }
 
+.esri-coordinate-conversion__mode-toggle {
+  display: none;
+}
+
+.esri-coordinate-conversion__heading,
+.esri-widget__heading {
+  color: #4e4e4e;
+}
+
 /*
 Print Widget
 */

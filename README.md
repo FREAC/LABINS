@@ -12,7 +12,8 @@ This WebMap is created as an update to the previous [version](http://labins.org/
 
 
 # Table of Contents
-- [How do we find data?](#how-to-find-data)
+- [What data is available?](#what-data-is-available)
+- [How to find data:](#how-to-find-data)
   - [Zoom to feature](#zoom-to-feature)
   - [Data Query](#data-query)
   - [Identify Results](#identify-results)
@@ -31,6 +32,8 @@ This WebMap is created as an update to the previous [version](http://labins.org/
 
 
 <!-- toc -->
+
+## What data is available?
 
 ## How to find data?
 

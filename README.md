@@ -28,6 +28,8 @@ This WebMap is created as an update to the previous [version](http://labins.org/
 
 ## What data is available?
 
+We need a table of what data we can find
+
 ## How to find data?
 
 ### Information Panel

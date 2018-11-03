@@ -14,20 +14,13 @@ This WebMap is created as an update to the previous [version](http://labins.org/
 # Table of Contents
 - [What data is available?](#what-data-is-available)
 - [How to find data:](#how-to-find-data)
+- [Information Panel](#information-panel)
   - [Zoom to feature](#zoom-to-feature)
   - [Data Query](#data-query)
-  - [Identify Results](#identify-results)
-  - [Legend](#legend)
-  - [Basemaps](#basemaps)
-  - [Print](#print)
-  - [Toggle Navigation Bar](#toggle-navigation-bar)
-
+  - [Drill Down Identify](#drill-down-identify)
+  - [Search Widget](#search-widget)
 - [Accessory Functionality](#accessory-functionality)
-  - [Print map ](#print-pdf)
-  - [Basemaps](#sub-sub-heading)
-- [Overview Map](#overview-map)
-- [Home Button](#identify-results)
-- [Clear Button](#clear-button)
+
 
 
 
@@ -36,6 +29,10 @@ This WebMap is created as an update to the previous [version](http://labins.org/
 ## What data is available?
 
 ## How to find data?
+
+### Information Panel
+
+![popup](docs/images/popup.gif)
 
 ### Zoom to Feature
 ![zoom_to_feature](docs/images/zoom-to-feature.JPG)
@@ -47,7 +44,9 @@ This tool will only zoom to the boundary polygons of the feature selected. **No 
 **Zoom to Township/Range/Section**  
   - Map will zoom once Township/Range dropdowns are filled.
   - Map will zoom when Township/Range/Section is filled.
-  - T/R/S dropdowns will automcatically reset once a
+
+  - Section choices will reset each time another Range is selected
+  - Section and Range will reset each time a township is selected
 
 ### Data Query
 
@@ -55,30 +54,18 @@ Select layer to query:
 
 ![dataquery-selectlayer](docs/images/dataquery-selectlayer.JPG)
 
-Select field from which to return all data:
+Select field from which to return all data within polygon or search by name/ID:
 
 ![dataquery-selectattribute](docs/images/dataquery-selectattribute.JPG)
 
-## Accessory Functionality
+### Drill-Down Identify
 
-This is an h1 heading
+Finds any data from all visible layers under a mouseclick. Resulting data is then fed to the Information Panel (popup).
 
-### Sub-heading
+![drilldown-identify](docs/images/drilldown-identify.gif)
 
-This is an h2 heading
+### Search Widget
 
-#### Sub-sub-heading
+Allows the user to do either a global or a layer specific search to find a desired feature.
 
-This is an h3 heading
-
-## Heading
-
-This is an h1 heading
-
-### Sub-heading
-
-This is an h2 heading
-
-#### Sub-sub-heading
-
-This is an h3 heading
+![search-bar](docs/images/search-bar.gif)

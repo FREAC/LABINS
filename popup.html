@@ -115,6 +115,13 @@
 
             // Executes each time the view is clicked
             function executeIdentifyTask(event) {
+
+                let paramNode = document.getElementById("infoPanel");
+                while (paramNode.firstChild) {
+                    console.log(paramNode.firstChild);
+                    paramNode.removeChild(paramNode.firstChild);
+                }
+
                 let infoPanelData = [];
                 // Set the geometry to the location of the view click
                 params.geometry = event.mapPoint;
@@ -166,7 +173,6 @@
 
     <div id="viewDiv">
         <div id="infoPanel">
-            <h2>Information Panel</h2>
 
         </div>
     </div>

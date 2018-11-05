@@ -15,10 +15,28 @@
             height: 100%;
             width: 100%;
         }
+
+
+        #infoPanel {
+            padding: 2px;
+            box-sizing: border-box;
+            width: 300px;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            right: 0;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.6);
+            overflow: auto;
+            z-index: 60;
+        }
     </style>
 
     <link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/css/main.css">
     <script src="https://js.arcgis.com/4.9/"></script>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <script>
         require([
@@ -27,6 +45,7 @@
             "esri/layers/MapImageLayer",
             "esri/tasks/IdentifyTask",
             "esri/tasks/support/IdentifyParameters"
+
         ], function (
             Map,
             MapView,
@@ -55,7 +74,8 @@
                     popupEnabled: true,
                     popupTemplate: {
                         title: "City Limits",
-                        content: "<b>Name:</b> {name}"
+                        content: "<b>Name:</b> {name}" +
+                            "<b>County</b>: {county}"
                     }
                 }]
             });
@@ -70,8 +90,8 @@
             var view = new MapView({
                 container: "viewDiv",
                 map: map,
-                center: [-84.2, 28.4],
-                zoom: 6
+                center: [-82.2, 28.4],
+                zoom: 9
             });
 
 
@@ -95,23 +115,62 @@
 
             // Executes each time the view is clicked
             function executeIdentifyTask(event) {
+                let infoPanelData = [];
                 // Set the geometry to the location of the view click
                 params.geometry = event.mapPoint;
                 params.mapExtent = view.extent;
-                document.getElementById("viewDiv").style.cursor = "wait";
-
+                // execute based on params
                 identifyTask.execute(params)
                     .then(function (response) {
+                        console.log(response);
                         let results = response.results;
-                    })
+                        for (let i = 0; i < results.length; i++) {
+                            // specify layername in attributes for use in queryInfoPanel
+                            results[i].feature.attributes.layerName = results[i].layerName;
+                            infoPanelData.push(results[i].feature);
 
+                        }
+
+                        queryInfoPanel(infoPanelData, 0)
+
+
+                    });
+
+            }
+
+            function queryInfoPanel(results, i) {
+                console.log(results);
+                if (results.length > 0) {
+                    // Set append templates for information panel
+                    for (var i = 0; i <= results.length; i++) {
+                        if (results[i].attributes.layerName === 'USGS Quads') {
+                            console.log('yes!');
+                            $('#infoPanel').append('<p style= "font-size: 15px"><b>USGS Quads</b></p>' +
+                                '<b>Quad Name:</b> ' + results[i].attributes.tile_name + '<br><hr>'
+                            );
+                        } else if (results[i].attributes.layerName === 'City Limits') {
+                            $('#infoPanel').append(
+                                '<p style= "font-size: 15px"><b>City Limits</b></p>' +
+                                '<b>City Name:</b> ' + results[i].attributes.name + '<br>' +
+                                '<b>County:</b> ' + results[i].attributes.county + '<br><hr>'
+                            );
+                        }
+                    }
+                }
             }
         });
     </script>
 </head>
 
 <body>
-    <div id="viewDiv"></div>
+
+    <div id="viewDiv">
+        <div id="infoPanel">
+            <h2>Information Panel</h2>
+
+        </div>
+    </div>
+
 </body>
 
 </html>

@@ -65,7 +65,7 @@
                     popupEnabled: true,
                     popupTemplate: {
                         title: "USGS Quads",
-                        content: "<b>Name:</b> {tile_name}"
+                        content: "<b>Quad Name:</b> {tile_name}"
                     }
                 }, {
                     id: 12,
@@ -74,8 +74,8 @@
                     popupEnabled: true,
                     popupTemplate: {
                         title: "City Limits",
-                        content: "<b>Name:</b> {name}" +
-                            "<b>County</b>: {county}"
+                        content: "<b>City Name:</b> {name}" +
+                            "<br><b>County</b>: {county}"
                     }
                 }]
             });
@@ -98,6 +98,8 @@
             let identifyTask, params
 
             view.when(function () {
+
+                //an event listener needs to be set-up to listen for a map click
                 view.on("click", executeIdentifyTask);
 
                 // Create identify task for the specified map service

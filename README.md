@@ -32,7 +32,7 @@ We need a table of what data we can find
 
 ## How to find data?
 
-### Information Panel
+### Information Panel - where to see the data.
 
 ![popup](docs/images/popup.gif)
 

@@ -1,4 +1,4 @@
-[Live Demo](https://htmlpreview.github.io/?https://github.com/FREAC/LABINS/blob/master/index.html)
+[Live Demo](https://freac.github.io/LABINS/)
 
 
 # LABINS (Land Area Boundary Information System) WebMap

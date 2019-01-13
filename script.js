@@ -934,23 +934,6 @@ require([
     return zoomToFeature(labinsURL + '12', e.target.value, "name");
   });
 
-  // function to find visible layers beacuse the layerOptio:visible does NOT work as of 6/1/18 - SWH
-  function getVisibleLayerIds(map, layer) {
-    if (layer.sublayers) {
-      vis_layers = []
-      for (i = 0; i < layer.sublayers.length; i++) {
-        console.log('vis or not vis for layer ', layer.sublayers.items[i].id, '  ', layer.sublayers.items[i].visible, ' ', layer.sublayers.items[i].title)
-        if (layer.sublayers.items[i].visible) {
-          vis_layers.push(layer.sublayers.items[i].id)
-        }
-      }
-      //return layer.sublayers.filter(sublayer => sublayers.items.visible).map(sublayer => layer.sublayers.items.id);
-      return vis_layers
-    } else {
-      return layer.visible ? [map.allLayers.indexOf(layer)] : [-1];
-    }
-  }
-
   ////////////////////////////////////////////////
   //// Zoom to Township/Section/Range Feature ////
   ////////////////////////////////////////////////
@@ -1072,7 +1055,7 @@ require([
   /////////////////////////
 
   var promises, tasks;
-  var identifyTask, params;
+  var params;
 
   tasks = [];
   var allParams = [];
@@ -1102,7 +1085,6 @@ require([
     }
   });
   Promise.all(wrappedPromiseArray).then(function (values) {
-    // console.log(values);
     for (var i = 0; i < values.length; i++) {
       if (values[i].url != undefined)
         workingServicesURLsObj.urls.push(new IdentifyTask(values[i].url));
@@ -1195,7 +1177,7 @@ require([
     }
   }
 
-
+  // Check current visibility of layers that we are going to perform an identifyTask on
   function checkVisibility(layerWidget) {
     console.log('checking visibility');
     var tempVis = []
@@ -1589,11 +1571,6 @@ require([
     $('<option/>').val(layerChoices[i]).text(layerChoices[i]).appendTo('#selectLayerDropdown');
   }
   query("#selectLayerDropdown").on("change", function (e) {
-    var queriedFeatures = [];
-
-
-    //Quad select
-    //buildSelectPanel(labinsURL + '9', "tile_name", "Zoom to a Quad", "selectQuadPanel");
 
     function getGeometry(url, attribute, value) {
       console.log(value.toUpperCase());
@@ -1611,38 +1588,8 @@ require([
 
       console.log(task.execute(query));
       return task.execute(query);
-
-
-
-
-
-      // for (i=0; i<results.features.length; i++) {
-      //   multiPolygonGeometries.push(results.features[i]);
-      // }
-
     }
 
-    // unused, could be removed
-    function dataQueryIdentify(url, response, layers) {
-      console.log(response);
-
-      identifyTask = new IdentifyTask(url);
-
-      // Set the parameters for the Identify
-      params = new IdentifyParameters();
-      //params.tolerance = 3;
-      //params.layerIds = [layers];
-      params.layerOption = "visible";
-      params.width = mapView.width;
-      params.height = mapView.height;
-
-      // Set the geometry to the location of the view click
-      params.geometry = response;
-      params.mapExtent = mapView.extent;
-      dom.byId("mapViewDiv").style.cursor = "wait";
-
-      return identifyTask.execute(params);
-    }
     // data query by text
     function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement) {
 

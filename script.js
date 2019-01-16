@@ -2462,6 +2462,7 @@ require([
     // Regular expression to find a number
     var numberSearchPattern = /-?\d+[\.]?\d*/;
 
+    // Custom Projection: FL State Plane East 
     var statePlaneEastFL = new Format({
       name: 'FSP E',
       conversionInfo: {
@@ -2493,6 +2494,7 @@ require([
 
     ccWidget.formats.add(statePlaneEastFL);
 
+    // Custom Projection: FL State Plane West
     var statePlaneWestFL = new Format({
       name: 'FSP W',
       conversionInfo: {
@@ -2524,6 +2526,7 @@ require([
 
     ccWidget.formats.add(statePlaneWestFL);
 
+    // Custom Projection: FL State Plane North
     var statePlaneNorthFL = new Format({
       name: 'FSP N',
       conversionInfo: {

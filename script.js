@@ -287,6 +287,15 @@ require([
     popupEnabled: false
   });
 
+  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/2"
+  var CCCLLayer = new FeatureLayer({
+    url: CCCLURL,
+    title: "Coastal Construction Control Lines",
+    visible: true,
+    listMode: "false",
+    popupEnabled: false
+  });
+
   // Graphics layer that will highlight features accessed through zoomTo Functions
   var selectionLayer = new GraphicsLayer({
     listMode: "hide"

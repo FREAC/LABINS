@@ -1755,7 +1755,7 @@ require([
             dataQueryQuerytask(labinsURL + '0', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
+                  response.features[i].attributes.layerName = 'NGS Control Points';
                   infoPanelData.push(response.features[i]);
                 }
                 goToFeature(infoPanelData[0]);
@@ -1779,7 +1779,7 @@ require([
             dataQueryQuerytask(labinsURL + '0', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
+                  response.features[i].attributes.layerName = 'NGS Control Points';
                   infoPanelData.push(response.features[i]);
                 }
                 goToFeature(infoPanelData[0]);
@@ -1789,7 +1789,7 @@ require([
           });
       });
 
-      // Textbox Query
+      // Textbox Query of NGS Control Points
       var textboxAfter = document.getElementById('textQuery');
 
       query(textboxAfter).on('keypress', function () {
@@ -1806,7 +1806,7 @@ require([
         multiTextQuerytask(labinsURL + '0', 'pid', textValue, 'name', textValue)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
-              response.features[i].attributes.layerName = 'NGS Control Points QueryTask';
+              response.features[i].attributes.layerName = 'NGS Control Points';
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
@@ -2013,21 +2013,6 @@ require([
           });
       });
 
-      // query(submitButton).on('click', function (e) {
-      //   clearDiv('informationdiv');
-      //   infoPanelData = [];
-      //   textQueryQuerytask(labinsURL + '3', 'name', inputAfter.value)
-      //     .then(function (response) {
-      //       for (i = 0; i < response.features.length; i++) {
-      //         response.features[i].attributes.layerName = 'Tide Stations';
-      //         infoPanelData.push(response.features[i]);
-      //       }
-      //       goToFeature(infoPanelData[0]);
-      //       queryInfoPanel(infoPanelData, 1);
-      //       togglePanel();
-      //     });
-      // });
-
     } else if (layerSelection === 'Erosion Control Line') {
       clearDiv('parametersQuery');
       addDescript();
@@ -2184,34 +2169,27 @@ require([
     $('#infoSpan').html('Information Panel');
   });
 
-  // //Custom Zoom to feature
-  // mapView.popup.on("trigger-action", function (evt) {
-  //   if (evt.action.id === "custom-zoom") {
-  //     selectionLayer.graphics.removeAll();
-  //     console.log(mapView.popup.selectedFeature);
-  //     mapView.goTo({
-  //       target: mapView.popup.selectedFeature.geometry,
-  //       zoom: 17
-  //     });
-  //     highlightGraphic = new Graphic(mapView.popup.selectedFeature.geometry, highlightSymbol);
-  //     selectionLayer.graphics.add(highlightGraphic);
-  //   };
-  // });
-
-
+  // after a query typed into search bar
+  // 
   searchWidget.on("search-complete", function (event) {
 
     infoPanelData = [];
+    console.log(event.results["0"].source);
 
     if (event.results["0"].source.locator) {
       // let native functionality work
     } else {
+      // change the layername based on which layer is searched on (because the search query looks at )
       var layerName = event.results["0"].source.featureLayer.source.layerDefinition.name;
-      if (layerName === 'NGS Control Points') {
-        event.results["0"].results["0"].feature.attributes.layerName = 'NGS Control Points QueryTask';
-      } else {
-        event.results["0"].results["0"].feature.attributes.layerName = layerName;
-      }
+      event.results["0"].results["0"].feature.attributes.layerName = layerName;
+
+      //clear content of information panel
+      clearDiv('informationdiv');
+      $('#numinput').val('');
+      $('#arraylengthdiv').html('');
+      $('#infoSpan').html('Information Panel');
+
+      // push query results of search bar to information panel
       infoPanelData.push(event.results["0"].results["0"].feature);
       queryInfoPanel(infoPanelData, 1);
       togglePanel();
@@ -2670,40 +2648,19 @@ require([
 
 
 
-  // Home
+  // Home Button
   var home = new Home({
     view: mapView
   });
   mapView.ui.add(home, "top-left");
 
+  // Locate Button
   var locateBtn = new Locate({
     view: mapView
   });
   mapView.ui.add(locateBtn, "top-left");
 
-
-  //mapView.ui.add(ccWidget, "bottom-left");
-
-  // Fires after the user's location has been found
-  /*locateBtn.on("locate", function(event) {
-      var bufferGeometry = event.target.graphic.geometry;
-      var buffer = geometryEngine.buffer(bufferGeometry, 50, "feet", false)
-
-      console.log(bufferGeometry);
-      console.log(buffer);
-      var bufferGraphic = new Graphic({
-        geometry: buffer,
-        symbol: highlightSymbol
-      });
-      selectionLayer.graphics.removeAll();
-      selectionLayer.add(bufferGraphic);
-
-      console.log(selectionLayer.graphics.items[0].geometry);
-      executeIdentifyTask(buffer);
-      console.log("finished");
-    });
-  */
-
+  // Clear Button
   var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
 

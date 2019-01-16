@@ -701,7 +701,7 @@ require([
         uniqueValues.sort();
         uniqueValues.forEach(function (value) {
           var option = domConstruct.create("option");
-          option.text = value; //.toUpperCase();
+          option.text = value;
           dom.byId(panelParam).add(option);
         });
       });

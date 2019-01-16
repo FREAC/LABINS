@@ -1286,14 +1286,9 @@ require([
             feature.attributes.layerName = layerName;
             // only identify the corners that have an image
             if (layerName != 'Certified Corners') {
-              console.log(layerName);
-              // We want to show Original GLO survey plats and field notes now
-              // if (layerName === 'Township-Range-Section') {
-              //   // Do nothing
-              // } else {
               identifyElements.push(feature);
               infoPanelData.push(feature);
-              // }
+
               // only push Certified Corners with an image
             } else if (layerName === 'Certified Corners') {
               if (feature.attributes.is_image === 'Y') {

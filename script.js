@@ -1326,13 +1326,13 @@ require([
         // ^ End logic for zoom control
         // Remove current selection
         selectionLayer.graphics.removeAll();
-        console.log("it's a polygon");
+        console.log("Resulting geometry is a polygon.");
         // Highlight the selected parcel
         highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
         selectionLayer.graphics.add(highlightGraphic);
 
       } else if (infoPanelData[0].geometry.type === "point") {
-        console.log("it's a point");
+        console.log("Resulting geometry is a point.");
         // Remove current selection
         selectionLayer.graphics.removeAll();
 
@@ -1407,12 +1407,12 @@ require([
       });
       // Remove current selection
       selectionLayer.graphics.removeAll();
-      console.log("it's a polygon");
+      console.log("Resulting geometry is a polygon.");
       // Highlight the selected parcel
       highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
       selectionLayer.graphics.add(highlightGraphic);
     } else if (feature.geometry.type === "point") {
-      console.log("it's a point");
+      console.log("Resulting geometry is a point.");
 
 
       // Remove current selection
@@ -2196,56 +2196,6 @@ require([
     }
   });
 
-
-  query("#numinput").on("change", function (e) {
-    console.log("target value");
-    console.log(e.target.value);
-    if (e.target.value <= infoPanelData.length && e.target.value >= 1) {
-      queryInfoPanel(infoPanelData, e.target.value);
-      var itemVal = $('#numinput').val();
-      var indexVal = parcelVal - 1;
-
-      // Determine the index value
-      var parcelVal = $('#numinput').val();
-      var indexVal = parcelVal - 1;
-
-      // Go to the selected parcel
-      if (infoPanelData[indexVal].geometry.type === "polygon") {
-        var ext = infoPanelData[indexVal].geometry.extent;
-        var cloneExt = ext.clone();
-        if (infoPanelData[indexVal].attributes.layerName !== 'USGS Quads') {
-          mapView.goTo({
-            target: infoPanelData[indexVal],
-            extent: cloneExt.expand(1.75)
-          });
-        }
-        // Remove current selection
-        selectionLayer.graphics.removeAll();
-        console.log("it's a polygon");
-        // Highlight the selected parcel
-        highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
-        selectionLayer.graphics.add(highlightGraphic);
-      } else if (infoPanelData[indexVal].geometry.type === "point") {
-        console.log("it's a point");
-
-
-        // Remove current selection
-        selectionLayer.graphics.removeAll();
-
-        // Highlight the selected parcel
-        highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightPoint);
-        selectionLayer.graphics.add(highlightGraphic);
-        mapView.goTo({
-          target: infoPanelData[indexVal].geometry,
-          zoom: 15
-        });
-      }
-    } else {
-      //$('#numinput').val(currentIndex);
-      console.log("number out of range");
-    }
-  });
-
   // Listen for the back button
   query("#back").on("click", function () {
     if ($('#numinput').val() > 1) {
@@ -2268,12 +2218,12 @@ require([
         });
         // Remove current selection
         selectionLayer.graphics.removeAll();
-        console.log("it's a polygon");
+        console.log("Resulting geometry is a polygon.");
         // Highlight the selected parcel
         highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
         selectionLayer.graphics.add(highlightGraphic);
       } else if (infoPanelData[indexVal].geometry.type === "point") {
-        console.log("it's a point");
+        console.log("Resulting geometry is a point.");
 
 
         // Remove current selection
@@ -2314,12 +2264,12 @@ require([
 
         // Remove current selection
         selectionLayer.graphics.removeAll();
-        console.log("it's a polygon");
+        console.log("Resulting geometry is a polygon.");
         // Highlight the selected parcel
         highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
         selectionLayer.graphics.add(highlightGraphic);
       } else if (infoPanelData[indexVal].geometry.type === "point") {
-        console.log("it's a point");
+        console.log("Resulting geometry is a point.");
 
 
         // Remove current selection
@@ -2339,10 +2289,10 @@ require([
   // set up alert for dynamically created zoom to feature buttons
   $(document).on('click', "button[name='zoom']", function () {
 
-
+    console.log("Determining geometry type");
     // Go to the selected parcel
     if (infoPanelData[this.id - 1].geometry.type === "polygon" || infoPanelData[this.id - 1].geometry.type === "polyline") {
-      console.log('its a polygon or a polyline');
+      console.log("Resulting geometry is a polygon. or a polyline");
       var ext = infoPanelData[this.id - 1].geometry.extent;
       var cloneExt = ext.clone();
       mapView.goTo({
@@ -2352,12 +2302,12 @@ require([
 
       // Remove current selection
       selectionLayer.graphics.removeAll();
-      console.log("it's a polygon");
+      console.log("Resulting geometry is a polygon.");
       // Highlight the selected parcel
       highlightGraphic = new Graphic(infoPanelData[this.id - 1].geometry, highlightSymbol);
       selectionLayer.graphics.add(highlightGraphic);
     } else if (infoPanelData[this.id - 1].geometry.type === "point") {
-      console.log("it's a point");
+      console.log("Resulting geometry is a point.");
 
 
       // Remove current selection
@@ -2594,9 +2544,6 @@ require([
     view: mapView
   });
   mapView.ui.add(scaleBar, "bottom-left");
-  //mapView.ui.add(["bottombar", scaleBar], "bottom-left");
-
-
 
   // Home Button
   var home = new Home({

@@ -711,10 +711,7 @@ require([
   function zoomToFeature(panelurl, location, attribute) {
     console.log(location);
 
-    //var multiPolygonGeometries = [];
     // union features so that they can be returned as a single geometry
-    //var union = geometryEngine.union(multiPolygonGeometries);
-
     var task = new QueryTask({
       url: panelurl
     });
@@ -733,11 +730,9 @@ require([
         for (i = 0; i < response.features.length; i++) {
           highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
           graphicArray.push(highlightGraphic);
-          //multiPolygonGeometries.push(response.features[i].geometry);
         }
         selectionLayer.graphics.addMany(graphicArray);
       });
-    //return union;
   }
 
   // Union geometries of multi polygon features
@@ -753,64 +748,7 @@ require([
     return union;
   }
 
-  // // the identify function that happens when a section is chosen from the Zoom to Feature panel
-  // function executeTRSIdentify(response) {
-  //   console.log(response);
-
-  //   identifyTask = new IdentifyTask(controlPointsURL);
-
-  //   // Set the parameters for the Identify
-  //   params = new IdentifyParameters();
-  //   params.tolerance = 3;
-  //   params.layerIds = [0, 2];
-  //   params.layerOption = "all";
-  //   params.width = mapView.width;
-  //   params.height = mapView.height;
-
-  //   // Set the geometry to the location of the view click
-  //   params.geometry = response;
-  //   params.mapExtent = mapView.extent;
-  //   dom.byId("mapViewDiv").style.cursor = "wait";
-
-  //   // This function returns a promise that resolves to an array of features
-  //   // A custom popupTemplate is set for each feature based on the layer it
-  //   // originates from
-  //   identifyTask.execute(params).then(function(response) {
-  //     var results = response.results;
-
-  //     return [arrayUtils.map(results, function(result) {
-
-  //       var feature = result.feature;
-  //       var layerName = result.layerName;
-
-  //       feature.attributes.layerName = layerName;
-  //       if (layerName === 'Certified Corners') {
-  //         feature.popupTemplate = CCRTemplate;
-  //       } else if (layerName === 'NGS Control Points') {
-  //         feature.popupTemplate = NGSIdentifyPopupTemplate;
-  //       }
-  //       //console.log(feature);
-  //       return feature;
-  //     }), params.geometry];
-  //   }).then(showPopup); // Send the array of features to showPopup()
-
-  //   // Shows the results of the Identify in a popup once the promise is resolved
-  //   function showPopup(data) {
-  //     response = data[0];
-  //     geometry = data[1];
-
-  //     if (response.length > 0) {
-  //       mapView.popup.open({
-  //         features: response,
-  //         location: geometry.centroid
-  //       });
-  //     }
-  //     dom.byId("mapViewDiv").style.cursor = "auto";
-  //   }
-  //   return identifyTask.execute(params);
-  // } 
-
-  // when a section feature is chose, a matching TRS combination is queried, highlighted and zoomed to
+  // when a section feature is choses, a matching TRS combination is queried, highlighted and zoomed to
   function zoomToSectionFeature(panelurl, location, attribute) {
 
 
@@ -849,14 +787,6 @@ require([
         return union;
       })
       .then(createBuffer)
-    // for now (6/4/2018) lets dont do the identify on the final zoom
-    // part of the problem is the visibility option does not work, it just identifies on ALL layers
-    // the getVisibleLayerIds works, but right now it only executes when the page loads, so that is a
-    // problem when other layers are turned on the getVisible is not reloaded.
-    //
-    //.then(executeTRSIdentify)
-    //.then(executeIdentifyTask)
-    //.then(togglePanel);
   }
 
   // Modified zoomToFeature function to zoom once the Township and Range has been chosen
@@ -1150,7 +1080,6 @@ require([
     if (mapView.scale < minimumDrawScale) {
       event.stopPropagation();
       clearDiv('informationdiv');
-      //document.getElementById('numinput').value = "";
       clearDiv('arraylengthdiv');
       executeIdentifyTask(event);
       togglePanel();
@@ -1224,8 +1153,6 @@ require([
   // multi service identifytask
   function executeIdentifyTask(event) {
     console.log('starting the executeIdentifyTask function')
-    // first get the visible layers because that option doesnt work
-
     // Determine visibility
 
     checkVisibility(layerWidget);

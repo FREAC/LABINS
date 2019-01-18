@@ -182,6 +182,13 @@ function queryInfoPanel(results, i) {
                     }
 
                 }
+            } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
+                $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
+                    '<b>County: </b>' + results[i - 1].attributes.COUNTY + '<br>' +
+                    '<b>ECL Name: </b>' + results[i - 1].attributes.YEAR + '<br>' +
+                    '<b>MHW: </b>' + results[i - 1].attributes.OBJECTID + '<br>'
+                    // '<b>Location: </b>' + results[i - 1].attributes.SHAPE.LEN + '<br>'
+                );
             }
             $('#informationdiv').append('<br>');
             $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');

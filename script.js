@@ -288,12 +288,15 @@ require([
   });
 
   var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/2"
-  var CCCLLayer = new FeatureLayer({
+  var CCCLLayer = new MapImageLayer({
     url: CCCLURL,
-    title: "Coastal Construction Control Lines",
-    visible: true,
-    listMode: "false",
-    popupEnabled: false
+    minScale: minimumDrawScale,
+    sublayers: [{
+      id: 0,
+      title: "Survey Benchmarks",
+      visible: true,
+      popupEnabled: false
+    }]
   });
 
   // Graphics layer that will highlight features accessed through zoomTo Functions
@@ -998,8 +1001,24 @@ require([
 
   tasks = [];
   var allParams = [];
-  var serviceURLs = [swfwmdURL, labinsURL];
+  var serviceURLs = [swfwmdURL, labinsURL, CCCLURL];
   var promiseArray = [];
+  var promiseArrayAlt = [];
+  var workingServices = []
+
+  async function fetchService(url) {
+    console.log('into fectch service');
+    try {
+      let response = await fetch(url)
+      console.log(response);
+      return response;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      return false;
+    }
+  }
+
 
   //Find online services and restrict identify to this
   function checkService(url) {
@@ -1010,28 +1029,60 @@ require([
       responseType: 'json'
     }));
   }
-  for (var i = 0; i < serviceURLs.length; i++) {
-    checkService(serviceURLs[i]);
+
+  // check for active services on map load
+  mapView.when(
+    async function () {
+      await serviceCheck(serviceURLs);
+
+      for (url of promiseArrayAlt) {
+        console.log(url);
+        workingServices.push(new IdentifyTask(url));
+        console.log(workingServices);
+      }
+      console.log('doing things')
+      console.log(tasks);
+    }
+  )
+
+  async function serviceCheck(urlArray) {
+    for (url of urlArray) {
+      try {
+        const response = await fetch(url)
+        promiseArrayAlt.push(response.url)
+      } catch (error) {
+        console.log('Error');
+      }
+    }
   }
-  var workingServicesURLsObj = {
-    urls: []
-  };
-  var wrappedPromiseArray = promiseArray.map(promise => {
-    if (promise) {
-      return new Promise((resolve, reject) => {
-        promise.then(resolve).catch(resolve);
-      });
-    }
-  });
-  Promise.all(wrappedPromiseArray).then(function (values) {
-    for (var i = 0; i < values.length; i++) {
-      if (values[i].url != undefined)
-        workingServicesURLsObj.urls.push(new IdentifyTask(values[i].url));
-    }
-  });
-  console.log("working Service URls");
-  tasks = workingServicesURLsObj.urls
-  console.log(tasks);
+
+
+  // for (var i = 0; i < serviceURLs.length; i++) {
+  //   checkService(serviceURLs[i]);
+  //   console.log(promiseArray);
+
+  // }
+  // var workingServicesURLsObj = {
+  //   urls: []
+  // };
+  // var wrappedPromiseArray = promiseArray.map(promise => {
+  //   if (promise) {
+  //     return new Promise((resolve, reject) => {
+  //       promise.then(resolve).catch(resolve);
+  //     });
+  //   }
+  // });
+  // Promise.all(wrappedPromiseArray).then(function (values) {
+  //   for (var i = 0; i < values.length; i++) {
+  //     console.log(values[i])
+  //     if (values[i].url != undefined) {
+  //       workingServicesURLsObj.urls.push(new IdentifyTask(values[i].url));
+  //     }
+  //   }
+  // });
+  // console.log("working Service URls");
+  // tasks = workingServicesURLsObj.urls
+  // console.log(tasks);
 
 
   // Set the parameters for the labins Identify
@@ -1056,6 +1107,17 @@ require([
   params.returnFieldName = true;
   allParams.push(params);
 
+
+  // Set the parameters for the County Boundaries Identify
+  params = new IdentifyParameters();
+  params.tolerance = 3;
+  params.layerIds;
+  params.layerOption = "all";
+  params.width = mapView.width;
+  params.height = mapView.height;
+  params.returnGeometry = true;
+  params.returnFieldName = true;
+  allParams.push(params);
 
   // Set the parameters for the County Boundaries Identify
   params = new IdentifyParameters();

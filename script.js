@@ -1062,7 +1062,18 @@ require([
   tasks = workingServicesURLsObj.urls
   console.log(tasks);
 
-
+  async function setIdentifyParamteters(tolerance, serviceCount) {
+    // Set the parameters for the labins Identify
+    params = new IdentifyParameters();
+    params.tolerance = tolerance;
+    params.layerOption = "all";
+    params.layerIds;
+    params.width = mapView.width;
+    params.height = mapView.height;
+    params.returnGeometry = true;
+    params.returnFieldName = true;
+    await allParams.push(params);
+  }
   // Set the parameters for the labins Identify
   params = new IdentifyParameters();
   params.tolerance = 10;

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Request data from a remote server - 4.10</title>
+
+    <style>
+        html,
+    body,
+    #viewDiv {
+      font-family: sans-serif;
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    .container {
+      padding: 1em;
+    }
+
+    input {
+      width: 75%;
+    }
+  </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+    <script src="https://js.arcgis.com/4.10/"></script>
+
+    <script>
+        require([
+      "esri/request"
+    ], function(
+      esriRequest
+    ) {
+
+      var resultsDiv = document.getElementById("resultsDiv");
+      var input = document.getElementById("inputUrl");
+
+      /************************************************
+       *
+       * Define the 'options' for our request.
+       *
+       *************************************************/
+      var options = {
+        query: {
+          f: 'json'
+        },
+        responseType: 'json'
+      };
+
+      const request = async function checkService (url) {
+          url = input.value;
+          try {
+            const response = await fetch(url)
+            console.log(response)
+          } catch (err) {
+              console.log(err);
+          }
+      }
+
+      // Make the request on a button click using the
+      // value of the 'input' text.
+      //on(btnQuery, "click", function() {
+      btnQuery.addEventListener("click", function () {
+        var url = input.value;
+        request(url)
+//         try {
+//             //   Block of code to try
+//             fetch(url).then(function(response) {
+//                 console.log(response);
+//         });
+//         }
+//         catch(err) {
+//             //   Block of code to handle errors
+//         } 
+//         finally {
+// //   Block of code to be executed regardless of the try / catch result
+//         }
+      });
+    });
+  </script>
+</head>
+
+<body>
+    <div class="container">
+        <div>
+            <h2>Using esri/request</h2>
+            <button id="btnQuery">Make Request</button>
+            <input id="inputUrl" type="text" value="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer">
+        </div>
+        <pre id="resultsDiv"></pre>
+    </div>
+</body>
+
+</html>

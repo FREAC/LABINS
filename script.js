@@ -1016,7 +1016,7 @@ require([
   //   }));
   // }
 
-  function checkService(url) {
+  let checkService = async function checkService(url) {
     esriRequest(url, {
       query: {
         f: 'json'
@@ -1034,7 +1034,11 @@ require([
   async function startupServiceCheck(serviceArray) {
     for (const url of serviceArray) {
       console.log(url);
-      await checkService(url);
+      try {
+        await checkService(url);
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 
@@ -1062,18 +1066,27 @@ require([
   tasks = workingServicesURLsObj.urls
   console.log(tasks);
 
-  async function setIdentifyParamteters(tolerance, serviceCount) {
-    // Set the parameters for the labins Identify
-    params = new IdentifyParameters();
-    params.tolerance = tolerance;
-    params.layerOption = "all";
-    params.layerIds;
-    params.width = mapView.width;
-    params.height = mapView.height;
-    params.returnGeometry = true;
-    params.returnFieldName = true;
-    await allParams.push(params);
-  }
+  // TODO:
+  // tester async function for setting identify paramters more simply  
+  // let setParams = async function setIdentifyParamteters(tolerance) {
+  //   // Set the parameters for the labins Identify
+  //   params = new IdentifyParameters();
+  //   params.tolerance = tolerance;
+  //   params.layerOption = "all";
+  //   params.layerIds;
+  //   params.width = mapView.width;
+  //   params.height = mapView.height;
+  //   params.returnGeometry = true;
+  //   params.returnFieldName = true;
+  //   console.log(params);
+  //   return params;
+  // }
+
+  // setParams(50)
+  // END TODO:
+
+
+
   // Set the parameters for the labins Identify
   params = new IdentifyParameters();
   params.tolerance = 10;

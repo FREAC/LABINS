@@ -263,7 +263,7 @@ require([
   });
 
 
-  var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
+  var swfwmdURL = "https://www25.swfwamd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
   var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
     title: "SWFWMD Survey Benchmarks",
@@ -1000,62 +1000,75 @@ require([
   var params;
 
   tasks = [];
-  var allParams = [];
+  // var allParams = [];
   var serviceURLs = [swfwmdURL, labinsURL, CCCLURL];
-  var promiseArray = [];
+  //var promiseArray = [];
   var promiseArrayAlt = [];
-  var workingServices = []
-
-  async function fetchService(url) {
-    console.log('into fectch service');
-    try {
-      let response = await fetch(url)
-      console.log(response);
-      return response;
-    } catch (error) {
-      console.log(error);
-    } finally {
-      return false;
-    }
-  }
-
-
-  //Find online services and restrict identify to this
-  function checkService(url) {
-    promiseArray.push(esriRequest(url, {
-      query: {
-        f: 'json'
-      },
-      responseType: 'json'
-    }));
-  }
+  var workingServices = [];
 
   // check for active services on map load
   mapView.when(
     async function () {
       await serviceCheck(serviceURLs);
 
+      console.log('starting for loop');
       for (url of promiseArrayAlt) {
         console.log(url);
         workingServices.push(new IdentifyTask(url));
         console.log(workingServices);
       }
       console.log('doing things')
+      tasks = workingServices;
       console.log(tasks);
     }
   )
 
   async function serviceCheck(urlArray) {
+    allParams = []
     for (url of urlArray) {
+      console.log('starting service check');
       try {
-        const response = await fetch(url)
-        promiseArrayAlt.push(response.url)
+        const response = await fetch(url);
+        const service = await response;
+        console.log(service.url);
+        promiseArrayAlt.push(service.url)
+        console.log('setting identify parameters');
+        await setIdentifyParameters();
+        console.log('success!')
+
       } catch (error) {
-        console.log('Error');
+        console.log(error);
       }
     }
+    console.log(allParams);
   }
 
+  async function setIdentifyParameters() {
+    console.log('starting setIdentifyParameters');
+
+    params = new IdentifyParameters();
+    params.tolerance = 10;
+    params.layerOption = "all";
+    params.layerIds;
+    params.width = mapView.width;
+    params.height = mapView.height;
+    params.returnGeometry = true;
+    params.returnFieldName = true;
+    allParams.push(params);
+
+
+  }
+
+
+  //Find online services and restrict identify to this
+  // function checkService(url) {
+  //   promiseArray.push(esriRequest(url, {
+  //     query: {
+  //       f: 'json'
+  //     },
+  //     responseType: 'json'
+  //   }));
+  // }
 
   // for (var i = 0; i < serviceURLs.length; i++) {
   //   checkService(serviceURLs[i]);
@@ -1086,50 +1099,38 @@ require([
 
 
   // Set the parameters for the labins Identify
-  params = new IdentifyParameters();
-  params.tolerance = 10;
-  params.layerOption = "all";
-  params.layerIds;
-  params.width = mapView.width;
-  params.height = mapView.height;
-  params.returnGeometry = true;
-  params.returnFieldName = true;
-  allParams.push(params);
+  // params = new IdentifyParameters();
+  // params.tolerance = 10;
+  // params.layerOption = "all";
+  // params.layerIds;
+  // params.width = mapView.width;
+  // params.height = mapView.height;
+  // params.returnGeometry = true;
+  // params.returnFieldName = true;
+  // allParams.push(params);
 
-  // Set the parameters for the SWFWMD Identify
-  params = new IdentifyParameters();
-  params.tolerance = 10;
-  params.layerIds;
-  params.layerOption = "all";
-  params.width = mapView.width;
-  params.height = mapView.height;
-  params.returnGeometry = true;
-  params.returnFieldName = true;
-  allParams.push(params);
+  // // Set the parameters for the SWFWMD Identify
+  // params = new IdentifyParameters();
+  // params.tolerance = 10;
+  // params.layerIds;
+  // params.layerOption = "all";
+  // params.width = mapView.width;
+  // params.height = mapView.height;
+  // params.returnGeometry = true;
+  // params.returnFieldName = true;
+  // allParams.push(params);
 
 
-  // Set the parameters for the County Boundaries Identify
-  params = new IdentifyParameters();
-  params.tolerance = 3;
-  params.layerIds;
-  params.layerOption = "all";
-  params.width = mapView.width;
-  params.height = mapView.height;
-  params.returnGeometry = true;
-  params.returnFieldName = true;
-  allParams.push(params);
-
-  // Set the parameters for the County Boundaries Identify
-  params = new IdentifyParameters();
-  params.tolerance = 3;
-  params.layerIds;
-  params.layerOption = "all";
-  params.width = mapView.width;
-  params.height = mapView.height;
-  params.returnGeometry = true;
-  params.returnFieldName = true;
-  allParams.push(params);
-
+  // // Set the parameters for the County Boundaries Identify
+  // params = new IdentifyParameters();
+  // params.tolerance = 3;
+  // params.layerIds;
+  // params.layerOption = "all";
+  // params.width = mapView.width;
+  // params.height = mapView.height;
+  // params.returnGeometry = true;
+  // params.returnFieldName = true;
+  // allParams.push(params);
 
   var identifyElements = [];
   var infoPanelData = [];

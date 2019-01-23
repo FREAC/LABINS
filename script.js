@@ -108,7 +108,7 @@ require([
   var minimumDrawScale = 100000;
   var extents = [];
 
-  var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/";
+  var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer";
   var countyBoundariesLayer = new MapImageLayer({
     url: countyBoundariesURL,
     title: "County Boundaries",
@@ -121,7 +121,7 @@ require([
     }]
   });
 
-  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/";
+  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer";
   var labinsLayer = new MapImageLayer({
     url: labinsURL,
     //minScale: minimumDrawScale,
@@ -263,7 +263,7 @@ require([
   });
 
 
-  var swfwmdURL = "https://www25.swfwamd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
+  var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer";
   var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
     title: "SWFWMD Survey Benchmarks",
@@ -287,13 +287,14 @@ require([
     popupEnabled: false
   });
 
-  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/2"
+  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer"
   var CCCLLayer = new MapImageLayer({
     url: CCCLURL,
     minScale: minimumDrawScale,
+    title: "Coastal Construction Control Lines",
     sublayers: [{
-      id: 0,
-      title: "Survey Benchmarks",
+      id: 2,
+      title: "Coastal Construction Control Lines",
       visible: true,
       popupEnabled: false
     }]
@@ -354,7 +355,7 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    layers: [countyBoundariesLayer, labinsLayer, swfwmdLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
+    layers: [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
   });
 
 
@@ -999,9 +1000,9 @@ require([
   var promises, tasks;
   var params;
 
-  tasks = [];
-  // var allParams = [];
-  var serviceURLs = [swfwmdURL, labinsURL, CCCLURL];
+  var tasks = [];
+  //var allParams = [];
+  var serviceURLs = [swfwmdURL, labinsURL, CCCLURL, countyBoundariesURL];
   //var promiseArray = [];
   var promiseArrayAlt = [];
   var workingServices = [];
@@ -1033,7 +1034,7 @@ require([
         console.log(service.url);
         promiseArrayAlt.push(service.url)
         console.log('setting identify parameters');
-        await setIdentifyParameters();
+        // await setIdentifyParameters();
         console.log('success!')
 
       } catch (error) {
@@ -1179,37 +1180,53 @@ require([
   }
 
   // Check current visibility of layers that we are going to perform an identifyTask on
-  function checkVisibility(layerWidget) {
+  async function checkVisibility(layerWidget) {
     console.log('checking visibility');
     var tempVis = []
     console.log(layerWidget);
     for (var i = 0; i < layerWidget.operationalItems.items.length; i++) {
-      console.log(layerWidget.operationalItems.items[i]);
-      if (layerWidget.operationalItems.items[i].visible != false) {
-        console.log(layerWidget.operationalItems.items[i]);
-        //iterate through sublayers
-        for (var j = 0; j < layerWidget.operationalItems.items[i].children.items.length; j++) {
-          //console.log(layerWidget.operationalItems.items[i].children.items[j]);
-          if (layerWidget.operationalItems.items[i].children.items[j].visible != false) {
-            //console.log(layerWidget.operationalItems.items[i].children.items[j].layer.title);
-            tempVis.push(layerWidget.operationalItems.items[i].children.items[j].layer.id);
+      // check to see if we're hitting a layer that is within the serviceUrls array
+      if (serviceURLs.includes(layerWidget.operationalItems.items[i].layer.url)) {
+        if (layerWidget.operationalItems.items[i].visible != false) {
+          await setIdentifyParameters();
+          console.log(layerWidget.operationalItems.items[i]);
+          //iterate through sublayers
+          for (var j = 0; j < layerWidget.operationalItems.items[i].children.items.length; j++) {
+            //console.log(layerWidget.operationalItems.items[i].children.items[j]);
+            if (layerWidget.operationalItems.items[i].children.items[j].visible != false) {
+              //console.log(layerWidget.operationalItems.items[i].children.items[j].layer.title);
+              tempVis.push(layerWidget.operationalItems.items[i].children.items[j].layer.id);
+            }
           }
+          console.log(tempVis);
+          console.log(allParams);
+          console.log(allParams[i]);
+          allParams[i].layerIds = tempVis;
+          console.log(allParams[i].layerIds);
         }
-        console.log(tempVis);
-        console.log(allParams[i]);
-        allParams[i].layerIds = tempVis;
-        console.log(allParams[i].layerIds);
+        console.log("allParams ", i, " are ", allParams[i].layerIds);
+        console.log("end of layer");
+        if (allParams[i].layerIds.length == 0) {
+          console.log("allParams are empty: Look! ", allParams[i].layerIds)
+          allParams[i].layerIds = [-1];
+          console.log(allParams[i]);
+        }
+        tempVis = [];
+        //console.log(layerWidget.operationalItems.items[i]);
       }
-      console.log("allParams ", i, " are ", allParams[i].layerIds);
-      console.log("end of layer");
-      if (allParams[i].layerIds.length == 0) {
-        console.log("allParams are empty: Look! ", allParams[i].layerIds)
-        allParams[i].layerIds = [-1];
-      }
-      tempVis = [];
-      //console.log(layerWidget.operationalItems.items[i]);
     }
     console.log('visibility checked.');
+  }
+
+  async function checkVisibilityAlt(layerWidget) {
+    for (item of layerWidget.operationalItems.items) {
+      console.log(item.layer.url);
+      if (serviceURLs.includes(item.layer.url)) {
+        console.log("We have a layer match");
+      } else {
+        console.log("we don't have a layer match");
+      }
+    }
   }
 
 
@@ -1219,12 +1236,11 @@ require([
     // Determine visibility
 
     checkVisibility(layerWidget);
+    checkVisibilityAlt(layerWidget);
 
-    console.log("updated allParams ", 0, " is ", allParams[0].layerIds)
+    for (item of allParams) {
 
-    console.log("updated allParams ", 1, " is ", allParams[1].layerIds)
-
-    console.log("updated allParams ", 1, " is ", allParams[1].layerIds)
+    }
 
     //console.log(layerWidget);
     var currentScale = mapView.scale;
@@ -1441,7 +1457,7 @@ require([
       minSuggestCharacters: 0
     }, {
       featureLayer: {
-        url: labinsURL + '0',
+        url: labinsURL + '/0',
       },
       searchFields: ["name"],
       suggestionTemplate: "Designation: {name}, County {county}",
@@ -1455,7 +1471,7 @@ require([
       placeholder: "Search by Designation",
     }, {
       featureLayer: {
-        url: labinsURL + '3',
+        url: labinsURL + '/3',
       },
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",
@@ -1468,7 +1484,7 @@ require([
       placeholder: "Search by ID, County Name, or Quad Name",
     }, {
       featureLayer: {
-        url: labinsURL + '4',
+        url: labinsURL + '/4',
       },
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
       suggestionTemplate: "ID: {iden}, County: {cname}",
@@ -1482,7 +1498,7 @@ require([
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
     }, {
       featureLayer: {
-        url: labinsURL + '7',
+        url: labinsURL + '/7',
       },
       searchFields: ["monument_name", "county"],
       suggestionTemplate: "R-Monument Name: {monument_name}, County: {county}",
@@ -1495,7 +1511,7 @@ require([
       placeholder: "Search by County Name or R-Monument Name",
     }, {
       featureLayer: {
-        url: labinsURL + '8',
+        url: labinsURL + '/8',
       },
       searchFields: ["ecl_name", "county"],
       suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
@@ -1522,7 +1538,7 @@ require([
       placeholder: "Benchmark Name Example: CYP016",
     }, {
       featureLayer: {
-        url: labinsURL + '2',
+        url: labinsURL + '/2',
       },
       searchFields: ["blmid", "tile_name"],
       displayField: "blmid",
@@ -1536,7 +1552,7 @@ require([
       placeholder: "Search by BLMID or Quad Name",
     }, {
       featureLayer: {
-        url: labinsURL + '11',
+        url: labinsURL + '/11',
       },
       searchFields: ["twn_ch", "rng_ch", "twnrngsec"],
       displayField: "twnrngsec",

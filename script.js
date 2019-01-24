@@ -1214,6 +1214,7 @@ require([
         tempVis = [];
         //console.log(layerWidget.operationalItems.items[i]);
       }
+      console.log(tempVis);
     }
     console.log('visibility checked.');
   }
@@ -1231,35 +1232,35 @@ require([
 
 
   // multi service identifytask
-  function executeIdentifyTask(event) {
+  async function executeIdentifyTask(event) {
     console.log('starting the executeIdentifyTask function')
     // Determine visibility
 
-    checkVisibility(layerWidget);
-    checkVisibilityAlt(layerWidget);
+    await checkVisibility(layerWidget);
+    await checkVisibilityAlt(layerWidget);
 
-    for (item of allParams) {
-
-    }
+    console.log(allParams)
 
     //console.log(layerWidget);
     var currentScale = mapView.scale;
     infoPanelData = [];
     identifyElements = [];
     promises = [];
+    console.log(allParams);
     // Set the geometry to the location of the view click
     if (event.type === "click") {
-      allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event.mapPoint;
-      allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
+      allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = allParams[3].geometry = event.mapPoint;
+      allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = allParams[3].mapExtent = mapView.extent;
     } else {
-      allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = event;
-      allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = mapView.extent;
+      allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = allParams[3].geometry = event;
+      allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = allParams[3].mapExtent = mapView.extent;
     }
     console.log('what does the event look like ', event)
     for (i = 0; i < tasks.length; i++) {
       console.log(tasks[i]);
       console.log('what is this doing--- ', allParams[i])
       promises.push(tasks[i].execute(allParams[i]));
+      console.log(tasks[i].execute(allParams[i]));
     }
 
     // create promises for each service to be checked for features

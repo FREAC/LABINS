@@ -127,7 +127,7 @@ function queryInfoPanel(results, i) {
                     // This point needs a study
                     $('#informationdiv').append('This point needs a study. Click <a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/MHW_Procedures_wo_29_or_88_data_May_2009_with_checklist.pdf>here</a> to open approval form.<br>');
                 }
-            } else if (results[i - 1].attributes.layerName === 'R-Monuments') {
+            } else if (results[i - 1].attributes.layerName === 'Coastal Range Monuments') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Regional Coastal Monitoring Data</b> </p>' +
                     '<b>Feature ID: </b>' + results[i - 1].attributes.unique_id + '<br>' +
                     '<b>Monument Name: </b>' + results[i - 1].attributes.monument_name + '<br>' +

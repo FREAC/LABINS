@@ -124,7 +124,6 @@ require([
   var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer";
   var labinsLayer = new MapImageLayer({
     url: labinsURL,
-    //minScale: minimumDrawScale,
     sublayers: [{
       id: 17,
       title: "Soils June 2012 - Dept. of Agriculture",
@@ -1183,6 +1182,7 @@ require([
   async function checkVisibility(layerWidget) {
     console.log('checking visibility');
     var tempVis = []
+    allParams = [];
     console.log(layerWidget);
     for (var i = 0; i < layerWidget.operationalItems.items.length; i++) {
       // check to see if we're hitting a layer that is within the serviceUrls array

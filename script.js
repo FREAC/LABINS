@@ -354,7 +354,8 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    layers: [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
+    // layers: [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
+    layers: [selectionLayer, bufferLayer]
   });
 
 
@@ -992,162 +993,164 @@ require([
     zoomToTRFeature(townshipRangeSectionURL, type, "rng_ch");
   });
 
-  /////////////////////////
-  //// Buffer Identify ////
-  /////////////////////////
+  // On a click, execute identifyTask once the map is within the minimum scale
+  // mapView.on("click", function (event) {
+  //   mapView.graphics.removeAll();
+  //   selectionLayer.graphics.removeAll();
+  //   console.log(mapView.scale);
+  //   if (mapView.scale < minimumDrawScale) {
+  //     event.stopPropagation();
+  //     clearDiv('informationdiv');
+  //     clearDiv('arraylengthdiv');
+  //     executeIdentifyTask(event);
+  //     togglePanel();
+  //   }
+  // });
 
-  var promises, tasks;
-  var params;
+  let infoPanelData = [];
 
-  var tasks = [];
-  //var allParams = [];
-  var serviceURLs = [swfwmdURL, labinsURL, CCCLURL, countyBoundariesURL];
-  //var promiseArray = [];
-  var promiseArrayAlt = [];
-  var workingServices = [];
+  mapView.when(async function () {
 
-  // check for active services on map load
-  mapView.when(
-    async function () {
-      await serviceCheck(serviceURLs);
+    const layersArr = [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
 
-      console.log('starting for loop');
-      for (url of promiseArrayAlt) {
-        console.log(url);
-        workingServices.push(new IdentifyTask(url));
-        console.log(workingServices);
+
+    let allParams = [];
+    console.log(map);
+    await checkServices(layersArr);
+    var layerList = await new LayerList({
+      view: mapView,
+      container: "layersDiv",
+
+    });
+    // status to watch if layerlist is on
+    var layerlistStatus;
+    on(dom.byId("desktopLayerlist"), "click", function (evt) {
+      // if layerlist status != 1, add it to the map
+      if (layerlistStatus != 1) {
+        mapView.ui.remove(scaleBar);
+        document.getElementById("layersDiv");
+        mapView.ui.add([layerList, scaleBar], "bottom-left");
+        layerlistStatus = 1;
+        console.log(layerlistStatus)
+      } else {
+        mapView.ui.remove(layerList);
+        layerlistStatus = 0;
+        console.log(layerlistStatus)
       }
-      console.log('doing things')
-      tasks = workingServices;
-      console.log(tasks);
-    }
-  )
+    });
 
-  async function serviceCheck(urlArray) {
-    allParams = []
-    for (url of urlArray) {
-      console.log('starting service check');
+    console.log("checked services");
+
+
+    on(mapView, "click", async function (event) {
+      if (mapView.scale < minimumDrawScale) {
+        mapView.graphics.removeAll();
+        selectionLayer.graphics.removeAll();
+        clearDiv('informationdiv');
+        clearDiv('arraylengthdiv');
+        infoPanelData = [];
+
+        console.log(event);
+        // look inside of layerList layers
+        let layers = layerList.operationalItems.items
+        console.log(layers)
+        // loop through layers
+
+        for (layer of layers) {
+          const visibleLayers = await checkVisibleLayers(layer);
+          console.log(visibleLayers)
+
+          // if there are visible layers returned
+          if (visibleLayers.length > 0) {
+            const task = new IdentifyTask(layer.layer.url)
+            const params = await setIdentifyParameters(visibleLayers, "click", event);
+            const identify = await executeIdentifyTask(task, params);
+
+            // push each feature to the infoPanelData
+            for (feature of identify.results) {
+              // console.log(feature);
+              feature.feature.attributes.layerName = feature.layerName;
+              let result = feature.feature.attributes
+
+              // make sure only certified corners with images are identified
+              if (result.layerName !== 'Certified Corners') {
+                await infoPanelData.push(feature.feature);
+              } else if (result.is_image == 'Y') {
+                await infoPanelData.push(feature.feature);
+              }
+            }
+          }
+        }
+        console.log("checked visible layers")
+        console.log(infoPanelData);
+        await queryInfoPanel(infoPanelData, 1);
+        togglePanel();
+      }
+    });
+
+  });
+
+  // fetch all map services before loading to map
+  // if service returns good, add service to map
+  async function checkServices(layersArr) {
+    // let layers = map.layers.items
+    let layers = layersArr
+    for (layer of layers) {
       try {
-        const response = await fetch(url);
-        const service = await response;
-        console.log(service.url);
-        promiseArrayAlt.push(service.url)
-        console.log('setting identify parameters');
-        // await setIdentifyParameters();
-        console.log('success!')
-
-      } catch (error) {
-        console.log(error);
+        // make request to server for layer in question
+        const request = await fetch(layer.url)
+        // if layer returns good, add to map
+        map.add(layer);
+      } catch (err) {
+        // layer returns bad, not added to map, log error
+        console.log(layer.title + " layer failed to be returned");
       }
     }
-    console.log(allParams);
   }
 
-  async function setIdentifyParameters() {
-    console.log('starting setIdentifyParameters');
+  async function checkVisibleLayers(service) {
+    let visibleLayerIds = [];
+    if (service.visible == true) {
+      // find the currently visible layers/sublayers
+      for (sublayer of service.children.items) {
+        // if sublayer is visible, add to visibleLayerIds array
+        if (sublayer.visible) {
+          visibleLayerIds.push(sublayer.layer.id);
+        }
+      }
+    }
+    // return visibleLayerIds
+    return visibleLayerIds;
+  }
 
+  async function setIdentifyParameters(visibleLayers, eventType, event) {
+    // receive array of active visible layer with urls
+    // Set the parameters for the Identify
     params = new IdentifyParameters();
-    params.tolerance = 10;
+    params.tolerance = 5;
+    params.layerIds = visibleLayers;
     params.layerOption = "all";
-    params.layerIds;
     params.width = mapView.width;
     params.height = mapView.height;
     params.returnGeometry = true;
     params.returnFieldName = true;
-    allParams.push(params);
-
-
+    console.log(params);
+    if (eventType == "click") {
+      params.geometry = event.mapPoint
+      params.mapExtent = mapView.extent;
+    } else {
+      params.geometry = event
+      params.mapExtent = mapView.extent;
+    }
+    return params; // return parameter array 
   }
 
-
-  //Find online services and restrict identify to this
-  // function checkService(url) {
-  //   promiseArray.push(esriRequest(url, {
-  //     query: {
-  //       f: 'json'
-  //     },
-  //     responseType: 'json'
-  //   }));
-  // }
-
-  // for (var i = 0; i < serviceURLs.length; i++) {
-  //   checkService(serviceURLs[i]);
-  //   console.log(promiseArray);
-
-  // }
-  // var workingServicesURLsObj = {
-  //   urls: []
-  // };
-  // var wrappedPromiseArray = promiseArray.map(promise => {
-  //   if (promise) {
-  //     return new Promise((resolve, reject) => {
-  //       promise.then(resolve).catch(resolve);
-  //     });
-  //   }
-  // });
-  // Promise.all(wrappedPromiseArray).then(function (values) {
-  //   for (var i = 0; i < values.length; i++) {
-  //     console.log(values[i])
-  //     if (values[i].url != undefined) {
-  //       workingServicesURLsObj.urls.push(new IdentifyTask(values[i].url));
-  //     }
-  //   }
-  // });
-  // console.log("working Service URls");
-  // tasks = workingServicesURLsObj.urls
-  // console.log(tasks);
-
-
-  // Set the parameters for the labins Identify
-  // params = new IdentifyParameters();
-  // params.tolerance = 10;
-  // params.layerOption = "all";
-  // params.layerIds;
-  // params.width = mapView.width;
-  // params.height = mapView.height;
-  // params.returnGeometry = true;
-  // params.returnFieldName = true;
-  // allParams.push(params);
-
-  // // Set the parameters for the SWFWMD Identify
-  // params = new IdentifyParameters();
-  // params.tolerance = 10;
-  // params.layerIds;
-  // params.layerOption = "all";
-  // params.width = mapView.width;
-  // params.height = mapView.height;
-  // params.returnGeometry = true;
-  // params.returnFieldName = true;
-  // allParams.push(params);
-
-
-  // // Set the parameters for the County Boundaries Identify
-  // params = new IdentifyParameters();
-  // params.tolerance = 3;
-  // params.layerIds;
-  // params.layerOption = "all";
-  // params.width = mapView.width;
-  // params.height = mapView.height;
-  // params.returnGeometry = true;
-  // params.returnFieldName = true;
-  // allParams.push(params);
-
-  var identifyElements = [];
-  var infoPanelData = [];
-
-  // On a double click, execute identifyTask once the map is within the minimum scale
-  mapView.on("click", function (event) {
-    mapView.graphics.removeAll();
-    selectionLayer.graphics.removeAll();
-    console.log(mapView.scale);
-    if (mapView.scale < minimumDrawScale) {
-      event.stopPropagation();
-      clearDiv('informationdiv');
-      clearDiv('arraylengthdiv');
-      executeIdentifyTask(event);
-      togglePanel();
-    }
-  });
+  async function executeIdentifyTask(tasks, params) {
+    // take in tasks
+    // take in parameters
+    console.log(params);
+    return tasks.execute(params)
+  }
 
   // collapse any of the current panels and switch to the identifyResults panel
   function togglePanel() {
@@ -1177,198 +1180,58 @@ require([
       paramNode.removeChild(paramNode.firstChild);
     }
   }
-
-  // Check current visibility of layers that we are going to perform an identifyTask on
-  async function checkVisibility(layerWidget) {
-    console.log('checking visibility');
-    var tempVis = []
-    allParams = [];
-    console.log(layerWidget);
-    for (var i = 0; i < layerWidget.operationalItems.items.length; i++) {
-      // check to see if we're hitting a layer that is within the serviceUrls array
-      if (serviceURLs.includes(layerWidget.operationalItems.items[i].layer.url)) {
-        if (layerWidget.operationalItems.items[i].visible != false) {
-          await setIdentifyParameters();
-          console.log(layerWidget.operationalItems.items[i]);
-          //iterate through sublayers
-          for (var j = 0; j < layerWidget.operationalItems.items[i].children.items.length; j++) {
-            //console.log(layerWidget.operationalItems.items[i].children.items[j]);
-            if (layerWidget.operationalItems.items[i].children.items[j].visible != false) {
-              //console.log(layerWidget.operationalItems.items[i].children.items[j].layer.title);
-              tempVis.push(layerWidget.operationalItems.items[i].children.items[j].layer.id);
-            }
-          }
-          console.log(tempVis);
-          console.log(allParams);
-          console.log(allParams[i]);
-          allParams[i].layerIds = tempVis;
-          console.log(allParams[i].layerIds);
-        }
-        console.log("allParams ", i, " are ", allParams[i].layerIds);
-        console.log("end of layer");
-        if (allParams[i].layerIds.length == 0) {
-          console.log("allParams are empty: Look! ", allParams[i].layerIds)
-          allParams[i].layerIds = [-1];
-          console.log(allParams[i]);
-        }
-        tempVis = [];
-        //console.log(layerWidget.operationalItems.items[i]);
-      }
-      console.log(tempVis);
-    }
-    console.log('visibility checked.');
-  }
-
-  async function checkVisibilityAlt(layerWidget) {
-    for (item of layerWidget.operationalItems.items) {
-      console.log(item.layer.url);
-      if (serviceURLs.includes(item.layer.url)) {
-        console.log("We have a layer match");
+  async function goToPoint(result) {
+    // determine whether first index of identify 
+    // is a polygon or point then do appropriate highlight and zoom
+    if (infoPanelData[0].geometry.type === "polygon" || infoPanelData[0].geometry.type === "polyline") {
+      var ext = infoPanelData[0].geometry.extent;
+      var cloneExt = ext.clone();
+      // This introduces logic to control zooming depending on if the current extent is closer or farther than resulting polygon or polyline
+      if (mapView.extent.height < ext.height || mapView.extent.width < ext.width) {
+        // no zoom, continue to next block 
+        // the map will not zoom out
       } else {
-        console.log("we don't have a layer match");
-      }
-    }
-  }
-
-
-  // multi service identifytask
-  async function executeIdentifyTask(event) {
-    console.log('starting the executeIdentifyTask function')
-    // Determine visibility
-
-    await checkVisibility(layerWidget);
-    await checkVisibilityAlt(layerWidget);
-
-    console.log(allParams)
-
-    //console.log(layerWidget);
-    var currentScale = mapView.scale;
-    infoPanelData = [];
-    identifyElements = [];
-    promises = [];
-    console.log(allParams);
-    // Set the geometry to the location of the view click
-    if (event.type === "click") {
-      allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = allParams[3].geometry = event.mapPoint;
-      allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = allParams[3].mapExtent = mapView.extent;
-    } else {
-      allParams[0].geometry = allParams[1].geometry = allParams[2].geometry = allParams[3].geometry = event;
-      allParams[0].mapExtent = allParams[1].mapExtent = allParams[2].mapExtent = allParams[3].mapExtent = mapView.extent;
-    }
-    console.log('what does the event look like ', event)
-    for (i = 0; i < tasks.length; i++) {
-      console.log(tasks[i]);
-      console.log('what is this doing--- ', allParams[i])
-      promises.push(tasks[i].execute(allParams[i]));
-      console.log(tasks[i].execute(allParams[i]));
-    }
-
-    // create promises for each service to be checked for features
-    var iPromises = new all(promises);
-    iPromises.then(function (rArray) {
-      console.log('iPromises is ', iPromises);
-      console.log('rArray is ', rArray);
-
-      var isArrayEmpty = 0
-      rArray.forEach(function (element) {
-        console.log(element.results.length);
-        isArrayEmpty += element.results.length;
-      });
-
-      console.log(isArrayEmpty);
-
-      // convert each response to response.results if returned array not empty
-      if (isArrayEmpty > 0) {
-        arrayUtils.map(rArray, function (response) {
-          console.log(response);
-          var results = response.results;
-          console.log('here are the objects we found in the section', results);
-          // for each resulting array, find the feature and layername to pass to queryinfopanel function
-          return arrayUtils.map(results, function (result) {
-            console.log(results);
-            var feature = result.feature;
-            var layerName = result.layerName;
-            console.log('the feature is ', feature, '  and the layer name is ', layerName)
-            console.log('all of the results look like this ', results)
-            feature.attributes.layerName = layerName;
-            // only identify the corners that have an image
-            if (layerName != 'Certified Corners') {
-              identifyElements.push(feature);
-              infoPanelData.push(feature);
-
-              // only push Certified Corners with an image
-            } else if (layerName === 'Certified Corners') {
-              if (feature.attributes.is_image === 'Y') {
-                infoPanelData.push(feature);
-              }
-            }
-          });
-        })
-      } else {
-        // reflect that no features were found
-        $("#infoSpan").html("Information Panel - 0 features found.")
-      }
-
-      // determine whether first index of identify 
-      // is a polygon or point then do appropriate highlight and zoom
-      if (infoPanelData[0].geometry.type === "polygon" || infoPanelData[0].geometry.type === "polyline") {
-        var ext = infoPanelData[0].geometry.extent;
-        var cloneExt = ext.clone();
-        // This introduces logic to control zooming depending on if the current extent is closer or farther than resulting polygon or polyline
-        if (mapView.extent.height < ext.height || mapView.extent.width < ext.width) {
-          // no zoom, continue to next block 
-          // the map will not zoom out
-        } else {
-          // the map zooms to extent of polygon
-          mapView.goTo({
-            target: infoPanelData[0],
-            extent: cloneExt.expand(1.75)
-          });
-        }
-        // ^ End logic for zoom control
-        // Remove current selection
-        selectionLayer.graphics.removeAll();
-        console.log("Resulting geometry is a polygon.");
-        // Highlight the selected parcel
-        highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
-        selectionLayer.graphics.add(highlightGraphic);
-
-      } else if (infoPanelData[0].geometry.type === "point") {
-        console.log("Resulting geometry is a point.");
-        // Remove current selection
-        selectionLayer.graphics.removeAll();
-
-        // Highlight the selected parcel
-        highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightPoint);
-        selectionLayer.graphics.add(highlightGraphic);
-        if (mapView.scale > 18055.954822) {
-          mapView.goTo({
-            target: infoPanelData[0].geometry,
-            zoom: 15
-          });
-        } else {
-          mapView.goTo({
-            target: infoPanelData[0].geometry,
-            scale: currentScale
-          });
-        }
-      }
-      queryInfoPanel(infoPanelData, 1);
-      buildUniquePanel();
-      //showPopup(identifyElements); 
-
-    });
-    // Shows the results of the Identify in a popup once the promise is resolved
-    function showPopup(response) {
-      if (response.length > 0) {
-        mapView.popup.open({
-          features: response,
-          location: event.mapPoint
+        // the map zooms to extent of polygon
+        mapView.goTo({
+          target: infoPanelData[0],
+          extent: cloneExt.expand(1.75)
         });
       }
-      dom.byId("viewDiv").style.cursor = "auto";
+      // ^ End logic for zoom control
+      // Remove current selection
+      selectionLayer.graphics.removeAll();
+      console.log("Resulting geometry is a polygon.");
+      // Highlight the selected parcel
+      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
+      selectionLayer.graphics.add(highlightGraphic);
+
+    } else if (infoPanelData[0].geometry.type === "point") {
+      console.log("Resulting geometry is a point.");
+      // Remove current selection
+      selectionLayer.graphics.removeAll();
+
+      // Highlight the selected parcel
+      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightPoint);
+      selectionLayer.graphics.add(highlightGraphic);
+      if (mapView.scale > 18055.954822) {
+        mapView.goTo({
+          target: infoPanelData[0].geometry,
+          zoom: 15
+        });
+      } else {
+        mapView.goTo({
+          target: infoPanelData[0].geometry,
+          scale: currentScale
+        });
+      }
     }
   }
+
+
+
+  // queryInfoPanel(infoPanelData, 1);
+  // buildUniquePanel();
+  //showPopup(identifyElements); 
 
   // inputs the geometry of the data query feature, and matches to it. 
   function dataQueryQuerytask(url, geometry) {
@@ -2366,28 +2229,28 @@ require([
       view: mapView
     });
 
-    // LayerList
-    var layerWidget = new LayerList({
-      container: "layersDiv",
-      view: mapView
-    });
+    // // LayerList
+    // var layerWidget = new LayerList({
+    //   container: "layersDiv",
+    //   view: mapView
+    // });
 
-    // status to watch if layerlist is on
-    var layerlistStatus;
-    on(dom.byId("desktopLayerlist"), "click", function (evt) {
-      // if layerlist status != 1, add it to the map
-      if (layerlistStatus != 1) {
-        mapView.ui.remove(scaleBar);
-        document.getElementById("layersDiv");
-        mapView.ui.add([layerWidget, scaleBar], "bottom-left");
-        layerlistStatus = 1;
-        console.log(layerlistStatus)
-      } else {
-        mapView.ui.remove(layerWidget);
-        layerlistStatus = 0;
-        console.log(layerlistStatus)
-      }
-    });
+    // // status to watch if layerlist is on
+    // var layerlistStatus;
+    // on(dom.byId("desktopLayerlist"), "click", function (evt) {
+    //   // if layerlist status != 1, add it to the map
+    //   if (layerlistStatus != 1) {
+    //     mapView.ui.remove(scaleBar);
+    //     document.getElementById("layersDiv");
+    //     mapView.ui.add([layerList, scaleBar], "bottom-left");
+    //     layerlistStatus = 1;
+    //     console.log(layerlistStatus)
+    //   } else {
+    //     mapView.ui.remove(layerList);
+    //     layerlistStatus = 0;
+    //     console.log(layerlistStatus)
+    //   }
+    // });
 
     var legendStatus;
     on(dom.byId("desktopLegend"), "click", function (evt) {

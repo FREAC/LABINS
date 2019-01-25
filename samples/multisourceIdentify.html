@@ -29,6 +29,12 @@
   <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
   <script src="https://js.arcgis.com/4.10/"></script>
 
+  <script src="/infopanel.js"></script>
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
   <script>
     var promises, tasks;
     require([
@@ -156,16 +162,19 @@
               if (visibleLayers.length > 0) {
                 const task = new IdentifyTask(layer.layer.url)
                 const params = await setIdentifyParameters(visibleLayers, "click", event);
-                let identify = await executeIdentifyTask(task, params);
+                const identify = await executeIdentifyTask(task, params);
 
                 // push each feature to the infoPanelData
                 for (feature of identify.results) {
-                  await infoPanelData.push(feature);
+                  console.log(feature);
+                  feature.feature.attributes.layerName = feature.layerName;
+                  await infoPanelData.push(feature.feature);
                 }
               }
             }
             console.log("checked visible layers")
             console.log(infoPanelData);
+            await queryInfoPanel(infoPanelData, 1);
           }
         });
 

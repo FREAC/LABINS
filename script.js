@@ -108,7 +108,7 @@ require([
   var minimumDrawScale = 100000;
   var extents = [];
 
-  var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer";
+  var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/";
   var countyBoundariesLayer = new MapImageLayer({
     url: countyBoundariesURL,
     title: "County Boundaries",
@@ -1073,11 +1073,12 @@ require([
               let result = feature.feature.attributes
 
               // make sure only certified corners with images are identified
-              if (result.layerName !== 'Certified Corners') {
-                await infoPanelData.push(feature.feature);
-              } else if (result.is_image == 'Y') {
+              if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
                 await infoPanelData.push(feature.feature);
               }
+              // } else if (result.is_image == 'Y') {
+              //   await infoPanelData.push(feature.feature);
+              // }
             }
           }
         }
@@ -1085,6 +1086,7 @@ require([
         console.log(infoPanelData);
         await queryInfoPanel(infoPanelData, 1);
         togglePanel();
+        await goToFeature(infoPanelData[0]);
       }
     });
 
@@ -1261,7 +1263,7 @@ require([
   // go to first feature of the infopaneldata array
   function goToFeature(feature) {
 
-    console.log(feature.geometry.type);
+    console.log(feature);
     // Go to the selected parcel
     if (feature.geometry.type === "polygon" || feature.geometry.type === "polyline") {
       var ext = feature.geometry.extent;
@@ -1446,7 +1448,7 @@ require([
   }
   query("#selectLayerDropdown").on("change", function (e) {
 
-    function getGeometry(url, attribute, value) {
+    async function getGeometry(url, attribute, value) {
       console.log(value.toUpperCase());
       // modifies value to remove portions of the string in parentheses 
       value = value.replace(/ *\([^)]*\) */g, "")
@@ -1461,7 +1463,8 @@ require([
       query.where = "Upper(" + attribute + ") LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
 
       console.log(task.execute(query));
-      return task.execute(query);
+      const results = task.execute(query);
+      return results;
     }
 
     // data query by text
@@ -1602,7 +1605,7 @@ require([
       clearDiv('parametersQuery');
       // add dropdown, input, and submit elements
       addDescript();
-      createCountyDropdown(labinsURL + '0', 'county');
+      createCountyDropdown(labinsURL + '/0', 'county');
       createQuadDropdown(labinsURL + '0', 'quad');
       createTextBox('textQuery', 'Enter NGS Name or PID.');
       createSubmit();

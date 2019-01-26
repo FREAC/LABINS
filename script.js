@@ -121,7 +121,7 @@ require([
     }]
   });
 
-  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer";
+  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/";
   var labinsLayer = new MapImageLayer({
     url: labinsURL,
     sublayers: [{
@@ -262,7 +262,7 @@ require([
   });
 
 
-  var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer";
+  var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
   var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
     title: "SWFWMD Survey Benchmarks",
@@ -286,7 +286,7 @@ require([
     popupEnabled: false
   });
 
-  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer"
+  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/"
   var CCCLLayer = new MapImageLayer({
     url: CCCLURL,
     minScale: minimumDrawScale,
@@ -640,13 +640,13 @@ require([
     }
   });
 
-  // clears selectionLayer (general feature highlighting) and highlightFeaturesLayer (data query highlighting)
-  function clearGraphics() {
-    console.log("cleared graphics");
-    map.graphics.clear();
-    selectionLayer.graphics.removeAll();
-    highlightFeaturesLayer.removeAll();
-  }
+  // // clears selectionLayer (general feature highlighting) and highlightFeaturesLayer (data query highlighting)
+  // function clearGraphics() {
+  //   console.log("cleared graphics");
+  //   map.graphics.clear();
+  //   selectionLayer.graphics.removeAll();
+  //   highlightFeaturesLayer.removeAll();
+  // }
 
   // reset dropdowns and all inputs that are not equal to the current element. 
   function resetElements(currentElement) {
@@ -712,7 +712,7 @@ require([
   }
 
   // Input location from drop down, zoom to it and highlight
-  function zoomToFeature(panelurl, location, attribute) {
+  async function zoomToFeature(panelurl, location, attribute) {
     console.log(location);
 
     // union features so that they can be returned as a single geometry
@@ -723,20 +723,17 @@ require([
       where: attribute + " = '" + location + "'",
       returnGeometry: true
     });
-    task.execute(params)
-      .then(function (response) {
-        console.log(response);
-        // Go to extent of features and highlight
-        mapView.goTo(response.features);
-        selectionLayer.graphics.removeAll();
-        graphicArray = [];
+    const response = await task.execute(params)
+    mapView.goTo(response.features);
+    selectionLayer.graphics.removeAll();
+    graphicArray = [];
 
-        for (i = 0; i < response.features.length; i++) {
-          highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
-          graphicArray.push(highlightGraphic);
-        }
-        selectionLayer.graphics.addMany(graphicArray);
-      });
+    for (feature of response.features) {
+      highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+      graphicArray.push(highlightGraphic);
+    }
+
+    selectionLayer.graphics.addMany(graphicArray);
   }
 
   // Union geometries of multi polygon features
@@ -1606,21 +1603,24 @@ require([
       // add dropdown, input, and submit elements
       addDescript();
       createCountyDropdown(labinsURL + '/0', 'county');
-      createQuadDropdown(labinsURL + '0', 'quad');
+      createQuadDropdown(labinsURL + '/0', 'quad');
       createTextBox('textQuery', 'Enter NGS Name or PID.');
       createSubmit();
 
       var countyDropdownAfter = document.getElementById('countyQuery');
       // county event listener
       query(countyDropdownAfter).on('change', function (e) {
+        // cursor wait button
+        console.log(document.getElementById("mapViewDiv").style.cursor);
+        document.getElementById("mapViewDiv").style.cursor = "wait";
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '0', 'Upper(name)', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '/0', 'Upper(name)', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(labinsURL + '0', response)
+            dataQueryQuerytask(labinsURL + '/0', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'NGS Control Points';
@@ -1629,6 +1629,7 @@ require([
                 goToFeature(infoPanelData[0]);
                 queryInfoPanel(infoPanelData, 1);
                 togglePanel();
+                document.getElementById("mapViewDiv").style.cursor = "auto";
               });
           });
       });
@@ -1641,10 +1642,10 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(labinsURL + '9', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '/9', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(labinsURL + '0', response)
+            dataQueryQuerytask(labinsURL + '/0', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'NGS Control Points';
@@ -1671,7 +1672,7 @@ require([
         infoPanelData = [];
         var textValue = document.getElementById('textQuery').value;
 
-        multiTextQuerytask(labinsURL + '0', 'pid', textValue, 'name', textValue)
+        multiTextQuerytask(labinsURL + '/0', 'pid', textValue, 'name', textValue)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'NGS Control Points';

@@ -1007,20 +1007,6 @@ require([
     zoomToTRFeature(townshipRangeSectionURL, type, "rng_ch");
   });
 
-  // On a click, execute identifyTask once the map is within the minimum scale
-  // mapView.on("click", function (event) {
-  //   mapView.graphics.removeAll();
-  //   selectionLayer.graphics.removeAll();
-  //   console.log(mapView.scale);
-  //   if (mapView.scale < minimumDrawScale) {
-  //     event.stopPropagation();
-  //     clearDiv('informationdiv');
-  //     clearDiv('arraylengthdiv');
-  //     executeIdentifyTask(event);
-  //     togglePanel();
-  //   }
-  // });
-
   let infoPanelData = [];
 
   mapView.when(async function () {
@@ -1063,10 +1049,8 @@ require([
         clearDiv('arraylengthdiv');
         infoPanelData = [];
 
-        console.log(event);
         // look inside of layerList layers
         let layers = layerList.operationalItems.items
-        console.log(layers)
         // loop through layers
 
         for (layer of layers) {
@@ -2114,10 +2098,10 @@ require([
     goToFeature(infoPanelData[this.id - 1]);
   });
 
+
   /////////////
   // Widgets //
   /////////////
-
 
   // Popup and panel sync
   mapView.when(function () {

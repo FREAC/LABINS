@@ -882,24 +882,39 @@ require([
   var rangeSelect = dom.byId("selectRange");
   var sectionSelect = dom.byId("selectSection");
 
-  mapView.when(function () {
-      return townshipRangeSectionLayer.when(function (response) {
-        console.log('loading the township now')
-        var townshipQuery = new Query();
-        townshipQuery.where = "tdir <> ' '";
-        townshipQuery.outFields = ["twn_ch", "tdir"];
-        townshipQuery.returnDistinctValues = true;
-        townshipQuery.orderByFields = ["twn_ch", "tdir"];
-        return townshipRangeSectionLayer.queryFeatures(townshipQuery);
-      });
-    }).then(addToSelect)
-    .otherwise(queryError);
+  // mapView.when(function () {
+  //     return townshipRangeSectionLayer.when(function (response) {
+  //       console.log('loading the township now')
+  //       var townshipQuery = new Query();
+  //       townshipQuery.where = "tdir <> ' '";
+  //       townshipQuery.outFields = ["twn_ch", "tdir"];
+  //       townshipQuery.returnDistinctValues = true;
+  //       townshipQuery.orderByFields = ["twn_ch", "tdir"];
+  //       return townshipRangeSectionLayer.queryFeatures(townshipQuery);
+  //     });
+  //   }).then(addToSelect)
+  //   .otherwise(queryError);
+
+  mapView.when(async function () {
+    var townshipQuery = new Query({
+      where: "tdir <> ' '",
+      outFields: ["twn_ch", "tdir"],
+      returnDistinctValues: true,
+      orderByFields: ["twn_ch", "tdir"],
+    });
+    try {
+      const results = await townshipRangeSectionLayer.queryFeatures(townshipQuery);
+      await addToSelect(results);
+    } catch (err) {
+      console.log('Township load failed: ', err);
+    }
+  })
 
 
-  function queryError(error) {
-    console.log("Error getting Township Features");
-    console.error(error);
-  }
+  // function queryError(error) {
+  //   console.log("Error getting Township Features");
+  //   console.error(error);
+  // }
   // Add the unique values to the subregion
   // select element. This will allow the user
   // to filter states by subregion.
@@ -952,11 +967,12 @@ require([
       rangeSelect.remove(i);
     }
 
-    var rangeQuery = new Query();
-    rangeQuery.where = "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "'";
-    rangeQuery.outFields = ["rng_ch", "rdir"];
-    rangeQuery.returnDistinctValues = true;
-    rangeQuery.orderByFields = ["rng_ch", "rdir"];
+    var rangeQuery = new Query({
+      where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "'",
+      outFields: ["rng_ch", "rdir"],
+      returnDistinctValues: true,
+      orderByFields: ["rng_ch", "rdir"]
+    });
     return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(addToSelect2);
   })
 

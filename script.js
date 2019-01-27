@@ -1031,6 +1031,7 @@ require([
     console.log(map);
     await checkServices(layersArr);
     console.log("checked services");
+
     var layerList = await new LayerList({
       view: mapView,
       container: "layersDiv",
@@ -1279,10 +1280,25 @@ require([
     if (feature.geometry.type === "polygon" || feature.geometry.type === "polyline") {
       var ext = feature.geometry.extent;
       var cloneExt = ext.clone();
-      mapView.goTo({
-        target: feature,
-        extent: cloneExt.expand(1.75)
-      });
+      // mapView.goTo({
+      //   target: feature,
+      //   extent: cloneExt.expand(1.75)
+      // });
+
+      if (mapView.scale > 18055.954822) {
+        console.log('larger', infoPanelData);
+        mapView.goTo({
+          target: feature,
+          extent: cloneExt.expand(1.75)
+        });
+      } else {
+        console.log('smaller', infoPanelData);
+        mapView.goTo({
+          target: feature,
+          extent: feature.extent,
+          scale: mapView.scale
+        });
+      }
       // Remove current selection
       selectionLayer.graphics.removeAll();
       console.log("Resulting geometry is a polygon.");
@@ -1303,11 +1319,13 @@ require([
 
       // TODO: NOt working properly, else if not being triggered
       if (mapView.scale > 18055.954822) {
+        console.log('larger', infoPanelData);
         mapView.goTo({
           target: infoPanelData[0].geometry,
           zoom: 15
         });
       } else {
+        console.log('smaller', infoPanelData);
         mapView.goTo({
           target: infoPanelData[0].geometry,
           scale: mapView.scale
@@ -2052,6 +2070,7 @@ require([
     mapView.graphics.removeAll();
     selectionLayer.graphics.removeAll();
     bufferLayer.graphics.removeAll();
+    console.log(mapView.scale);
     clearDiv('informationdiv');
     $('#numinput').val('');
     $('#arraylengthdiv').html('');
@@ -2060,7 +2079,7 @@ require([
 
   // after a query typed into search bar
   // 
-  searchWidget.on("search-complete", function (event) {
+  searchWidget.on("search-complete", async function (event) {
 
     infoPanelData = [];
     console.log(event.results["0"].source);
@@ -2080,136 +2099,19 @@ require([
 
       // push query results of search bar to information panel
       infoPanelData.push(event.results["0"].results["0"].feature);
-      queryInfoPanel(infoPanelData, 1);
+      await queryInfoPanel(infoPanelData, 1);
+      goToFeature(infoPanelData[0]);
       togglePanel();
     }
   });
 
-  // Listen for the back button
-  query("#back").on("click", function () {
-    if ($('#numinput').val() > 1) {
-      value = $('#numinput').val();
-      value = parseInt(value);
-      queryInfoPanel(infoPanelData, --value);
-      $('#numinput').val(value);
-
-      // Determine the index value
-      var parcelVal = $('#numinput').val();
-      var indexVal = parcelVal - 1;
-
-      // Go to the selected parcel
-      if (infoPanelData[indexVal].geometry.type === "polygon") {
-        var ext = infoPanelData[indexVal].geometry.extent;
-        var cloneExt = ext.clone();
-        mapView.goTo({
-          target: infoPanelData[indexVal],
-          extent: cloneExt.expand(1.75)
-        });
-        // Remove current selection
-        selectionLayer.graphics.removeAll();
-        console.log("Resulting geometry is a polygon.");
-        // Highlight the selected parcel
-        highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
-        selectionLayer.graphics.add(highlightGraphic);
-      } else if (infoPanelData[indexVal].geometry.type === "point") {
-        console.log("Resulting geometry is a point.");
-
-
-        // Remove current selection
-        selectionLayer.graphics.removeAll();
-
-        // Highlight the selected parcel
-        highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightPoint);
-        selectionLayer.graphics.add(highlightGraphic);
-        mapView.goTo({
-          target: infoPanelData[indexVal].geometry,
-          zoom: 15
-        });
-      }
-    }
-
-  });
-
-  // Listen for forward button
-  query("#forward").on("click", function () {
-    if ($('#numinput').val() < infoPanelData.length) {
-      value = $('#numinput').val();
-      value = parseInt(value);
-      queryInfoPanel(infoPanelData, ++value);
-      $('#numinput').val(value);
-
-      // Determine the index value
-      var parcelVal = $('#numinput').val();
-      var indexVal = parcelVal - 1;
-
-      // Go to the selected parcel
-      if (infoPanelData[indexVal].geometry.type === "polygon") {
-        var ext = infoPanelData[indexVal].geometry.extent;
-        var cloneExt = ext.clone();
-        mapView.goTo({
-          target: infoPanelData[indexVal],
-          extent: cloneExt.expand(1.75)
-        });
-
-        // Remove current selection
-        selectionLayer.graphics.removeAll();
-        console.log("Resulting geometry is a polygon.");
-        // Highlight the selected parcel
-        highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightSymbol);
-        selectionLayer.graphics.add(highlightGraphic);
-      } else if (infoPanelData[indexVal].geometry.type === "point") {
-        console.log("Resulting geometry is a point.");
-
-
-        // Remove current selection
-        selectionLayer.graphics.removeAll();
-
-        // Highlight the selected parcel
-        highlightGraphic = new Graphic(infoPanelData[indexVal].geometry, highlightPoint);
-        selectionLayer.graphics.add(highlightGraphic);
-        mapView.goTo({
-          target: infoPanelData[indexVal].geometry,
-          zoom: 15
-        });
-      }
-    }
-  });
 
   // set up alert for dynamically created zoom to feature buttons
   $(document).on('click', "button[name='zoom']", function () {
 
     console.log("Determining geometry type");
-    // Go to the selected parcel
-    if (infoPanelData[this.id - 1].geometry.type === "polygon" || infoPanelData[this.id - 1].geometry.type === "polyline") {
-      console.log("Resulting geometry is a polygon. or a polyline");
-      var ext = infoPanelData[this.id - 1].geometry.extent;
-      var cloneExt = ext.clone();
-      mapView.goTo({
-        target: infoPanelData[this.id - 1],
-        extent: cloneExt.expand(1.75)
-      });
 
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-      console.log("Resulting geometry is a polygon.");
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(infoPanelData[this.id - 1].geometry, highlightSymbol);
-      selectionLayer.graphics.add(highlightGraphic);
-    } else if (infoPanelData[this.id - 1].geometry.type === "point") {
-      console.log("Resulting geometry is a point.");
-
-
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(infoPanelData[this.id - 1].geometry, highlightPoint);
-      selectionLayer.graphics.add(highlightGraphic);
-      mapView.goTo({
-        target: infoPanelData[this.id - 1].geometry,
-        zoom: 15
-      });
-    }
+    goToFeature(infoPanelData[this.id - 1]);
   });
 
   /////////////
@@ -2231,14 +2133,8 @@ require([
   // if screen width under 992 pixels, put legend and layerlist widget button into navigation bar menu
   if (screen.availWidth < 992) {
     // Legend
-    var legendWidget = new Legend({
+    const legendWidget = new Legend({
       container: "legendDiv",
-      view: mapView
-    });
-
-    // LayerList
-    var layerWidget = new LayerList({
-      container: "layersDiv",
       view: mapView
     });
 
@@ -2248,35 +2144,12 @@ require([
   } else {
 
     // if screen size normal, legend and layerlist will be buttons on nav bar
-    var legendWidget = new Legend({
+    const legendWidget = new Legend({
       container: "legendDiv",
       view: mapView
     });
 
-    // // LayerList
-    // var layerWidget = new LayerList({
-    //   container: "layersDiv",
-    //   view: mapView
-    // });
-
-    // // status to watch if layerlist is on
-    // var layerlistStatus;
-    // on(dom.byId("desktopLayerlist"), "click", function (evt) {
-    //   // if layerlist status != 1, add it to the map
-    //   if (layerlistStatus != 1) {
-    //     mapView.ui.remove(scaleBar);
-    //     document.getElementById("layersDiv");
-    //     mapView.ui.add([layerList, scaleBar], "bottom-left");
-    //     layerlistStatus = 1;
-    //     console.log(layerlistStatus)
-    //   } else {
-    //     mapView.ui.remove(layerList);
-    //     layerlistStatus = 0;
-    //     console.log(layerlistStatus)
-    //   }
-    // });
-
-    var legendStatus;
+    let legendStatus;
     on(dom.byId("desktopLegend"), "click", function (evt) {
       // if legend status != 1 (not currently being displayed), add it to the map
       if (legendStatus != 1) {

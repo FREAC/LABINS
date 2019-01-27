@@ -986,6 +986,7 @@ require([
     var e = document.getElementById("selectTownship");
     var strUser = e.options[e.selectedIndex].text;
 
+    // TODO: Refactor this query to rmeove selectQuery.xxxxxxx    
     var selectQuery = new Query();
     selectQuery.where = "twn_ch = '" + strUser.substr(0, 2) + "' AND tdir = '" + strUser.substr(2) + "' AND rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND rng_ch <> ' '";
     selectQuery.outFields = ["sec_ch"];
@@ -1027,9 +1028,9 @@ require([
     const layersArr = [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
 
 
-    let allParams = [];
     console.log(map);
     await checkServices(layersArr);
+    console.log("checked services");
     var layerList = await new LayerList({
       view: mapView,
       container: "layersDiv",
@@ -1051,8 +1052,6 @@ require([
         console.log(layerlistStatus)
       }
     });
-
-    console.log("checked services");
 
 
     on(mapView, "click", async function (event) {
@@ -1089,9 +1088,6 @@ require([
               if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
                 await infoPanelData.push(feature.feature);
               }
-              // } else if (result.is_image == 'Y') {
-              //   await infoPanelData.push(feature.feature);
-              // }
             }
           }
         }
@@ -1188,6 +1184,7 @@ require([
       }
     });
   }
+
   // clear all child nodes from current div
   function clearDiv(div) {
     var paramNode = document.getElementById(div);
@@ -1195,6 +1192,7 @@ require([
       paramNode.removeChild(paramNode.firstChild);
     }
   }
+
   async function goToPoint(result) {
     // determine whether first index of identify 
     // is a polygon or point then do appropriate highlight and zoom
@@ -1301,10 +1299,20 @@ require([
       // Highlight the selected parcel
       highlightGraphic = new Graphic(feature.geometry, highlightPoint);
       selectionLayer.graphics.add(highlightGraphic);
-      mapView.goTo({
-        target: feature.geometry,
-        zoom: 15
-      });
+      console.log(mapView);
+
+      // TODO: NOt working properly, else if not being triggered
+      if (mapView.scale > 18055.954822) {
+        mapView.goTo({
+          target: infoPanelData[0].geometry,
+          zoom: 15
+        });
+      } else {
+        mapView.goTo({
+          target: infoPanelData[0].geometry,
+          scale: mapView.scale
+        });
+      }
     }
   }
 
@@ -1481,8 +1489,8 @@ require([
     }
 
     // data query by text
-    function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement) {
-
+    async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement) {
+      console.log('starting multiTextQueryTask');
       var whereStatement;
 
       if (queryStatement != '' || idQueryStatement != '') {
@@ -1490,10 +1498,6 @@ require([
       } else {
         console.log('No features found.');
       }
-
-
-      //whereStatement = attribute +  ' = ' + "'" + queryStatement + "'";
-      console.log(whereStatement);
 
       var queryTask = new QueryTask({
         url: url
@@ -1504,6 +1508,7 @@ require([
         // possibly could be limited to return only necessary outfields
         outFields: '*'
       });
+
       return queryTask.execute(params)
         .then(function (response) {
           console.log(response);
@@ -1517,6 +1522,7 @@ require([
             clearDiv('arraylengthdiv');
           }
         });
+
     }
 
     // data query by text
@@ -1532,8 +1538,6 @@ require([
       } else {
         console.log('No features found.');
       }
-
-      console.log(whereStatement);
 
       var queryTask = new QueryTask({
         url: url

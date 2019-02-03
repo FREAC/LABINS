@@ -1346,7 +1346,7 @@ require([
       minSuggestCharacters: 0
     }, {
       featureLayer: {
-        url: labinsURL + '/0',
+        url: labinsURL + '0',
       },
       searchFields: ["name"],
       suggestionTemplate: "Designation: {name}, County {county}",
@@ -1360,7 +1360,7 @@ require([
       placeholder: "Search by Designation",
     }, {
       featureLayer: {
-        url: labinsURL + '/3',
+        url: labinsURL + '3',
       },
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",
@@ -1373,7 +1373,7 @@ require([
       placeholder: "Search by ID, County Name, or Quad Name",
     }, {
       featureLayer: {
-        url: labinsURL + '/4',
+        url: labinsURL + '4',
       },
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
       suggestionTemplate: "ID: {iden}, County: {cname}",
@@ -1387,7 +1387,7 @@ require([
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
     }, {
       featureLayer: {
-        url: labinsURL + '/7',
+        url: labinsURL + '7',
       },
       searchFields: ["monument_name", "county"],
       suggestionTemplate: "R-Monument Name: {monument_name}, County: {county}",
@@ -1400,7 +1400,7 @@ require([
       placeholder: "Search by County Name or R-Monument Name",
     }, {
       featureLayer: {
-        url: labinsURL + '/8',
+        url: labinsURL + '8',
       },
       searchFields: ["ecl_name", "county"],
       suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
@@ -1427,7 +1427,7 @@ require([
       placeholder: "Benchmark Name Example: CYP016",
     }, {
       featureLayer: {
-        url: labinsURL + '/2',
+        url: labinsURL + '2',
       },
       searchFields: ["blmid", "tile_name"],
       displayField: "blmid",
@@ -1441,7 +1441,7 @@ require([
       placeholder: "Search by BLMID or Quad Name",
     }, {
       featureLayer: {
-        url: labinsURL + '/11',
+        url: labinsURL + '11',
       },
       searchFields: ["twn_ch", "rng_ch", "twnrngsec"],
       displayField: "twnrngsec",

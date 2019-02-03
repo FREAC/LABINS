@@ -105,7 +105,7 @@ require([
   CalciteMaps,
   CalciteMapsArcGISSupport) {
 
-  var minimumDrawScale = 100000;
+  var minimumDrawScale = 95000;
   var extents = [];
 
   var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/";

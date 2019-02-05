@@ -256,9 +256,6 @@
                                 <option value="no">No</option>
                             </select>
                         </div>
-
-
-                        <div id="drawResults"></div>
                     </div>
 
                 </div>
@@ -400,25 +397,24 @@
                 switch (type) {
                     case "distance":
                         activeWidget = new DistanceMeasurement2D({
-                            view: mapView,
-                            container: "drawResults"
-                        });
-
-                        // skip the initial 'new measurement' button
-                        activeWidget.viewModel.newMeasurement();
-
-                        //mapView.ui.add(activeWidget, "bottom-right");
-                        setActiveButton(document.getElementById('distanceButton'));
-                        break;
-                    case "area":
-                        activeWidget = new AreaMeasurement2D({
                             view: mapView
                         });
 
                         // skip the initial 'new measurement' button
                         activeWidget.viewModel.newMeasurement();
 
-                        mapView.ui.add(activeWidget, "bottom-right");
+                        mapView.ui.add(activeWidget, "bottom-left");
+                        setActiveButton(document.getElementById('distanceButton'));
+                        break;
+                    case "area":
+                        activeWidget = new AreaMeasurement2D({
+                            view: mapView,
+                        });
+
+                        // skip the initial 'new measurement' button
+                        activeWidget.viewModel.newMeasurement();
+
+                        mapView.ui.add(activeWidget, "bottom-left");
                         setActiveButton(document.getElementById('areaButton'));
                         break;
                     case null:

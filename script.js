@@ -37,8 +37,6 @@ require([
   "esri/widgets/Home",
   "esri/widgets/Locate",
   "esri/widgets/Expand",
-  "esri/widgets/DistanceMeasurement2D",
-  "esri/widgets/AreaMeasurement2D",
   "esri/core/watchUtils",
   "dojo/_base/array",
   "dojo/Deferred",
@@ -101,8 +99,6 @@ require([
   Home,
   Locate,
   Expand,
-  DistanceMeasurement2D,
-  AreaMeasurement2D,
   watchUtils, arrayUtils, Deferred, on, dom, domClass, all, domConstruct, domGeom, keys, JSON, lang, query, Color,
   Collapse,
   Dropdown,
@@ -2281,18 +2277,6 @@ require([
 
     mapView.ui.add(coordExpand, "top-left");
   }
-
-  const measureExpand = new Expand({
-    view: mapView,
-    content: drawWidget.domNode,
-    expandIconClass: "esri-icon-polygon",
-    collapseTooltip: "Measurement Tool",
-    group: "left",
-  });
-
-  mapView.ui.add(measureExpand, "top-left");
-
-
 
   // Print
   var printWidget = new Print({

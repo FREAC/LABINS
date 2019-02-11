@@ -2282,6 +2282,80 @@ require([
     mapView.ui.add(coordExpand, "top-left");
   }
 
+  let activeWidget = null;
+
+  document.getElementById("distanceButton").addEventListener("click",
+    function () {
+      setActiveWidget(null);
+      if (!this.classList.contains('active')) {
+        setActiveWidget('distance');
+        console.log('active widget is distance');
+      } else {
+        setActiveButton(null);
+      }
+    });
+
+  document.getElementById("areaButton").addEventListener("click",
+    function () {
+      setActiveWidget(null);
+      if (!this.classList.contains('active')) {
+        setActiveWidget('area');
+      } else {
+        setActiveButton(null);
+      }
+    });
+
+  function setActiveWidget(type) {
+    switch (type) {
+      case "distance":
+        activeWidget = new DistanceMeasurement2D({
+          view: mapView
+        });
+
+        // skip the initial 'new measurement' button
+        //activeWidget.viewModel.newMeasurement();
+        console.log(activeWidget);
+        mapView.ui.add(activeWidget, "bottom-left");
+        setActiveButton(document.getElementById('distanceButton'));
+        // activeWidget.on('measure-after', function (event) {
+        //   console.log('measuring');
+        // });
+        break;
+      case "area":
+        activeWidget = new AreaMeasurement2D({
+          view: mapView,
+        });
+
+        // skip the initial 'new measurement' button
+        activeWidget.viewModel.newMeasurement();
+
+        mapView.ui.add(activeWidget, "bottom-left");
+        setActiveButton(document.getElementById('areaButton'));
+        break;
+      case null:
+        if (activeWidget) {
+          mapView.ui.remove(activeWidget);
+          activeWidget.destroy();
+          activeWidget = null;
+        }
+        break;
+    }
+  }
+
+  function setActiveButton(selectedButton) {
+    // focus the view to activate keyboard shortcuts for sketching
+    mapView.focus();
+    var elements = document.getElementsByClassName("active");
+    for (var i = 0; i < elements.length; i++) {
+      elements[i].classList.remove("active");
+    }
+    if (selectedButton) {
+      selectedButton.classList.add("active");
+    }
+  }
+
+
+
   // Print
   var printWidget = new Print({
     container: "printDiv",

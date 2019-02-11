@@ -64,6 +64,8 @@
             Data Query</a></li>
         <li><a role="menuitem" tabindex="0" data-target="#panelPopup" aria-haspopup="true"><span class="glyphicon glyphicon-th-list"></span>
             Identify Results</a></li>
+        <li><a role="button" data-target="#panelDraw" aria-haspopup="true"><span class="glyphicon glyphicon-cog"></span>
+            Drawing and Measurement Tools</a></li>
         <li><a role="menuitem" id="layersMenuID" tabindex="0" href="#" data-target="#panelLayers" aria-haspopup="true"><span
               class="glyphicon glyphicon-list"></span>
             Layers</a></li>
@@ -148,7 +150,7 @@
         </div>
       </div>
       <!-- <div id="collapseLayer" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLayer"> -->
-      <div id="collapseLayer">
+      <div id="collapseLayer" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLayer">
         <div class="panel-body">
           <li class="dropdown-header" style="color: #DCDCDC">
             <font size="3">Zoom to County/City/Quad</font>
@@ -172,7 +174,7 @@
     <div id="panelQuery" class="panel collapse">
       <div id="headingQuery" class="panel-heading" role="tab">
         <div class="panel-title">
-          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#dataLayerQuery" aria-expanded="true"
+          <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseQuery" aria-expanded="true"
             aria-controls="dataLayerQuery">
             <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
             <span class="panel-label">Data Query</span>
@@ -182,7 +184,7 @@
           </a>
         </div>
       </div>
-      <div id="dataLayerQuery">
+      <div id="collapseQuery" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingQuery">
         <div class="panel-body">
           <li class="dropdown-header" style="color: #DCDCDC">
             <font size="3">Select layer to search</font>
@@ -270,6 +272,49 @@
       </div>
 
 
+    </div>
+
+    <!-- Measurement Panel -->
+    <div id="panelDraw" class="panel collapse">
+      <div id="headingDraw" class="panel-heading" role="tab">
+        <div class="panel-title">
+          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseDraw" aria-expanded="false"
+            aria-controls="collapseDraw"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span><span
+              class="panel-label">Drawing and Measurement Tools</span></a>
+          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelDraw"><span class="esri-icon esri-icon-close"
+              aria-hidden="true"></span></a>
+        </div>
+      </div>
+      <div id="collapseDraw" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingDraw">
+        <div class="panel-body">
+          <div id="drawPanelDiv">
+
+            <!-- Measurement Buttons -->
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label for="settingsLayout" class="col-xs-3 control-label">Measure: </label>
+                <div class="col-xs-4" style="display: flex; justify-content: center; align-items: center;">
+                  <button class="action-button esri-icon-minus" id="distanceButton" type="button" title="Measure distance between two or more points"></button>
+                  <button class="action-button esri-icon-polygon" id="areaButton" type="button" title="Measure area"></button>
+                </div>
+                <div class="col-xs-5" style="display: flex; justify-content: center; align-items: center; max-width: 50%;">
+                  <label class="toggle-switch modifier-class">
+                    <label>Identify: </label>
+                    <input type="checkbox" id="measureIdentify" checked>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- <div class="col-xs-9">
+              <label class="toggle-switch modifier-class">
+                <input type="checkbox" id="measureIdentify" checked>
+                <span class="glyphicon glyphicon-info-sign" style="font-size: 1.3em;"></span>
+              </label>
+            </div> -->
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Panel - Basemaps -->

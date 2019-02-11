@@ -1012,6 +1012,8 @@ require([
   });
 
   let infoPanelData = [];
+  let layerList;
+
 
   mapView.when(async function () {
 
@@ -1022,13 +1024,13 @@ require([
     await checkServices(layersArr);
     console.log("checked services");
 
-    var layerList = await new LayerList({
+    layerList = await new LayerList({
       view: mapView,
       container: "layersDiv",
 
     });
     // status to watch if layerlist is on
-    var layerlistStatus;
+    let layerlistStatus;
     on(dom.byId("desktopLayerlist"), "click", function (evt) {
       // if layerlist status != 1, add it to the map
       if (layerlistStatus != 1) {
@@ -2313,7 +2315,7 @@ require([
         });
 
         // skip the initial 'new measurement' button
-        //activeWidget.viewModel.newMeasurement();
+        activeWidget.viewModel.newMeasurement();
         console.log(activeWidget);
         mapView.ui.add(activeWidget, "bottom-left");
         setActiveButton(document.getElementById('distanceButton'));
@@ -2331,6 +2333,15 @@ require([
 
         mapView.ui.add(activeWidget, "bottom-left");
         setActiveButton(document.getElementById('areaButton'));
+        activeWidget.watch("viewModel.tool.active", function (active) {
+          if (active === false) {
+            console.log("mapview", mapView);
+            console.log("layerlist", layerList);
+            console.log("active widget viewmodel", activeWidget.viewModel);
+            console.log('measurement completed');
+          }
+        });
+
         break;
       case null:
         if (activeWidget) {

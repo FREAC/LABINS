@@ -495,3 +495,24 @@ Bookmark Styles
   display: table;
   clear: both;
 }
+
+/* Measurement Button CSS rules */
+
+/* Action button configurations*/
+
+.action-button {
+  font-size: 16px;
+  background-color: transparent;
+  border: 1px solid #D3D3D3;
+  color: #D3D3D3;
+  height: 32px;
+  width: 32px;
+  text-align: center;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+}
+
+.action-button:hover,
+.action-button:focus {
+  background: #0079c1;
+  color: #e4e4e4;
+}

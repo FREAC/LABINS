@@ -37,6 +37,8 @@ require([
   "esri/widgets/Home",
   "esri/widgets/Locate",
   "esri/widgets/Expand",
+  "esri/widgets/DistanceMeasurement2D",
+  "esri/widgets/AreaMeasurement2D",
   "esri/core/watchUtils",
   "dojo/_base/array",
   "dojo/Deferred",
@@ -99,6 +101,8 @@ require([
   Home,
   Locate,
   Expand,
+  DistanceMeasurement2D,
+  AreaMeasurement2D,
   watchUtils, arrayUtils, Deferred, on, dom, domClass, all, domConstruct, domGeom, keys, JSON, lang, query, Color,
   Collapse,
   Dropdown,
@@ -1008,6 +1012,8 @@ require([
   });
 
   let infoPanelData = [];
+  let layerList;
+
 
   mapView.when(async function () {
 
@@ -1018,13 +1024,13 @@ require([
     await checkServices(layersArr);
     console.log("checked services");
 
-    var layerList = await new LayerList({
+    layerList = await new LayerList({
       view: mapView,
       container: "layersDiv",
 
     });
     // status to watch if layerlist is on
-    var layerlistStatus;
+    let layerlistStatus;
     on(dom.byId("desktopLayerlist"), "click", function (evt) {
       // if layerlist status != 1, add it to the map
       if (layerlistStatus != 1) {
@@ -2277,6 +2283,89 @@ require([
 
     mapView.ui.add(coordExpand, "top-left");
   }
+
+  let activeWidget = null;
+
+  document.getElementById("distanceButton").addEventListener("click",
+    function () {
+      setActiveWidget(null);
+      if (!this.classList.contains('active')) {
+        setActiveWidget('distance');
+        console.log('active widget is distance');
+      } else {
+        setActiveButton(null);
+      }
+    });
+
+  document.getElementById("areaButton").addEventListener("click",
+    function () {
+      setActiveWidget(null);
+      if (!this.classList.contains('active')) {
+        setActiveWidget('area');
+      } else {
+        setActiveButton(null);
+      }
+    });
+
+  function setActiveWidget(type) {
+    switch (type) {
+      case "distance":
+        activeWidget = new DistanceMeasurement2D({
+          view: mapView
+        });
+
+        // skip the initial 'new measurement' button
+        activeWidget.viewModel.newMeasurement();
+        console.log(activeWidget);
+        mapView.ui.add(activeWidget, "bottom-left");
+        setActiveButton(document.getElementById('distanceButton'));
+        // activeWidget.on('measure-after', function (event) {
+        //   console.log('measuring');
+        // });
+        break;
+      case "area":
+        activeWidget = new AreaMeasurement2D({
+          view: mapView,
+        });
+
+        // skip the initial 'new measurement' button
+        activeWidget.viewModel.newMeasurement();
+
+        mapView.ui.add(activeWidget, "bottom-left");
+        setActiveButton(document.getElementById('areaButton'));
+        activeWidget.watch("viewModel.tool.active", function (active) {
+          if (active === false) {
+            console.log("mapview", mapView);
+            console.log("layerlist", layerList);
+            console.log("active widget viewmodel", activeWidget.viewModel);
+            console.log('measurement completed');
+          }
+        });
+
+        break;
+      case null:
+        if (activeWidget) {
+          mapView.ui.remove(activeWidget);
+          activeWidget.destroy();
+          activeWidget = null;
+        }
+        break;
+    }
+  }
+
+  function setActiveButton(selectedButton) {
+    // focus the view to activate keyboard shortcuts for sketching
+    mapView.focus();
+    var elements = document.getElementsByClassName("active");
+    for (var i = 0; i < elements.length; i++) {
+      elements[i].classList.remove("active");
+    }
+    if (selectedButton) {
+      selectedButton.classList.add("active");
+    }
+  }
+
+
 
   // Print
   var printWidget = new Print({

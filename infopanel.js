@@ -51,22 +51,6 @@ function queryInfoPanel(results, i) {
                     'PID: ' + results[i - 1].attributes.pid + '<br>' +
                     'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.data_srce + '>' + results[i - 1].attributes.pid + '</a><br>',
                 );
-                // } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
-                //     $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
-                //         'Control Point Name: ' + results[i - 1].attributes.NAME + '<br>' +
-                //         'Latitude, Longitude: ' + results[i - 1].attributes.DEC_LAT + ', ' + results[i - 1].attributes.DEC_LONG + '<br>' +
-                //         'County: ' + results[i - 1].attributes.COUNTY + '<br>' +
-                //         'PID: ' + results[i - 1].attributes.PID + '<br>' +
-                //         'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.DATA_SRCE + '>' + results[i - 1].attributes.PID + '</a><br>',
-                //     );
-            } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
-                $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
-                    'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
-                    'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +
-                    'County: ' + results[i - 1].attributes.county + '<br>' +
-                    'PID: ' + results[i - 1].attributes.pid + '<br>' +
-                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.datasheet2 + '>' + results[i - 1].attributes.pid + '</a><br>',
-                );
             } else if (results[i - 1].attributes.layerName === 'City Limits') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>City Limits</b></p>' +
                     '<b>City limits:</b> ' + results[i - 1].attributes.name + '<br>' +
@@ -135,7 +119,7 @@ function queryInfoPanel(results, i) {
                     // This point needs a study
                     $('#informationdiv').append('This point needs a study. Click <a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/MHW_Procedures_wo_29_or_88_data_May_2009_with_checklist.pdf>here</a> to open approval form.<br>');
                 }
-            } else if (results[i - 1].attributes.layerName === 'R-Monuments') {
+            } else if (results[i - 1].attributes.layerName === 'Coastal Range Monuments') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Regional Coastal Monitoring Data</b> </p>' +
                     '<b>Feature ID: </b>' + results[i - 1].attributes.unique_id + '<br>' +
                     '<b>Monument Name: </b>' + results[i - 1].attributes.monument_name + '<br>' +
@@ -174,7 +158,7 @@ function queryInfoPanel(results, i) {
                     '<b>Feature Name: </b>' + results[i - 1].attributes.feature_na + '<br>' +
                     '<b>Feature Class: </b>' + results[i - 1].attributes.feature_cl + '<br>'
                 );
-            } else if (results[i - 1].attributes.layerName === 'Certified Corners') {
+            } else if (results[i - 1].attributes.layerName === 'Certified Corners' && results[i - 1].attributes.is_image === 'Y') {
                 console.log("found the corners");
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
@@ -190,6 +174,13 @@ function queryInfoPanel(results, i) {
                     }
 
                 }
+            } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
+                $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
+                    '<b>County: </b>' + results[i - 1].attributes.COUNTY + '<br>' +
+                    '<b>ECL Name: </b>' + results[i - 1].attributes.YEAR + '<br>' +
+                    '<b>MHW: </b>' + results[i - 1].attributes.OBJECTID + '<br>'
+                    // '<b>Location: </b>' + results[i - 1].attributes.SHAPE.LEN + '<br>'
+                );
             }
             $('#informationdiv').append('<br>');
             $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');

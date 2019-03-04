@@ -834,14 +834,14 @@ require([
   }
 
   // Union geometries of multi polygon features
-  function unionGeometries(response) {
+  async function unionGeometries(response) {
     console.log(response);
     // Array to store polygons in
     var multiPolygonGeometries = [];
     for (i = 0; i < response.features.length; i++) {
       multiPolygonGeometries.push(response.features[i].geometry);
     }
-    var union = geometryEngine.union(multiPolygonGeometries);
+    var union = await geometryEngine.union(multiPolygonGeometries);
     console.log('unioning of all pieces is complete', union);
     return union;
   }
@@ -979,18 +979,6 @@ require([
   var rangeSelect = dom.byId("selectRange");
   var sectionSelect = dom.byId("selectSection");
 
-  // mapView.when(function () {
-  //     return townshipRangeSectionLayer.when(function (response) {
-  //       console.log('loading the township now')
-  //       var townshipQuery = new Query();
-  //       townshipQuery.where = "tdir <> ' '";
-  //       townshipQuery.outFields = ["twn_ch", "tdir"];
-  //       townshipQuery.returnDistinctValues = true;
-  //       townshipQuery.orderByFields = ["twn_ch", "tdir"];
-  //       return townshipRangeSectionLayer.queryFeatures(townshipQuery);
-  //     });
-  //   }).then(addToSelect)
-  //   .otherwise(queryError);
 
   mapView.when(async function () {
     var townshipQuery = new Query({
@@ -1008,10 +996,6 @@ require([
   })
 
 
-  // function queryError(error) {
-  //   console.log("Error getting Township Features");
-  //   console.error(error);
-  // }
   // Add the unique values to the subregion
   // select element. This will allow the user
   // to filter states by subregion.

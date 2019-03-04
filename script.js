@@ -1140,6 +1140,7 @@ require([
         // loop through layers
         for (layer of layers) {
           let visibleLayers
+          // exclude geographic names layer from identify operation
           if (layer.title !== 'Geographic Names') {
             visibleLayers = await checkVisibleLayers(layer);
 
@@ -1164,9 +1165,14 @@ require([
             }
           }
         }
-        await queryInfoPanel(infoPanelData, 1);
-        togglePanel();
-        await goToFeature(infoPanelData[0]);
+        if (infoPanelData.length > 0) {
+          await queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+          await goToFeature(infoPanelData[0]);
+        } else { // if no features were found under the click
+          $('#infoSpan').html('Information Panel - 0 features found.');
+          $('#informationdiv').append('<p><strong>This query did not return any features</strong></p>');
+        }
       }
     });
 
@@ -1290,50 +1296,52 @@ require([
   // go to first feature of the infopaneldata array
   function goToFeature(feature) {
 
-    // Go to the selected parcel
-    if (feature.geometry.type === "polygon" || feature.geometry.type === "polyline") {
-      var ext = feature.geometry.extent;
-      var cloneExt = ext.clone();
+    if (feature) {
+      // Go to the selected parcel
+      if (feature.geometry.type === "polygon" || feature.geometry.type === "polyline") {
+        var ext = feature.geometry.extent;
+        var cloneExt = ext.clone();
 
-      // if current scale is greater than number, 
-      // go to feature and expand extent by 1.75x
-      if (mapView.scale > 18055.954822) {
-        mapView.goTo({
-          target: feature,
-          extent: cloneExt.expand(1.75)
-        });
-      } else {
-        // go to point at current scale
-        mapView.goTo({
-          target: feature,
-          extent: feature.extent,
-          scale: mapView.scale
-        });
-      }
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
-      selectionLayer.graphics.add(highlightGraphic);
-    } else if (feature.geometry.type === "point") {
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
+        // if current scale is greater than number, 
+        // go to feature and expand extent by 1.75x
+        if (mapView.scale > 18055.954822) {
+          mapView.goTo({
+            target: feature,
+            extent: cloneExt.expand(1.75)
+          });
+        } else {
+          // go to point at current scale
+          mapView.goTo({
+            target: feature,
+            extent: feature.extent,
+            scale: mapView.scale
+          });
+        }
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+        selectionLayer.graphics.add(highlightGraphic);
+      } else if (feature.geometry.type === "point") {
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
 
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(feature.geometry, highlightPoint);
-      selectionLayer.graphics.add(highlightGraphic);
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(feature.geometry, highlightPoint);
+        selectionLayer.graphics.add(highlightGraphic);
 
-      // TODO: NOt working properly, else if not being triggered
-      if (mapView.scale > 18055.954822) {
-        mapView.goTo({
-          target: infoPanelData[0].geometry,
-          zoom: 15
-        });
-      } else {
-        mapView.goTo({
-          target: infoPanelData[0].geometry,
-          scale: mapView.scale
-        });
+        // TODO: NOt working properly, else if not being triggered
+        if (mapView.scale > 18055.954822) {
+          mapView.goTo({
+            target: infoPanelData[0].geometry,
+            zoom: 15
+          });
+        } else {
+          mapView.goTo({
+            target: infoPanelData[0].geometry,
+            scale: mapView.scale
+          });
+        }
       }
     }
   }

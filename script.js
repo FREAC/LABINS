@@ -908,7 +908,6 @@ require([
     });
     task.execute(params)
       .then(function (response) {
-        console.log('here is what we found with this query', response);
         mapView.goTo(response.features);
         selectionLayer.graphics.removeAll();
         bufferLayer.graphics.removeAll();
@@ -927,7 +926,6 @@ require([
   //Input geometry, output buffer
   function createBuffer(response) {
     var bufferGeometry = response;
-    // var bufferGeometry = response.features[0].geometry
     var buffer = geometryEngine.geodesicBuffer(bufferGeometry, 300, "feet", true);
     // add the buffer to the view as a graphic
     var bufferGraphic = new Graphic({
@@ -979,7 +977,7 @@ require([
   var rangeSelect = dom.byId("selectRange");
   var sectionSelect = dom.byId("selectSection");
 
-
+  // when mapView is ready, build the first dropdown for township selection
   mapView.when(async function () {
     var townshipQuery = new Query({
       where: "tdir <> ' '",
@@ -1013,9 +1011,8 @@ require([
     });
   }
 
-  // Add the unique values to the state
-  // select element. This will allow the user
-  // to filter states by state and region.
+  // Add the unique values to the
+  // range selection element.
   function addToSelect2(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Range";
@@ -1029,6 +1026,8 @@ require([
     });
   }
 
+  // Add the unique values to the
+  // section selection element.
   function addToSelect3(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Section";
@@ -1041,6 +1040,7 @@ require([
     });
   }
 
+  // when township changes, reset the other dropdowns.
   on(townshipSelect, "change", function (evt) {
     var type = evt.target.value;
     var i;
@@ -1057,6 +1057,7 @@ require([
     return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(addToSelect2);
   })
 
+  // when range changes, reset the section dropdown.
   on(rangeSelect, "change", function (evt) {
     var type = evt.target.value;
     var j;
@@ -1091,16 +1092,17 @@ require([
   let infoPanelData = [];
   let layerList;
 
-
+  // when mapView is ready, check that the services are online
+  // if service is online, add to map
+  // if service is offline, ignore
   mapView.when(async function () {
 
     const layersArr = [GNISLayer, countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
 
-
-    console.log(map);
+    // wait for all services to be checked in the layersArr
     await checkServices(layersArr);
-    console.log("checked services");
 
+    // declare layerlist
     layerList = await new LayerList({
       view: mapView,
       container: "layersDiv",
@@ -1122,6 +1124,8 @@ require([
     });
 
 
+    // when mapview is clicked:
+    // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
       if (mapView.scale < minimumDrawScale) {
         mapView.graphics.removeAll();
@@ -1132,14 +1136,12 @@ require([
 
         // look inside of layerList layers
         let layers = layerList.operationalItems.items
-        // loop through layers
 
+        // loop through layers
         for (layer of layers) {
           let visibleLayers
-          console.log(layer);
           if (layer.title !== 'Geographic Names') {
             visibleLayers = await checkVisibleLayers(layer);
-            console.log(visibleLayers)
 
 
 
@@ -1151,7 +1153,6 @@ require([
 
               // push each feature to the infoPanelData
               for (feature of identify.results) {
-                // console.log(feature);
                 feature.feature.attributes.layerName = feature.layerName;
                 let result = feature.feature.attributes
 
@@ -1163,7 +1164,6 @@ require([
             }
           }
         }
-        console.log("checked visible layers")
         await queryInfoPanel(infoPanelData, 1);
         togglePanel();
         await goToFeature(infoPanelData[0]);
@@ -1185,7 +1185,7 @@ require([
         map.add(layer);
       } catch (err) {
         // layer returns bad, not added to map, log error
-        console.log(layer.title + " layer failed to be returned");
+        console.log(layer.title + " layer failed to be returned" + err);
       }
     }
   }
@@ -1216,7 +1216,6 @@ require([
     params.height = mapView.height;
     params.returnGeometry = true;
     params.returnFieldName = true;
-    console.log(params);
     if (eventType == "click") {
       params.geometry = event.mapPoint
       params.mapExtent = mapView.extent;
@@ -1230,7 +1229,6 @@ require([
   async function executeIdentifyTask(tasks, params) {
     // take in tasks
     // take in parameters
-    console.log(params);
     return tasks.execute(params)
   }
 
@@ -1264,59 +1262,6 @@ require([
     }
   }
 
-  async function goToPoint(result) {
-    // determine whether first index of identify 
-    // is a polygon or point then do appropriate highlight and zoom
-    if (infoPanelData[0].geometry.type === "polygon" || infoPanelData[0].geometry.type === "polyline") {
-      var ext = infoPanelData[0].geometry.extent;
-      var cloneExt = ext.clone();
-      // This introduces logic to control zooming depending on if the current extent is closer or farther than resulting polygon or polyline
-      if (mapView.extent.height < ext.height || mapView.extent.width < ext.width) {
-        // no zoom, continue to next block 
-        // the map will not zoom out
-      } else {
-        // the map zooms to extent of polygon
-        mapView.goTo({
-          target: infoPanelData[0],
-          extent: cloneExt.expand(1.75)
-        });
-      }
-      // ^ End logic for zoom control
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-      console.log("Resulting geometry is a polygon.");
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
-      selectionLayer.graphics.add(highlightGraphic);
-
-    } else if (infoPanelData[0].geometry.type === "point") {
-      console.log("Resulting geometry is a point.");
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightPoint);
-      selectionLayer.graphics.add(highlightGraphic);
-      if (mapView.scale > 18055.954822) {
-        mapView.goTo({
-          target: infoPanelData[0].geometry,
-          zoom: 15
-        });
-      } else {
-        mapView.goTo({
-          target: infoPanelData[0].geometry,
-          scale: currentScale
-        });
-      }
-    }
-  }
-
-
-
-  // queryInfoPanel(infoPanelData, 1);
-  // buildUniquePanel();
-  //showPopup(identifyElements); 
-
   // inputs the geometry of the data query feature, and matches to it. 
   function dataQueryQuerytask(url, geometry) {
     var queryTask = new QueryTask({
@@ -1345,24 +1290,20 @@ require([
   // go to first feature of the infopaneldata array
   function goToFeature(feature) {
 
-    console.log(feature);
     // Go to the selected parcel
     if (feature.geometry.type === "polygon" || feature.geometry.type === "polyline") {
       var ext = feature.geometry.extent;
       var cloneExt = ext.clone();
-      // mapView.goTo({
-      //   target: feature,
-      //   extent: cloneExt.expand(1.75)
-      // });
 
+      // if current scale is greater than number, 
+      // go to feature and expand extent by 1.75x
       if (mapView.scale > 18055.954822) {
-        console.log('larger', infoPanelData);
         mapView.goTo({
           target: feature,
           extent: cloneExt.expand(1.75)
         });
       } else {
-        console.log('smaller', infoPanelData);
+        // go to point at current scale
         mapView.goTo({
           target: feature,
           extent: feature.extent,
@@ -1371,31 +1312,24 @@ require([
       }
       // Remove current selection
       selectionLayer.graphics.removeAll();
-      console.log("Resulting geometry is a polygon.");
       // Highlight the selected parcel
       highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
       selectionLayer.graphics.add(highlightGraphic);
     } else if (feature.geometry.type === "point") {
-      console.log("Resulting geometry is a point.");
-
-
       // Remove current selection
       selectionLayer.graphics.removeAll();
 
       // Highlight the selected parcel
       highlightGraphic = new Graphic(feature.geometry, highlightPoint);
       selectionLayer.graphics.add(highlightGraphic);
-      console.log(mapView);
 
       // TODO: NOt working properly, else if not being triggered
       if (mapView.scale > 18055.954822) {
-        console.log('larger', infoPanelData);
         mapView.goTo({
           target: infoPanelData[0].geometry,
           zoom: 15
         });
       } else {
-        console.log('smaller', infoPanelData);
         mapView.goTo({
           target: infoPanelData[0].geometry,
           scale: mapView.scale

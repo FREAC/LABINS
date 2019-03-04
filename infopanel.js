@@ -1,6 +1,4 @@
 function queryInfoPanel(results, i) {
-    console.log(results);
-
     if (results.length > 0) {
         // Set append templates for information panel
         for (var i = 1; i <= results.length; i++) {

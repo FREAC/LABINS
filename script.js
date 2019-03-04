@@ -1500,11 +1500,11 @@ require([
   }
   query("#selectLayerDropdown").on("change", function (e) {
 
+    // get geometry based on query results
     async function getGeometry(url, attribute, value) {
       console.log(value.toUpperCase());
       // modifies value to remove portions of the string in parentheses 
       value = value.replace(/ *\([^)]*\) */g, "")
-      console.log(value);
 
       var task = new QueryTask({
         url: url

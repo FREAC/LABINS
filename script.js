@@ -1128,6 +1128,7 @@ require([
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
       if (mapView.scale < minimumDrawScale) {
+        document.getElementById("mapViewDiv").style.cursor = "wait";
         mapView.graphics.removeAll();
         selectionLayer.graphics.removeAll();
         clearDiv('informationdiv');
@@ -1171,9 +1172,10 @@ require([
           await goToFeature(infoPanelData[0]);
         } else { // if no features were found under the click
           $('#infoSpan').html('Information Panel - 0 features found.');
-          $('#informationdiv').append('<p><strong>This query did not return any features</strong></p>');
+          $('#informationdiv').append('<p>This query did not return any features</p>');
         }
       }
+      document.getElementById("mapViewDiv").style.cursor = "auto";
     });
 
   });
@@ -1282,12 +1284,11 @@ require([
 
     return queryTask.execute(params)
       .then(function (response) {
-        console.log(response);
         if (response.features.length > 0) {
           return queryTask.execute(params);
-        } else {
-          console.log('No features found.');
-          $("#informationdiv").append("No features found.");
+        } else { // if no features were found
+          $('#infoSpan').html('Information Panel - 0 features found.');
+          $('#informationdiv').append('<p>This query did not return any features</p>');
           clearDiv('arraylengthdiv');
         }
       });
@@ -1336,7 +1337,7 @@ require([
             target: infoPanelData[0].geometry,
             zoom: 15
           });
-        } else {
+        } else { // go to point at the current scale
           mapView.goTo({
             target: infoPanelData[0].geometry,
             scale: mapView.scale
@@ -1546,9 +1547,8 @@ require([
             return queryTask.execute(params);
           } else {
             togglePanel();
-            $('#infoSpan').html("Information Panel - 0 features found.")
-            console.log('No features found.');
-            $('#informationdiv').append("No features found.");
+            $('#infoSpan').html('Information Panel - 0 features found.');
+            $('#informationdiv').append('<p>This query did not return any features</p>');
             clearDiv('arraylengthdiv');
           }
         });
@@ -1566,7 +1566,8 @@ require([
           whereStatement = attribute + ' = ' + "'" + queryStatement + "'";
         }
       } else {
-        console.log('No features found.');
+        $('#infoSpan').html('Information Panel - 0 features found.');
+        $('#informationdiv').append('<p>This query did not return any features</p>');
       }
 
       var queryTask = new QueryTask({
@@ -1585,8 +1586,8 @@ require([
             return queryTask.execute(params);
           } else {
             togglePanel();
-            console.log('No features found.');
-            $('#informationdiv').append("No features found.");
+            $('#infoSpan').html('Information Panel - 0 features found.');
+            $('#informationdiv').append('<p>This query did not return any features</p>');
             clearDiv('arraylengthdiv');
           }
         });;
@@ -1661,7 +1662,6 @@ require([
       // county event listener
       query(countyDropdownAfter).on('change', function (e) {
         // cursor wait button
-        console.log(document.getElementById("mapViewDiv").style.cursor);
         document.getElementById("mapViewDiv").style.cursor = "wait";
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);

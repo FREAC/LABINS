@@ -129,142 +129,285 @@ require([
   var labinsLayer = new MapImageLayer({
     url: labinsURL,
     sublayers: [{
-      id: 17,
-      title: "Soils June 2012 - Dept. of Agriculture",
-      visible: false,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 16,
-      title: "Hi-Res Imagery Grid State Plane East",
-      visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 15,
-      title: "Hi-Res Imagery Grid: State Plane North",
-      visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 14,
-      title: "Hi-Res Imagery Grid: State Plane West",
-      visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 13,
-      title: "Parcels",
-      visible: false,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 12,
-      title: "City Limits",
-      visible: false,
-      popupEnabled: false,
-      renderer: {
-        type: "simple",
-        symbol: {
-          type: "simple-fill",
-          style: "none",
-          outline: {
-            style: "dash",
-            width: 1.25
+        id: 17,
+        title: "Soils June 2012 - Dept. of Agriculture",
+        visible: false,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }, {
+        id: 16,
+        title: "Hi-Res Imagery Grid State Plane East",
+        visible: true,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }, {
+        id: 15,
+        title: "Hi-Res Imagery Grid: State Plane North",
+        visible: true,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }, {
+        id: 14,
+        title: "Hi-Res Imagery Grid: State Plane West",
+        visible: true,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }, {
+        id: 13,
+        title: "Parcels",
+        visible: false,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }, {
+        id: 12,
+        title: "City Limits",
+        visible: false,
+        popupEnabled: false,
+        renderer: {
+          type: "simple",
+          symbol: {
+            type: "simple-fill",
+            style: "none",
+            outline: {
+              style: "dash",
+              width: 1.25
+            }
           }
-        }
+        },
+        minScale: minimumDrawScale
+      }, {
+        id: 11,
+        title: "Township-Range-Section",
+        visible: true,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }, {
+        id: 10,
+        title: "Township-Range",
+        visible: true,
+        popupEnabled: false,
+        labelsVisible: true,
+        // Set label specs for township-range
+        labelingInfo: [{
+          labelExpression: "[tr_dissolve]",
+          labelPlacement: "always-horizontal",
+          symbol: {
+            type: "text", // autocasts as new TextSymbol()
+            color: [0, 0, 255, 1],
+            haloColor: [255, 255, 255],
+            haloSize: 2,
+            font: {
+              size: 11
+            }
+          }
+        }],
+        minScale: minimumDrawScale
+      }, {
+        id: 9,
+        title: "USGS Quads",
+        visible: false,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }, {
+        id: 8,
+        title: "Erosion Control Line",
+        minScale: 4000000,
+        visible: true,
+        popupEnabled: false
+      }, {
+        id: 7,
+        title: "R-Monuments",
+        visible: true,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }, {
+        id: 6,
+        title: "CCR with Images",
+        visible: false,
+        popupEnabled: false,
+        minScale: minimumDrawScale
       },
-      minScale: minimumDrawScale
-    }, {
-      id: 11,
-      title: "Township-Range-Section",
-      visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 10,
-      title: "Township-Range",
-      visible: true,
-      popupEnabled: false,
-      labelsVisible: true,
-      // Set label specs for township-range
-      labelingInfo: [{
-        labelExpression: "[tr_dissolve]",
-        labelPlacement: "always-horizontal",
-        symbol: {
-          type: "text", // autocasts as new TextSymbol()
-          color: [0, 0, 255, 1],
-          haloColor: [255, 255, 255],
-          haloSize: 2,
-          font: {
-            size: 11
-          }
-        }
-      }],
-      minScale: minimumDrawScale
-    }, {
-      id: 9,
-      title: "USGS Quads",
-      visible: false,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 8,
-      title: "Erosion Control Line",
-      minScale: 4000000,
-      visible: true,
-      popupEnabled: false
-    }, {
-      id: 7,
-      title: "R-Monuments",
-      visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 6,
-      title: "CCR with Images",
-      visible: false,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 5,
-      title: "Geographic Names",
-      visible: false,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 4,
-      title: "Tide Interpolation Points",
-      visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 3,
-      title: "Tide Stations",
-      visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 2,
-      title: "Certified Corners",
-      visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 1,
-      title: "Preliminary NGS Points",
-      visible: false,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 0,
-      title: "NGS Control Points",
-      visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }]
+      //  {
+      //   id: 5,
+      //   title: "Geographic Names",
+      //   visible: false,
+      //   popupEnabled: false,
+      //   minScale: minimumDrawScale
+      // },
+      {
+        id: 4,
+        title: "Tide Interpolation Points",
+        visible: true,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }, {
+        id: 3,
+        title: "Tide Stations",
+        visible: true,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }, {
+        id: 2,
+        title: "Certified Corners",
+        visible: true,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }, {
+        id: 1,
+        title: "Preliminary NGS Points",
+        visible: false,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }, {
+        id: 0,
+        title: "NGS Control Points",
+        visible: true,
+        popupEnabled: false,
+        minScale: minimumDrawScale
+      }
+    ]
   });
 
+  var GNISURL = "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/";
+  var GNISLayer = new MapImageLayer({
+    url: GNISURL,
+    title: "Geographic Names",
+    minScale: minimumDrawScale,
+    sublayers: [{
+        id: 0,
+        title: "Physical Points",
+        visible: false,
+        popupEnabled: false,
+      }, {
+        id: 1,
+        title: "Landforms",
+        visible: false,
+        popupEnabled: false,
+      }, {
+        id: 2,
+        title: "Streams (mouth)",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 4,
+        title: "Cultural Points",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 5,
+        title: "Airports",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 6,
+        title: "Buildings",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 7,
+        title: "Churches",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 8,
+        title: "Hospitals",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 9,
+        title: "Schools",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 10,
+        title: "Bridges, Crossings, and Tunnels",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 11,
+        title: "Cemeteries",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 12,
+        title: "Dams",
+        visible: false,
+        popupEnabled: false
+      },
+      //  {
+      //   id: 13,
+      //   title: "Locales",
+      //   visible: false,
+      //   popupEnabled: false
+      // }, {
+      //   id: 14,
+      //   title: "Mines",
+      //   visible: false,
+      //   popupEnabled: false
+      // }, {
+      //   id: 15,
+      //   title: "Trailheads",
+      //   visible: false,
+      //   popupEnabled: false
+      // }, {
+      //   id: 16,
+      //   title: "Wells",
+      //   visible: false,
+      //   popupEnabled: false
+      // }, {
+      //   id: 17,
+      //   title: "Political Points",
+      //   visible: false,
+      //   popupEnabled: false
+      // }, {
+      //   id: 18,
+      //   title: "Populated Places",
+      //   visible: false,
+      //   popupEnabled: false
+      // },
+      {
+        id: 19,
+        title: "Civil Features",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 20,
+        title: "Forests",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 21,
+        title: "Parks",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 22,
+        title: "Reserves",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 23,
+        title: "Historical Points",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 24,
+        title: "Historical Cultural-Political Points",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 25,
+        title: "Historical Hydrographic Points",
+        visible: false,
+        popupEnabled: false
+      }, {
+        id: 26,
+        title: "Historical Physical Points",
+        visible: false,
+        popupEnabled: false
+      }
+    ]
+  });
 
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
   var swfwmdLayer = new MapImageLayer({
@@ -395,6 +538,42 @@ require([
   overView.ui.components = [];
 
   var extentDiv = dom.byId("extentDiv");
+
+  overView.when(function () {
+    // Update the overview extent whenever the MapView or SceneView extent changes
+    mapView.watch("extent", updateOverviewExtent);
+    overView.watch("extent", updateOverviewExtent);
+
+    // Update the minimap overview when the main view becomes stationary
+    watchUtils.when(mapView, "stationary", updateOverview);
+
+    function updateOverview() {
+      // Animate the MapView to a zoomed-out scale so we get a nice overview.
+      // We use the "progress" callback of the goTo promise to update
+      // the overview extent while animating
+      overView.goTo({
+        center: mapView.center,
+        scale: mapView.scale * 2 * Math.max(mapView.width /
+          overView.width,
+          mapView.height / overView.height)
+      });
+    }
+
+    function updateOverviewExtent() {
+      // Update the overview extent by converting the SceneView extent to the
+      // MapView screen coordinates and updating the extentDiv position.
+      var extent = mapView.extent;
+
+      var bottomLeft = overView.toScreen(extent.xmin, extent.ymin);
+      var topRight = overView.toScreen(extent.xmax, extent.ymax);
+
+      extentDiv.style.top = topRight.y + "px";
+      extentDiv.style.left = bottomLeft.x + "px";
+
+      extentDiv.style.height = (bottomLeft.y - topRight.y) + "px";
+      extentDiv.style.width = (topRight.x - bottomLeft.x) + "px";
+    }
+  });
 
   // Bookmark data objects
   var bookmarkJSON = {
@@ -607,50 +786,6 @@ require([
       console.warn("Could not parse bookmark JSON", e.message);
     }
   }
-
-  overView.when(function () {
-    // Update the overview extent whenever the MapView or SceneView extent changes
-    mapView.watch("extent", updateOverviewExtent);
-    overView.watch("extent", updateOverviewExtent);
-
-    // Update the minimap overview when the main view becomes stationary
-    watchUtils.when(mapView, "stationary", updateOverview);
-
-    function updateOverview() {
-      // Animate the MapView to a zoomed-out scale so we get a nice overview.
-      // We use the "progress" callback of the goTo promise to update
-      // the overview extent while animating
-      overView.goTo({
-        center: mapView.center,
-        scale: mapView.scale * 2 * Math.max(mapView.width /
-          overView.width,
-          mapView.height / overView.height)
-      });
-    }
-
-    function updateOverviewExtent() {
-      // Update the overview extent by converting the SceneView extent to the
-      // MapView screen coordinates and updating the extentDiv position.
-      var extent = mapView.extent;
-
-      var bottomLeft = overView.toScreen(extent.xmin, extent.ymin);
-      var topRight = overView.toScreen(extent.xmax, extent.ymax);
-
-      extentDiv.style.top = topRight.y + "px";
-      extentDiv.style.left = bottomLeft.x + "px";
-
-      extentDiv.style.height = (bottomLeft.y - topRight.y) + "px";
-      extentDiv.style.width = (topRight.x - bottomLeft.x) + "px";
-    }
-  });
-
-  // // clears selectionLayer (general feature highlighting) and highlightFeaturesLayer (data query highlighting)
-  // function clearGraphics() {
-  //   console.log("cleared graphics");
-  //   map.graphics.clear();
-  //   selectionLayer.graphics.removeAll();
-  //   highlightFeaturesLayer.removeAll();
-  // }
 
   // reset dropdowns and all inputs that are not equal to the current element. 
   function resetElements(currentElement) {
@@ -1017,7 +1152,7 @@ require([
 
   mapView.when(async function () {
 
-    const layersArr = [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
+    const layersArr = [GNISLayer, countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
 
 
     console.log(map);
@@ -1038,11 +1173,9 @@ require([
         document.getElementById("layersDiv");
         mapView.ui.add([layerList, scaleBar], "bottom-left");
         layerlistStatus = 1;
-        console.log(layerlistStatus)
       } else {
         mapView.ui.remove(layerList);
         layerlistStatus = 0;
-        console.log(layerlistStatus)
       }
     });
 
@@ -1060,30 +1193,35 @@ require([
         // loop through layers
 
         for (layer of layers) {
-          const visibleLayers = await checkVisibleLayers(layer);
-          console.log(visibleLayers)
+          let visibleLayers
+          console.log(layer);
+          if (layer.title !== 'Geographic Names') {
+            visibleLayers = await checkVisibleLayers(layer);
+            console.log(visibleLayers)
 
-          // if there are visible layers returned
-          if (visibleLayers.length > 0) {
-            const task = new IdentifyTask(layer.layer.url)
-            const params = await setIdentifyParameters(visibleLayers, "click", event);
-            const identify = await executeIdentifyTask(task, params);
 
-            // push each feature to the infoPanelData
-            for (feature of identify.results) {
-              // console.log(feature);
-              feature.feature.attributes.layerName = feature.layerName;
-              let result = feature.feature.attributes
 
-              // make sure only certified corners with images are identified
-              if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
-                await infoPanelData.push(feature.feature);
+            // if there are visible layers returned
+            if (visibleLayers.length > 0) {
+              const task = new IdentifyTask(layer.layer.url)
+              const params = await setIdentifyParameters(visibleLayers, "click", event);
+              const identify = await executeIdentifyTask(task, params);
+
+              // push each feature to the infoPanelData
+              for (feature of identify.results) {
+                // console.log(feature);
+                feature.feature.attributes.layerName = feature.layerName;
+                let result = feature.feature.attributes
+
+                // make sure only certified corners with images are identified
+                if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+                  await infoPanelData.push(feature.feature);
+                }
               }
             }
           }
         }
         console.log("checked visible layers")
-        console.log(infoPanelData);
         await queryInfoPanel(infoPanelData, 1);
         togglePanel();
         await goToFeature(infoPanelData[0]);

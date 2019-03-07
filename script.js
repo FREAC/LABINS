@@ -2363,10 +2363,6 @@ require([
         setActiveButton(document.getElementById('areaButton'));
         activeWidget.watch("viewModel.tool.active", async function (active) {
           if (active === false) {
-            console.log("mapview", mapView);
-            console.log("layerlist", layerList);
-            console.log("active widget viewmodel", activeWidget.viewModel);
-            console.log('measurement completed');
 
             // if identify is checked, run a drill down identifyTask
             if (document.getElementById('measureIdentify').checked) {

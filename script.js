@@ -1361,20 +1361,19 @@ require([
     popupEnabled: false,
     allPlaceholder: "Text search for NGS, DEP, and SWFWMD Data",
     sources: [{
-      locator: new Locator({
-        url: "//geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
-      }),
-      singleLineFieldName: "SingleLine",
-      name: "Addresses and Points of Interest",
-      localSearchOptions: {
-        minScale: 300000,
-        distance: 50000
+      featureLayer: {
+        url: labinsURL + '2',
       },
-      placeholder: "Search Geocoder",
-      maxResults: 3,
-      maxSuggestions: 6,
-      suggestionsEnabled: true,
-      minSuggestCharacters: 0
+      searchFields: ["blmid", "tile_name"],
+      displayField: "blmid",
+      suggestionTemplate: "BLMID: {blmid}, Quad Name: {tile_name}",
+      zoomScale: 100000,
+      exactMatch: false,
+      popupOpenOnSelect: false,
+      resultSymbol: highlightPoint,
+      outFields: ["blmid", "tile_name", "image1", "image2", "objectid"],
+      name: "Certified Corners",
+      placeholder: "T07NR10W600700",
     }, {
       featureLayer: {
         url: labinsURL + '0',
@@ -1458,20 +1457,6 @@ require([
       placeholder: "Benchmark Name Example: CYP016",
     }, {
       featureLayer: {
-        url: labinsURL + '2',
-      },
-      searchFields: ["blmid", "tile_name"],
-      displayField: "blmid",
-      suggestionTemplate: "BLMID: {blmid}, Quad Name: {tile_name}",
-      zoomScale: 100000,
-      exactMatch: false,
-      popupOpenOnSelect: false,
-      resultSymbol: highlightPoint,
-      outFields: ["blmid", "tile_name", "image1", "image2", "objectid"],
-      name: "Certified Corners",
-      placeholder: "Search by BLMID or Quad Name",
-    }, {
-      featureLayer: {
         url: labinsURL + '11',
       },
       searchFields: ["twn_ch", "rng_ch", "twnrngsec"],
@@ -1484,6 +1469,21 @@ require([
       outFields: ["twn_ch", "rng_ch", "twnrngsec"],
       name: "Township Range",
       placeholder: "Search by township, range, or township range."
+    }, {
+      locator: new Locator({
+        url: "//geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+      }),
+      singleLineFieldName: "SingleLine",
+      name: "Addresses and Points of Interest",
+      localSearchOptions: {
+        minScale: 300000,
+        distance: 50000
+      },
+      placeholder: "Search Geocoder",
+      maxResults: 3,
+      maxSuggestions: 6,
+      suggestionsEnabled: true,
+      minSuggestCharacters: 0
     }],
   });
 

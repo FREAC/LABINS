@@ -2335,8 +2335,11 @@ require([
       }
     });
 
+  // function to switch active widget between areaMeasurement and distanceMeasurement widgets
   function setActiveWidget(type) {
     switch (type) {
+
+      // if the distance measurement button was clicked
       case "distance":
         activeWidget = new DistanceMeasurement2D({
           view: mapView
@@ -2344,13 +2347,12 @@ require([
 
         // skip the initial 'new measurement' button
         activeWidget.viewModel.newMeasurement();
-        console.log(activeWidget);
         mapView.ui.add(activeWidget, "bottom-left");
         setActiveButton(document.getElementById('distanceButton'));
-        // activeWidget.on('measure-after', function (event) {
-        //   console.log('measuring');
-        // });
+
         break;
+
+        // if the area measurement button was clicked
       case "area":
         activeWidget = new AreaMeasurement2D({
           view: mapView,
@@ -2359,6 +2361,7 @@ require([
         // skip the initial 'new measurement' button
         activeWidget.viewModel.newMeasurement();
 
+        // add the widget UI to the screen
         mapView.ui.add(activeWidget, "bottom-left");
         setActiveButton(document.getElementById('areaButton'));
         activeWidget.watch("viewModel.tool.active", async function (active) {

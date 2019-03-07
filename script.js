@@ -1306,6 +1306,8 @@ require([
         // if current scale is greater than number, 
         // go to feature and expand extent by 1.75x
         if (mapView.scale > 18055.954822) {
+          console.log(mapView.scale);
+          console.log('going to a different scale')
           mapView.goTo({
             target: feature,
             extent: cloneExt.expand(1.75)
@@ -2295,6 +2297,7 @@ require([
       })
     );
 
+    // adds an expand widget to the map that will house the ccWidget
     var coordExpand = new Expand({
       view: mapView,
       content: ccWidget.domNode,
@@ -2306,8 +2309,10 @@ require([
     mapView.ui.add(coordExpand, "top-left");
   }
 
+  // keeps track of the active widget between distance measurement and area measurement
   let activeWidget = null;
 
+  // listen to when the distance button is clicked in order to activate the distanceMeasurement widget
   document.getElementById("distanceButton").addEventListener("click",
     function () {
       setActiveWidget(null);
@@ -2319,6 +2324,7 @@ require([
       }
     });
 
+  // listen to when the area button is clicked in order to activate the areaMeasurement widget
   document.getElementById("areaButton").addEventListener("click",
     function () {
       setActiveWidget(null);

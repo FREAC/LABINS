@@ -2361,12 +2361,67 @@ require([
 
         mapView.ui.add(activeWidget, "bottom-left");
         setActiveButton(document.getElementById('areaButton'));
-        activeWidget.watch("viewModel.tool.active", function (active) {
+        activeWidget.watch("viewModel.tool.active", async function (active) {
           if (active === false) {
             console.log("mapview", mapView);
             console.log("layerlist", layerList);
             console.log("active widget viewmodel", activeWidget.viewModel);
             console.log('measurement completed');
+
+            // if identify is checked, run a drill down identifyTask
+            if (document.getElementById('measureIdentify').checked) {
+
+              if (mapView.scale < minimumDrawScale) {
+                document.getElementById("mapViewDiv").style.cursor = "wait";
+                mapView.graphics.removeAll();
+                selectionLayer.graphics.removeAll();
+                clearDiv('informationdiv');
+                clearDiv('arraylengthdiv');
+                infoPanelData = [];
+
+                // look inside of layerList layers
+                let layers = layerList.operationalItems.items
+
+                // loop through layers
+                for (layer of layers) {
+                  let visibleLayers
+                  // exclude geographic names layer from identify operation
+                  if (layer.title !== 'Geographic Names') {
+                    visibleLayers = await checkVisibleLayers(layer);
+
+
+
+                    // if there are visible layers returned
+                    if (visibleLayers.length > 0) {
+                      const task = new IdentifyTask(layer.layer.url)
+                      const params = await setIdentifyParameters(visibleLayers, "polygon", activeWidget.viewModel.measurement.geometry);
+                      const identify = await executeIdentifyTask(task, params);
+
+                      // push each feature to the infoPanelData
+                      for (feature of identify.results) {
+                        feature.feature.attributes.layerName = feature.layerName;
+                        let result = feature.feature.attributes
+
+                        // make sure only certified corners with images are identified
+                        if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+                          await infoPanelData.push(feature.feature);
+                        }
+                      }
+                    }
+                  }
+                }
+                if (infoPanelData.length > 0) {
+                  await queryInfoPanel(infoPanelData, 1);
+                  togglePanel();
+                  await goToFeature(infoPanelData[0]);
+                } else { // if no features were found under the click
+                  $('#infoSpan').html('Information Panel - 0 features found.');
+                  $('#informationdiv').append('<p>This query did not return any features</p>');
+                }
+              }
+              document.getElementById("mapViewDiv").style.cursor = "auto";
+
+            }
           }
         });
 

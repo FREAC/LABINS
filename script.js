@@ -227,12 +227,6 @@ require([
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 5,
-      title: "Geographic Names",
-      visible: false,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
       id: 4,
       title: "Tide Interpolation Points",
       visible: true,
@@ -265,6 +259,113 @@ require([
     }]
   });
 
+  var GNISURL = "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/";
+  var GNISLayer = new MapImageLayer({
+    url: GNISURL,
+    title: "Geographic Names",
+    minScale: minimumDrawScale,
+    sublayers: [{
+      id: 0,
+      title: "Physical Points",
+      visible: false,
+      popupEnabled: false,
+    }, {
+      id: 1,
+      title: "Landforms",
+      visible: false,
+      popupEnabled: false,
+    }, {
+      id: 2,
+      title: "Streams (mouth)",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 4,
+      title: "Cultural Points",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 5,
+      title: "Airports",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 6,
+      title: "Buildings",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 7,
+      title: "Churches",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 8,
+      title: "Hospitals",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 9,
+      title: "Schools",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 10,
+      title: "Bridges, Crossings, and Tunnels",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 11,
+      title: "Cemeteries",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 12,
+      title: "Dams",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 19,
+      title: "Civil Features",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 20,
+      title: "Forests",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 21,
+      title: "Parks",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 22,
+      title: "Reserves",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 23,
+      title: "Historical Points",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 24,
+      title: "Historical Cultural-Political Points",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 25,
+      title: "Historical Hydrographic Points",
+      visible: false,
+      popupEnabled: false
+    }, {
+      id: 26,
+      title: "Historical Physical Points",
+      visible: false,
+      popupEnabled: false
+    }]
+  });
 
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
   var swfwmdLayer = new MapImageLayer({
@@ -395,6 +496,42 @@ require([
   overView.ui.components = [];
 
   var extentDiv = dom.byId("extentDiv");
+
+  overView.when(function () {
+    // Update the overview extent whenever the MapView or SceneView extent changes
+    mapView.watch("extent", updateOverviewExtent);
+    overView.watch("extent", updateOverviewExtent);
+
+    // Update the minimap overview when the main view becomes stationary
+    watchUtils.when(mapView, "stationary", updateOverview);
+
+    function updateOverview() {
+      // Animate the MapView to a zoomed-out scale so we get a nice overview.
+      // We use the "progress" callback of the goTo promise to update
+      // the overview extent while animating
+      overView.goTo({
+        center: mapView.center,
+        scale: mapView.scale * 2 * Math.max(mapView.width /
+          overView.width,
+          mapView.height / overView.height)
+      });
+    }
+
+    function updateOverviewExtent() {
+      // Update the overview extent by converting the SceneView extent to the
+      // MapView screen coordinates and updating the extentDiv position.
+      var extent = mapView.extent;
+
+      var bottomLeft = overView.toScreen(extent.xmin, extent.ymin);
+      var topRight = overView.toScreen(extent.xmax, extent.ymax);
+
+      extentDiv.style.top = topRight.y + "px";
+      extentDiv.style.left = bottomLeft.x + "px";
+
+      extentDiv.style.height = (bottomLeft.y - topRight.y) + "px";
+      extentDiv.style.width = (topRight.x - bottomLeft.x) + "px";
+    }
+  });
 
   // Bookmark data objects
   var bookmarkJSON = {
@@ -608,50 +745,6 @@ require([
     }
   }
 
-  overView.when(function () {
-    // Update the overview extent whenever the MapView or SceneView extent changes
-    mapView.watch("extent", updateOverviewExtent);
-    overView.watch("extent", updateOverviewExtent);
-
-    // Update the minimap overview when the main view becomes stationary
-    watchUtils.when(mapView, "stationary", updateOverview);
-
-    function updateOverview() {
-      // Animate the MapView to a zoomed-out scale so we get a nice overview.
-      // We use the "progress" callback of the goTo promise to update
-      // the overview extent while animating
-      overView.goTo({
-        center: mapView.center,
-        scale: mapView.scale * 2 * Math.max(mapView.width /
-          overView.width,
-          mapView.height / overView.height)
-      });
-    }
-
-    function updateOverviewExtent() {
-      // Update the overview extent by converting the SceneView extent to the
-      // MapView screen coordinates and updating the extentDiv position.
-      var extent = mapView.extent;
-
-      var bottomLeft = overView.toScreen(extent.xmin, extent.ymin);
-      var topRight = overView.toScreen(extent.xmax, extent.ymax);
-
-      extentDiv.style.top = topRight.y + "px";
-      extentDiv.style.left = bottomLeft.x + "px";
-
-      extentDiv.style.height = (bottomLeft.y - topRight.y) + "px";
-      extentDiv.style.width = (topRight.x - bottomLeft.x) + "px";
-    }
-  });
-
-  // // clears selectionLayer (general feature highlighting) and highlightFeaturesLayer (data query highlighting)
-  // function clearGraphics() {
-  //   console.log("cleared graphics");
-  //   map.graphics.clear();
-  //   selectionLayer.graphics.removeAll();
-  //   highlightFeaturesLayer.removeAll();
-  // }
-
   // reset dropdowns and all inputs that are not equal to the current element. 
   function resetElements(currentElement) {
     // if elements are not equal to the current element
@@ -741,14 +834,14 @@ require([
   }
 
   // Union geometries of multi polygon features
-  function unionGeometries(response) {
+  async function unionGeometries(response) {
     console.log(response);
     // Array to store polygons in
     var multiPolygonGeometries = [];
     for (i = 0; i < response.features.length; i++) {
       multiPolygonGeometries.push(response.features[i].geometry);
     }
-    var union = geometryEngine.union(multiPolygonGeometries);
+    var union = await geometryEngine.union(multiPolygonGeometries);
     console.log('unioning of all pieces is complete', union);
     return union;
   }
@@ -815,7 +908,6 @@ require([
     });
     task.execute(params)
       .then(function (response) {
-        console.log('here is what we found with this query', response);
         mapView.goTo(response.features);
         selectionLayer.graphics.removeAll();
         bufferLayer.graphics.removeAll();
@@ -834,7 +926,6 @@ require([
   //Input geometry, output buffer
   function createBuffer(response) {
     var bufferGeometry = response;
-    // var bufferGeometry = response.features[0].geometry
     var buffer = geometryEngine.geodesicBuffer(bufferGeometry, 300, "feet", true);
     // add the buffer to the view as a graphic
     var bufferGraphic = new Graphic({
@@ -886,19 +977,7 @@ require([
   var rangeSelect = dom.byId("selectRange");
   var sectionSelect = dom.byId("selectSection");
 
-  // mapView.when(function () {
-  //     return townshipRangeSectionLayer.when(function (response) {
-  //       console.log('loading the township now')
-  //       var townshipQuery = new Query();
-  //       townshipQuery.where = "tdir <> ' '";
-  //       townshipQuery.outFields = ["twn_ch", "tdir"];
-  //       townshipQuery.returnDistinctValues = true;
-  //       townshipQuery.orderByFields = ["twn_ch", "tdir"];
-  //       return townshipRangeSectionLayer.queryFeatures(townshipQuery);
-  //     });
-  //   }).then(addToSelect)
-  //   .otherwise(queryError);
-
+  // when mapView is ready, build the first dropdown for township selection
   mapView.when(async function () {
     var townshipQuery = new Query({
       where: "tdir <> ' '",
@@ -915,10 +994,6 @@ require([
   })
 
 
-  // function queryError(error) {
-  //   console.log("Error getting Township Features");
-  //   console.error(error);
-  // }
   // Add the unique values to the subregion
   // select element. This will allow the user
   // to filter states by subregion.
@@ -936,9 +1011,8 @@ require([
     });
   }
 
-  // Add the unique values to the state
-  // select element. This will allow the user
-  // to filter states by state and region.
+  // Add the unique values to the
+  // range selection element.
   function addToSelect2(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Range";
@@ -952,6 +1026,8 @@ require([
     });
   }
 
+  // Add the unique values to the
+  // section selection element.
   function addToSelect3(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Section";
@@ -964,6 +1040,7 @@ require([
     });
   }
 
+  // when township changes, reset the other dropdowns.
   on(townshipSelect, "change", function (evt) {
     var type = evt.target.value;
     var i;
@@ -980,6 +1057,7 @@ require([
     return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(addToSelect2);
   })
 
+  // when range changes, reset the section dropdown.
   on(rangeSelect, "change", function (evt) {
     var type = evt.target.value;
     var j;
@@ -1014,16 +1092,17 @@ require([
   let infoPanelData = [];
   let layerList;
 
-
+  // when mapView is ready, check that the services are online
+  // if service is online, add to map
+  // if service is offline, ignore
   mapView.when(async function () {
 
-    const layersArr = [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
+    const layersArr = [GNISLayer, countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
 
-
-    console.log(map);
+    // wait for all services to be checked in the layersArr
     await checkServices(layersArr);
-    console.log("checked services");
 
+    // declare layerlist
     layerList = await new LayerList({
       view: mapView,
       container: "layersDiv",
@@ -1038,17 +1117,18 @@ require([
         document.getElementById("layersDiv");
         mapView.ui.add([layerList, scaleBar], "bottom-left");
         layerlistStatus = 1;
-        console.log(layerlistStatus)
       } else {
         mapView.ui.remove(layerList);
         layerlistStatus = 0;
-        console.log(layerlistStatus)
       }
     });
 
 
+    // when mapview is clicked:
+    // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
       if (mapView.scale < minimumDrawScale) {
+        document.getElementById("mapViewDiv").style.cursor = "wait";
         mapView.graphics.removeAll();
         selectionLayer.graphics.removeAll();
         clearDiv('informationdiv');
@@ -1057,37 +1137,45 @@ require([
 
         // look inside of layerList layers
         let layers = layerList.operationalItems.items
+
         // loop through layers
-
         for (layer of layers) {
-          const visibleLayers = await checkVisibleLayers(layer);
-          console.log(visibleLayers)
+          let visibleLayers
+          // exclude geographic names layer from identify operation
+          if (layer.title !== 'Geographic Names') {
+            visibleLayers = await checkVisibleLayers(layer);
 
-          // if there are visible layers returned
-          if (visibleLayers.length > 0) {
-            const task = new IdentifyTask(layer.layer.url)
-            const params = await setIdentifyParameters(visibleLayers, "click", event);
-            const identify = await executeIdentifyTask(task, params);
 
-            // push each feature to the infoPanelData
-            for (feature of identify.results) {
-              // console.log(feature);
-              feature.feature.attributes.layerName = feature.layerName;
-              let result = feature.feature.attributes
 
-              // make sure only certified corners with images are identified
-              if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
-                await infoPanelData.push(feature.feature);
+            // if there are visible layers returned
+            if (visibleLayers.length > 0) {
+              const task = new IdentifyTask(layer.layer.url)
+              const params = await setIdentifyParameters(visibleLayers, "click", event);
+              const identify = await executeIdentifyTask(task, params);
+
+              // push each feature to the infoPanelData
+              for (feature of identify.results) {
+                feature.feature.attributes.layerName = feature.layerName;
+                let result = feature.feature.attributes
+
+                // make sure only certified corners with images are identified
+                if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+                  await infoPanelData.push(feature.feature);
+                }
               }
             }
           }
         }
-        console.log("checked visible layers")
-        console.log(infoPanelData);
-        await queryInfoPanel(infoPanelData, 1);
-        togglePanel();
-        await goToFeature(infoPanelData[0]);
+        if (infoPanelData.length > 0) {
+          await queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+          await goToFeature(infoPanelData[0]);
+        } else { // if no features were found under the click
+          $('#infoSpan').html('Information Panel - 0 features found.');
+          $('#informationdiv').append('<p>This query did not return any features</p>');
+        }
       }
+      document.getElementById("mapViewDiv").style.cursor = "auto";
     });
 
   });
@@ -1105,7 +1193,7 @@ require([
         map.add(layer);
       } catch (err) {
         // layer returns bad, not added to map, log error
-        console.log(layer.title + " layer failed to be returned");
+        console.log(layer.title + " layer failed to be returned" + err);
       }
     }
   }
@@ -1136,7 +1224,6 @@ require([
     params.height = mapView.height;
     params.returnGeometry = true;
     params.returnFieldName = true;
-    console.log(params);
     if (eventType == "click") {
       params.geometry = event.mapPoint
       params.mapExtent = mapView.extent;
@@ -1150,7 +1237,6 @@ require([
   async function executeIdentifyTask(tasks, params) {
     // take in tasks
     // take in parameters
-    console.log(params);
     return tasks.execute(params)
   }
 
@@ -1184,59 +1270,6 @@ require([
     }
   }
 
-  async function goToPoint(result) {
-    // determine whether first index of identify 
-    // is a polygon or point then do appropriate highlight and zoom
-    if (infoPanelData[0].geometry.type === "polygon" || infoPanelData[0].geometry.type === "polyline") {
-      var ext = infoPanelData[0].geometry.extent;
-      var cloneExt = ext.clone();
-      // This introduces logic to control zooming depending on if the current extent is closer or farther than resulting polygon or polyline
-      if (mapView.extent.height < ext.height || mapView.extent.width < ext.width) {
-        // no zoom, continue to next block 
-        // the map will not zoom out
-      } else {
-        // the map zooms to extent of polygon
-        mapView.goTo({
-          target: infoPanelData[0],
-          extent: cloneExt.expand(1.75)
-        });
-      }
-      // ^ End logic for zoom control
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-      console.log("Resulting geometry is a polygon.");
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightSymbol);
-      selectionLayer.graphics.add(highlightGraphic);
-
-    } else if (infoPanelData[0].geometry.type === "point") {
-      console.log("Resulting geometry is a point.");
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(infoPanelData[0].geometry, highlightPoint);
-      selectionLayer.graphics.add(highlightGraphic);
-      if (mapView.scale > 18055.954822) {
-        mapView.goTo({
-          target: infoPanelData[0].geometry,
-          zoom: 15
-        });
-      } else {
-        mapView.goTo({
-          target: infoPanelData[0].geometry,
-          scale: currentScale
-        });
-      }
-    }
-  }
-
-
-
-  // queryInfoPanel(infoPanelData, 1);
-  // buildUniquePanel();
-  //showPopup(identifyElements); 
-
   // inputs the geometry of the data query feature, and matches to it. 
   function dataQueryQuerytask(url, geometry) {
     var queryTask = new QueryTask({
@@ -1251,12 +1284,11 @@ require([
 
     return queryTask.execute(params)
       .then(function (response) {
-        console.log(response);
         if (response.features.length > 0) {
           return queryTask.execute(params);
-        } else {
-          console.log('No features found.');
-          $("#informationdiv").append("No features found.");
+        } else { // if no features were found
+          $('#infoSpan').html('Information Panel - 0 features found.');
+          $('#informationdiv').append('<p>This query did not return any features</p>');
           clearDiv('arraylengthdiv');
         }
       });
@@ -1265,61 +1297,54 @@ require([
   // go to first feature of the infopaneldata array
   function goToFeature(feature) {
 
-    console.log(feature);
-    // Go to the selected parcel
-    if (feature.geometry.type === "polygon" || feature.geometry.type === "polyline") {
-      var ext = feature.geometry.extent;
-      var cloneExt = ext.clone();
-      // mapView.goTo({
-      //   target: feature,
-      //   extent: cloneExt.expand(1.75)
-      // });
+    if (feature) {
+      // Go to the selected parcel
+      if (feature.geometry.type === "polygon" || feature.geometry.type === "polyline") {
+        var ext = feature.geometry.extent;
+        var cloneExt = ext.clone();
 
-      if (mapView.scale > 18055.954822) {
-        console.log('larger', infoPanelData);
-        mapView.goTo({
-          target: feature,
-          extent: cloneExt.expand(1.75)
-        });
-      } else {
-        console.log('smaller', infoPanelData);
-        mapView.goTo({
-          target: feature,
-          extent: feature.extent,
-          scale: mapView.scale
-        });
-      }
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-      console.log("Resulting geometry is a polygon.");
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
-      selectionLayer.graphics.add(highlightGraphic);
-    } else if (feature.geometry.type === "point") {
-      console.log("Resulting geometry is a point.");
+        // if current scale is greater than number, 
+        // go to feature and expand extent by 1.75x
+        if (mapView.scale > 18055.954822) {
+          console.log(mapView.scale);
+          console.log('going to a different scale')
+          mapView.goTo({
+            target: feature,
+            extent: cloneExt.expand(1.75)
+          });
+        } else {
+          // go to point at current scale
+          mapView.goTo({
+            target: feature,
+            extent: feature.extent,
+            scale: mapView.scale
+          });
+        }
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+        selectionLayer.graphics.add(highlightGraphic);
+      } else if (feature.geometry.type === "point") {
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
 
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(feature.geometry, highlightPoint);
+        selectionLayer.graphics.add(highlightGraphic);
 
-      // Remove current selection
-      selectionLayer.graphics.removeAll();
-
-      // Highlight the selected parcel
-      highlightGraphic = new Graphic(feature.geometry, highlightPoint);
-      selectionLayer.graphics.add(highlightGraphic);
-      console.log(mapView);
-
-      // TODO: NOt working properly, else if not being triggered
-      if (mapView.scale > 18055.954822) {
-        console.log('larger', infoPanelData);
-        mapView.goTo({
-          target: infoPanelData[0].geometry,
-          zoom: 15
-        });
-      } else {
-        console.log('smaller', infoPanelData);
-        mapView.goTo({
-          target: infoPanelData[0].geometry,
-          scale: mapView.scale
-        });
+        // TODO: NOt working properly, else if not being triggered
+        if (mapView.scale > 18055.954822) {
+          mapView.goTo({
+            target: infoPanelData[0].geometry,
+            zoom: 15
+          });
+        } else { // go to point at the current scale
+          mapView.goTo({
+            target: infoPanelData[0].geometry,
+            scale: mapView.scale
+          });
+        }
       }
     }
   }
@@ -1477,11 +1502,11 @@ require([
   }
   query("#selectLayerDropdown").on("change", function (e) {
 
+    // get geometry based on query results
     async function getGeometry(url, attribute, value) {
       console.log(value.toUpperCase());
       // modifies value to remove portions of the string in parentheses 
       value = value.replace(/ *\([^)]*\) */g, "")
-      console.log(value);
 
       var task = new QueryTask({
         url: url
@@ -1524,9 +1549,8 @@ require([
             return queryTask.execute(params);
           } else {
             togglePanel();
-            $('#infoSpan').html("Information Panel - 0 features found.")
-            console.log('No features found.');
-            $('#informationdiv').append("No features found.");
+            $('#infoSpan').html('Information Panel - 0 features found.');
+            $('#informationdiv').append('<p>This query did not return any features</p>');
             clearDiv('arraylengthdiv');
           }
         });
@@ -1544,7 +1568,8 @@ require([
           whereStatement = attribute + ' = ' + "'" + queryStatement + "'";
         }
       } else {
-        console.log('No features found.');
+        $('#infoSpan').html('Information Panel - 0 features found.');
+        $('#informationdiv').append('<p>This query did not return any features</p>');
       }
 
       var queryTask = new QueryTask({
@@ -1563,8 +1588,8 @@ require([
             return queryTask.execute(params);
           } else {
             togglePanel();
-            console.log('No features found.');
-            $('#informationdiv').append("No features found.");
+            $('#infoSpan').html('Information Panel - 0 features found.');
+            $('#informationdiv').append('<p>This query did not return any features</p>');
             clearDiv('arraylengthdiv');
           }
         });;
@@ -1639,7 +1664,6 @@ require([
       // county event listener
       query(countyDropdownAfter).on('change', function (e) {
         // cursor wait button
-        console.log(document.getElementById("mapViewDiv").style.cursor);
         document.getElementById("mapViewDiv").style.cursor = "wait";
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
@@ -2273,6 +2297,7 @@ require([
       })
     );
 
+    // adds an expand widget to the map that will house the ccWidget
     var coordExpand = new Expand({
       view: mapView,
       content: ccWidget.domNode,
@@ -2284,8 +2309,10 @@ require([
     mapView.ui.add(coordExpand, "top-left");
   }
 
+  // keeps track of the active widget between distance measurement and area measurement
   let activeWidget = null;
 
+  // listen to when the distance button is clicked in order to activate the distanceMeasurement widget
   document.getElementById("distanceButton").addEventListener("click",
     function () {
       setActiveWidget(null);
@@ -2297,6 +2324,7 @@ require([
       }
     });
 
+  // listen to when the area button is clicked in order to activate the areaMeasurement widget
   document.getElementById("areaButton").addEventListener("click",
     function () {
       setActiveWidget(null);
@@ -2307,8 +2335,11 @@ require([
       }
     });
 
+  // function to switch active widget between areaMeasurement and distanceMeasurement widgets
   function setActiveWidget(type) {
     switch (type) {
+
+      // if the distance measurement button was clicked
       case "distance":
         activeWidget = new DistanceMeasurement2D({
           view: mapView
@@ -2316,13 +2347,12 @@ require([
 
         // skip the initial 'new measurement' button
         activeWidget.viewModel.newMeasurement();
-        console.log(activeWidget);
         mapView.ui.add(activeWidget, "bottom-left");
         setActiveButton(document.getElementById('distanceButton'));
-        // activeWidget.on('measure-after', function (event) {
-        //   console.log('measuring');
-        // });
+
         break;
+
+        // if the area measurement button was clicked
       case "area":
         activeWidget = new AreaMeasurement2D({
           view: mapView,
@@ -2331,14 +2361,66 @@ require([
         // skip the initial 'new measurement' button
         activeWidget.viewModel.newMeasurement();
 
+        // add the widget UI to the screen
         mapView.ui.add(activeWidget, "bottom-left");
         setActiveButton(document.getElementById('areaButton'));
-        activeWidget.watch("viewModel.tool.active", function (active) {
+        activeWidget.watch("viewModel.tool.active", async function (active) {
           if (active === false) {
-            console.log("mapview", mapView);
-            console.log("layerlist", layerList);
-            console.log("active widget viewmodel", activeWidget.viewModel);
-            console.log('measurement completed');
+
+            // if identify is checked, run a drill down identifyTask
+            if (document.getElementById('measureIdentify').checked) {
+
+              if (mapView.scale < minimumDrawScale) {
+                document.getElementById("mapViewDiv").style.cursor = "wait";
+                mapView.graphics.removeAll();
+                selectionLayer.graphics.removeAll();
+                clearDiv('informationdiv');
+                clearDiv('arraylengthdiv');
+                infoPanelData = [];
+
+                // look inside of layerList layers
+                let layers = layerList.operationalItems.items
+
+                // loop through layers
+                for (layer of layers) {
+                  let visibleLayers
+                  // exclude geographic names layer from identify operation
+                  if (layer.title !== 'Geographic Names') {
+                    visibleLayers = await checkVisibleLayers(layer);
+
+
+
+                    // if there are visible layers returned
+                    if (visibleLayers.length > 0) {
+                      const task = new IdentifyTask(layer.layer.url)
+                      const params = await setIdentifyParameters(visibleLayers, "polygon", activeWidget.viewModel.measurement.geometry);
+                      const identify = await executeIdentifyTask(task, params);
+
+                      // push each feature to the infoPanelData
+                      for (feature of identify.results) {
+                        feature.feature.attributes.layerName = feature.layerName;
+                        let result = feature.feature.attributes
+
+                        // make sure only certified corners with images are identified
+                        if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+                          await infoPanelData.push(feature.feature);
+                        }
+                      }
+                    }
+                  }
+                }
+                if (infoPanelData.length > 0) {
+                  await queryInfoPanel(infoPanelData, 1);
+                  togglePanel();
+                  await goToFeature(infoPanelData[0]);
+                } else { // if no features were found under the click
+                  $('#infoSpan').html('Information Panel - 0 features found.');
+                  $('#informationdiv').append('<p>This query did not return any features</p>');
+                }
+              }
+              document.getElementById("mapViewDiv").style.cursor = "auto";
+
+            }
           }
         });
 

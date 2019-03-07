@@ -1,6 +1,4 @@
 function queryInfoPanel(results, i) {
-    console.log(results);
-
     if (results.length > 0) {
         // Set append templates for information panel
         for (var i = 1; i <= results.length; i++) {
@@ -188,10 +186,9 @@ function queryInfoPanel(results, i) {
 
         }
     } else {
-        console.log('hey dummy, find some features');
+        $('#informationdiv').append('<p>This query did not return any features</p>');
         $('#infoSpan').html('Information Panel - 0 features found. ');
     }
-    //$('#numinput').val(parseInt(i));
     if (i == 1) {
         // $('#arraylengthdiv').html((parseInt(i - 1)) + ' feature found.');
         $('#infoSpan').html('Information Panel - ' + (parseInt(i - 1)) + ' feature found.');

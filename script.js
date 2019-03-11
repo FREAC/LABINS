@@ -2324,6 +2324,7 @@ require([
       view: mapView,
       content: ccWidget.domNode,
       expandIconClass: "esri-icon-map-pin",
+      expandTooltip: "Coordinates",
       collapseTooltip: "Coordinates",
       group: "left",
     });

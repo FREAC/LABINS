@@ -1097,6 +1097,32 @@ require([
   // if service is offline, ignore
   mapView.when(async function () {
 
+    // action definition for toggling labels on Certified Corner LABINS's sublayer
+    function defineActions(event) {
+
+      // The event object contains an item property.
+      // is is a ListItem referencing the associated layer
+      // and other properties. You can control the visibility of the
+      // item, its title, and actions using this object.
+
+      var item = event.item;
+
+      if (item.title === "Certified Corners") {
+
+        // An array of objects defining actions to place in the LayerList.
+        // By making this array two-dimensional, you can separate similar
+        // actions into separate groups with a breaking line.
+
+        item.actionsSections = [
+          [{
+            title: "Toggle labels",
+            className: "esri-icon-labels",
+            id: "toggle-labels"
+          }]
+        ];
+      }
+    }
+
     const layersArr = [GNISLayer, countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
 
     // wait for all services to be checked in the layersArr
@@ -1106,6 +1132,7 @@ require([
     layerList = await new LayerList({
       view: mapView,
       container: "layersDiv",
+      listItemCreatedFunction: defineActions
 
     });
     // status to watch if layerlist is on
@@ -1120,6 +1147,28 @@ require([
       } else {
         mapView.ui.remove(layerList);
         layerlistStatus = 0;
+      }
+    });
+
+    layerList.on("trigger-action", function (event) {
+      if ((layerList.operationalItems.items[2].children.items[2].visible === true) && (mapView.scale < minimumDrawScale)) {
+        const targetLayer = layerList.operationalItems.items[2].children.items[2].layer;
+        targetLayer.labelsVisible = true;
+        targetLayer.labelingInfo = [{
+          labelExpression: "[blmid]",
+          labelPlacement: "above-center",
+          symbol: {
+            type: "text", // autocasts as new TextSymbol()
+            color: [0, 0, 255, 1],
+            haloColor: [255, 255, 255],
+            haloSize: 2,
+            font: {
+              size: 8
+            }
+          }
+        }]
+      } else {
+        alert('scale is not good or item is not visible');
       }
     });
 

@@ -1417,19 +1417,6 @@ require([
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
     }, {
       featureLayer: {
-        url: labinsURL + '7',
-      },
-      searchFields: ["monument_name", "county"],
-      suggestionTemplate: "R-Monument Name: {monument_name}, County: {county}",
-      zoomScale: 100000,
-      exactMatch: false,
-      popupOpenOnSelect: false,
-      resultSymbol: highlightPoint,
-      outFields: ["*"],
-      name: "R-Monuments",
-      placeholder: "Search by County Name or R-Monument Name",
-    }, {
-      featureLayer: {
         url: labinsURL + '8',
       },
       searchFields: ["ecl_name", "county"],
@@ -1455,20 +1442,6 @@ require([
       outFields: ["BENCHMARK_NAME", "FILE_NAME"],
       name: "Survey Benchmarks",
       placeholder: "Benchmark Name Example: CYP016",
-    }, {
-      featureLayer: {
-        url: labinsURL + '11',
-      },
-      searchFields: ["twn_ch", "rng_ch", "twnrngsec"],
-      displayField: "twnrngsec",
-      suggestionTemplate: "Township/Range/Section: {twnrngsec}",
-      zoomScale: 50000,
-      exactMatch: false,
-      popupOpenOnSelect: false,
-      resultSymbol: highlightSymbol,
-      outFields: ["twn_ch", "rng_ch", "twnrngsec"],
-      name: "Township Range",
-      placeholder: "Search by township, range, or township range."
     }, {
       locator: new Locator({
         url: "//geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"

@@ -1159,8 +1159,22 @@ require([
       // if the certified corners are visible and the mapView.scale is less than the minimum draw scale
       // enable toggling
       if ((targetLayer.visible === true) && (mapView.scale < minimumDrawScale)) {
+
         // if labels are not already visible, turn them on
         if (targetLayer.layer.labelsVisible === false) {
+          // // handle focus toggle of action button on CCR sublayer
+          var labelToggle = $('.esri-layer-list__item-actions-menu-item');
+          $(labelToggle).on('mousedown', function () {
+            console.log(labelToggle);
+            $(this).data('inputFocused', labelToggle.is(":focus"));
+          }).click(function () {
+            if ($(this).data('inputFocused')) {
+              labelToggle.blur();
+            } else {
+              labelToggle.focus();
+            }
+          });
+
           targetLayer.layer.labelsVisible = true;
           targetLayer.layer.labelingInfo = [{
             labelExpression: "[blmid]",
@@ -1180,7 +1194,7 @@ require([
         }
 
       } else {
-        alert('scale is not good or item is not visible');
+        // do nothing
       }
     });
 

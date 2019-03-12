@@ -67,6 +67,19 @@ body,
   background-color: transparent;
 }
 
+.esri-layer-list__item-actions-menu-item:first-of-type:focus {
+  /* outline-color: #ffffff; */
+  outline: none;
+}
+
+.layer-action-focus {
+  color: #ffffff;
+}
+
+.layer-action-blur {
+  outline: none;
+}
+
 #overviewDiv {
   position: absolute;
   bottom: 20px;

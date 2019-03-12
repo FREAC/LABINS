@@ -1135,6 +1135,8 @@ require([
       listItemCreatedFunction: defineActions
 
     });
+
+
     // status to watch if layerlist is on
     let layerlistStatus;
     on(dom.byId("desktopLayerlist"), "click", function (evt) {
@@ -1148,25 +1150,35 @@ require([
         mapView.ui.remove(layerList);
         layerlistStatus = 0;
       }
+
     });
 
+    // event to listen for action button on layerlist
     layerList.on("trigger-action", function (event) {
-      if ((layerList.operationalItems.items[2].children.items[2].visible === true) && (mapView.scale < minimumDrawScale)) {
-        const targetLayer = layerList.operationalItems.items[2].children.items[2].layer;
-        targetLayer.labelsVisible = true;
-        targetLayer.labelingInfo = [{
-          labelExpression: "[blmid]",
-          labelPlacement: "above-center",
-          symbol: {
-            type: "text", // autocasts as new TextSymbol()
-            color: [0, 0, 255, 1],
-            haloColor: [255, 255, 255],
-            haloSize: 2,
-            font: {
-              size: 8
+      const targetLayer = layerList.operationalItems.items[2].children.items[2]
+      // if the certified corners are visible and the mapView.scale is less than the minimum draw scale
+      // enable toggling
+      if ((targetLayer.visible === true) && (mapView.scale < minimumDrawScale)) {
+        // if labels are not already visible, turn them on
+        if (targetLayer.layer.labelsVisible === false) {
+          targetLayer.layer.labelsVisible = true;
+          targetLayer.layer.labelingInfo = [{
+            labelExpression: "[blmid]",
+            labelPlacement: "above-center",
+            symbol: {
+              type: "text", // autocasts as new TextSymbol()
+              color: [0, 0, 255, 1],
+              haloColor: [255, 255, 255],
+              haloSize: 2,
+              font: {
+                size: 8
+              }
             }
-          }
-        }]
+          }]
+        } else { // if labels are visible, toggle them off
+          targetLayer.layer.labelsVisible = false;
+        }
+
       } else {
         alert('scale is not good or item is not visible');
       }

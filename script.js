@@ -980,7 +980,7 @@ require([
   // when mapView is ready, build the first dropdown for township selection
   mapView.when(async function () {
     var townshipQuery = new Query({
-      where: "tdir <> ' '",
+      where: "tdir <> ' ' AND CAST(twn_ch AS int) < '8'",
       outFields: ["twn_ch", "tdir"],
       returnDistinctValues: true,
       orderByFields: ["twn_ch", "tdir"],
@@ -1097,7 +1097,33 @@ require([
   // if service is offline, ignore
   mapView.when(async function () {
 
-    const layersArr = [GNISLayer, countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
+    // action definition for toggling labels on Certified Corner LABINS's sublayer
+    function defineActions(event) {
+
+      // The event object contains an item property.
+      // is is a ListItem referencing the associated layer
+      // and other properties. You can control the visibility of the
+      // item, its title, and actions using this object.
+
+      var item = event.item;
+
+      if (item.title === "Certified Corners") {
+
+        // An array of objects defining actions to place in the LayerList.
+        // By making this array two-dimensional, you can separate similar
+        // actions into separate groups with a breaking line.
+
+        item.actionsSections = [
+          [{
+            title: "Toggle labels",
+            className: "esri-icon-labels",
+            id: "toggle-labels"
+          }]
+        ];
+      }
+    }
+
+    const layersArr = [ /*GNISLayer, */ countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
 
     // wait for all services to be checked in the layersArr
     await checkServices(layersArr);
@@ -1106,8 +1132,11 @@ require([
     layerList = await new LayerList({
       view: mapView,
       container: "layersDiv",
+      listItemCreatedFunction: defineActions
 
     });
+
+
     // status to watch if layerlist is on
     let layerlistStatus;
     on(dom.byId("desktopLayerlist"), "click", function (evt) {
@@ -1120,6 +1149,41 @@ require([
       } else {
         mapView.ui.remove(layerList);
         layerlistStatus = 0;
+      }
+
+    });
+
+    // event to listen for action button on layerlist
+    layerList.on("trigger-action", function (event) {
+      // var labelToggle = $('.esri-layer-list__item-actions-menu-item');
+      const targetLayer = layerList.operationalItems.items[2].children.items[2]
+      // if the certified corners are visible and the mapView.scale is less than the minimum draw scale
+      // enable toggling
+      if ((targetLayer.visible === true) && (mapView.scale < minimumDrawScale)) {
+        // if labels are not already visible, turn them on
+        if ((targetLayer.layer.labelsVisible === false) || (targetLayer.layer.labelsVisible === undefined)) {
+          // // handle focus toggle of action button on CCR sublayer
+
+          targetLayer.layer.labelsVisible = true;
+          targetLayer.layer.labelingInfo = [{
+            labelExpression: "[blmid]",
+            labelPlacement: "above-center",
+            symbol: {
+              type: "text", // autocasts as new TextSymbol()
+              color: [0, 0, 255, 1],
+              haloColor: [255, 255, 255],
+              haloSize: 2,
+              font: {
+                size: 8
+              }
+            }
+          }]
+        } else { // if labels are visible, toggle them off
+          targetLayer.layer.labelsVisible = false;
+        }
+
+      } else {
+        // do nothing
       }
     });
 
@@ -1417,19 +1481,6 @@ require([
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
     }, {
       featureLayer: {
-        url: labinsURL + '7',
-      },
-      searchFields: ["monument_name", "county"],
-      suggestionTemplate: "R-Monument Name: {monument_name}, County: {county}",
-      zoomScale: 100000,
-      exactMatch: false,
-      popupOpenOnSelect: false,
-      resultSymbol: highlightPoint,
-      outFields: ["*"],
-      name: "R-Monuments",
-      placeholder: "Search by County Name or R-Monument Name",
-    }, {
-      featureLayer: {
         url: labinsURL + '8',
       },
       searchFields: ["ecl_name", "county"],
@@ -1455,20 +1506,6 @@ require([
       outFields: ["BENCHMARK_NAME", "FILE_NAME"],
       name: "Survey Benchmarks",
       placeholder: "Benchmark Name Example: CYP016",
-    }, {
-      featureLayer: {
-        url: labinsURL + '11',
-      },
-      searchFields: ["twn_ch", "rng_ch", "twnrngsec"],
-      displayField: "twnrngsec",
-      suggestionTemplate: "Township/Range/Section: {twnrngsec}",
-      zoomScale: 50000,
-      exactMatch: false,
-      popupOpenOnSelect: false,
-      resultSymbol: highlightSymbol,
-      outFields: ["twn_ch", "rng_ch", "twnrngsec"],
-      name: "Township Range",
-      placeholder: "Search by township, range, or township range."
     }, {
       locator: new Locator({
         url: "//geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
@@ -2302,6 +2339,7 @@ require([
       view: mapView,
       content: ccWidget.domNode,
       expandIconClass: "esri-icon-map-pin",
+      expandTooltip: "Coordinates",
       collapseTooltip: "Coordinates",
       group: "left",
     });

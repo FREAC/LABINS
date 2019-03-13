@@ -157,13 +157,12 @@ function queryInfoPanel(results, i) {
                     '<b>Feature Class: </b>' + results[i - 1].attributes.feature_cl + '<br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Certified Corners' && results[i - 1].attributes.is_image === 'Y') {
-                console.log("found the corners");
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
                     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
+                    '<b>Quad Number: </b>' + results[i - 1].attributes.quad_num + '<br>' +
                     '<b>PDF: </b><a target="_blank" href=' + results[i - 1].attributes.pdf + '>' + results[i - 1].attributes.pdf.substring(44, 55) + '</a><br>'
                 );
-                //console.log(results[i-1].attributes.image1);
                 for (var prop in results[i - 1].attributes) {
                     if (prop.startsWith('image')) {
                         if (results[i - 1].attributes[prop].length > 1) {

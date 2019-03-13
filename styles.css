@@ -57,6 +57,21 @@ body,
   display: block;
 }
 
+/* color of label toggle button */
+.esri-layer-list__item-actions-menu-item:first-of-type {
+  color: lightgray;
+}
+
+.esri-layer-list__item-actions-menu-item:first-of-type:hover {
+  color: #ffffff;
+  background-color: transparent;
+}
+
+.esri-layer-list__item-actions-menu-item:first-of-type {
+  outline: none;
+}
+
+
 #overviewDiv {
   position: absolute;
   bottom: 20px;

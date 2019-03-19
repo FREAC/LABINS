@@ -268,9 +268,9 @@ h3.esri-widget__heading {
   text-align: center;
 }
 
-.esri-coordinate-conversion__mode-toggle {
+/* .esri-coordinate-conversion__mode-toggle {
   display: none;
-}
+} */
 
 .esri-coordinate-conversion__heading,
 .esri-widget__heading {

@@ -1191,7 +1191,7 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
-      if (mapView.scale < minimumDrawScale) {
+      if ((mapView.scale < minimumDrawScale) && (coordExpand.expanded !== true)) {
         document.getElementById("mapViewDiv").style.cursor = "wait";
         mapView.graphics.removeAll();
         selectionLayer.graphics.removeAll();

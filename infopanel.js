@@ -91,7 +91,7 @@ function queryInfoPanel(results, i) {
                 // A null value here will return an object, otherwise, number will be returned
                 if (typeof results[i - 1].attributes.navd88mhw_ft != 'object' && results[i - 1].attributes.navd88mlw_ft != 'object') {
                     // mhw and mlw are null
-                    $('#informationdiv').append(' <a target="_blank" href=http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_2016.pdf><b>MHW Procedural Approval Form if data IS available</b></a><br>');
+                    $('#informationdiv').append(' <a target="_blank" href=https://www.labins.org/survey_data/water/procedures_and_forms/Forms/MHW%20Procedural%20Approval%20-%20Map.pdf><b>MHW Procedural Approval Form if data IS available</b></a><br>');
                 } else {
                     // mhw and mlw are null
                     $('#informationdiv').append('<a target="_blank" href=http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_noelevation.pdf><b>MHW Procedural Approval Form if data IS NOT available</b></a><br>');

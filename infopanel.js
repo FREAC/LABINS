@@ -1,4 +1,5 @@
-function queryInfoPanel(results, i) {
+function queryInfoPanel(results, i, isPinValid = false) {
+
     if (results.length > 0) {
         // Set append templates for information panel
         for (var i = 1; i <= results.length; i++) {
@@ -72,7 +73,7 @@ function queryInfoPanel(results, i) {
                     'Abstract: ' + '<a href=' + results[i - 1].attributes.abstract + '>' + results[i - 1].attributes.l_number + '</a><br>',
                     'Description: ' + '<a href=' + results[i - 1].attributes.description2 + '>' + results[i - 1].attributes.l_number + '</a><br>',
                 );
-            } else if (results[i - 1].attributes.layerName === 'Tide Stations') {
+            } else if ((results[i - 1].attributes.layerName === 'Tide Stations') && (isPinValid !== true)) {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Stations</b></p>' +
                     '<b>Tide Station ID: </b>' + results[i - 1].attributes.id + '<br>' +
                     '<b>Tide Station Name: </b>' + results[i - 1].attributes.name + '<br>' +
@@ -81,7 +82,7 @@ function queryInfoPanel(results, i) {
                     '<b>Status: </b>' + results[i - 1].attributes.status + '<br>' +
                     // '<b>MHW (feet): </b>' + results[i - 1].attributes.navd88mhw_ft + '<br>' +
                     // '<b>MLW (feet): </b>' + results[i - 1].attributes.navd88mlw_ft + '<br>' +
-                    "<b>Steven's ID: </b>" + results[i - 1].attributes.stevens_id + '<br>',
+                    "<b>Steven's ID: </b>" + results[i - 1].attributes.stevens_id + '<br>' +
                     "<b>For MHW and MLW data, please contact: </b> <a href='mailto:mhwrequest@floridadep.gov'>mhwrequest@floridadep.gov</a><br>"
                 );
                 // Do not include link to DEP report if the old link is present
@@ -97,7 +98,31 @@ function queryInfoPanel(results, i) {
                     $('#informationdiv').append('<a target="_blank" href=http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_noelevation.pdf><b>MHW Procedural Approval Form if data IS NOT available</b></a><br>');
 
                 }
-            } else if (results[i - 1].attributes.layerName === 'Tide Interpolation Points') {
+            } else if ((results[i - 1].attributes.layerName === 'Tide Stations') && (isPinValid === true)) {
+                $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Stations</b></p>' +
+                    '<b>Tide Station ID: </b>' + results[i - 1].attributes.id + '<br>' +
+                    '<b>Tide Station Name: </b>' + results[i - 1].attributes.name + '<br>' +
+                    '<b>County: </b>' + results[i - 1].attributes.countyname + '<br>' +
+                    '<b>Quad: </b>' + results[i - 1].attributes.quadname + '<br>' +
+                    '<b>Status: </b>' + results[i - 1].attributes.status + '<br>' +
+                    '<b>MHW (feet): </b>' + results[i - 1].attributes.navd88mhw_ft + '<br>' +
+                    '<b>MLW (feet): </b>' + results[i - 1].attributes.navd88mlw_ft + '<br>' +
+                    "<b>Steven's ID: </b>" + results[i - 1].attributes.stevens_id + '<br>'
+                );
+                // Do not include link to DEP report if the old link is present
+                if (results[i - 1].attributes.report_dep.substring(0, 36) == 'ftp://ftp.labins.org/tide/NewReports') {
+                    $('#informationdiv').append('DEP Report: ' + '<a target="_blank" href=' + results[i - 1].attributes.report_dep + '>' + results[i - 1].attributes.filename + '</a><br>');
+                }
+                // A null value here will return an object, otherwise, number will be returned
+                if (typeof results[i - 1].attributes.navd88mhw_ft != 'object' && results[i - 1].attributes.navd88mlw_ft != 'object') {
+                    // mhw and mlw are null
+                    $('#informationdiv').append(' <a target="_blank" href=http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_2016.pdf><b>MHW Procedural Approval Form if data IS available</b></a><br>');
+                } else {
+                    // mhw and mlw are null
+                    $('#informationdiv').append('<a target="_blank" href=http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_noelevation.pdf><b>MHW Procedural Approval Form if data IS NOT available</b></a><br>');
+
+                }
+            } else if ((results[i - 1].attributes.layerName === 'Tide Interpolation Points') && (isPinValid !== true)) {
                 var replaceWhitespace = results[i - 1].attributes.tile_name.replace(" ", "%20");
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Interpolation Points</b></p>' +
                     '<b>Tide Interpolation Points: </b>' + results[i - 1].attributes.iden + '<br>' +
@@ -107,8 +132,30 @@ function queryInfoPanel(results, i) {
                     // '<b>MHW (feet): </b>' + results[i - 1].attributes.mhw2_ft + '<br>' +
                     // '<b>MLW (feet): </b>' + results[i - 1].attributes.mlw2_ft + '<br>' +
                     '<b>Station 1: </b>' + results[i - 1].attributes.station1 + '<br>' +
-                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>',
+                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>' +
                     "<b>For MHW and MLW data, please contact: </b> <a href='mailto:mhwrequest@floridadep.gov'>mhwrequest@floridadep.gov</a><br>"
+
+                );
+                if (results[i - 1].attributes.status_col === "1") {
+                    // This is not a tidal point
+                } else if (results[i - 1].attributes.status_col === "2") {
+                    // The point has data, fill in the report as you are currently doing
+                    $('#informationdiv').append('<b>Download Approval Form: </b><a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin=' + results[i - 1].attributes.iden + '&mCountyName=' + results[i - 1].attributes.cname + '&mQuad=' + replaceWhitespace + '&mhw=' + results[i - 1].attributes.mhw2_ft + '&mlw=' + results[i - 1].attributes.mlw2_ft + '>here</a><br>');
+                } else if (results[i - 1].attributes.status_col === "3") {
+                    // This point needs a study
+                    $('#informationdiv').append('This point needs a study. Click <a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/MHW_Procedures_wo_29_or_88_data_May_2009_with_checklist.pdf>here</a> to open approval form.<br>');
+                }
+            } else if ((results[i - 1].attributes.layerName === 'Tide Interpolation Points') && (isPinValid === true)) {
+                var replaceWhitespace = results[i - 1].attributes.tile_name.replace(" ", "%20");
+                $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Interpolation Points</b></p>' +
+                    '<b>Tide Interpolation Points: </b>' + results[i - 1].attributes.iden + '<br>' +
+                    '<b>County: </b>' + results[i - 1].attributes.cname + '<br>' +
+                    '<b>Quad: </b>' + results[i - 1].attributes.tile_name + '<br>' +
+                    '<b>Method: </b>' + results[i - 1].attributes.method + '<br>' +
+                    '<b>MHW (feet): </b>' + results[i - 1].attributes.mhw2_ft + '<br>' +
+                    '<b>MLW (feet): </b>' + results[i - 1].attributes.mlw2_ft + '<br>' +
+                    '<b>Station 1: </b>' + results[i - 1].attributes.station1 + '<br>' +
+                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>'
 
                 );
                 if (results[i - 1].attributes.status_col === "1") {

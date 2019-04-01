@@ -1231,7 +1231,7 @@ require([
           }
         }
         if (infoPanelData.length > 0) {
-          await queryInfoPanel(infoPanelData, 1);
+          await queryInfoPanel(infoPanelData, 1, isPinValid);
           togglePanel();
           await goToFeature(infoPanelData[0]);
         } else { // if no features were found under the click
@@ -1716,7 +1716,7 @@ require([
                   infoPanelData.push(response.features[i]);
                 }
                 goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
+                queryInfoPanel(infoPanelData, 1, isPinValid);
                 togglePanel();
                 document.getElementById("mapViewDiv").style.cursor = "auto";
               });
@@ -1741,7 +1741,7 @@ require([
                   infoPanelData.push(response.features[i]);
                 }
                 goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
+                queryInfoPanel(infoPanelData, 1, isPinValid);
                 togglePanel();
               });
           });
@@ -1768,7 +1768,7 @@ require([
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
+            queryInfoPanel(infoPanelData, 1, isPinValid);
             togglePanel();
           });
       });
@@ -1797,7 +1797,7 @@ require([
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
+            queryInfoPanel(infoPanelData, 1, isPinValid);
             togglePanel();
           });
       });
@@ -1829,7 +1829,7 @@ require([
                   infoPanelData.push(response.features[i]);
                 }
                 goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
+                queryInfoPanel(infoPanelData, 1, isPinValid);
                 togglePanel();
               });
           });
@@ -1853,7 +1853,7 @@ require([
                   infoPanelData.push(response.features[i]);
                 }
                 goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
+                queryInfoPanel(infoPanelData, 1, isPinValid);
                 togglePanel();
               });
           });
@@ -1881,7 +1881,7 @@ require([
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
+            queryInfoPanel(infoPanelData, 1, isPinValid);
             togglePanel();
           });
       });
@@ -1910,7 +1910,7 @@ require([
                   infoPanelData.push(response.features[i]);
                 }
                 goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
+                queryInfoPanel(infoPanelData, 1, isPinValid);
                 togglePanel();
               });
           });
@@ -1936,7 +1936,7 @@ require([
                 }
                 console.log(infoPanelData);
                 goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
+                queryInfoPanel(infoPanelData, 1, isPinValid);
                 togglePanel();
               });
           });
@@ -1966,7 +1966,7 @@ require([
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
+            queryInfoPanel(infoPanelData, 1, isPinValid);
             togglePanel();
           });
       });
@@ -2004,7 +2004,7 @@ require([
                   infoPanelData.push(response.features[i]);
                 }
                 goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
+                queryInfoPanel(infoPanelData, 1, isPinValid);
                 togglePanel();
               });
           });
@@ -2021,7 +2021,7 @@ require([
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
+            queryInfoPanel(infoPanelData, 1, isPinValid);
             togglePanel();
           });
       });
@@ -2051,7 +2051,7 @@ require([
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
+            queryInfoPanel(infoPanelData, 1, isPinValid);
             togglePanel();
           });
       });
@@ -2150,7 +2150,7 @@ require([
 
       // push query results of search bar to information panel
       infoPanelData.push(event.results["0"].results["0"].feature);
-      await queryInfoPanel(infoPanelData, 1);
+      await queryInfoPanel(infoPanelData, 1, isPinValid);
       goToFeature(infoPanelData[0]);
       togglePanel();
     }
@@ -2163,6 +2163,34 @@ require([
     console.log("Determining geometry type");
 
     goToFeature(infoPanelData[this.id - 1]);
+  });
+
+  // to hold the value of the user entered pin
+  let pin;
+  // the pin that will unlock the MHW and MLW features
+  const validPin = 8505;
+  let isPinValid;
+  // on the dep-submit button click, set the entered pin
+  // correct pin will be 8505
+  $('#dep-submit').click(function (event) {
+    pin = parseInt($('#dep-pin').val());
+
+    if (pin === validPin) {
+      console.log(pin);
+      console.log(validPin);
+      isPinValid = true;
+
+
+      console.log('you entered the correct pin');
+    } else {
+      console.log(pin);
+      console.log(validPin);
+
+      isPinValid = false;
+
+      console.log('you entered an incorrect pin');
+    }
+
   });
 
 
@@ -2448,7 +2476,7 @@ require([
                   }
                 }
                 if (infoPanelData.length > 0) {
-                  await queryInfoPanel(infoPanelData, 1);
+                  await queryInfoPanel(infoPanelData, 1, isPinValid);
                   togglePanel();
                   await goToFeature(infoPanelData[0]);
                 } else { // if no features were found under the click

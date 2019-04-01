@@ -79,9 +79,10 @@ function queryInfoPanel(results, i) {
                     '<b>County: </b>' + results[i - 1].attributes.countyname + '<br>' +
                     '<b>Quad: </b>' + results[i - 1].attributes.quadname + '<br>' +
                     '<b>Status: </b>' + results[i - 1].attributes.status + '<br>' +
-                    '<b>MHW (feet): </b>' + results[i - 1].attributes.navd88mhw_ft + '<br>' +
-                    '<b>MLW (feet): </b>' + results[i - 1].attributes.navd88mlw_ft + '<br>' +
+                    // '<b>MHW (feet): </b>' + results[i - 1].attributes.navd88mhw_ft + '<br>' +
+                    // '<b>MLW (feet): </b>' + results[i - 1].attributes.navd88mlw_ft + '<br>' +
                     "<b>Steven's ID: </b>" + results[i - 1].attributes.stevens_id + '<br>',
+                    "<b>For MHW and MLW data, please contact: </b> <a href='mailto:mhwrequest@floridadep.gov'>mhwrequest@floridadep.gov</a><br>"
                 );
                 // Do not include link to DEP report if the old link is present
                 if (results[i - 1].attributes.report_dep.substring(0, 36) == 'ftp://ftp.labins.org/tide/NewReports') {
@@ -103,10 +104,12 @@ function queryInfoPanel(results, i) {
                     '<b>County: </b>' + results[i - 1].attributes.cname + '<br>' +
                     '<b>Quad: </b>' + results[i - 1].attributes.tile_name + '<br>' +
                     '<b>Method: </b>' + results[i - 1].attributes.method + '<br>' +
-                    '<b>MHW (feet): </b>' + results[i - 1].attributes.mhw2_ft + '<br>' +
-                    '<b>MLW (feet): </b>' + results[i - 1].attributes.mlw2_ft + '<br>' +
+                    // '<b>MHW (feet): </b>' + results[i - 1].attributes.mhw2_ft + '<br>' +
+                    // '<b>MLW (feet): </b>' + results[i - 1].attributes.mlw2_ft + '<br>' +
                     '<b>Station 1: </b>' + results[i - 1].attributes.station1 + '<br>' +
-                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>'
+                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>',
+                    "<b>For MHW and MLW data, please contact: </b> <a href='mailto:mhwrequest@floridadep.gov'>mhwrequest@floridadep.gov</a><br>"
+
                 );
                 if (results[i - 1].attributes.status_col === "1") {
                     // This is not a tidal point

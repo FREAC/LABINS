@@ -259,113 +259,113 @@ require([
     }]
   });
 
-  var GNISURL = "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/";
-  var GNISLayer = new MapImageLayer({
-    url: GNISURL,
-    title: "Geographic Names",
-    minScale: minimumDrawScale,
-    sublayers: [{
-      id: 0,
-      title: "Physical Points",
-      visible: false,
-      popupEnabled: false,
-    }, {
-      id: 1,
-      title: "Landforms",
-      visible: false,
-      popupEnabled: false,
-    }, {
-      id: 2,
-      title: "Streams (mouth)",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 4,
-      title: "Cultural Points",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 5,
-      title: "Airports",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 6,
-      title: "Buildings",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 7,
-      title: "Churches",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 8,
-      title: "Hospitals",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 9,
-      title: "Schools",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 10,
-      title: "Bridges, Crossings, and Tunnels",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 11,
-      title: "Cemeteries",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 12,
-      title: "Dams",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 19,
-      title: "Civil Features",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 20,
-      title: "Forests",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 21,
-      title: "Parks",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 22,
-      title: "Reserves",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 23,
-      title: "Historical Points",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 24,
-      title: "Historical Cultural-Political Points",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 25,
-      title: "Historical Hydrographic Points",
-      visible: false,
-      popupEnabled: false
-    }, {
-      id: 26,
-      title: "Historical Physical Points",
-      visible: false,
-      popupEnabled: false
-    }]
-  });
+  // var GNISURL = "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/";
+  // var GNISLayer = new MapImageLayer({
+  //   url: GNISURL,
+  //   title: "Geographic Names",
+  //   minScale: minimumDrawScale,
+  //   sublayers: [{
+  //     id: 0,
+  //     title: "Physical Points",
+  //     visible: false,
+  //     popupEnabled: false,
+  //   }, {
+  //     id: 1,
+  //     title: "Landforms",
+  //     visible: false,
+  //     popupEnabled: false,
+  //   }, {
+  //     id: 2,
+  //     title: "Streams (mouth)",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 4,
+  //     title: "Cultural Points",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 5,
+  //     title: "Airports",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 6,
+  //     title: "Buildings",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 7,
+  //     title: "Churches",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 8,
+  //     title: "Hospitals",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 9,
+  //     title: "Schools",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 10,
+  //     title: "Bridges, Crossings, and Tunnels",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 11,
+  //     title: "Cemeteries",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 12,
+  //     title: "Dams",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 19,
+  //     title: "Civil Features",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 20,
+  //     title: "Forests",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 21,
+  //     title: "Parks",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 22,
+  //     title: "Reserves",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 23,
+  //     title: "Historical Points",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 24,
+  //     title: "Historical Cultural-Political Points",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 25,
+  //     title: "Historical Hydrographic Points",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }, {
+  //     id: 26,
+  //     title: "Historical Physical Points",
+  //     visible: false,
+  //     popupEnabled: false
+  //   }]
+  // });
 
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
   var swfwmdLayer = new MapImageLayer({

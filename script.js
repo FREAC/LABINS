@@ -980,7 +980,8 @@ require([
   // when mapView is ready, build the first dropdown for township selection
   mapView.when(async function () {
     var townshipQuery = new Query({
-      where: "tdir <> ' '",
+      where: "tdir <> ' ' AND NOT (CAST(twn_ch AS int) > '8' AND tdir = 'N')",
+      // where: "tdir <> ' '", // priginal sql query
       outFields: ["twn_ch", "tdir"],
       returnDistinctValues: true,
       orderByFields: ["twn_ch", "tdir"],

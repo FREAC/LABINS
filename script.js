@@ -1122,15 +1122,6 @@ require([
           }]
         ];
       }
-
-      // console.log(item.layer.type);
-      if (item.layer.type != "group") {
-        // don't show legend twice
-        item.panel = {
-          content: "legend",
-          open: true
-        };
-      }
     }
 
     const layersArr = [ /*GNISLayer, */ countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
@@ -1153,30 +1144,35 @@ require([
       // if layerlist status != 1, add it to the map
       if (layerlistStatus != 1) {
         mapView.ui.remove(scaleBar);
-        // document.getElementById("layersDiv");
-        // $("#layersDiv").prepend('<div class="text-right"><button type="button" class="esri-icon esri-icon-close" aria-label="Close"></button><br></div>');
-        // $("#layersDiv").prepend('<div class="text-right"><span class="esri-icon esri-icon-close" style="color:white" aria-hidden="true"></span></div>');
-        const closeBtn = `<div class="text-right">
-                            <button type="button" class="btn" style="background-color: transparent">
-                              <span class="esri-icon esri-icon-close" style="color:white" aria-hidden="true"></span>
-                            </button>
-                          </div >`;
-
-        const heading = `
-        <div id="headingLayers" class="panel-heading" role="tab">
-        <div class="panel-title" style="color:white">
-          <a class="panel-toggle" data-toggle="collapse" aria-expanded="false"
-            aria-controls="collapseLayers"><span class="panel-label">Layers</span></a>
-          <a class="panel-close" role="button" data-toggle="collapse" tabindex="0"><span class="esri-icon esri-icon-close"
-              aria-hidden="true"></span></a>
-        </div>
-      </div>
-        `;
-        $("#layersDiv").prepend(heading);
+        // const altHead = `
+        // <div class="panel-heading"style="display: inline-block;">
+        //   <h5 class="text-left" style="display: inline-block; float: left; color:white;">Title</h5>
+        //   <button id="closeBtn" type="button" class="btn text-right" style="background-color: transparent;">
+        //     <span class="esri-icon esri-icon-close" style="color:white; display:inline-block; float:left;" aria-hidden="true"></span>
+        //   </button>
+        // </div>
+        // `
+        const altHead = `<div>
+          <button id="closeBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
+            <span class="esri-icon esri-icon-close" style="color:white; display:inline-block; float:left;" aria-hidden="true"></span>
+          </button>
+          </div>
+        `
         mapView.ui.add([layerList, scaleBar], "bottom-left");
+        $("#layersDiv").prepend(altHead);
+
+        const closebtn = document.getElementById('closeBtn');
+        on(closebtn, "click", function (event) {
+          $("#closeBtn").remove();
+          mapView.ui.remove(layerList);
+          layerlistStatus = 0;
+        });
         layerlistStatus = 1;
       } else {
+        $("#closeBtn").remove();
+
         mapView.ui.remove(layerList);
+
         layerlistStatus = 0;
       }
 

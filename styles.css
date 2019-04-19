@@ -98,6 +98,7 @@ body,
 #layersDiv {
   margin-left: 40px;
   overflow: auto;
+  display: grid;
 }
 
 /* style the layers widget */

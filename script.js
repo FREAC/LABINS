@@ -1152,8 +1152,10 @@ require([
         //   </button>
         // </div>
         // `
-        const altHead = `<div>
-          <button id="closeBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
+        const altHead = `<div id="layerlist">
+          <span class="glyphicon esri-icon-layers" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 2px;"></span>
+          <span id="infoSpan" class="panel-label"  style="color: white; margin-top: 5px;">Layerlist</span>
+          <button id="closeLyrBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
             <span class="esri-icon esri-icon-close" style="color:white; display:inline-block; float:left;" aria-hidden="true"></span>
           </button>
           </div>
@@ -1161,15 +1163,16 @@ require([
         mapView.ui.add([layerList, scaleBar], "bottom-left");
         $("#layersDiv").prepend(altHead);
 
-        const closebtn = document.getElementById('closeBtn');
+        const layerlistDiv = document.getElementById('layerlist');
+        const closebtn = document.getElementById('closeLyrBtn');
         on(closebtn, "click", function (event) {
-          $("#closeBtn").remove();
+          $("#layerlist").remove();
           mapView.ui.remove(layerList);
           layerlistStatus = 0;
         });
         layerlistStatus = 1;
       } else {
-        $("#closeBtn").remove();
+        $("#layerlist").remove();
 
         mapView.ui.remove(layerList);
 
@@ -2228,10 +2231,29 @@ require([
     let legendStatus;
     on(dom.byId("desktopLegend"), "click", function (evt) {
       // if legend status != 1 (not currently being displayed), add it to the map
+
       if (legendStatus != 1) {
+
+        const altHead = `
+        <div>
+          <button id="closeLgdBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
+            <span class="esri-icon esri-icon-close" style="color:white; display:inline-block; float:left;" aria-hidden="true"></span>
+          </button>
+        </div>
+        `
+
         mapView.ui.remove(scaleBar);
         document.getElementById("legendDiv");
         mapView.ui.add([legendWidget, scaleBar], "bottom-left");
+        $("#legendDiv").prepend(altHead);
+
+        const closebtn = document.getElementById('closeLgdBtn');
+        on(closebtn, "click", function (event) {
+          $("#closeLgdBtn").remove();
+          mapView.ui.remove(legendWidget);
+          legendStatus = 0;
+        });
+
         legendStatus = 1;
         console.log(legendStatus)
       } else {

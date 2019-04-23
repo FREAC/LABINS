@@ -1145,7 +1145,8 @@ require([
       if (layerlistStatus != 1) {
         mapView.ui.remove(scaleBar);
 
-        const altHead = `<div id="layerlist">
+        // custom header to display a header and close button
+        const header = `<div id="layerlist">
           <span class="glyphicon esri-icon-layers" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 2px;"></span>
           <span id="infoSpan" class="panel-label"  style="color: white; margin-top: 5px;">Layerlist</span>
           <button id="closeLyrBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
@@ -1154,9 +1155,8 @@ require([
           </div>
         `
         mapView.ui.add([layerList, scaleBar], "bottom-left");
-        $("#layersDiv").prepend(altHead);
+        $("#layersDiv").prepend(header);
 
-        document.getElementById('layerlist');
         const closebtn = document.getElementById('closeLyrBtn');
         on(closebtn, "click", function (event) {
           $("#layerlist").remove();
@@ -2226,8 +2226,10 @@ require([
       // if legend status != 1 (not currently being displayed), add it to the map
 
       if (legendStatus != 1) {
+        mapView.ui.remove(scaleBar);
 
-        const altHead = `
+        // custom header to display a header and close button
+        const header = `
         <div id="legend" style="background-color:#315866; padding-bottom: 5px">
           <span class="glyphicon glyphicon-list-alt" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 10px;"></span>
           <span id="infoSpan" class="panel-label"  style="color: white; margin-top: 5px;">Legend</span>
@@ -2237,10 +2239,8 @@ require([
         </div>
         `
 
-        mapView.ui.remove(scaleBar);
-        document.getElementById("legendDiv");
         mapView.ui.add([legendWidget, scaleBar], "bottom-left");
-        $("#legendDiv").prepend(altHead);
+        $("#legendDiv").prepend(header);
 
         const closebtn = document.getElementById('closeLgdBtn');
         on(closebtn, "click", function (event) {
@@ -2250,11 +2250,10 @@ require([
         });
 
         legendStatus = 1;
-        console.log(legendStatus)
       } else {
+        $("#legend").remove();
         mapView.ui.remove(legendWidget);
         legendStatus = 0;
-        console.log(legendStatus)
       }
     });
 

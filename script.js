@@ -218,12 +218,6 @@ require([
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 6,
-      title: "CCR with Images",
-      visible: false,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
       id: 5,
       title: "Geographic Names",
       visible: false,

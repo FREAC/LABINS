@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>IdentifyTask - 4.10</title>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    .esri-popup .esri-popup-header .esri-title {
+      font-size: 18px;
+      font-weight: bolder;
+    }
+
+    .esri-popup .esri-popup-body .esri-popup-content {
+      font-size: 14px;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.10/"></script>
+
+  <script src="/infopanel.js"></script>
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+  <script>
+    var promises, tasks;
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/MapImageLayer",
+      "esri/tasks/IdentifyTask",
+      "esri/tasks/support/IdentifyParameters",
+      "esri/widgets/LayerList",
+      "dojo/_base/array",
+      "dojo/on",
+      "dojo/dom",
+      "dojo/promise/all",
+      "dojo/domReady!"
+    ], function (
+      Map, MapView, MapImageLayer,
+      IdentifyTask, IdentifyParameters, LayerList,
+      arrayUtils, on, dom, all
+    ) {
+
+      let minimumDrawScale = 100000;
+
+
+      var identifyTask, params;
+
+      var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer";
+      var swfwmdLayer = new MapImageLayer({
+        url: swfwmdURL,
+        title: "SWFWMD Survey Benchmarks",
+        minScale: minimumDrawScale,
+        sublayers: [{
+          id: 0,
+          title: "Survey Benchmarks",
+          visible: true,
+          popupEnabled: false
+        }]
+      });
+
+      var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer";
+      var labinsLayer = new MapImageLayer({
+        url: labinsURL,
+        //minScale: minimumDrawScale,
+        sublayers: [{
+          id: 4,
+          title: "Tide Interpolation Points",
+          visible: true,
+          popupEnabled: false,
+          minScale: minimumDrawScale
+        }, {
+          id: 3,
+          title: "Tide Stations",
+          visible: true,
+          popupEnabled: false,
+          minScale: minimumDrawScale
+        }, {
+          id: 2,
+          title: "Certified Corners",
+          visible: true,
+          popupEnabled: false,
+          minScale: minimumDrawScale
+        }, {
+          id: 1,
+          title: "Preliminary NGS Points",
+          visible: false,
+          popupEnabled: false,
+          minScale: minimumDrawScale
+        }, {
+          id: 0,
+          title: "NGS Control Points",
+          visible: true,
+          popupEnabled: false,
+          minScale: minimumDrawScale
+        }]
+      });
+
+      var map = new Map({
+        basemap: "osm"
+      });
+
+      const layersArr = [labinsLayer, swfwmdLayer];
+
+
+      var view = new MapView({
+        map: map,
+        container: "viewDiv",
+        center: [-82.5018310546875, 29.559123451577964],
+        zoom: 15
+      });
+
+      var identifyElements = [];
+      var allParams;
+
+      view.when(async function () {
+
+        let allParams = [];
+        console.log(map);
+        await checkServices(map);
+        var layerList = await new LayerList({
+          view: view
+        });
+        // Add widget to the top right corner of the view
+        view.ui.add(layerList, "top-right");
+        console.log("checked services");
+
+
+        on(view, "click", async function (event) {
+          let infoPanelData = [];
+          let tasks = [];
+
+
+          console.log(event);
+
+          if (view.scale < minimumDrawScale) {
+            // look inside of layerList layers
+            let layers = layerList.operationalItems.items
+            console.log(layers)
+            // loop through layers
+
+            for (layer of layers) {
+              const visibleLayers = await checkVisibleLayers(layer);
+              console.log(visibleLayers)
+              //console.log(layer);
+              // if there are visible layers returned
+
+              if (visibleLayers.length > 0) {
+                const task = new IdentifyTask(layer.layer.url)
+                const params = await setIdentifyParameters(visibleLayers, "click", event);
+                const identify = await executeIdentifyTask(task, params);
+
+                // push each feature to the infoPanelData
+                for (feature of identify.results) {
+                  console.log(feature);
+                  feature.feature.attributes.layerName = feature.layerName;
+                  await infoPanelData.push(feature.feature);
+                }
+              }
+            }
+            console.log("checked visible layers")
+            console.log(infoPanelData);
+            await queryInfoPanel(infoPanelData, 1);
+          }
+        });
+
+      });
+
+      // fetch all map services before loading to map
+      // if service returns good, add service to map
+      async function checkServices(map) {
+        // let layers = map.layers.items
+        let layers = layersArr
+        for (layer of layers) {
+          try {
+            // make request to server for layer in question
+            const request = await fetch(layer.url)
+            // if layer returns good, add to map
+            map.add(layer);
+          } catch (err) {
+            // layer returns bad, not added to map, log error
+            console.log(layer.title + " layer failed to be returned");
+          }
+        }
+      }
+
+      async function checkVisibleLayers(service) {
+        let visibleLayerIds = [];
+        if (service.visible == true) {
+          // find the currently visible layers/sublayers
+          for (sublayer of service.children.items) {
+            // if sublayer is visible, add to visibleLayerIds array
+            if (sublayer.visible) {
+              visibleLayerIds.push(sublayer.layer.id);
+            }
+          }
+        }
+        // return visibleLayerIds
+        return visibleLayerIds;
+      }
+
+      async function setIdentifyParameters(visibleLayers, eventType, event) {
+        // receive array of active visible layer with urls
+        // Set the parameters for the Identify
+        params = new IdentifyParameters();
+        params.tolerance = 5;
+        params.layerIds = visibleLayers;
+        params.layerOption = "all";
+        params.width = view.width;
+        params.height = view.height;
+        params.returnGeometry = true;
+        console.log(params);
+        if (eventType == "click") {
+          params.geometry = event.mapPoint
+          params.mapExtent = view.extent;
+        } else {
+          params.geometry = event
+          params.mapExtent = view.extent;
+        }
+        return params; // return parameter array 
+      }
+
+      async function executeIdentifyTask(tasks, params) {
+        // take in tasks
+        // take in parameters
+        console.log(params);
+        return tasks.execute(params)
+      }
+
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>

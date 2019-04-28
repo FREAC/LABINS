@@ -49,7 +49,9 @@ function queryInfoPanel(results, i) {
                     'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +
                     'County: ' + results[i - 1].attributes.county + '<br>' +
                     'PID: ' + results[i - 1].attributes.pid + '<br>' +
-                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.data_srce + '>' + results[i - 1].attributes.pid + '</a><br>',
+                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.data_srce + '>' + results[i - 1].attributes.pid + '</a><br>' +
+                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a>'
+
                 );
                 // } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
                 //     $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
@@ -65,7 +67,8 @@ function queryInfoPanel(results, i) {
                     'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +
                     'County: ' + results[i - 1].attributes.county + '<br>' +
                     'PID: ' + results[i - 1].attributes.pid + '<br>' +
-                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.datasheet2 + '>' + results[i - 1].attributes.pid + '</a><br>',
+                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.datasheet2 + '>' + results[i - 1].attributes.pid + '</a><br>' +
+                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a>'
                 );
             } else if (results[i - 1].attributes.layerName === 'City Limits') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>City Limits</b></p>' +
@@ -88,7 +91,9 @@ function queryInfoPanel(results, i) {
                     '<b>Latitude: </b>' + results[i - 1].attributes.latdecdeg + '<br>' +
                     '<b>Longitude: </b>' + results[i - 1].attributes.londecdeg + '<br>' +
                     'Abstract: ' + '<a href=' + results[i - 1].attributes.abstract + '>' + results[i - 1].attributes.l_number + '</a><br>',
-                    'Description: ' + '<a href=' + results[i - 1].attributes.description2 + '>' + results[i - 1].attributes.l_number + '</a><br>',
+                    'Description: ' + '<a href=' + results[i - 1].attributes.description2 + '>' + results[i - 1].attributes.l_number + '</a><br>' +
+                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a>'
+
                 );
             } else if (results[i - 1].attributes.layerName === 'Tide Stations') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Stations</b></p>' +
@@ -99,7 +104,9 @@ function queryInfoPanel(results, i) {
                     '<b>Status: </b>' + results[i - 1].attributes.status + '<br>' +
                     '<b>MHW (feet): </b>' + results[i - 1].attributes.navd88mhw_ft + '<br>' +
                     '<b>MLW (feet): </b>' + results[i - 1].attributes.navd88mlw_ft + '<br>' +
-                    "<b>Steven's ID: </b>" + results[i - 1].attributes.stevens_id + '<br>',
+                    "<b>Steven's ID: </b>" + results[i - 1].attributes.stevens_id + '<br>' +
+                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
+
                 );
                 // Do not include link to DEP report if the old link is present
                 if (results[i - 1].attributes.report_dep.substring(0, 36) == 'ftp://ftp.labins.org/tide/NewReports') {
@@ -124,7 +131,8 @@ function queryInfoPanel(results, i) {
                     '<b>MHW (feet): </b>' + results[i - 1].attributes.mhw2_ft + '<br>' +
                     '<b>MLW (feet): </b>' + results[i - 1].attributes.mlw2_ft + '<br>' +
                     '<b>Station 1: </b>' + results[i - 1].attributes.station1 + '<br>' +
-                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>'
+                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>' +
+                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
                 );
                 if (results[i - 1].attributes.status_col === "1") {
                     // This is not a tidal point
@@ -142,7 +150,8 @@ function queryInfoPanel(results, i) {
                     '<b>State Plane Zone: </b>' + results[i - 1].attributes.state_plane_zone + '<br>' +
                     '<b>County: </b>' + results[i - 1].attributes.county + '<br>' +
                     '<b>Latitude: </b>' + results[i - 1].attributes.latitude + '<br>' +
-                    '<b>Longitude: </b>' + results[i - 1].attributes.longitude + '<br>'
+                    '<b>Longitude: </b>' + results[i - 1].attributes.longitude + '<br>' +
+                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Erosion Control Line') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Erosion Control Line</b></p>' +
@@ -156,7 +165,8 @@ function queryInfoPanel(results, i) {
                 var replaceWhitespace = results[i - 1].attributes.FILE_NAME.replace(" ", "%20");
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>SWFWMD Survey Benchmarks</b></p>' +
                     '<b>Benchmark Name: </b>' + results[i - 1].attributes.BENCHMARK_NAME + '<br>' +
-                    'More Information: </b><a target="_blank" href=http://ftp.labins.org/swfwmd/SWFWMD_control_2013/' + replaceWhitespace + '>' + results[i - 1].attributes.FILE_NAME + '</a><br>'
+                    'More Information: </b><a target="_blank" href=http://ftp.labins.org/swfwmd/SWFWMD_control_2013/' + replaceWhitespace + '>' + results[i - 1].attributes.FILE_NAME + '</a><br>' +
+                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>  '
                 );
 
             } else if (results[i - 1].attributes.layerName === 'Township-Range-Section') {
@@ -172,14 +182,16 @@ function queryInfoPanel(results, i) {
             } else if (results[i - 1].attributes.layerName === 'Geographic Names') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Geographic Names</b> </p>' +
                     '<b>Feature Name: </b>' + results[i - 1].attributes.feature_na + '<br>' +
-                    '<b>Feature Class: </b>' + results[i - 1].attributes.feature_cl + '<br>'
+                    '<b>Feature Class: </b>' + results[i - 1].attributes.feature_cl + '<br>' +
+                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a>'
+
                 );
             } else if (results[i - 1].attributes.layerName === 'Certified Corners') {
-                console.log("found the corners");
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
                     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
-                    '<b>PDF: </b><a target="_blank" href=' + results[i - 1].attributes.pdf + '>' + results[i - 1].attributes.pdf.substring(44, 55) + '</a><br>'
+                    '<b>PDF: </b><a target="_blank" href=' + results[i - 1].attributes.pdf + '>' + results[i - 1].attributes.pdf.substring(44, 55) + '</a><br>' +
+                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
                 );
                 //console.log(results[i-1].attributes.image1);
                 for (var prop in results[i - 1].attributes) {

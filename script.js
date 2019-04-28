@@ -1147,7 +1147,7 @@ require([
 
         // custom header to display a header and close button
         const header = `
-        <div id="layerlist" style="background-color:#315866; position: sticky; top: 0; z-index: 999; padding-top: 1px;">
+        <div id="layerlistHeader" style="background-color:#315866; position: sticky; top: 0; z-index: 999; padding-top: 1px;">
           <span class="glyphicon esri-icon-layers" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 2px;"></span>
           <span id="infoSpan" class="panel-label"  style="color: white; margin-top: 5px;">Layerlist</span>
           <button id="closeLyrBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
@@ -1156,17 +1156,19 @@ require([
         </div>
         `
         mapView.ui.add([layerList, scaleBar], "bottom-left");
+        // add layerlist header to beginning of div
         $("#layersDiv").prepend(header);
 
         const closebtn = document.getElementById('closeLyrBtn');
         on(closebtn, "click", function (event) {
-          $("#layerlist").remove();
+          // remove the layerlist header
+          $("#layerlistHeader").remove();
           mapView.ui.remove(layerList);
           layerlistStatus = 0;
         });
         layerlistStatus = 1;
       } else {
-        $("#layerlist").remove();
+        $("#layerlistHeader").remove();
 
         mapView.ui.remove(layerList);
 
@@ -2231,7 +2233,7 @@ require([
 
         // custom header to display a header and close button
         const header = `
-        <div id="legend" style="background-color:#315866; padding-bottom: 5px; position: sticky; top: 0;">
+        <div id="legendHeader" style="background-color:#315866; padding-bottom: 5px; position: sticky; top: 0;">
           <span class="glyphicon glyphicon-list-alt" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 10px;"></span>
           <span id="infoSpan" class="panel-label"  style="color: white; margin-top: 5px;">Legend</span>
           <button id="closeLgdBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
@@ -2241,18 +2243,20 @@ require([
         `
 
         mapView.ui.add([legendWidget, scaleBar], "bottom-left");
+        // add legend header to beginning of div
         $("#legendDiv").prepend(header);
 
         const closebtn = document.getElementById('closeLgdBtn');
         on(closebtn, "click", function (event) {
-          $("#legend").remove();
+          // remove the legend header
+          $("#legendHeader").remove();
           mapView.ui.remove(legendWidget);
           legendStatus = 0;
         });
 
         legendStatus = 1;
       } else {
-        $("#legend").remove();
+        $("#legendHeader").remove();
         mapView.ui.remove(legendWidget);
         legendStatus = 0;
       }

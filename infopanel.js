@@ -1,6 +1,4 @@
 function queryInfoPanel(results, i) {
-    console.log(results);
-
     if (results.length > 0) {
         // Set append templates for information panel
         for (var i = 1; i <= results.length; i++) {
@@ -109,18 +107,18 @@ function queryInfoPanel(results, i) {
 
                 );
                 // Do not include link to DEP report if the old link is present
-                if (results[i - 1].attributes.report_dep.substring(0, 36) == 'ftp://ftp.labins.org/tide/NewReports') {
-                    $('#informationdiv').append('DEP Report: ' + '<a target="_blank" href=' + results[i - 1].attributes.report_dep + '>' + results[i - 1].attributes.filename + '</a><br>');
-                }
-                // A null value here will return an object, otherwise, number will be returned
-                if (typeof results[i - 1].attributes.navd88mhw_ft != 'object' && results[i - 1].attributes.navd88mlw_ft != 'object') {
-                    // mhw and mlw are null
-                    $('#informationdiv').append(' <a target="_blank" href=http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_2016.pdf><b>MHW Procedural Approval Form if data IS available</b></a><br>');
-                } else {
-                    // mhw and mlw are null
-                    $('#informationdiv').append('<a target="_blank" href=http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_noelevation.pdf><b>MHW Procedural Approval Form if data IS NOT available</b></a><br>');
+                // if (results[i - 1].attributes.report_dep.substring(0, 36) == 'ftp://ftp.labins.org/tide/NewReports') {
+                //     $('#informationdiv').append('DEP Report: ' + '<a target="_blank" href=' + results[i - 1].attributes.report_dep + '>' + results[i - 1].attributes.filename + '</a><br>');
+                // }
+                // // A null value here will return an object, otherwise, number will be returned
+                // if (typeof results[i - 1].attributes.navd88mhw_ft != 'object' && results[i - 1].attributes.navd88mlw_ft != 'object') {
+                //     // mhw and mlw are null
+                //     $('#informationdiv').append(' <a target="_blank" href=https://www.labins.org/survey_data/water/procedures_and_forms/Forms/MHW%20Procedural%20Approval%20-%20Map.pdf><b>MHW Procedural Approval Form if data IS available</b></a><br>');
+                // } else {
+                //     // mhw and mlw are null
+                //     $('#informationdiv').append('<a target="_blank" href=http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_noelevation.pdf><b>MHW Procedural Approval Form if data IS NOT available</b></a><br>');
 
-                }
+                // }
             } else if (results[i - 1].attributes.layerName === 'Tide Interpolation Points') {
                 var replaceWhitespace = results[i - 1].attributes.tile_name.replace(" ", "%20");
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Interpolation Points</b></p>' +
@@ -128,8 +126,8 @@ function queryInfoPanel(results, i) {
                     '<b>County: </b>' + results[i - 1].attributes.cname + '<br>' +
                     '<b>Quad: </b>' + results[i - 1].attributes.tile_name + '<br>' +
                     '<b>Method: </b>' + results[i - 1].attributes.method + '<br>' +
-                    '<b>MHW (feet): </b>' + results[i - 1].attributes.mhw2_ft + '<br>' +
-                    '<b>MLW (feet): </b>' + results[i - 1].attributes.mlw2_ft + '<br>' +
+                    // '<b>MHW (feet): </b>' + results[i - 1].attributes.mhw2_ft + '<br>' +
+                    // '<b>MLW (feet): </b>' + results[i - 1].attributes.mlw2_ft + '<br>' +
                     '<b>Station 1: </b>' + results[i - 1].attributes.station1 + '<br>' +
                     '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>' +
                     '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
@@ -193,7 +191,6 @@ function queryInfoPanel(results, i) {
                     '<b>PDF: </b><a target="_blank" href=' + results[i - 1].attributes.pdf + '>' + results[i - 1].attributes.pdf.substring(44, 55) + '</a><br>' +
                     '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
                 );
-                //console.log(results[i-1].attributes.image1);
                 for (var prop in results[i - 1].attributes) {
                     if (prop.startsWith('image')) {
                         if (results[i - 1].attributes[prop].length > 1) {
@@ -202,6 +199,13 @@ function queryInfoPanel(results, i) {
                     }
 
                 }
+            } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
+                $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
+                    '<b>County: </b>' + results[i - 1].attributes.COUNTY + '<br>' +
+                    '<b>ECL Name: </b>' + results[i - 1].attributes.YEAR + '<br>' +
+                    '<b>MHW: </b>' + results[i - 1].attributes.OBJECTID + '<br>'
+                    // '<b>Location: </b>' + results[i - 1].attributes.SHAPE.LEN + '<br>'
+                );
             }
             $('#informationdiv').append('<br>');
             $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
@@ -209,10 +213,9 @@ function queryInfoPanel(results, i) {
 
         }
     } else {
-        console.log('hey dummy, find some features');
+        $('#informationdiv').append('<p>This query did not return any features</p>');
         $('#infoSpan').html('Information Panel - 0 features found. ');
     }
-    //$('#numinput').val(parseInt(i));
     if (i == 1) {
         // $('#arraylengthdiv').html((parseInt(i - 1)) + ' feature found.');
         $('#infoSpan').html('Information Panel - ' + (parseInt(i - 1)) + ' feature found.');

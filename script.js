@@ -112,12 +112,23 @@ require([
   var countyBoundariesLayer = new MapImageLayer({
     url: countyBoundariesURL,
     title: "County Boundaries",
-    minScale: minimumDrawScale,
+    minScale: 4000000,
     sublayers: [{
       id: 0,
       title: "County Boundaries",
       visible: false,
-      popupEnabled: false
+      popupEnabled: false,
+      renderer: {
+        type: "simple",
+        symbol: {
+          type: "simple-fill",
+          style: "none",
+          outline: {
+            style: "dash-dot",
+            width: 1.50
+          }
+        }
+      },
     }]
   });
 

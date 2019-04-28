@@ -1146,13 +1146,14 @@ require([
         mapView.ui.remove(scaleBar);
 
         // custom header to display a header and close button
-        const header = `<div id="layerlist">
+        const header = `
+        <div id="layerlist" style="background-color:#315866; position: sticky; top: 0; z-index: 999; padding-top: 1px;">
           <span class="glyphicon esri-icon-layers" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 2px;"></span>
           <span id="infoSpan" class="panel-label"  style="color: white; margin-top: 5px;">Layerlist</span>
           <button id="closeLyrBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
             <span class="esri-icon esri-icon-close" style="color:white; display:inline-block; float:left;" aria-hidden="true"></span>
           </button>
-          </div>
+        </div>
         `
         mapView.ui.add([layerList, scaleBar], "bottom-left");
         $("#layersDiv").prepend(header);

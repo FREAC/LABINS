@@ -103,6 +103,7 @@ body,
   display: grid;
   height: auto;
   max-height: 37vh;
+  padding-top: inherit;
 }
 
 /* style the layers widget */

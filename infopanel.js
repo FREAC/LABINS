@@ -41,7 +41,6 @@ function queryInfoPanel(results, i) {
                     '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
-                console.log('looking at control points');
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
                     'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
                     'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +

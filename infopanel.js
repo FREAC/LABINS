@@ -48,7 +48,7 @@ function queryInfoPanel(results, i) {
                     'County: ' + results[i - 1].attributes.county + '<br>' +
                     'PID: ' + results[i - 1].attributes.pid + '<br>' +
                     'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.data_srce + '>' + results[i - 1].attributes.pid + '</a><br>' +
-                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a>'
+                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
 
                 );
                 // } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
@@ -66,7 +66,7 @@ function queryInfoPanel(results, i) {
                     'County: ' + results[i - 1].attributes.county + '<br>' +
                     'PID: ' + results[i - 1].attributes.pid + '<br>' +
                     'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.datasheet2 + '>' + results[i - 1].attributes.pid + '</a><br>' +
-                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a>'
+                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'City Limits') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>City Limits</b></p>' +

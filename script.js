@@ -129,37 +129,37 @@ require([
   var labinsLayer = new MapImageLayer({
     url: labinsURL,
     sublayers: [{
-      id: 17,
+      id: 16,
       title: "Soils June 2012 - Dept. of Agriculture",
       visible: false,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 16,
+      id: 15,
       title: "Hi-Res Imagery Grid State Plane East",
       visible: true,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 15,
+      id: 14,
       title: "Hi-Res Imagery Grid: State Plane North",
       visible: true,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 14,
+      id: 13,
       title: "Hi-Res Imagery Grid: State Plane West",
       visible: true,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 13,
+      id: 12,
       title: "Parcels",
       visible: false,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 12,
+      id: 11,
       title: "City Limits",
       visible: false,
       popupEnabled: false,
@@ -176,13 +176,13 @@ require([
       },
       minScale: minimumDrawScale
     }, {
-      id: 11,
+      id: 10,
       title: "Township-Range-Section",
       visible: true,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 10,
+      id: 9,
       title: "Township-Range",
       visible: true,
       popupEnabled: false,
@@ -203,27 +203,21 @@ require([
       }],
       minScale: minimumDrawScale
     }, {
-      id: 9,
+      id: 8,
       title: "USGS Quads",
       visible: false,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 8,
+      id: 7,
       title: "Erosion Control Line",
       minScale: 4000000,
       visible: true,
       popupEnabled: false
     }, {
-      id: 7,
+      id: 6,
       title: "R-Monuments",
       visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 6,
-      title: "CCR with Images",
-      visible: false,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
@@ -259,114 +253,6 @@ require([
     }]
   });
 
-  // var GNISURL = "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/";
-  // var GNISLayer = new MapImageLayer({
-  //   url: GNISURL,
-  //   title: "Geographic Names",
-  //   minScale: minimumDrawScale,
-  //   sublayers: [{
-  //     id: 0,
-  //     title: "Physical Points",
-  //     visible: false,
-  //     popupEnabled: false,
-  //   }, {
-  //     id: 1,
-  //     title: "Landforms",
-  //     visible: false,
-  //     popupEnabled: false,
-  //   }, {
-  //     id: 2,
-  //     title: "Streams (mouth)",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 4,
-  //     title: "Cultural Points",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 5,
-  //     title: "Airports",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 6,
-  //     title: "Buildings",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 7,
-  //     title: "Churches",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 8,
-  //     title: "Hospitals",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 9,
-  //     title: "Schools",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 10,
-  //     title: "Bridges, Crossings, and Tunnels",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 11,
-  //     title: "Cemeteries",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 12,
-  //     title: "Dams",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 19,
-  //     title: "Civil Features",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 20,
-  //     title: "Forests",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 21,
-  //     title: "Parks",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 22,
-  //     title: "Reserves",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 23,
-  //     title: "Historical Points",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 24,
-  //     title: "Historical Cultural-Political Points",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 25,
-  //     title: "Historical Hydrographic Points",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 26,
-  //     title: "Historical Physical Points",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }]
-  // });
-
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
   var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
@@ -381,7 +267,7 @@ require([
   });
 
   // Layers needed for dependent dropdowns
-  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/11"
+  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/10"
   var townshipRangeSectionLayer = new FeatureLayer({
     url: townshipRangeSectionURL,
     outFields: ["twn_ch", "rng_ch", "sec_ch"],
@@ -689,7 +575,6 @@ require([
             extent: mapView.extent
           }
           extents.push(sExt);
-          console.log(sExt);
           var stringifedExtents = JSON.stringify(extents);
           localStorage.setItem("myBookmarks", stringifedExtents);
         }
@@ -810,7 +695,6 @@ require([
 
   // Input location from drop down, zoom to it and highlight
   async function zoomToFeature(panelurl, location, attribute) {
-    console.log(location);
 
     // union features so that they can be returned as a single geometry
     var task = new QueryTask({
@@ -835,14 +719,12 @@ require([
 
   // Union geometries of multi polygon features
   async function unionGeometries(response) {
-    console.log(response);
     // Array to store polygons in
     var multiPolygonGeometries = [];
     for (i = 0; i < response.features.length; i++) {
       multiPolygonGeometries.push(response.features[i].geometry);
     }
     var union = await geometryEngine.union(multiPolygonGeometries);
-    console.log('unioning of all pieces is complete', union);
     return union;
   }
 
@@ -869,13 +751,11 @@ require([
     });
     task.execute(params)
       .then(function (response) {
-        console.log(response);
         var multiPolygonGeometries = [];
         for (i = 0; i < response.features.length; i++) {
           multiPolygonGeometries.push(response.features[i].geometry);
         }
         var union = geometryEngine.union(multiPolygonGeometries);
-        console.log(union);
         var ext = union.extent;
         var cloneExt = ext.clone();
         mapView.goTo({
@@ -981,7 +861,6 @@ require([
   mapView.when(async function () {
     var townshipQuery = new Query({
       where: "tdir <> ' ' AND NOT (CAST(twn_ch AS int) > '8' AND tdir = 'N')",
-      // where: "tdir <> ' '", // priginal sql query
       outFields: ["twn_ch", "tdir"],
       returnDistinctValues: true,
       orderByFields: ["twn_ch", "tdir"],
@@ -1394,8 +1273,6 @@ require([
         // if current scale is greater than number, 
         // go to feature and expand extent by 1.75x
         if (mapView.scale > 18055.954822) {
-          console.log(mapView.scale);
-          console.log('going to a different scale')
           mapView.goTo({
             target: feature,
             extent: cloneExt.expand(1.75)
@@ -1565,7 +1442,6 @@ require([
 
     // get geometry based on query results
     async function getGeometry(url, attribute, value) {
-      console.log(value.toUpperCase());
       // modifies value to remove portions of the string in parentheses 
       value = value.replace(/ *\([^)]*\) */g, "")
 
@@ -1577,20 +1453,16 @@ require([
       //query.outFields = ['*'];
       query.where = "Upper(" + attribute + ") LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
 
-      console.log(task.execute(query));
       const results = task.execute(query);
       return results;
     }
 
     // data query by text
     async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement) {
-      console.log('starting multiTextQueryTask');
       var whereStatement;
 
       if (queryStatement != '' || idQueryStatement != '') {
         whereStatement = "Upper(" + attribute + ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute + ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%'";
-      } else {
-        console.log('No features found.');
       }
 
       var queryTask = new QueryTask({
@@ -1605,7 +1477,6 @@ require([
 
       return queryTask.execute(params)
         .then(function (response) {
-          console.log(response);
           if (response.features.length > 0) {
             return queryTask.execute(params);
           } else {
@@ -1644,7 +1515,6 @@ require([
       });
       return queryTask.execute(params)
         .then(function (response) {
-          console.log('response length ', response.features.length);
           if (response.features.length > 0) {
             return queryTask.execute(params);
           } else {
@@ -1812,10 +1682,8 @@ require([
         infoPanelData = [];
         var textValue = document.getElementById('IDQuery').value;
 
-        console.log(textValue);
         textQueryQuerytask(labinsURL + '2', 'blmid', textValue)
           .then(function (response) {
-            console.log(response);
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Certified Corners';
               infoPanelData.push(response.features[i]);
@@ -1841,7 +1709,6 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        console.log(e.target.value);
 
         getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
@@ -1953,12 +1820,10 @@ require([
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
               .then(function (response) {
-                console.log(response);
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Tide Stations';
                   infoPanelData.push(response.features[i]);
                 }
-                console.log(infoPanelData);
                 goToFeature(infoPanelData[0]);
                 queryInfoPanel(infoPanelData, 1);
                 togglePanel();
@@ -2017,7 +1882,6 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        console.log('grabbing geometry');
         getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
@@ -2039,7 +1903,6 @@ require([
         infoPanelData = [];
         textQueryQuerytask(labinsURL + '8', 'ecl_name', inputAfter.value)
           .then(function (response) {
-            console.log(response)
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Erosion Control Line';
               infoPanelData.push(response.features[i]);
@@ -2145,7 +2008,6 @@ require([
     mapView.graphics.removeAll();
     selectionLayer.graphics.removeAll();
     bufferLayer.graphics.removeAll();
-    console.log(mapView.scale);
     clearDiv('informationdiv');
     $('#numinput').val('');
     $('#arraylengthdiv').html('');
@@ -2157,7 +2019,6 @@ require([
   searchWidget.on("search-complete", async function (event) {
 
     infoPanelData = [];
-    console.log(event.results["0"].source);
 
     if (event.results["0"].source.locator) {
       // let native functionality work
@@ -2183,8 +2044,6 @@ require([
 
   // set up alert for dynamically created zoom to feature buttons
   $(document).on('click', "button[name='zoom']", function () {
-
-    console.log("Determining geometry type");
 
     goToFeature(infoPanelData[this.id - 1]);
   });
@@ -2402,7 +2261,6 @@ require([
       setActiveWidget(null);
       if (!this.classList.contains('active')) {
         setActiveWidget('distance');
-        console.log('active widget is distance');
       } else {
         setActiveButton(null);
       }

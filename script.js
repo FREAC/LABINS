@@ -832,21 +832,21 @@ require([
   });
 
   //Build Quad Dropdown panel
-  buildSelectPanel(labinsURL + '9', "tile_name", "Zoom to a Quad", "selectQuadPanel");
+  buildSelectPanel(labinsURL + '8', "tile_name", "Zoom to a Quad", "selectQuadPanel");
 
   //Zoom to feature
   query("#selectQuadPanel").on("change", function (e) {
     resetElements(document.getElementById('selectQuadPanel'));
-    return zoomToFeature(labinsURL + '9', e.target.value, "tile_name");
+    return zoomToFeature(labinsURL + '8', e.target.value, "tile_name");
   });
 
   //Build City Dropdown panel
-  buildSelectPanel(labinsURL + '12', "name", "Zoom to a City", "selectCityPanel");
+  buildSelectPanel(labinsURL + '11', "name", "Zoom to a City", "selectCityPanel");
 
   //Zoom to feature
   query("#selectCityPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCityPanel'));
-    return zoomToFeature(labinsURL + '12', e.target.value, "name");
+    return zoomToFeature(labinsURL + '11', e.target.value, "name");
   });
 
   ////////////////////////////////////////////////
@@ -1625,7 +1625,7 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(labinsURL + '/9', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '/8', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '/0', response)
@@ -1734,7 +1734,7 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(labinsURL + '9', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '8', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)
@@ -1815,7 +1815,7 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(labinsURL + '9', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '8', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
@@ -1863,7 +1863,7 @@ require([
     } else if (layerSelection === 'Erosion Control Line') {
       clearDiv('parametersQuery');
       addDescript();
-      createCountyDropdown(labinsURL + '8', 'county');
+      createCountyDropdown(labinsURL + '7', 'county');
       createTextBox('textQuery', 'Enter an ECL Name')
       createSubmit();
 
@@ -1885,7 +1885,7 @@ require([
         getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(labinsURL + '8', response)
+            dataQueryQuerytask(labinsURL + '7', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Erosion Control Line';
@@ -1901,7 +1901,7 @@ require([
       query(submitButton).on('click', function (e) {
         clearDiv('informationdiv');
         infoPanelData = [];
-        textQueryQuerytask(labinsURL + '8', 'ecl_name', inputAfter.value)
+        textQueryQuerytask(labinsURL + '7', 'ecl_name', inputAfter.value)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Erosion Control Line';

@@ -340,7 +340,6 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    // layers: [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
     layers: [selectionLayer, bufferLayer]
   });
 
@@ -2013,7 +2012,7 @@ require([
   });
 
   // Basemaps
-  var basemaps = new Basemaps({
+  new Basemaps({
     container: "basemapGalleryDiv",
     view: mapView
   })
@@ -2021,7 +2020,7 @@ require([
   // if screen width under 992 pixels, put legend and layerlist widget button into navigation bar menu
   if (screen.availWidth < 992) {
     // Legend
-    const legendWidget = new Legend({
+    new Legend({
       container: "legendDiv",
       view: mapView
     });
@@ -2340,7 +2339,7 @@ require([
   }
 
   // Print
-  var printWidget = new Print({
+  new Print({
     container: "printDiv",
     view: mapView,
     printServiceUrl: "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"

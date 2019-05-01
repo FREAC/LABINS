@@ -1912,6 +1912,7 @@ require([
     var identifyPanel = document.getElementById('panelPopup');
     var identifyStyle = document.getElementById('collapsePopup');
     var dataQueryPanel = document.getElementById('panelQuery');
+    let dataQueryPanelBody = document.getElementById('collapseQuery');
 
     identifyPanel.setAttribute('class', 'panel collapse');
     identifyPanel.setAttribute('style', 'height:0px;');
@@ -1921,6 +1922,9 @@ require([
 
     dataQueryPanel.setAttribute('class', 'panel collapse in');
     dataQueryPanel.setAttribute('style', 'height:auto;');
+
+    dataQueryPanelBody.setAttribute('class', 'panel collapse in');
+    dataQueryPanelBody.setAttribute('style', 'height:auto;');
   });
 
   // Switch panel to zoom to feature panel

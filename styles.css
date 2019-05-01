@@ -93,11 +93,17 @@ body,
 #legendDiv {
   margin-left: 40px;
   overflow: auto;
+  height: auto;
+  max-height: 40vh;
 }
 
 #layersDiv {
   margin-left: 40px;
   overflow: auto;
+  display: grid;
+  height: auto;
+  max-height: 37vh;
+  padding-top: inherit;
 }
 
 /* style the layers widget */

@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="description" content="Utah Geologic and Mineral Resources">
+
+    <title>Utah Geologic and Mineral Resources</title>
+
+    <!-- Calcite Maps Bootstrap -->
+    <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-bootstrap.min-v0.10.css">
+
+    <!-- Calcite Maps -->
+    <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-arcgis-4.x.min-v0.10.css">
+    <!--link rel="stylesheet" href="../../dist/css/calcite-maps.min-v0.10.css"-->
+    <!-- works -->
+
+    <!-- ArcGIS JS 4 -->
+    <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+    <link rel="stylesheet" href="../tests/lightbox2/dist/css/lightbox.min.css">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        .calcite-panels.calcite-panels-left.calcite-bg-custom.calcite-text-light.calcite-bgcolor-dark.panel-group {
+            top: 61%;
+        }
+
+        .esri-layer-list__item-actions-menu-item:first-of-type {
+            display: none;
+        }
+
+        .tab {
+            margin-left: 4%;
+        }
+
+        .esri-legend__layer-caption {
+            display: none;
+        }
+
+        .esri-legend__message {
+            display: none;
+        }
+
+        .esri-layer-list__child-toggle+.esri-layer-list__item-label>.esri-layer-list__item-toggle {
+            display: none;
+        }
+
+        a {
+            cursor: pointer;
+        }
+
+        .esri-layer-list__item-actions-menu-item--active,
+        .esri-layer-list__item-actions-menu-item--active:hover {
+            background-color: whitesmoke;
+        }
+
+        .calcite-title:before {
+            content: url('/apps/jay/tests/UGS-blm.png');
+            padding: 6px 12px 0 2px;
+            cursor: pointer;
+        }
+
+
+
+        .esri-layer-list__item-container .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: ivory;
+            color: #fff;
+            text-align: center;
+            padding: 5px 0;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .esri-layer-list__item-container:hover .tooltiptext {
+            visibility: visible;
+        }
+
+        .calcite-maps .calcite-search-expander .esri-search__sources-button.esri-widget--button {
+            display: block !important;
+        }
+
+        .calcite-maps .calcite-search-expanded .esri-menu.esri-search__sources-menu {
+            display: block !important;
+        }
+    </style>
+
+</head>
+
+<body class="calcite-maps calcite-nav-top">
+
+    <!-- Navbar -->
+    <a class="ugs-watermark " href="https://geology.utah.gov"></a>
+    <nav class="navbar calcite-navbar navbar-fixed-top calcite-text-light calcite-bg-dark calcite-bgcolor-dark">
+        <!-- Menu -->
+        <div class="dropdown calcite-dropdown calcite-bg-light calcite-text-dark" role="presentation">
+            <a class="dropdown-toggle" role="menubutton" aria-haspopup="true" aria-expanded="false" tabindex="0">
+                <div class="calcite-dropdown-toggle">
+                    <span class="sr-only">Toggle dropdown menu</span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </a>
+            <ul class="dropdown-menu calcite-menu">
+                <li><a class="active hidden-md hidden-lg" href="#mapTab" aria-controls="mapTab" role="tab"
+                        data-toggle="tab"> 2D</a></li>
+                <li><a class="hidden-md hidden-lg" href="#sceneTab" aria-controls="sceneTab" role="tab"
+                        data-toggle="tab"> 3D</a></li>
+                <li><a role="menuitem" tabindex="0" data-target="#panelInfo" aria-haspopup="true"><span
+                            class="esri-icon-notice-round"></span> About</a></li>
+                <li><a role="menuitem" tabindex="0" data-target="#panelDisclaimer" aria-haspopup="true"><span
+                            class="esri-icon-notice-triangle"></span> Disclaimer</a></li>
+                <li><a role="menuitem" tabindex="0" data-target="#panelLegend" aria-haspopup="true"><span
+                            class="glyphicon glyphicon-list-alt"></span> Legend</a></li>
+                <li><a role="menuitem" tabindex="0" data-target="#panelBasemaps" aria-haspopup="true"><span
+                            class="esri-icon-basemap"></span> Basemaps</a></li>
+                <!-- <li><a role="menuitem" tabindex="0" data-target="#calciteLocate" id="calciteLocate" aria-haspopup="true"><span class="glyphicon glyphicon-map-marker"></span> Locate</a></li> -->
+                <!-- <li><a role="menuitem" tabindex="0" id="calciteToggleNavbar" aria-haspopup="true"><span class="glyphicon glyphicon-fullscreen"></span> Full Map</a></li> -->
+            </ul>
+        </div>
+        <!-- Title -->
+        <div class="calcite-title calcite-overflow-hidden">
+            <span class="calcite-title-main">Utah Geological Survey</span>
+            <span class="calcite-title-divider hidden-xs"></span>
+            <span class="calcite-title-sub hidden-xs">Utah Geologic and Mineral Resources</span>
+        </div>
+        <!-- Nav -->
+        <ul class="calcite-nav nav navbar-nav">
+            <!-- <li><a id="mapNav" class="hidden-xs hidden-sm" href="#mapTab" aria-controls="mapTab" aria-expanded="true" role="tab" data-toggle="tab" data-tooltip="tip" title="2D View" data-placement="bottom">2D View</a></li>
+    <li class="active"><a id="sceneNav" class="hidden-xs hidden-sm" href="#sceneTab" aria-controls="mapTab" role="tab" data-toggle="tab" data-tooltip="tip" title="3D View" data-placement="bottom">3D View</a></li>                   -->
+            <li>
+                <div class="calcite-navbar-search calcite-search-expander" role="presentation" tabindex="-1">
+                    <div id="searchNavDiv" tabindex="0"></div>
+                </div>
+            </li>
+        </ul>
+    </nav>
+    <!--/.navbar -->
+
+    <!-- Map Container  -->
+
+    <div class="calcite-map calcite-map-absolute">
+        <div id="tabContainer" class="tab-content">
+            <div id="mapTab" class="tab-pane fade in active" role="tabpanel">
+                <div id="mapViewDiv"></div>
+            </div>
+            <!-- <div id="sceneTab" class="tab-pane fade in active" role="tabpanel">
+      <div id="sceneViewDiv"></div>
+    </div> -->
+        </div>
+    </div>
+
+    <!-- Panel Container -->
+
+    <!-- Panel - Legend -->
+    <div class="calcite-panels calcite-panels-left calcite-bg-custom calcite-text-light calcite-bgcolor-dark panel-group"
+        role="tablist" aria-multiselectable="true">
+
+        <div id="panelLegend" class="panel collapse in">
+            <div id="headingLegend" class="panel-heading" role="tab">
+                <div class="panel-title">
+                    <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseLegend"
+                        aria-expanded="true" aria-controls="collapseLegend"><span class="glyphicon glyphicon-list-alt"
+                            aria-hidden="true"></span><span class="panel-label">Legend</span></a>
+                    <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelLegend"><span
+                            class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
+                </div>
+            </div>
+            <div id="collapseLegend" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingLegend">
+                <div class="panel-body">
+                    <div id="legendDiv"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="calcite-panels calcite-panels-right calcite-bg-custom calcite-text-light calcite-bgcolor-dark panel-group"
+        role="tablist" aria-multiselectable="true">
+
+        <!-- Info Panel -->
+
+
+
+        <div id="panelInfo" class="panel collapse in">
+            <div id="headingInfo" class="panel-heading" role="tab">
+                <div class="panel-title">
+                    <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseInfo"
+                        aria-expanded="true" aria-controls="collapseInfo"><span class="esri-icon-notice-round"
+                            aria-hidden="true"></span><span class="panel-label">About</span></a>
+                    <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelInfo"><span
+                            class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
+                </div>
+            </div>
+            <div id="collapseInfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingInfo">
+                <div class="panel-body">
+                    <p><strong>BLM UTAH MINERAL RESOURCES</strong></p>
+                    <p align="justify">This web map application was created by the Utah Geological Survey (UGS) in
+                        cooperation with the U.S. Bureau of Land Management (BLM) to show geologic resources on BLM land
+                        and statewide mineral resources in Utah. Use the links below to download the map data.
+                        <br /><br /><a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-695.pdf"
+                            target="_blank"><span style="color: blue;"> Utah Mining Districts publication</span></a>
+                        <br /><a href="https://geology.utah.gov/docs/zip/Mining_Districts_20190116gdb.zip"
+                            target="_blank"><span style="color: blue;"> Utah Mining Districts GIS data</span></a>
+                        <br /><a href="https://geology.utah.gov/docs/zip/Utah_IM_GIS.zip" target="_blank"><span
+                                style="color: blue;"> Industrial Mineral GIS data</span></a> <br /><br /><strong>Layer
+                            Information</strong></p>
+                    <p><br />GeoSights on BLM Land</p>
+                    <p class="tab" style="padding-left: 20px;">A collection of Utah's lesser-known geologic wonders
+                        (from UGS Survey Notes).</p>
+                    <p><br />Rockhounding Sites on BLM Land</p>
+                    <p class="tab" style="padding-left: 20px;">Utah rockhounding sites (from UGS publication MP-95-4 by
+                        Wilson).</p>
+                    <p><br /><br /></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Basemaps Panel -->
+
+        <div id="panelBasemaps" class="panel collapse">
+            <div id="headingBasemaps" class="panel-heading" role="tab">
+                <div class="panel-title">
+                    <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseBasemaps"
+                        aria-expanded="false" aria-controls="collapseBasemaps"><span class="esri-icon-basemap"
+                            aria-hidden="true"></span><span class="panel-label">Basemaps</span></a>
+                    <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelBasemaps"><span
+                            class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
+                </div>
+            </div>
+            <div id="collapseBasemaps" class="panel-collapse collapse" role="tabpanel"
+                aria-labelledby="headingBasemaps">
+                <div class="panel-body">
+                    <select id="selectBasemapPanel" class="form-control">
+                        <option value="streets" data-vector="streets-vector">Streets</option>
+                        <option value="satellite" data-vector="satellite">Satellite</option>
+                        <option value="hybrid" data-vector="hybrid">Hybrid</option>
+                        <option value="national-geographic" data-vector="national-geographic">National Geographic
+                        </option>
+                        <option value="topo" data-vector="topo-vector" selected="">Topographic</option>
+                        <option value="gray" data-vector="gray-vector">Gray</option>
+                        <option value="dark-gray" data-vector="dark-gray-vector">Dark Gray</option>
+                        <option value="osm" data-vector="osm">Open Street Map</option>
+                        <option value="dark-gray" data-vector="streets-night-vector">Streets Night</option>
+                        <option value="streets" data-vector="streets-navigation-vector">Streets Mobile</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <!-- Grid panelSearch panel -->
+        <div id="panelGrid" class="panel collapse">
+            <div id="headingInfo" class="panel-heading" role="tab">
+                <div class="panel-title">
+                    <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseGrid"
+                        aria-expanded="false" aria-controls="collapseGrid"><span class="glyphicon glyphicon-list-alt"
+                            aria-hidden="true"></span><span class="panel-label">Search Results</span></a>
+                    <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelGrid"><span
+                            class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
+                </div>
+            </div>
+            <div id="collapseGrid" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingGrid">
+                <div class="panel-body">
+
+
+                    <div id="grid"></div>
+                    <!--  <div id="results" class="results"></div>  -->
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Attribute Details panel -->
+        <div id="panelDetails" class="panel collapse">
+            <div id="headingInfo" class="panel-heading" role="tab">
+                <div class="panel-title">
+                    <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseDetails"
+                        aria-expanded="true" aria-controls="collapseDetails"><span class="glyphicon glyphicon-list-alt"
+                            aria-hidden="true"></span><span class="panel-label" id="details">All Available Sample
+                            Data</span></a>
+                    <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelDetails"><span
+                            class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
+                </div>
+            </div>
+            <div id="collapseDetails" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingDetails">
+                <div class="panel-body">
+
+                    <div id="attDetails"></div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Disclaimer panel -->
+        <div id="panelDisclaimer" class="panel collapse">
+            <div id="headingInfo" class="panel-heading" role="tab">
+                <div class="panel-title">
+                    <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseDisclaimer"
+                        aria-expanded="true" aria-controls="collapseDisclaimer"><span class="esri-icon-notice-triangle"
+                            aria-hidden="true"></span><span class="panel-label">Disclaimer</span></a>
+                    <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelDisclaimer"><span
+                            class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
+                </div>
+            </div>
+            <div id="collapseDisclaimer" class="panel-collapse collapse" role="tabpanel"
+                aria-labelledby="headingDisclaimer">
+                <div class="panel-body">
+
+                    <p style="text-align: justify;">Although this product represents the work of professional
+                        scientists, the Utah Department of Natural Resources, Utah Geological Survey and U.S. Department
+                        of the Interior, U.S. Bureau of Land Management make no warranty, expressed or implied,
+                        regarding its suitability for any particular use. The Utah Department of Natural Resources, Utah
+                        Geological Survey, and U.S. Department of the Interior, U.S. Bureau of Land Management shall not
+                        be liable under any circumstances for any direct, indirect, special, incidental, or
+                        consequential damages with respect to claims by users of this product. The Utah Geological
+                        Survey and U.S. Bureau of Land Management do not guarantee accuracy or completeness of the data.
+                        The views and conclusions contained in this document are those of the authors and should not be
+                        interpreted as necessarily representing the official policies, either expressed or implied, of
+                        the U.S. Government. Persons or agencies using these data specifically agree not to misrepresent
+                        the data, nor to imply that changes they made were approved by the Utah Geological Survey, and
+                        should indicate the data source and any modifications made on plots, digital copies, derivative
+                        products, and in metadata. The authors' determinations of resource potential DO NOT imply a
+                        determination of locatability for claim-staking purposes. The authors' determinations of
+                        resource potential also DO NOT imply potential for development of mineral resources.</p>
+
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- /.calcite-panels -->
+
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+
+    <script src="../tests/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+
+    <script type="text/javascript">
+        var dojoConfig = {
+            packages: [{
+                    name: "bootstrap",
+                    location: "https://esri.github.io/calcite-maps/dist/vendor/dojo-bootstrap"
+                },
+                {
+                    name: "calcite-maps",
+                    location: "https://esri.github.io/calcite-maps/dist/js/dojo"
+                }
+            ]
+        };
+    </script>
+
+    <!-- ArcGIS JS 4 -->
+    <script src="https://js.arcgis.com/4.10/"></script>
+
+
+    <script>
+        var app;
+        require([
+            "esri/Map",
+            "esri/Basemap",
+            "esri/Graphic",
+            "esri/layers/FeatureLayer",
+            "esri/layers/GroupLayer",
+            "esri/views/MapView",
+            "esri/views/SceneView",
+            "esri/support/ContentElement/Attachments",
+            "esri/widgets/Search",
+            "esri/core/watchUtils",
+            "esri/widgets/Home",
+            "esri/widgets/Zoom",
+            "esri/widgets/Compass",
+            "esri/widgets/Locate",
+            "esri/widgets/Legend",
+            "esri/widgets/BasemapToggle",
+            "esri/widgets/LayerList",
+            "esri/tasks/QueryTask",
+            "esri/tasks/support/Query",
+            "dojo/query",
+            "dojo/_base/declare",
+            "dojo/request",
+            // Calcite-maps
+            "calcite-maps/calcitemaps-v0.10",
+            "calcite-maps/calcitemaps-arcgis-support-v0.10",
+            // Bootstrap
+            "bootstrap/Collapse",
+            "bootstrap/Dropdown",
+            "bootstrap/Tab",
+            "dojo/on",
+            "dojo/dom",
+            "dojo/dom-construct",
+            "dojo/domReady!"
+
+        ], function (Map, Basemap, Graphic, FeatureLayer, GroupLayer, MapView, SceneView,
+            AttachmentsContentElement, Search, watchUtils, Home, Zoom, Compass, Locate, Legend, BasemapToggle,
+            LayerList, QueryTask, Query, query, declare, request, CalciteMaps, CalciteMapsArcGIS, on, dom) {
+
+            // App
+            app = {
+                zoom: 8,
+                center: [-112, 39.5],
+                basemap: "topo",
+                viewPadding: {
+                    top: 50,
+                    bottom: 0
+                },
+                uiPadding: {
+                    top: 15,
+                    bottom: 15
+                },
+                map: null,
+                mapView: null,
+                sceneView: null,
+                activeView: null,
+                searchWidgetNav: null,
+                containerMap: "mapViewDiv",
+                containerScene: "sceneViewDiv"
+            };
+            // Map 
+            app.map = new Map({
+                basemap: app.basemap,
+                //ground: "world-elevation"
+            });
+            // 2D View
+            app.mapView = new MapView({
+                container: app.containerMap, // deactivate
+                map: app.map,
+                zoom: 8,
+                center: [-112, 39.5],
+                padding: app.viewPadding,
+                ui: {
+                    components: ["zoom", "compass", "home"],
+                    padding: app.uiPadding
+                }
+            });
+            // 3D View
+            app.sceneView = new SceneView({
+                container: null, // activate
+                map: app.map,
+                zoom: app.zoom,
+                center: app.center,
+                padding: app.viewPadding,
+                ui: {
+                    padding: app.uiPadding
+                }
+            });
+            // Active view is scene
+            setActiveView(app.mapView);
+            // Create search widget
+            app.searchWidgetNav = new Search({
+                container: "searchNavDiv",
+                view: app.activeView,
+                includeDefaultSources: false,
+            });
+            // Wire-up expand events
+            CalciteMapsArcGIS.setSearchExpandEvents(app.searchWidgetNav);
+            CalciteMapsArcGIS.setPopupPanelSync(app.mapView);
+            CalciteMapsArcGIS.setPopupPanelSync(app.sceneView);
+            // Menu UI - change Basemaps
+            query("#selectBasemapPanel").on("change", function (e) {
+                app.mapView.map.basemap = e.target.options[e.target.selectedIndex].dataset.vector;
+                app.sceneView.map.basemap = e.target.value;
+            });
+            // Tab UI - switch views
+            query(".calcite-navbar li a[data-toggle='tab']").on("click", function (e) {
+                if (e.target.text.indexOf("2D") > -1) {
+                    syncViews(app.sceneView, app.mapView);
+                    setActiveView(app.mapView);
+                } else {
+                    syncViews(app.mapView, app.sceneView);
+                    setActiveView(app.sceneView);
+                }
+                syncSearch(app.activeView);
+            });
+            // Views
+            function syncViews(fromView, toView) {
+                var viewPt = fromView.viewpoint.clone();
+                fromView.container = null;
+                if (fromView.type === "3d") {
+                    toView.container = app.containerMap;
+                } else {
+                    toView.container = app.containerScene;
+                }
+                toView.viewpoint = viewPt;
+                toView.padding = app.viewPadding;
+            }
+            // Search Widget
+            function syncSearch(view) {
+                app.searchWidgetNav.view = view;
+                if (app.searchWidgetNav.selectedResult) {
+                    watchUtils.whenTrueOnce(view, "ready", function () {
+                        app.searchWidgetNav.autoSelect = false;
+                        app.searchWidgetNav.search(app.searchWidgetNav.selectedResult.name);
+                        app.searchWidgetNav.autoSelect = true;
+                    });
+                }
+            }
+            // Active view
+            function setActiveView(view) {
+                app.activeView = view;
+            }
+
+            var home = new Home({
+                view: app.activeView
+            });
+            app.activeView.ui.add(home, "top-left");
+
+            var locate = new Locate({
+                view: app.activeView
+            });
+            app.activeView.ui.add(locate, "top-left");
+
+            // Panel widgets - add legend
+            var legendWidget = new Legend({
+                //container: "legendDiv",
+                view: app.activeView
+            });
+
+
+
+
+            //Panel widgets - layerlist
+            var layerList = new LayerList({
+                view: app.activeView,
+                container: "legendDiv",
+                listItemCreatedFunction: function (event) {
+                    const item = event.item;
+                    setTimeout(function () {
+                        var eyeArr = query('.esri-layer-list__item-toggle');
+                        if (eyeArr.length) {
+                            eyeArr.map(function (node) {
+                                node.title = "Turn Layer On/Off";
+                            });
+                        }
+                    }, 500);
+                    if (item.layer.type != "group") { // don't show legend twice
+                        item.panel = {
+                            content: "legend",
+                            open: true
+                        };
+                        if (item.layer.geometryType ==
+                            "polygon") { //gets rid of the opacity tool for the point features
+
+                            item.actionsSections = [
+                                [{
+                                    title: "Increase opacity",
+                                    className: "esri-icon-up",
+                                    id: "increase-opacity"
+                                }, {
+                                    title: "Decrease opacity",
+                                    className: "esri-icon-down",
+                                    id: "decrease-opacity"
+                                }]
+                            ];
+                        };
+                    }
+                }
+            });
+
+            layerList.on("trigger-action", function (event) {
+
+                // Capture the action id.
+                var id = event.action.id;
+                var title = event.item.title;
+
+                if (title === "Mining Districts") {
+                    layer = miningDistricts;
+                } else if (title === "Land Ownership") {
+                    layer = adminBounds;
+                } else if (title === "Bentonite") {
+                    layer = bentonite;
+                } else if (title === "Gypsum") {
+                    layer = gypsum;
+                } else if (title === "Limestone") {
+                    layer = limestone;
+                } else {
+                    layer = dolomite;
+                }
+
+                if (id === "increase-opacity") {
+
+                    // if the increase-opacity action is triggered, then
+                    // increase the opacity of the GroupLayer by 0.1
+
+                    if (layer.opacity < 1) {
+                        layer.opacity += 0.1;
+                    }
+                } else if (id === "decrease-opacity") {
+
+                    // if the decrease-opacity action is triggered, then
+                    // decrease the opacity of the GroupLayer by 0.1
+
+                    if (layer.opacity > 0) {
+                        layer.opacity -= 0.1;
+                    }
+                }
+
+            });
+
+
+            //Popup Templates
+
+
+            rockHoundingContent = function (value, key, data) {
+                var content = "";
+
+                if (key === "Material") {
+                    if (data.Material) {
+                        content += "<span class='bold' title='Name'><b>Rockhounding </b></span><b>" + data
+                            .Material + " Site</b>";
+                    }
+                }
+
+                if (key === "Material_Description") {
+                    if (data.Material_Description) {
+                        content +=
+                            "<span class='bold' title='Description'><b>Material Description: </b></span>" +
+                            data.Material_Description;
+                    }
+                }
+
+                if (key === "Site_Description_Geology") {
+                    if (data.Site_Description_Geology) {
+                        content +=
+                            "<br><span class='bold' title='Description'><b>Site Geology: </b></span>" + data
+                            .Site_Description_Geology;
+                    }
+                }
+
+                if (key === "Directions_To_Site") {
+                    if (data.Directions_To_Site) {
+                        content +=
+                            "<br><span class='bold' title='Description'><b>Directions To Site: </b></span>" +
+                            data.Directions_To_Site;
+                    }
+                }
+
+                return content;
+
+            }
+
+            geoSitesContent = function (value, key, data) {
+                var content = "";
+
+                if (key === "Picture") {
+                    if (data.Picture) {
+                        content += "<span class='bold' title='Photo'></span>" + "<a href='" + data.Picture +
+                            "' data-lightbox='photo1' target='_blank'> <img src='" + data.Picture +
+                            "' width='150' height='100'></a><br>";
+                    }
+                }
+
+                if (key === "Name") {
+                    content += "<span class='bold' title='Name'></span><b>" + data.Name + "</b><br>";
+                }
+
+                if (key === "Description") {
+                    if (data.Description) {
+                        content +=
+                            "<br><span class='bold' title='Description'><b>Description: </b></span>" + data
+                            .Description + "<br>";
+                    }
+                }
+
+                return content;
+
+            }
+
+            miningContent = function (value, key, data) {
+                var content = "";
+
+                if (key === "District") {
+                    if (data.District) {
+                        content += "<span class='bold' title='District'></span>" + data.District +
+                            " Mining District</b><br>";
+                    }
+                }
+                if (key === "Commodity") {
+                    if (data.Commodity) {
+                        content += "<span class='bold' title='Commodity'><b>Commodity: </b></span>" + data
+                            .Commodity + "</b><br>";
+                    }
+                }
+                if (key === "Organized") {
+                    if (data.Organized) {
+                        content += "<span class='bold' title='Organized'><b>Organized: </b></span>" + data
+                            .Organized + "</b><br>";
+                    }
+                }
+                if (key === "Productive") {
+                    if (data.Productive) {
+                        content += "<span class='bold' title='Productive'><b>Productive: </b></span>" + data
+                            .Productive + "</b><br>";
+                    }
+                }
+                if (key === "Short_Tons") {
+                    if (data.Short_Tons) {
+                        content += "<span class='bold' title='Short Tons'><b>Short Tons: </b></span>" + data
+                            .Short_Tons + "</b><br>";
+                    }
+                }
+                if (key === "Total_Dollar_Value") {
+                    if (data.Total_Dollar_Value) {
+                        content +=
+                            "<span class='bold' title='Total Dollar Value'><b>Total Dollar Value: </b></span>" +
+                            data.Total_Dollar_Value.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                            }) + "</b><br>";
+                    }
+                }
+
+                return content;
+
+            }
+
+            industrialMinContent = function (value, key, data) {
+                var content = "";
+
+
+                if (key === "AGE") {
+                    if (data.AGE) {
+                        content += "<span class='bold' title='Age'><b>Age: </b></span>" + data.AGE +
+                            "</b><br>";
+                    }
+                }
+                if (key === "UNITNAME") {
+                    if (data.UNITNAME) {
+                        content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>" + data
+                            .UNITNAME + "</b><br>";
+                    }
+                }
+
+                if (key === "Commodity") {
+                    if (data.Commodity == "Gypsum") {
+                        content += "<br><span class='bold' title='Show complete report for " + data
+                            .Commodity + "'></span>" +
+                            "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Gypsum.pdf' target='_blank'><b>Detailed Report</b></a>";
+                    } else if (data.Commodity == "Dolomite") {
+                        content += "<br><span class='bold' title='Show complete report for " + data
+                            .Commodity + "'></span>" +
+                            "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Dolomite.pdf' target='_blank'><b>Detailed Report</b></a>";
+                    } else if (data.Commodity == "Limestone") {
+                        content += "<br><span class='bold' title='Show complete report for " + data
+                            .Commodity + "'></span>" +
+                            "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Limestone.pdf' target='_blank'><b>Detailed Report</b></a>";
+                    }
+                }
+
+
+                return content;
+
+            }
+
+            bentMinContent = function (value, key, data) {
+                var content = "";
+
+                if (key === "Age") {
+                    if (data.Age) {
+                        content += "<span class='bold' title='Age'><b>Age: </b></span>" + data.Age +
+                            "</b><br>";
+                    }
+                }
+                if (key === "UnitName") {
+                    if (data.UnitName) {
+                        content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>" + data
+                            .UnitName + "</b><br>";
+                    }
+                }
+
+                if (key === "Commodity") {
+                    if (data.Commodity) {
+                        content += "<br><span class='bold' title='Show complete report for " + data
+                            .Commodity + "'></span>" +
+                            "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Bentonite.pdf' target='_blank'><b>Detailed Report</b></a><br>";
+                    }
+                }
+
+
+                return content;
+
+            }
+
+            let attachmentsElement = new AttachmentsContentElement({
+                displayType: "list"
+            });
+
+
+            //remove panels when user clicks on map
+
+            app.activeView.on("click", function (event) {
+                app.activeView.graphics.removeAll();
+                query("#panelDetails").removeClass("in");
+            });
+
+            //renderers
+            const rockHoundRenderer = {
+                type: "simple", // autocasts as new SimpleRenderer()
+                symbol: {
+                    type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+                    size: 8,
+                    color: [255, 71, 68],
+                    outline: null
+                }
+            };
+
+            const geoSitesRenderer = {
+                type: "simple", // autocasts as new SimpleRenderer()
+                symbol: {
+                    type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+                    size: 8,
+                    color: [66, 194, 244],
+                    outline: null
+                }
+            };
+
+
+
+            //add feature layers
+
+            const rockHounding = new FeatureLayer({
+                url: "https://maps.dnr.utah.gov/arcgis/rest/services/UGS/BLM_Rockhounding_Sites/MapServer/0",
+                title: "Rockhounding Sites on BLM Land",
+                outFields: ["*"],
+                renderer: rockHoundRenderer,
+                popupTemplate: {
+                    title: "<b>{Material:rockHoundingContent}</b>",
+                    content: "{Material_Description:rockHoundingContent}<br>{Site_Description_Geology:rockHoundingContent}<br>{Directions_To_Site:rockHoundingContent}"
+                },
+                visible: false,
+            });
+
+            const geoSites = new FeatureLayer({
+                url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/8",
+                title: "GeoSights on BLM Land",
+                outFields: ["*"],
+                renderer: geoSitesRenderer,
+                popupTemplate: {
+                    title: "<b>{Name:geoSitesContent}</b>",
+                    content: "{Picture:geoSitesContent}{Description:geoSitesContent}"
+                },
+                visible: false,
+            });
+
+            const miningDistricts = new FeatureLayer({
+                url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/6",
+                title: "Mining Districts",
+                outFields: ["*"],
+                opacity: 0.5,
+                popupTemplate: {
+                    title: "<b>{District:miningContent}</b>",
+                    content: [{
+                        type: "text",
+                        text: "{Commodity:miningContent}{Organized:miningContent}{Productive:miningContent}{Short_Tons:miningContent}{Total_Dollar_Value:miningContent}"
+                    }, {
+                        type: "attachments"
+
+                    }]
+
+                },
+                visible: true,
+            });
+
+            const bentonite = new FeatureLayer({
+                url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/1",
+                title: "Bentonite",
+                opacity: 0.5,
+                outFields: ["*"],
+
+                popupTemplate: {
+                    title: "<b>Bentonite Potential</b>",
+                    content: "{Age:bentMinContent}{UnitName:bentMinContent}{Commodity:bentMinContent}"
+
+                },
+                visible: false,
+            });
+
+            const dolomite = new FeatureLayer({
+                url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/2",
+                title: "Dolomite",
+                outFields: ["*"],
+                opacity: 0.5,
+
+                popupTemplate: {
+                    title: "<b>Dolomite Potential</b>",
+                    content: "{AGE:industrialMinContent}{UNITNAME:industrialMinContent}{Commodity:industrialMinContent}"
+                },
+                visible: false,
+            });
+
+            const gypsum = new FeatureLayer({
+                url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/3",
+                title: "Gypsum",
+                outFields: ["*"],
+                opacity: 0.5,
+
+                popupTemplate: {
+                    title: "<b>Gypsum Potential</b>",
+                    content: "{AGE:industrialMinContent}{UNITNAME:industrialMinContent}{Commodity:industrialMinContent}"
+                },
+                visible: false,
+            });
+
+            const limestone = new FeatureLayer({
+                url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/4",
+                title: "Limestone",
+                outFields: ["*"],
+                opacity: 0.5,
+
+                popupTemplate: {
+                    title: "<b>Limestone Potential</b>",
+                    content: "{AGE:industrialMinContent}{UNITNAME:industrialMinContent}{Commodity:industrialMinContent}"
+                },
+                visible: false,
+            });
+
+            const industrialMins = new GroupLayer({
+                title: "Industrial Mineral Resource Potential",
+                visible: true,
+                layers: [bentonite, dolomite, gypsum, limestone]
+            });
+
+            const adminlabelClass = { // autocasts as new LabelClass()
+                symbol: {
+                    type: "text", // autocasts as new TextSymbol()
+                    color: "rgba(125, 125, 125, 0.51)",
+                    //haloColor: "black",
+                    font: { // autocast as new Font()
+                        family: "sans-serif",
+                        size: 10,
+                        weight: "bold"
+                    }
+                },
+                labelPlacement: "always-horizontal",
+                labelExpressionInfo: {
+                    expression: "$feature.ADMIN"
+                }
+            };
+
+            const adminBounds = new FeatureLayer({
+                url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/11",
+                title: "Land Ownership",
+                outFields: ["*"],
+                legendEnabled: true,
+                opacity: 0.15,
+                visible: true,
+                //labelingInfo: [adminlabelClass],
+
+            });
+
+            const countylabelClass = { // autocasts as new LabelClass()
+                symbol: {
+                    type: "text", // autocasts as new TextSymbol()
+                    color: "rgba(125, 125, 125, 0.51)",
+                    //haloColor: "black",
+                    font: { // autocast as new Font()
+                        family: "sans-serif",
+                        size: 16,
+                        weight: "bold"
+                    }
+                },
+                labelPlacement: "always-horizontal",
+                labelExpressionInfo: {
+                    expression: "$feature.NAME"
+                }
+            };
+
+            const countyLayer = new FeatureLayer({
+                url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/10",
+                popupEnabled: false,
+                name: "Counties",
+                title: "Counties",
+                listMode: "hide",
+                opacity: 0.5,
+                labelingInfo: [countylabelClass],
+            });
+
+            const refLayers = new GroupLayer({
+                title: "Reference Layers",
+                visible: true,
+                layers: [adminBounds, countyLayer]
+            });
+
+            app.activeView.map.add(countyLayer);
+            app.activeView.map.add(adminBounds);
+
+            app.activeView.map.add(miningDistricts);
+            app.activeView.map.add(geoSites);
+            app.activeView.map.add(rockHounding);
+            app.activeView.map.add(industrialMins);
+
+
+
+
+        });
+    </script>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- jQuery (for Bootstrap's JavaScript plugins). NOTE: You can also use pure Dojo. See examples. -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all  plugins or individual files as needed
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>  -->
+
+</body>
+
+</html>

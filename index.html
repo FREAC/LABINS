@@ -39,9 +39,11 @@
 <body class="calcite-maps calcite-nav-top">
   <!-- Navbar -->
 
-  <nav class="navbar calcite-navbar navbar-fixed-top calcite-text-light calcite-bg-custom" style="background-color: #0d3b4b">
+  <nav class="navbar calcite-navbar navbar-fixed-top calcite-text-light calcite-bg-custom"
+    style="background-color: #0d3b4b">
     <!-- Menu -->
-    <div class="dropdown calcite-dropdown calcite-text-light calcite-bg-custom" role="presentation" style="background-color: #0d3b4b">
+    <div class="dropdown calcite-dropdown calcite-text-light calcite-bg-custom" role="presentation"
+      style="background-color: #0d3b4b">
       <a class="dropdown-toggle" role="menubutton" aria-haspopup="true" aria-expanded="false" tabindex="0">
         <div class="calcite-dropdown-toggle">
           <span class="sr-only">Toggle dropdown menu</span>
@@ -53,29 +55,37 @@
       </a>
       <ul class="dropdown-menu" role="menu">
 
-        <li><a role="menuitem" data-target="#panelLayer" aria-haspopup="true"><span class="glyphicon glyphicon-flag"></span>
+        <li><a role="menuitem" data-target="#panelLayer" aria-haspopup="true"><span
+              class="glyphicon glyphicon-flag"></span>
             Zoom to Feature</a></li>
-        <li><a role="menuitem" data-target="#panelQuery" aria-haspopup="true"><span class="glyphicon glyphicon-flag"></span>
+        <li><a role="menuitem" data-target="#panelQuery" aria-haspopup="true"><span
+              class="glyphicon glyphicon-flag"></span>
             Data Query</a></li>
-        <li><a role="menuitem" tabindex="0" data-target="#panelPopup" aria-haspopup="true"><span class="glyphicon glyphicon-th-list"></span>
+        <li><a role="menuitem" tabindex="0" data-target="#panelPopup" aria-haspopup="true"><span
+              class="glyphicon glyphicon-th-list"></span>
             Identify Results</a></li>
         <li><a role="button" data-target="#panelDraw" aria-haspopup="true"><span class="glyphicon glyphicon-cog"></span>
             Drawing and Measurement Tools</a></li>
-        <li><a role="menuitem" id="layersMenuID" tabindex="0" href="#" data-target="#panelLayers" aria-haspopup="true"><span
-              class="glyphicon glyphicon-list"></span>
+        <li><a role="menuitem" id="layersMenuID" tabindex="0" href="#" data-target="#panelLayers"
+            aria-haspopup="true"><span class="glyphicon glyphicon-list"></span>
             Layers</a></li>
-        <li><a role="menuitem" id="legendMenuID" tabindex="0" href="#" data-target="#panelLegend" aria-haspopup="true"><span
-              class="glyphicon glyphicon-list-alt"></span>
+        <li><a role="menuitem" id="legendMenuID" tabindex="0" href="#" data-target="#panelLegend"
+            aria-haspopup="true"><span class="glyphicon glyphicon-list-alt"></span>
             Legend</a></li>
-        <li><a role="menuitem" tabindex="0" href="#" data-target="#panelBasemaps" aria-haspopup="true"><span class="glyphicon glyphicon-th-large"></span>
+        <li><a role="menuitem" tabindex="0" href="#" data-target="#panelBasemaps" aria-haspopup="true"><span
+              class="glyphicon glyphicon-th-large"></span>
             Basemaps</a></li>
-        <li><a role="menuitem" tebindex="0" data-target="#panelInfo" aria-haspopup="true"><span class="glyphicon glyphicon-info-sign"></span>
+        <li><a role="menuitem" tebindex="0" data-target="#panelInfo" aria-haspopup="true"><span
+              class="glyphicon glyphicon-info-sign"></span>
             Info</a></li>
-        <li><a role="menuitem" tabindex="0" href="#" data-target="#panelPrint" aria-haspopup="true"><span class="glyphicon glyphicon-print"></span>
+        <li><a role="menuitem" tabindex="0" href="#" data-target="#panelPrint" aria-haspopup="true"><span
+              class="glyphicon glyphicon-print"></span>
             Print</a></li>
-        <li><a role="menuitem" tabindex="0" href="#" data-target="#panelBookmarks" aria-haspopup="true"><span class="glyphicon glyphicon-bookmark"></span>
+        <li><a role="menuitem" tabindex="0" href="#" data-target="#panelBookmarks" aria-haspopup="true"><span
+              class="glyphicon glyphicon-bookmark"></span>
             Personal Bookmarks</a></li>
-        <li><a role="menuitem" tabindex="0" href="#" id="calciteToggleNavbar" aria-haspopup="true"><span class="glyphicon glyphicon-fullscreen"></span>
+        <li><a role="menuitem" tabindex="0" href="#" id="calciteToggleNavbar" aria-haspopup="true"><span
+              class="glyphicon glyphicon-fullscreen"></span>
             Toggle Navigation Bar</a></li>
       </ul>
     </div>
@@ -88,8 +98,9 @@
     </div>
     <!-- Search/Legend/LayerList -->
     <ul class="nav navbar-nav calcite-nav">
-      <li class><a id="desktopLayerlist" class="hidden-xs hidden-sm" href="#" aria-controls="Layerlist" aria-expanded="true"
-          role="tab" data-toggle="tab" data-tooltip="tip" title="Layerlist" data-placement="bottom">Layerlist</a></li>
+      <li class><a id="desktopLayerlist" class="hidden-xs hidden-sm" href="#" aria-controls="Layerlist"
+          aria-expanded="true" role="tab" data-toggle="tab" data-tooltip="tip" title="Layerlist"
+          data-placement="bottom">Layerlist</a></li>
       <li><a id="desktopLegend" class="hidden-xs hidden-sm" href="#" aria-controls="Legend" role="tab" data-toggle="tab"
           data-tooltip="tip" title="Legend" data-placement="bottom">Legend</a></li>
       <!-- <li>
@@ -210,10 +221,12 @@
       <div id="collapseInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingInfo">
         <div id="info" class="panel-body" style="text-align: justify">
           <p><span style="font-size: medium">This is the updated LABINS Data Explorer created to replace the current
-              LABINS Viewer in Flex which can be found <a id="tablelink" href="http://labins.org/map/index.html" target="_blank">here</a>.</span></p>
+              LABINS Viewer in Flex which can be found <a id="tablelink" href="http://labins.org/map/index.html"
+                target="_blank">here</a>.</span></p>
           <p><span style="font-size: medium">For data questions, contact <b>Lamar Evers</b>. 850.245.2606</span></p>
           <br>
-          <p><span style="font-size: medium">For website questions, contact <b>Technical Support</b>. 850.644.2305</span></p>
+          <p><span style="font-size: medium">For website questions, contact <b>Technical Support</b>.
+              850.644.2305</span></p>
         </div>
       </div>
     </div>
@@ -273,11 +286,11 @@
     <div id="panelDraw" class="panel collapse">
       <div id="headingDraw" class="panel-heading" role="tab">
         <div class="panel-title">
-          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseDraw" aria-expanded="false"
-            aria-controls="collapseDraw"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span><span
-              class="panel-label">Drawing and Measurement Tools</span></a>
-          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelDraw"><span class="esri-icon esri-icon-close"
-              aria-hidden="true"></span></a>
+          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseDraw"
+            aria-expanded="false" aria-controls="collapseDraw"><span class="glyphicon glyphicon-th-large"
+              aria-hidden="true"></span><span class="panel-label">Drawing and Measurement Tools</span></a>
+          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelDraw"><span
+              class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
         </div>
       </div>
       <div id="collapseDraw" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingDraw">
@@ -289,10 +302,13 @@
               <div class="form-group">
                 <label for="settingsLayout" class="col-xs-3 control-label">Measure: </label>
                 <div class="col-xs-4" style="display: flex; justify-content: center; align-items: center;">
-                  <button class="action-button esri-icon-minus" id="distanceButton" type="button" title="Measure distance between two or more points"></button>
-                  <button class="action-button esri-icon-polygon" id="areaButton" type="button" title="Measure area"></button>
+                  <button class="action-button esri-icon-minus" id="distanceButton" type="button"
+                    title="Measure distance between two or more points"></button>
+                  <button class="action-button esri-icon-polygon" id="areaButton" type="button"
+                    title="Measure area"></button>
                 </div>
-                <div class="col-xs-5" style="display: flex; justify-content: center; align-items: center; max-width: 50%;">
+                <div class="col-xs-5"
+                  style="display: flex; justify-content: center; align-items: center; max-width: 50%;">
                   <label class="toggle-switch modifier-class">
                     <label>Identify: </label>
                     <input type="checkbox" id="measureIdentify" checked>
@@ -317,11 +333,11 @@
     <div id="panelBasemaps" class="panel collapse">
       <div id="headingBasemaps" class="panel-heading" role="tab">
         <div class="panel-title">
-          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseBasemaps" aria-expanded="false"
-            aria-controls="collapseBasemaps"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span><span
-              class="panel-label">Basemaps</span></a>
-          <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelBasemaps"><span class="esri-icon esri-icon-close"
-              aria-hidden="true"></span></a>
+          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseBasemaps"
+            aria-expanded="false" aria-controls="collapseBasemaps"><span class="glyphicon glyphicon-th-large"
+              aria-hidden="true"></span><span class="panel-label">Basemaps</span></a>
+          <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelBasemaps"><span
+              class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
         </div>
       </div>
       <div id="collapseBasemaps" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingBasemaps">
@@ -341,8 +357,8 @@
           <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseLegend" aria-expanded="false"
             aria-controls="collapseLegend"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span><span
               class="panel-label">Legend</span></a>
-          <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelLegend"><span class="esri-icon esri-icon-close"
-              aria-hidden="true"></span></a>
+          <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelLegend"><span
+              class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
         </div>
       </div>
       <div id="collapseLegend" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLegend">
@@ -360,9 +376,10 @@
       <div id="headingLayers" class="panel-heading" role="tab">
         <div class="panel-title">
           <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseLayers" aria-expanded="false"
-            aria-controls="collapseLayers"><span class="glyphicon glyphicon-list" aria-hidden="true"></span><span class="panel-label">Layers</span></a>
-          <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelLayers"><span class="esri-icon esri-icon-close"
-              aria-hidden="true"></span></a>
+            aria-controls="collapseLayers"><span class="glyphicon glyphicon-list" aria-hidden="true"></span><span
+              class="panel-label">Layers</span></a>
+          <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelLayers"><span
+              class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
         </div>
       </div>
       <div id="collapseLayers" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLayers">
@@ -377,10 +394,11 @@
     <div id="panelPrint" class="panel collapse">
       <div id="headingPrint" class="panel-heading">
         <div class="panel-title">
-          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapsePrint" aria-expanded="false"
-            aria-controls="collapsePrint"><span class="glyphicon glyphicon-print" aria-hidden="true"></span><span class="panel-label">Print</span></a>
-          <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelPrint"><span class="esri-icon esri-icon-close"
-              aria-hidden="true"></span></a>
+          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapsePrint"
+            aria-expanded="false" aria-controls="collapsePrint"><span class="glyphicon glyphicon-print"
+              aria-hidden="true"></span><span class="panel-label">Print</span></a>
+          <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelPrint"><span
+              class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
         </div>
       </div>
       <div id="collapsePrint" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingPrint">
@@ -399,8 +417,8 @@
             aria-controls="collapseBookmarks">
             <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
             <span class="panel-label">Personal Bookmarks</span>
-            <span class="glyphicon glyphicon-info-sign" title="Note: if browsing history is cleared, bookmarks will be lost"
-              aria-hidden="false">
+            <span class="glyphicon glyphicon-info-sign"
+              title="Note: if browsing history is cleared, bookmarks will be lost" aria-hidden="false">
             </span>
           </a>
           <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelBookmarks">

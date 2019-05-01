@@ -6,7 +6,6 @@ require([
   "esri/layers/FeatureLayer",
   "esri/tasks/QueryTask",
   "esri/tasks/support/Query",
-  "esri/request",
   "esri/geometry/geometryEngine",
   "esri/geometry/Extent",
   "esri/geometry/Point",
@@ -16,11 +15,7 @@ require([
   "esri/tasks/support/IdentifyParameters",
   "esri/symbols/SimpleFillSymbol",
   "esri/symbols/SimpleLineSymbol",
-  "esri/renderers/SimpleRenderer",
   "esri/tasks/Locator",
-  "esri/tasks/GeometryService",
-  "esri/geometry/support/webMercatorUtils",
-  "esri/tasks/support/BufferParameters",
   "esri/geometry/SpatialReference",
 
   // Widgets
@@ -32,7 +27,6 @@ require([
   "esri/widgets/Legend",
   "esri/widgets/LayerList",
   "esri/widgets/Print",
-  "esri/widgets/BasemapToggle",
   "esri/widgets/ScaleBar",
   "esri/widgets/Home",
   "esri/widgets/Locate",
@@ -40,29 +34,24 @@ require([
   "esri/widgets/DistanceMeasurement2D",
   "esri/widgets/AreaMeasurement2D",
   "esri/core/watchUtils",
-  "dojo/_base/array",
-  "dojo/Deferred",
   "dojo/on",
   "dojo/dom",
   "dojo/dom-class",
-  "dojo/promise/all",
   "dojo/dom-construct",
   "dojo/dom-geometry",
   "dojo/keys",
   "dojo/json",
-  "dojo/_base/lang",
   "dojo/query",
   "dojo/_base/Color",
 
+  // Calcite Maps ArcGIS Support
+  "calcite-maps/calcitemaps-arcgis-support-v0.6",
+  // Calcite Maps
+  "calcite-maps/calcitemaps-v0.6",
 
   // Bootstrap
   "bootstrap/Collapse",
   "bootstrap/Dropdown",
-
-  // Calcite Maps
-  "calcite-maps/calcitemaps-v0.6",
-  // Calcite Maps ArcGIS Support
-  "calcite-maps/calcitemaps-arcgis-support-v0.6",
 
   "dojo/domReady!"
 ], function (
@@ -72,7 +61,6 @@ require([
   FeatureLayer,
   QueryTask,
   Query,
-  esriRequest,
   geometryEngine,
   Extent,
   Point,
@@ -82,11 +70,7 @@ require([
   IdentifyParameters,
   SimpleFillSymbol,
   SimpleLineSymbol,
-  SimpleRenderer,
   Locator,
-  GeometryService,
-  webMercatorUtils,
-  BufferParameters,
   SpatialReference,
   CoordinateConversion,
   Format,
@@ -96,17 +80,13 @@ require([
   Legend,
   LayerList,
   Print,
-  BasemapToggle,
   ScaleBar,
   Home,
   Locate,
   Expand,
   DistanceMeasurement2D,
   AreaMeasurement2D,
-  watchUtils, arrayUtils, Deferred, on, dom, domClass, all, domConstruct, domGeom, keys, JSON, lang, query, Color,
-  Collapse,
-  Dropdown,
-  CalciteMaps,
+  watchUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, query, Color,
   CalciteMapsArcGISSupport) {
 
   var minimumDrawScale = 95000;
@@ -140,37 +120,37 @@ require([
   var labinsLayer = new MapImageLayer({
     url: labinsURL,
     sublayers: [{
-      id: 17,
+      id: 16,
       title: "Soils June 2012 - Dept. of Agriculture",
       visible: false,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 16,
+      id: 15,
       title: "Hi-Res Imagery Grid State Plane East",
       visible: true,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 15,
+      id: 14,
       title: "Hi-Res Imagery Grid: State Plane North",
       visible: true,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 14,
+      id: 13,
       title: "Hi-Res Imagery Grid: State Plane West",
       visible: true,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 13,
+      id: 12,
       title: "Parcels",
       visible: false,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 12,
+      id: 11,
       title: "City Limits",
       visible: false,
       popupEnabled: false,
@@ -187,13 +167,13 @@ require([
       },
       minScale: minimumDrawScale
     }, {
-      id: 11,
+      id: 10,
       title: "Township-Range-Section",
       visible: true,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 10,
+      id: 9,
       title: "Township-Range",
       visible: true,
       popupEnabled: false,
@@ -214,27 +194,21 @@ require([
       }],
       minScale: minimumDrawScale
     }, {
-      id: 9,
+      id: 8,
       title: "USGS Quads",
       visible: false,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 8,
+      id: 7,
       title: "Erosion Control Line",
       minScale: 4000000,
       visible: true,
       popupEnabled: false
     }, {
-      id: 7,
+      id: 6,
       title: "R-Monuments",
       visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 5,
-      title: "Geographic Names",
-      visible: false,
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
@@ -270,114 +244,6 @@ require([
     }]
   });
 
-  // var GNISURL = "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/";
-  // var GNISLayer = new MapImageLayer({
-  //   url: GNISURL,
-  //   title: "Geographic Names",
-  //   minScale: minimumDrawScale,
-  //   sublayers: [{
-  //     id: 0,
-  //     title: "Physical Points",
-  //     visible: false,
-  //     popupEnabled: false,
-  //   }, {
-  //     id: 1,
-  //     title: "Landforms",
-  //     visible: false,
-  //     popupEnabled: false,
-  //   }, {
-  //     id: 2,
-  //     title: "Streams (mouth)",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 4,
-  //     title: "Cultural Points",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 5,
-  //     title: "Airports",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 6,
-  //     title: "Buildings",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 7,
-  //     title: "Churches",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 8,
-  //     title: "Hospitals",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 9,
-  //     title: "Schools",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 10,
-  //     title: "Bridges, Crossings, and Tunnels",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 11,
-  //     title: "Cemeteries",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 12,
-  //     title: "Dams",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 19,
-  //     title: "Civil Features",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 20,
-  //     title: "Forests",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 21,
-  //     title: "Parks",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 22,
-  //     title: "Reserves",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 23,
-  //     title: "Historical Points",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 24,
-  //     title: "Historical Cultural-Political Points",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 25,
-  //     title: "Historical Hydrographic Points",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }, {
-  //     id: 26,
-  //     title: "Historical Physical Points",
-  //     visible: false,
-  //     popupEnabled: false
-  //   }]
-  // });
-
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
   var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
@@ -392,7 +258,7 @@ require([
   });
 
   // Layers needed for dependent dropdowns
-  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/11"
+  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/10"
   var townshipRangeSectionLayer = new FeatureLayer({
     url: townshipRangeSectionURL,
     outFields: ["twn_ch", "rng_ch", "sec_ch"],
@@ -448,8 +314,6 @@ require([
     color: [255, 0, 0, 1]
   };
 
-
-
   var sectionSym = {
     type: "simple-fill",
     outline: {
@@ -474,7 +338,6 @@ require([
     layers: [selectionLayer, bufferLayer]
   });
 
-
   /////////////////////////
   // Create the MapView ///
   /////////////////////////
@@ -492,7 +355,6 @@ require([
       rotationEnabled: false
     }
   });
-
 
   //Overview Mapview
   // Create the MapView for overview map
@@ -560,7 +422,6 @@ require([
       "name": "Florida Prime Meridian"
     },
   };
-
 
   function initBookmarksWidget() {
     var bmDiv = dom.byId("bookmarksDiv");
@@ -700,7 +561,6 @@ require([
             extent: mapView.extent
           }
           extents.push(sExt);
-          console.log(sExt);
           var stringifedExtents = JSON.stringify(extents);
           localStorage.setItem("myBookmarks", stringifedExtents);
         }
@@ -776,9 +636,6 @@ require([
     );
   }
 
-
-
-
   /////////////////////////////
   /// Dropdown Select Panel ///
   /////////////////////////////
@@ -821,7 +678,6 @@ require([
 
   // Input location from drop down, zoom to it and highlight
   async function zoomToFeature(panelurl, location, attribute) {
-    console.log(location);
 
     // union features so that they can be returned as a single geometry
     var task = new QueryTask({
@@ -846,20 +702,17 @@ require([
 
   // Union geometries of multi polygon features
   async function unionGeometries(response) {
-    console.log(response);
     // Array to store polygons in
     var multiPolygonGeometries = [];
     for (i = 0; i < response.features.length; i++) {
       multiPolygonGeometries.push(response.features[i].geometry);
     }
     var union = await geometryEngine.union(multiPolygonGeometries);
-    console.log('unioning of all pieces is complete', union);
     return union;
   }
 
   // when a section feature is choses, a matching TRS combination is queried, highlighted and zoomed to
   function zoomToSectionFeature(panelurl, location, attribute) {
-
 
     var township = document.getElementById("selectTownship");
     var strUser = township.options[township.selectedIndex].text;
@@ -870,7 +723,6 @@ require([
     var section = document.getElementById("selectSection");
     var sectionUser = section.options[section.selectedIndex].text;
 
-
     var task = new QueryTask({
       url: panelurl
     });
@@ -880,13 +732,11 @@ require([
     });
     task.execute(params)
       .then(function (response) {
-        console.log(response);
         var multiPolygonGeometries = [];
         for (i = 0; i < response.features.length; i++) {
           multiPolygonGeometries.push(response.features[i].geometry);
         }
         var union = geometryEngine.union(multiPolygonGeometries);
-        console.log(union);
         var ext = union.extent;
         var cloneExt = ext.clone();
         mapView.goTo({
@@ -900,15 +750,14 @@ require([
 
   // Modified zoomToFeature function to zoom once the Township and Range has been chosen
   function zoomToTRFeature(panelurl, location, attribute) {
+
     multiPolygonGeometries = [];
-    var union = geometryEngine.union(multiPolygonGeometries);
 
     var township = document.getElementById("selectTownship");
     var strUser = township.options[township.selectedIndex].text;
 
     var range = document.getElementById("selectRange");
     var rangeUser = range.options[range.selectedIndex].text;
-
 
     var task = new QueryTask({
       url: panelurl
@@ -952,7 +801,6 @@ require([
   /// Zoom to Feature ///
   ///////////////////////
 
-
   // Build County Drop Down
   buildSelectPanel(countyBoundariesURL + '0', 'tigername', "Zoom to a County", "selectCountyPanel");
 
@@ -963,21 +811,21 @@ require([
   });
 
   //Build Quad Dropdown panel
-  buildSelectPanel(labinsURL + '9', "tile_name", "Zoom to a Quad", "selectQuadPanel");
+  buildSelectPanel(labinsURL + '8', "tile_name", "Zoom to a Quad", "selectQuadPanel");
 
   //Zoom to feature
   query("#selectQuadPanel").on("change", function (e) {
     resetElements(document.getElementById('selectQuadPanel'));
-    return zoomToFeature(labinsURL + '9', e.target.value, "tile_name");
+    return zoomToFeature(labinsURL + '8', e.target.value, "tile_name");
   });
 
   //Build City Dropdown panel
-  buildSelectPanel(labinsURL + '12', "name", "Zoom to a City", "selectCityPanel");
+  buildSelectPanel(labinsURL + '11', "name", "Zoom to a City", "selectCityPanel");
 
   //Zoom to feature
   query("#selectCityPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCityPanel'));
-    return zoomToFeature(labinsURL + '12', e.target.value, "name");
+    return zoomToFeature(labinsURL + '11', e.target.value, "name");
   });
 
   ////////////////////////////////////////////////
@@ -992,7 +840,6 @@ require([
   mapView.when(async function () {
     var townshipQuery = new Query({
       where: "tdir <> ' ' AND NOT (CAST(twn_ch AS int) > '8' AND tdir = 'N')",
-      // where: "tdir <> ' '", // priginal sql query
       outFields: ["twn_ch", "tdir"],
       returnDistinctValues: true,
       orderByFields: ["twn_ch", "tdir"],
@@ -1004,7 +851,6 @@ require([
       console.log('Township load failed: ', err);
     }
   })
-
 
   // Add the unique values to the subregion
   // select element. This will allow the user
@@ -1019,7 +865,6 @@ require([
       var name = value.attributes.twn_ch + value.attributes.tdir;
       option.text = name;
       townshipSelect.add(option);
-
     });
   }
 
@@ -1145,9 +990,7 @@ require([
       view: mapView,
       container: "layersDiv",
       listItemCreatedFunction: defineActions
-
     });
-
 
     // status to watch if layerlist is on
     let layerlistStatus;
@@ -1155,14 +998,36 @@ require([
       // if layerlist status != 1, add it to the map
       if (layerlistStatus != 1) {
         mapView.ui.remove(scaleBar);
-        document.getElementById("layersDiv");
+
+        // custom header to display a header and close button
+        const header = `
+        <div id="layerlistHeader" style="background-color:#315866; position: sticky; top: 0; z-index: 999; padding-top: 1px;">
+          <span class="glyphicon esri-icon-layers" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 2px;"></span>
+          <span id="infoSpan" class="panel-label"  style="color: white; margin-top: 5px;">Layerlist</span>
+          <button id="closeLyrBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
+            <span class="esri-icon esri-icon-close" style="color:white; display:inline-block; float:left;" aria-hidden="true"></span>
+          </button>
+        </div>
+        `
         mapView.ui.add([layerList, scaleBar], "bottom-left");
+        // add layerlist header to beginning of div
+        $("#layersDiv").prepend(header);
+
+        const closebtn = document.getElementById('closeLyrBtn');
+        on(closebtn, "click", function (event) {
+          // remove the layerlist header
+          $("#layerlistHeader").remove();
+          mapView.ui.remove(layerList);
+          layerlistStatus = 0;
+        });
         layerlistStatus = 1;
       } else {
+        $("#layerlistHeader").remove();
+
         mapView.ui.remove(layerList);
+
         layerlistStatus = 0;
       }
-
     });
 
     // event to listen for action button on layerlist
@@ -1174,8 +1039,8 @@ require([
       if ((targetLayer.visible === true) && (mapView.scale < minimumDrawScale)) {
         // if labels are not already visible, turn them on
         if ((targetLayer.layer.labelsVisible === false) || (targetLayer.layer.labelsVisible === undefined)) {
-          // // handle focus toggle of action button on CCR sublayer
 
+          // handle focus toggle of action button on CCR sublayer
           targetLayer.layer.labelsVisible = true;
           targetLayer.layer.labelingInfo = [{
             labelExpression: "[blmid]",
@@ -1193,12 +1058,8 @@ require([
         } else { // if labels are visible, toggle them off
           targetLayer.layer.labelsVisible = false;
         }
-
-      } else {
-        // do nothing
       }
     });
-
 
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
@@ -1220,8 +1081,6 @@ require([
           // exclude geographic names layer from identify operation
           if (layer.title !== 'Geographic Names') {
             visibleLayers = await checkVisibleLayers(layer);
-
-
 
             // if there are visible layers returned
             if (visibleLayers.length > 0) {
@@ -1253,7 +1112,6 @@ require([
       }
       document.getElementById("mapViewDiv").style.cursor = "auto";
     });
-
   });
 
   // fetch all map services before loading to map
@@ -1382,8 +1240,6 @@ require([
         // if current scale is greater than number, 
         // go to feature and expand extent by 1.75x
         if (mapView.scale > 18055.954822) {
-          console.log(mapView.scale);
-          console.log('going to a different scale')
           mapView.goTo({
             target: feature,
             extent: cloneExt.expand(1.75)
@@ -1424,7 +1280,6 @@ require([
       }
     }
   }
-
 
   //////////////////////////////////
   //// Search Widget Text Search ///
@@ -1538,7 +1393,6 @@ require([
 
   CalciteMapsArcGISSupport.setSearchExpandEvents(searchWidget);
 
-
   ////////////////////////////
   ///// Data Query////////////
   ////////////////////////////
@@ -1553,7 +1407,6 @@ require([
 
     // get geometry based on query results
     async function getGeometry(url, attribute, value) {
-      console.log(value.toUpperCase());
       // modifies value to remove portions of the string in parentheses 
       value = value.replace(/ *\([^)]*\) */g, "")
 
@@ -1565,20 +1418,16 @@ require([
       //query.outFields = ['*'];
       query.where = "Upper(" + attribute + ") LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
 
-      console.log(task.execute(query));
       const results = task.execute(query);
       return results;
     }
 
     // data query by text
     async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement) {
-      console.log('starting multiTextQueryTask');
       var whereStatement;
 
       if (queryStatement != '' || idQueryStatement != '') {
         whereStatement = "Upper(" + attribute + ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute + ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%'";
-      } else {
-        console.log('No features found.');
       }
 
       var queryTask = new QueryTask({
@@ -1593,7 +1442,6 @@ require([
 
       return queryTask.execute(params)
         .then(function (response) {
-          console.log(response);
           if (response.features.length > 0) {
             return queryTask.execute(params);
           } else {
@@ -1603,7 +1451,6 @@ require([
             clearDiv('arraylengthdiv');
           }
         });
-
     }
 
     // data query by text
@@ -1632,7 +1479,6 @@ require([
       });
       return queryTask.execute(params)
         .then(function (response) {
-          console.log('response length ', response.features.length);
           if (response.features.length > 0) {
             return queryTask.execute(params);
           } else {
@@ -1641,7 +1487,7 @@ require([
             $('#informationdiv').append('<p>This query did not return any features</p>');
             clearDiv('arraylengthdiv');
           }
-        });;
+        });
     }
 
     function createCountyDropdown(attributeURL, countyAttribute) {
@@ -1650,8 +1496,6 @@ require([
       countyDropdown.setAttribute('class', 'form-control');
       document.getElementById('parametersQuery').appendChild(countyDropdown);
       buildSelectPanel(attributeURL, countyAttribute, "Select a County", "countyQuery");
-
-
     }
 
     function createQuadDropdown(attributeURL, quadAttribute) {
@@ -1660,7 +1504,6 @@ require([
       quadDropdown.setAttribute('class', 'form-control');
       document.getElementById('parametersQuery').appendChild(quadDropdown);
       buildSelectPanel(attributeURL, quadAttribute, "Select a Quad", "quadQuery")
-
     }
 
     function createTextBox(id, placeholder) {
@@ -1680,7 +1523,6 @@ require([
       var t = document.createTextNode(text);
       submitButton.appendChild(t);
       document.getElementById('parametersQuery').appendChild(submitButton);
-
     }
 
     function createTextDescription(string) {
@@ -1743,7 +1585,7 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(labinsURL + '/9', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '/8', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '/0', response)
@@ -1800,10 +1642,8 @@ require([
         infoPanelData = [];
         var textValue = document.getElementById('IDQuery').value;
 
-        console.log(textValue);
         textQueryQuerytask(labinsURL + '2', 'blmid', textValue)
           .then(function (response) {
-            console.log(response);
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Certified Corners';
               infoPanelData.push(response.features[i]);
@@ -1829,7 +1669,6 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        console.log(e.target.value);
 
         getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
@@ -1855,7 +1694,7 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(labinsURL + '9', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '8', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)
@@ -1936,17 +1775,15 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(labinsURL + '9', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '8', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
               .then(function (response) {
-                console.log(response);
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Tide Stations';
                   infoPanelData.push(response.features[i]);
                 }
-                console.log(infoPanelData);
                 goToFeature(infoPanelData[0]);
                 queryInfoPanel(infoPanelData, 1);
                 togglePanel();
@@ -1968,7 +1805,6 @@ require([
         infoPanelData = [];
         var textValue = inputAfter.value;
 
-
         multiTextQuerytask(labinsURL + '3', 'id', textValue, 'name', textValue)
 
           .then(function (response) {
@@ -1986,14 +1822,13 @@ require([
     } else if (layerSelection === 'Erosion Control Line') {
       clearDiv('parametersQuery');
       addDescript();
-      createCountyDropdown(labinsURL + '8', 'county');
+      createCountyDropdown(labinsURL + '7', 'county');
       createTextBox('textQuery', 'Enter an ECL Name')
       createSubmit();
 
       var submitButton = document.getElementById('submitQuery');
       var countyDropdownAfter = document.getElementById('countyQuery');
       var inputAfter = document.getElementById('textQuery');
-
 
       // clear other elements when keypress happens
       query(inputAfter).on('keypress', function () {
@@ -2005,11 +1840,10 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        console.log('grabbing geometry');
         getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(labinsURL + '8', response)
+            dataQueryQuerytask(labinsURL + '7', response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Erosion Control Line';
@@ -2025,9 +1859,8 @@ require([
       query(submitButton).on('click', function (e) {
         clearDiv('informationdiv');
         infoPanelData = [];
-        textQueryQuerytask(labinsURL + '8', 'ecl_name', inputAfter.value)
+        textQueryQuerytask(labinsURL + '7', 'ecl_name', inputAfter.value)
           .then(function (response) {
-            console.log(response)
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Erosion Control Line';
               infoPanelData.push(response.features[i]);
@@ -2046,7 +1879,6 @@ require([
 
       var submitButton = document.getElementById('submitNameQuery');
       var inputAfter = document.getElementById('textQuery');
-
 
       // clear other elements when keypress happens
       query(inputAfter).on('keypress', function () {
@@ -2070,16 +1902,11 @@ require([
     }
   });
 
-
-
   ////////////////////////////
   ///// Event Listeners //////
   ////////////////////////////
 
-
-
-  //// Clickable Links 
-
+  //// Clickable Links
 
   // Switch to Data Query panel on click
   query('#gobackBtn').on('click', function () {
@@ -2096,7 +1923,6 @@ require([
     dataQueryPanel.setAttribute('class', 'panel collapse in');
     dataQueryPanel.setAttribute('style', 'height:auto;');
   });
-
 
   // Switch panel to zoom to feature panel
   query('#gotozoom').on('click', function () {
@@ -2133,7 +1959,6 @@ require([
     mapView.graphics.removeAll();
     selectionLayer.graphics.removeAll();
     bufferLayer.graphics.removeAll();
-    console.log(mapView.scale);
     clearDiv('informationdiv');
     $('#numinput').val('');
     $('#arraylengthdiv').html('');
@@ -2141,11 +1966,9 @@ require([
   });
 
   // after a query typed into search bar
-  // 
   searchWidget.on("search-complete", async function (event) {
 
     infoPanelData = [];
-    console.log(event.results["0"].source);
 
     if (event.results["0"].source.locator) {
       // let native functionality work
@@ -2168,15 +1991,11 @@ require([
     }
   });
 
-
   // set up alert for dynamically created zoom to feature buttons
   $(document).on('click', "button[name='zoom']", function () {
 
-    console.log("Determining geometry type");
-
     goToFeature(infoPanelData[this.id - 1]);
   });
-
 
   /////////////
   // Widgets //
@@ -2203,7 +2022,6 @@ require([
 
     mapView.ui.add(searchWidget, "top-right");
 
-
   } else {
 
     // if screen size normal, legend and layerlist will be buttons on nav bar
@@ -2215,16 +2033,38 @@ require([
     let legendStatus;
     on(dom.byId("desktopLegend"), "click", function (evt) {
       // if legend status != 1 (not currently being displayed), add it to the map
+
       if (legendStatus != 1) {
         mapView.ui.remove(scaleBar);
-        document.getElementById("legendDiv");
+
+        // custom header to display a header and close button
+        const header = `
+        <div id="legendHeader" style="background-color:#315866; padding-bottom: 5px; position: sticky; top: 0;">
+          <span class="glyphicon glyphicon-list-alt" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 10px;"></span>
+          <span id="infoSpan" class="panel-label"  style="color: white; margin-top: 5px;">Legend</span>
+          <button id="closeLgdBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
+            <span class="esri-icon esri-icon-close" style="color:white; display:inline-block; float:left;" aria-hidden="true"></span>
+          </button>
+        </div>
+        `
+
         mapView.ui.add([legendWidget, scaleBar], "bottom-left");
+        // add legend header to beginning of div
+        $("#legendDiv").prepend(header);
+
+        const closebtn = document.getElementById('closeLgdBtn');
+        on(closebtn, "click", function (event) {
+          // remove the legend header
+          $("#legendHeader").remove();
+          mapView.ui.remove(legendWidget);
+          legendStatus = 0;
+        });
+
         legendStatus = 1;
-        console.log(legendStatus)
       } else {
+        $("#legendHeader").remove();
         mapView.ui.remove(legendWidget);
         legendStatus = 0;
-        console.log(legendStatus)
       }
     });
 
@@ -2368,7 +2208,6 @@ require([
       setActiveWidget(null);
       if (!this.classList.contains('active')) {
         setActiveWidget('distance');
-        console.log('active widget is distance');
       } else {
         setActiveButton(null);
       }
@@ -2438,8 +2277,6 @@ require([
                   if (layer.title !== 'Geographic Names') {
                     visibleLayers = await checkVisibleLayers(layer);
 
-
-
                     // if there are visible layers returned
                     if (visibleLayers.length > 0) {
                       const task = new IdentifyTask(layer.layer.url)
@@ -2469,7 +2306,6 @@ require([
                 }
               }
               document.getElementById("mapViewDiv").style.cursor = "auto";
-
             }
           }
         });
@@ -2496,8 +2332,6 @@ require([
       selectedButton.classList.add("active");
     }
   }
-
-
 
   // Print
   var printWidget = new Print({
@@ -2527,5 +2361,4 @@ require([
   // Clear Button
   var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
-
 });

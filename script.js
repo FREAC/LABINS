@@ -52,7 +52,7 @@ require([
   // Bootstrap
   "bootstrap/Collapse",
   "bootstrap/Dropdown",
-  
+
   "dojo/domReady!"
 ], function (
   Map,
@@ -96,7 +96,7 @@ require([
   var countyBoundariesLayer = new MapImageLayer({
     url: countyBoundariesURL,
     title: "County Boundaries",
-    minScale: minimumDrawScale,
+    minScale: 2000000,
     sublayers: [{
       id: 0,
       title: "County Boundaries",
@@ -739,7 +739,7 @@ require([
 
   // Modified zoomToFeature function to zoom once the Township and Range has been chosen
   function zoomToTRFeature(panelurl, location, attribute) {
-    
+
     multiPolygonGeometries = [];
 
     var township = document.getElementById("selectTownship");
@@ -1028,7 +1028,7 @@ require([
       if ((targetLayer.visible === true) && (mapView.scale < minimumDrawScale)) {
         // if labels are not already visible, turn them on
         if ((targetLayer.layer.labelsVisible === false) || (targetLayer.layer.labelsVisible === undefined)) {
-          
+
           // handle focus toggle of action button on CCR sublayer
           targetLayer.layer.labelsVisible = true;
           targetLayer.layer.labelingInfo = [{

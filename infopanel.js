@@ -162,7 +162,7 @@ function queryInfoPanel(results, i) {
                 );
             } else if (results[i - 1].attributes.layerName === 'Certified Corners' && results[i - 1].attributes.is_image === 'Y') {
                 console.log(results[i - 1].attributes);
-                
+
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
                     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
@@ -173,8 +173,8 @@ function queryInfoPanel(results, i) {
                 const tifFiles = [];
                 imageIds.map(prop => {
                     if (prop.startsWith('image') && results[i - 1].attributes[prop].length > 1) {
-                            pdfFiles.add(results[i - 1].attributes[prop].slice(-18,-5));
-                            tifFiles.push(results[i - 1].attributes[prop]);
+                        pdfFiles.add(results[i - 1].attributes[prop].slice(-18, -5));
+                        tifFiles.push(results[i - 1].attributes[prop]);
                     }
                 });
                 // convert back to array using spread operator and add to popup
@@ -183,7 +183,7 @@ function queryInfoPanel(results, i) {
                 });
                 // add .tif files to popup
                 tifFiles.map(fileName => {
-                    $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12,-4) + '.tif</a><br>');
+                    $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
                 });
 
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {

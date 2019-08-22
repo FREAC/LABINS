@@ -50,14 +50,19 @@ function queryInfoPanel(results, i) {
                     '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
 
                 );
-                // } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
-                //     $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
-                //         'Control Point Name: ' + results[i - 1].attributes.NAME + '<br>' +
-                //         'Latitude, Longitude: ' + results[i - 1].attributes.DEC_LAT + ', ' + results[i - 1].attributes.DEC_LONG + '<br>' +
-                //         'County: ' + results[i - 1].attributes.COUNTY + '<br>' +
-                //         'PID: ' + results[i - 1].attributes.PID + '<br>' +
-                //         'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.DATA_SRCE + '>' + results[i - 1].attributes.PID + '</a><br>',
-                //     );
+
+                // opus links
+                /*
+                const request = async () => {
+                    const response = await fetch('https://api.com/values/1');
+                    const json = await response.json();
+                    console.log(json);
+                }
+
+                request();
+                */
+                fetch("https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=" + results[i - 1].attributes.pid);
+
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
                     'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +

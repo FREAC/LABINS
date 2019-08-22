@@ -92,27 +92,33 @@ require([
   var minimumDrawScale = 95000;
   var extents = [];
 
+  const countiesRenderer = {
+    type: "simple", // autocasts as new SimpleRenderer()
+    symbol: {
+      type: "simple-fill", // autocasts as new SimpleLineSymbol()
+      style: "none",
+      // width: 0.7,
+      color: "none",
+      outline: {
+        style: "dash-dot",
+        width: 1,
+        color: "dimgray"
+      }
+    }
+  };
+
   var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/";
   var countyBoundariesLayer = new MapImageLayer({
     url: countyBoundariesURL,
     title: "County Boundaries",
-    minScale: 4000000,
+
+    minScale: 2000000,
     sublayers: [{
       id: 0,
       title: "County Boundaries",
-      visible: false,
+      visible: true,
       popupEnabled: false,
-      renderer: {
-        type: "simple",
-        symbol: {
-          type: "simple-fill",
-          style: "none",
-          outline: {
-            style: "dash-dot",
-            width: 1.50
-          }
-        }
-      },
+      renderer: countiesRenderer
     }]
   });
 

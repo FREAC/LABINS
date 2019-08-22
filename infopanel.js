@@ -183,27 +183,38 @@ function queryInfoPanel(results, i) {
                     '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a>'
 
                 );
-            } else if (results[i - 1].attributes.layerName === 'Certified Corners') {
+
+            } else if (results[i - 1].attributes.layerName === 'Certified Corners' && results[i - 1].attributes.is_image === 'Y') {
+                console.log(results[i - 1].attributes);
+
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
                     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
-                    '<b>PDF: </b><a target="_blank" href=' + results[i - 1].attributes.pdf + '>' + results[i - 1].attributes.pdf.substring(44, 55) + '</a><br>' +
-                    '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
+                    '<b>Quad Number: </b>' + results[i - 1].attributes.quad_num + '<br>'
                 );
-                for (var prop in results[i - 1].attributes) {
-                    if (prop.startsWith('image')) {
-                        if (results[i - 1].attributes[prop].length > 1) {
-                            $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + results[i - 1].attributes[prop] + '>' + results[i - 1].attributes[prop].substring(40, 52) + '</a><br>');
-                        }
+                const pdfFiles = new Set([]);
+                const imageIds = Object.keys(results[i - 1].attributes);
+                const tifFiles = [];
+                imageIds.map(prop => {
+                    if (prop.startsWith('image') && results[i - 1].attributes[prop].length > 1) {
+                        pdfFiles.add(results[i - 1].attributes[prop].slice(-18, -5));
+                        tifFiles.push(results[i - 1].attributes[prop]);
                     }
+                });
+                // convert back to array using spread operator and add to popup
+                [...pdfFiles].map(fileName => {
+                    $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/' + fileName + '.pdf>' + fileName.slice(6) + '.pdf</a><br>');
+                });
+                // add .tif files to popup
+                tifFiles.map(fileName => {
+                    $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
+                });
 
-                }
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
                     '<b>County: </b>' + results[i - 1].attributes.COUNTY + '<br>' +
                     '<b>ECL Name: </b>' + results[i - 1].attributes.YEAR + '<br>' +
                     '<b>MHW: </b>' + results[i - 1].attributes.OBJECTID + '<br>'
-                    // '<b>Location: </b>' + results[i - 1].attributes.SHAPE.LEN + '<br>'
                 );
             }
             $('#informationdiv').append('<br>');

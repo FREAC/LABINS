@@ -23,17 +23,6 @@
   <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-  <style>
-
-
-
-
-
-
-
-
-  </style>
-
 </head>
 
 <body class="calcite-maps calcite-nav-top">
@@ -103,11 +92,6 @@
           data-placement="bottom">Layerlist</a></li>
       <li><a id="desktopLegend" class="hidden-xs hidden-sm" href="#" aria-controls="Legend" role="tab" data-toggle="tab"
           data-tooltip="tip" title="Legend" data-placement="bottom">Legend</a></li>
-      <!-- <li>
-        <div class="calcite-navbar-search calcite-search-expander">
-          <div id="searchWidgetDiv"></div>
-        </div>
-      </li> -->
       <li>
         <div class="calcite-navbar-search hidden-xs hidden-sm calcite-text-dark">
           <div id="searchWidgetDiv"></div>
@@ -155,7 +139,8 @@
           </a>
         </div>
       </div>
-      <!-- <div id="collapseLayer" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLayer"> -->
+
+      <!-- Zoom to Feature Body -->
       <div id="collapseLayer" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLayer">
         <div class="panel-body">
           <li class="dropdown-header" style="color: #DCDCDC">
@@ -247,21 +232,6 @@
       </div>
       <div id="collapsePopup" class="panel-collapse" role="tabpanel" aria-labelledby="headingPopup">
         <div class="panel-body">
-          <!-- <li class="dropdown-header" style="color: #FFFFFF"><font size="3">Filter by Layer</font></li>
-        <select id="filterLayerPanel" class="form-control" placeholder="Filter By Layer"></select> -->
-          <!--<p><div id="numberinputdiv">
-          <nav class="leader-1">
-              <button title="Previous" type="button" class="btn btn-default" id="back">
-                  <span class="esri-icon-reverse" ></span>
-                  
-              </button>
-              <input type="text" id="numinput" style="text-align:center;">
-              <button title="Next" type="button" class="btn btn-default" id="forward">
-                <span class="esri-icon-forward"></span>
-                  
-              </button>             
-          </nav>
-      </div></p>-->
           <p>
             <div id="arraylengthdiv" style="text-align:center;"></div>
           </p>
@@ -317,12 +287,6 @@
               </div>
             </div>
 
-            <!-- <div class="col-xs-9">
-              <label class="toggle-switch modifier-class">
-                <input type="checkbox" id="measureIdentify" checked>
-                <span class="glyphicon glyphicon-info-sign" style="font-size: 1.3em;"></span>
-              </label>
-            </div> -->
           </div>
         </div>
       </div>

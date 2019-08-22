@@ -111,6 +111,7 @@ require([
   var countyBoundariesLayer = new MapImageLayer({
     url: countyBoundariesURL,
     title: "County Boundaries",
+
     minScale: 2000000,
     sublayers: [{
       id: 0,
@@ -339,7 +340,6 @@ require([
 
   var map = new Map({
     basemap: "topo",
-    // layers: [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
     layers: [selectionLayer, bufferLayer]
   });
 
@@ -1918,6 +1918,7 @@ require([
     var identifyPanel = document.getElementById('panelPopup');
     var identifyStyle = document.getElementById('collapsePopup');
     var dataQueryPanel = document.getElementById('panelQuery');
+    let dataQueryPanelBody = document.getElementById('collapseQuery');
 
     identifyPanel.setAttribute('class', 'panel collapse');
     identifyPanel.setAttribute('style', 'height:0px;');
@@ -1927,6 +1928,9 @@ require([
 
     dataQueryPanel.setAttribute('class', 'panel collapse in');
     dataQueryPanel.setAttribute('style', 'height:auto;');
+
+    dataQueryPanelBody.setAttribute('class', 'panel collapse in');
+    dataQueryPanelBody.setAttribute('style', 'height:auto;');
   });
 
   // Switch panel to zoom to feature panel
@@ -2012,7 +2016,7 @@ require([
   });
 
   // Basemaps
-  var basemaps = new Basemaps({
+  new Basemaps({
     container: "basemapGalleryDiv",
     view: mapView
   })
@@ -2020,7 +2024,7 @@ require([
   // if screen width under 992 pixels, put legend and layerlist widget button into navigation bar menu
   if (screen.availWidth < 992) {
     // Legend
-    const legendWidget = new Legend({
+    new Legend({
       container: "legendDiv",
       view: mapView
     });
@@ -2339,7 +2343,7 @@ require([
   }
 
   // Print
-  var printWidget = new Print({
+  new Print({
     container: "printDiv",
     view: mapView,
     printServiceUrl: "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"

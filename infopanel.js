@@ -50,6 +50,8 @@ function queryInfoPanel(results, i) {
                     '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
 
                 );
+                console.log(results[i - 1].attributes);
+
 
                 // opus links
                 /*
@@ -60,8 +62,24 @@ function queryInfoPanel(results, i) {
                 }
 
                 request();
+                https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid
                 */
-                fetch("https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=" + results[i - 1].attributes.pid);
+
+
+                // request GeoJson data from USGS remote server
+                var url = 'https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid;
+
+                require(["esri/request"], function (esriRequest) {
+                    /* code goes here */
+                    esriRequest(url, {
+                        responseType: "json"
+                    }).then(function (response) {
+                        // The requested data
+                        var geoJson = response.data;
+                        console.log(geoJson);
+
+                    });
+                });
 
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +

@@ -47,39 +47,22 @@ function queryInfoPanel(results, i) {
                     'County: ' + results[i - 1].attributes.county + '<br>' +
                     'PID: ' + results[i - 1].attributes.pid + '<br>' +
                     'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.data_srce + '>' + results[i - 1].attributes.pid + '</a><br>' +
+                    'OPUS Datasheet: ' + '<a target="_blank" href=https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid + '>' + results[i - 1].attributes.pid + '</a> <br>' +
                     '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
-
                 );
-                console.log(results[i - 1].attributes);
 
-
-                // opus links
-                /*
-                const request = async () => {
-                    const response = await fetch('https://api.com/values/1');
-                    const json = await response.json();
-                    console.log(json);
-                }
-
-                request();
-                https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid
-                */
-
-
+                // https://medium.com/netscape/hacking-it-out-when-cors-wont-let-you-be-great-35f6206cc646
                 // request GeoJson data from USGS remote server
-                var url = 'https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid;
+                var url = 'https://cors-anywhere.herokuapp.com/https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid;
 
-                require(["esri/request"], function (esriRequest) {
-                    /* code goes here */
-                    esriRequest(url, {
-                        responseType: "json"
-                    }).then(function (response) {
-                        // The requested data
-                        var geoJson = response.data;
-                        console.log(geoJson);
+                fetch(url)
+                    .then(function (response) {
+                        return response.text();
+                    })
+                    .then(function (myresponse) {
+                        console.log(myresponse);
 
                     });
-                });
 
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +

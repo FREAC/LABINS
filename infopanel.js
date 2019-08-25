@@ -41,13 +41,14 @@ function queryInfoPanel(results, i) {
                     '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
+
+
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
                     'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
                     'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +
                     'County: ' + results[i - 1].attributes.county + '<br>' +
                     'PID: ' + results[i - 1].attributes.pid + '<br>' +
                     'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.data_srce + '>' + results[i - 1].attributes.pid + '</a><br>' +
-                    'OPUS Datasheet: ' + '<a target="_blank" href=https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid + '>' + results[i - 1].attributes.pid + '</a> <br>' +
                     '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
                 );
 
@@ -55,14 +56,16 @@ function queryInfoPanel(results, i) {
                 // request GeoJson data from USGS remote server
                 var url = 'https://cors-anywhere.herokuapp.com/https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid;
 
-                fetch(url)
-                    .then(function (response) {
-                        return response.text();
-                    })
-                    .then(function (myresponse) {
-                        console.log(myresponse);
-
-                    });
+                const opusData = async (results) => {
+                    response = await fetch(url);
+                    text = await response.text();
+                    if (text.length > 414) {
+                        $('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
+                    } else {
+                        console.log('not long enough');
+                    }
+                }
+                opusData(results[i - 1]);
 
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +

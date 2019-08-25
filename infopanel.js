@@ -62,7 +62,7 @@ async function queryInfoPanel(results, i) {
                     if (text.length > 414) {
                         $('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
                     } else {
-                        console.log('not long enough');
+                        console.log('No data returned for OPUS Datasheet');
                     }
                 }
                 await opusData(results[i - 1]);

@@ -1,4 +1,4 @@
-function queryInfoPanel(results, i) {
+async function queryInfoPanel(results, i) {
     if (results.length > 0) {
         // Set append templates for information panel
         for (var i = 1; i <= results.length; i++) {
@@ -9,12 +9,12 @@ function queryInfoPanel(results, i) {
                     '<b>Latitude, Longitude:</b> ' + results[i - 1].attributes.latitude + ', ' + results[i - 1].attributes.longitude + '<br>' +
                     '<b>Layer Name:</b> ' + results[i - 1].attributes.layerName + '<br>'
                 );
-            } else if (results[i - 1].attributes.layerName === 'County Boundaries') {
+            } else if (results[i - 1].attributes.layerName === 'County_Boundaries_Shoreline') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>County Boundaries</b></p>' +
-                    '<b>County Name:</b> ' + results[i - 1].attributes.ctyname + '<br>' +
-                    '<b>FIPS:</b> ' + results[i - 1].attributes.cfips + '<br>' +
-                    '<b>Area:</b> ' + results[i - 1].attributes.st_area + '<br>' +
-                    '<b>Layer Name:</b> ' + results[i - 1].attributes.layerName + '<br>'
+                    '<b>County Name:</b> ' + results[i - 1].attributes.tigername + '<br>' +
+                    '<b>FIPS:</b> ' + results[i - 1].attributes.fips + '<br>' +
+                    '<b>Area:</b> ' + results[i - 1].attributes.st_area_shape_ + '<br>' +
+                    '<b>Layer Name:</b>County Boundaries<br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Soils June 2012 - Dept. of Agriculture') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Soils June 2012 - Dept. of Agriculture</b></p>' +
@@ -65,7 +65,10 @@ function queryInfoPanel(results, i) {
                         console.log('not long enough');
                     }
                 }
-                opusData(results[i - 1]);
+                await opusData(results[i - 1]);
+
+                console.log(results);
+
 
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +

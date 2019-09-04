@@ -56,19 +56,28 @@ async function queryInfoPanel(results, i) {
                 // request GeoJson data from USGS remote server
                 var url = 'https://cors-anywhere.herokuapp.com/https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid;
 
+                // const opusData = async (results) => {
+                //     text = await response.text();
+                //     if (text.length > 414) {
+                //         $('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
+                //     } else {
+                //         console.log('No data returned for OPUS Datasheet');
+                //     }
+                // }
+                // await opusData(results[i - 1]);
+
+                // console.log(results);
+
                 const opusData = async (results) => {
-                    response = await fetch(url);
-                    text = await response.text();
-                    if (text.length > 414) {
-                        $('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
-                    } else {
-                        console.log('No data returned for OPUS Datasheet');
-                    }
+                    $.get("./docs/opus-data/fl_ngs.json", function (json_data) {
+                        let obj = json_data.find(element => element.properties.pid === results.attributes.pid);
+                        console.log(obj);
+                        if (obj !== undefined) {
+                            // TODO: add url for pid
+                        }
+                    });
                 }
-                await opusData(results[i - 1]);
-
-                console.log(results);
-
+                opusData(results[i - 1]);
 
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +

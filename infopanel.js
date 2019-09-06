@@ -1,3 +1,14 @@
+const opusData = async (results) => {
+    await $.get("./docs/opus-data/fl_ngs.json", async function (json_data) {
+        const obj = await json_data.find(element => element.properties.pid === results.attributes.pid);
+        console.log(obj);
+        if (obj !== undefined) {
+            // TODO: add url for pid
+            $('#informationdiv').append('<a target="_blank" href=https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>Opus Datasheet: ' + results.attributes.pid + '</a><br>');
+        }
+    });
+}
+
 async function queryInfoPanel(results, i) {
     if (results.length > 0) {
         // Set append templates for information panel
@@ -68,16 +79,8 @@ async function queryInfoPanel(results, i) {
 
                 // console.log(results);
 
-                const opusData = async (results) => {
-                    $.get("./docs/opus-data/fl_ngs.json", function (json_data) {
-                        let obj = json_data.find(element => element.properties.pid === results.attributes.pid);
-                        console.log(obj);
-                        if (obj !== undefined) {
-                            // TODO: add url for pid
-                        }
-                    });
-                }
-                opusData(results[i - 1]);
+
+                await opusData(results[i - 1]);
 
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +

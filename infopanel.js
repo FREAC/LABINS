@@ -1,4 +1,13 @@
-function queryInfoPanel(results, i) {
+const opusData = async (results) => {
+    await $.get("./docs/opus-data/fl_ngs.json", async function (json_data) {
+        const obj = await json_data.find(element => element.properties.pid === results.attributes.pid);
+        if (obj !== undefined) {
+            $('#informationdiv').append('Opus Datasheet: <a target="_blank" href=https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a><br>');
+        }
+    });
+}
+
+async function queryInfoPanel(results, i) {
     if (results.length > 0) {
         // Set append templates for information panel
         for (var i = 1; i <= results.length; i++) {
@@ -9,12 +18,12 @@ function queryInfoPanel(results, i) {
                     '<b>Latitude, Longitude:</b> ' + results[i - 1].attributes.latitude + ', ' + results[i - 1].attributes.longitude + '<br>' +
                     '<b>Layer Name:</b> ' + results[i - 1].attributes.layerName + '<br>'
                 );
-            } else if (results[i - 1].attributes.layerName === 'County Boundaries') {
+            } else if (results[i - 1].attributes.layerName === 'County_Boundaries_Shoreline') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>County Boundaries</b></p>' +
-                    '<b>County Name:</b> ' + results[i - 1].attributes.ctyname + '<br>' +
-                    '<b>FIPS:</b> ' + results[i - 1].attributes.cfips + '<br>' +
-                    '<b>Area:</b> ' + results[i - 1].attributes.st_area + '<br>' +
-                    '<b>Layer Name:</b> ' + results[i - 1].attributes.layerName + '<br>'
+                    '<b>County Name:</b> ' + results[i - 1].attributes.tigername + '<br>' +
+                    '<b>FIPS:</b> ' + results[i - 1].attributes.fips + '<br>' +
+                    '<b>Area:</b> ' + results[i - 1].attributes.st_area_shape_ + '<br>' +
+                    '<b>Layer Name:</b>County Boundaries<br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Soils June 2012 - Dept. of Agriculture') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Soils June 2012 - Dept. of Agriculture</b></p>' +
@@ -41,6 +50,8 @@ function queryInfoPanel(results, i) {
                     '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
+
+
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
                     'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
                     'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +
@@ -48,16 +59,27 @@ function queryInfoPanel(results, i) {
                     'PID: ' + results[i - 1].attributes.pid + '<br>' +
                     'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.data_srce + '>' + results[i - 1].attributes.pid + '</a><br>' +
                     '<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + results[i - 1].geometry.latitude + ',' + results[i - 1].geometry.longitude + '>Google Street View</a><br>'
-
                 );
-                // } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
-                //     $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
-                //         'Control Point Name: ' + results[i - 1].attributes.NAME + '<br>' +
-                //         'Latitude, Longitude: ' + results[i - 1].attributes.DEC_LAT + ', ' + results[i - 1].attributes.DEC_LONG + '<br>' +
-                //         'County: ' + results[i - 1].attributes.COUNTY + '<br>' +
-                //         'PID: ' + results[i - 1].attributes.PID + '<br>' +
-                //         'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.DATA_SRCE + '>' + results[i - 1].attributes.PID + '</a><br>',
-                //     );
+
+                // https://medium.com/netscape/hacking-it-out-when-cors-wont-let-you-be-great-35f6206cc646
+                // request GeoJson data from USGS remote server
+                var url = 'https://cors-anywhere.herokuapp.com/https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid;
+
+                // const opusData = async (results) => {
+                //     text = await response.text();
+                //     if (text.length > 414) {
+                //         $('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
+                //     } else {
+                //         console.log('No data returned for OPUS Datasheet');
+                //     }
+                // }
+                // await opusData(results[i - 1]);
+
+                // console.log(results);
+
+
+                await opusData(results[i - 1]);
+
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
                     'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +

@@ -1069,7 +1069,7 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
-      if ((mapView.scale < minimumDrawScale) && (coordExpand.expanded !== true)) {
+      if ((mapView.scale < minimumDrawScale) && (coordExpand.expanded !== true) && streetViewToggle !== true) {
         document.getElementById("mapViewDiv").style.cursor = "wait";
         mapView.graphics.removeAll();
         selectionLayer.graphics.removeAll();
@@ -2341,6 +2341,17 @@ require([
       selectedButton.classList.add("active");
     }
   }
+
+  // Google street view functionality
+  let streetViewToggle = false;
+  document.getElementById('streetViewToggle').addEventListener('click', function () {
+    // if the button contains the class of 'active' set it to inactive
+    // if the button doesn't contain the class of 'active' set it to active. 
+    //this.classList.contains('active')
+    // when the button is pressed, disable the identify somehow
+
+    console.log('hello');
+  });
 
   // Print
   new Print({

@@ -851,7 +851,7 @@ require([
     });
     try {
       const results = await townshipRangeSectionLayer.queryFeatures(townshipQuery);
-      await addToSelect(results);
+      await buildTownshipDropdown(results);
     } catch (err) {
       console.log('Township load failed: ', err);
     }
@@ -860,7 +860,7 @@ require([
   // Add the unique values to the subregion
   // select element. This will allow the user
   // to filter states by subregion.
-  function addToSelect(values) {
+  function buildTownshipDropdown(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Township";
     townshipSelect.add(option);
@@ -875,7 +875,7 @@ require([
 
   // Add the unique values to the
   // range selection element.
-  function addToSelect2(values) {
+  function buildRangeDropdown(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Range";
     rangeSelect.add(option);
@@ -890,7 +890,7 @@ require([
 
   // Add the unique values to the
   // section selection element.
-  function addToSelect3(values) {
+  function buildSectionDropdown(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Section";
     sectionSelect.add(option);
@@ -916,7 +916,7 @@ require([
       returnDistinctValues: true,
       orderByFields: ["rng_ch", "rdir"]
     });
-    return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(addToSelect2);
+    return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(buildRangeDropdown);
   })
 
   // when range changes, reset the section dropdown.
@@ -936,7 +936,7 @@ require([
     selectQuery.outFields = ["sec_ch"];
     selectQuery.returnDistinctValues = true;
     selectQuery.orderByFields = ["sec_ch"];
-    return townshipRangeSectionLayer.queryFeatures(selectQuery).then(addToSelect3);
+    return townshipRangeSectionLayer.queryFeatures(selectQuery).then(buildSectionDropdown);
   });
 
   var querySection = dom.byId("selectSection");
@@ -2208,7 +2208,7 @@ require([
     mapView.ui.add(coordExpand, "top-left");
   }
 
-  // keeps track of the active widget between distance measurement and area measurement
+  // keeps track of the active widget between distance measurement and area measurement and google street view
   let activeWidget = null;
 
   // listen to when the distance button is clicked in order to activate the distanceMeasurement widget

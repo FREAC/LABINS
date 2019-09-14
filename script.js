@@ -2358,16 +2358,11 @@ require([
     if (this.classList.contains('active') && streetViewToggle !== true) {
       //enable streettoggle flag
       streetViewToggle = true;
-      console.log('activeeeeee!')
-      console.log(streetViewToggle);
     } else if (streetViewToggle === true) {
-      console.log('streetviewtoggle is true');
       //undo streettoggle flag
       this.classList.remove('active');
       streetViewToggle = false;
     }
-
-    console.log('hello');
   });
 
   // Print

@@ -1114,6 +1114,12 @@ require([
           $('#infoSpan').html('Information Panel - 0 features found.');
           $('#informationdiv').append('<p>This query did not return any features</p>');
         }
+      } else if (streetViewToggle === true && (mapView.scale < minimumDrawScale)) {
+        const googleStreetViewLink = 'http://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude;
+        console.log({
+          event
+        });
+        window.open(googleStreetViewLink, '_blank');
       }
       document.getElementById("mapViewDiv").style.cursor = "auto";
     });
@@ -2344,11 +2350,22 @@ require([
 
   // Google street view functionality
   let streetViewToggle = false;
-  document.getElementById('streetViewToggle').addEventListener('click', function () {
+  document.getElementById('streetViewToggle').addEventListener('click', function (event) {
     // if the button contains the class of 'active' set it to inactive
     // if the button doesn't contain the class of 'active' set it to active. 
     //this.classList.contains('active')
     // when the button is pressed, disable the identify somehow
+    if (this.classList.contains('active') && streetViewToggle !== true) {
+      //enable streettoggle flag
+      streetViewToggle = true;
+      console.log('activeeeeee!')
+      console.log(streetViewToggle);
+    } else if (streetViewToggle === true) {
+      console.log('streetviewtoggle is true');
+      //undo streettoggle flag
+      this.classList.remove('active');
+      streetViewToggle = false;
+    }
 
     console.log('hello');
   });

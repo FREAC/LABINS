@@ -2351,10 +2351,9 @@ require([
   // Google street view functionality
   let streetViewToggle = false;
   document.getElementById('streetViewToggle').addEventListener('click', function (event) {
-    // if the button contains the class of 'active' set it to inactive
-    // if the button doesn't contain the class of 'active' set it to active. 
-    //this.classList.contains('active')
-    // when the button is pressed, disable the identify somehow
+
+
+    // when the button is pressed, disable the identify
     if (this.classList.contains('active') && streetViewToggle !== true) {
       //enable streettoggle flag
       streetViewToggle = true;

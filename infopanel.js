@@ -7,7 +7,11 @@ const opusData = async (results) => {
     });
 }
 
-async function queryInfoPanel(results, i) {
+async function queryInfoPanel(event, results, i) {
+
+    $('#informationdiv').append('<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View</a><br><br>');
+
+
     if (results.length > 0) {
         // Set append templates for information panel
         for (var i = 1; i <= results.length; i++) {

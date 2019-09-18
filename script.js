@@ -1069,7 +1069,7 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
-      if ((mapView.scale < minimumDrawScale) && (coordExpand.expanded !== true) && streetViewToggle !== true) {
+      if ((mapView.scale < minimumDrawScale) && (coordExpand.expanded !== true)) {
         document.getElementById("mapViewDiv").style.cursor = "wait";
         mapView.graphics.removeAll();
         selectionLayer.graphics.removeAll();
@@ -1107,19 +1107,13 @@ require([
           }
         }
         if (infoPanelData.length > 0) {
-          await queryInfoPanel(infoPanelData, 1);
+          await queryInfoPanel(event, infoPanelData, 1);
           togglePanel();
           await goToFeature(infoPanelData[0]);
         } else { // if no features were found under the click
           $('#infoSpan').html('Information Panel - 0 features found.');
           $('#informationdiv').append('<p>This query did not return any features</p>');
         }
-      } else if (streetViewToggle === true && (mapView.scale < minimumDrawScale)) {
-        const googleStreetViewLink = 'http://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude;
-        console.log({
-          event
-        });
-        window.open(googleStreetViewLink, '_blank');
       }
       document.getElementById("mapViewDiv").style.cursor = "auto";
     });
@@ -2214,7 +2208,7 @@ require([
     mapView.ui.add(coordExpand, "top-left");
   }
 
-  // keeps track of the active widget between distance measurement and area measurement and google street view
+  // keeps track of the active widget between distance measurement and area measurement
   let activeWidget = null;
 
   // listen to when the distance button is clicked in order to activate the distanceMeasurement widget
@@ -2347,22 +2341,6 @@ require([
       selectedButton.classList.add("active");
     }
   }
-
-  // Google street view functionality
-  let streetViewToggle = false;
-  document.getElementById('streetViewToggle').addEventListener('click', function (event) {
-
-
-    // when the button is pressed, disable the identify
-    if (this.classList.contains('active') && streetViewToggle !== true) {
-      //enable streettoggle flag
-      streetViewToggle = true;
-    } else if (streetViewToggle === true) {
-      //undo streettoggle flag
-      this.classList.remove('active');
-      streetViewToggle = false;
-    }
-  });
 
   // Print
   new Print({

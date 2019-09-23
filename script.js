@@ -1069,12 +1069,12 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
-      identifyTaskFlow(event);
+      identifyTaskFlow(event, coordExpand.expanded !== true);
     });
   });
 
-  async function identifyTaskFlow(event) {
-    if ((mapView.scale < minimumDrawScale) && (coordExpand.expanded !== true)) {
+  async function identifyTaskFlow(event, coordExpanParam) {
+    if ((mapView.scale < minimumDrawScale) && (coordExpanParam)) {
       document.getElementById("mapViewDiv").style.cursor = "wait";
       mapView.graphics.removeAll();
       selectionLayer.graphics.removeAll();

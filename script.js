@@ -2317,7 +2317,7 @@ require([
                   }
                 }
                 if (infoPanelData.length > 0) {
-                  await queryInfoPanel(infoPanelData, 1);
+                  await queryInfoPanel(undefined, infoPanelData, 1);
                   togglePanel();
                   await goToFeature(infoPanelData[0]);
                 } else { // if no features were found under the click

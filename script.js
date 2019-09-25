@@ -851,7 +851,7 @@ require([
     });
     try {
       const results = await townshipRangeSectionLayer.queryFeatures(townshipQuery);
-      await addToSelect(results);
+      await buildTownshipDropdown(results);
     } catch (err) {
       console.log('Township load failed: ', err);
     }
@@ -860,7 +860,7 @@ require([
   // Add the unique values to the subregion
   // select element. This will allow the user
   // to filter states by subregion.
-  function addToSelect(values) {
+  function buildTownshipDropdown(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Township";
     townshipSelect.add(option);
@@ -875,7 +875,7 @@ require([
 
   // Add the unique values to the
   // range selection element.
-  function addToSelect2(values) {
+  function buildRangeDropdown(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Range";
     rangeSelect.add(option);
@@ -890,7 +890,7 @@ require([
 
   // Add the unique values to the
   // section selection element.
-  function addToSelect3(values) {
+  function buildSectionDropdown(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Section";
     sectionSelect.add(option);
@@ -916,7 +916,7 @@ require([
       returnDistinctValues: true,
       orderByFields: ["rng_ch", "rdir"]
     });
-    return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(addToSelect2);
+    return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(buildRangeDropdown);
   })
 
   // when range changes, reset the section dropdown.
@@ -936,7 +936,7 @@ require([
     selectQuery.outFields = ["sec_ch"];
     selectQuery.returnDistinctValues = true;
     selectQuery.orderByFields = ["sec_ch"];
-    return townshipRangeSectionLayer.queryFeatures(selectQuery).then(addToSelect3);
+    return townshipRangeSectionLayer.queryFeatures(selectQuery).then(buildSectionDropdown);
   });
 
   var querySection = dom.byId("selectSection");
@@ -1069,55 +1069,60 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
-      if ((mapView.scale < minimumDrawScale) && (coordExpand.expanded !== true)) {
-        document.getElementById("mapViewDiv").style.cursor = "wait";
-        mapView.graphics.removeAll();
-        selectionLayer.graphics.removeAll();
-        clearDiv('informationdiv');
-        clearDiv('arraylengthdiv');
-        infoPanelData = [];
+      identifyTaskFlow(event, coordExpand.expanded !== true);
+    });
+  });
 
-        // look inside of layerList layers
-        let layers = layerList.operationalItems.items
+  async function identifyTaskFlow(event, coordExpanParam) {
+    if ((mapView.scale < minimumDrawScale) && (coordExpanParam)) {
+      document.getElementById("mapViewDiv").style.cursor = "wait";
+      mapView.graphics.removeAll();
+      selectionLayer.graphics.removeAll();
+      clearDiv('informationdiv');
+      clearDiv('arraylengthdiv');
+      infoPanelData = [];
 
-        // loop through layers
-        for (layer of layers) {
-          let visibleLayers
-          // exclude geographic names layer from identify operation
-          if (layer.title !== 'Geographic Names') {
-            visibleLayers = await checkVisibleLayers(layer);
+      // look inside of layerList layers
+      let layers = layerList.operationalItems.items
 
-            // if there are visible layers returned
-            if (visibleLayers.length > 0) {
-              const task = new IdentifyTask(layer.layer.url)
-              const params = await setIdentifyParameters(visibleLayers, "click", event);
-              const identify = await executeIdentifyTask(task, params);
+      // loop through layers
+      for (layer of layers) {
+        let visibleLayers
+        // exclude geographic names layer from identify operation
+        if (layer.title !== 'Geographic Names') {
+          visibleLayers = await checkVisibleLayers(layer);
 
-              // push each feature to the infoPanelData
-              for (feature of identify.results) {
-                feature.feature.attributes.layerName = feature.layerName;
-                let result = feature.feature.attributes
+          // if there are visible layers returned
+          if (visibleLayers.length > 0) {
+            const task = new IdentifyTask(layer.layer.url)
+            const params = await setIdentifyParameters(visibleLayers, "click", event);
+            const identify = await executeIdentifyTask(task, params);
 
-                // make sure only certified corners with images are identified
-                if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
-                  await infoPanelData.push(feature.feature);
-                }
+            // push each feature to the infoPanelData
+            for (feature of identify.results) {
+              feature.feature.attributes.layerName = feature.layerName;
+              let result = feature.feature.attributes
+
+              // make sure only certified corners with images are identified
+              if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+                await infoPanelData.push(feature.feature);
               }
             }
           }
         }
-        if (infoPanelData.length > 0) {
-          await queryInfoPanel(infoPanelData, 1);
-          togglePanel();
-          await goToFeature(infoPanelData[0]);
-        } else { // if no features were found under the click
-          $('#infoSpan').html('Information Panel - 0 features found.');
-          $('#informationdiv').append('<p>This query did not return any features</p>');
-        }
       }
-      document.getElementById("mapViewDiv").style.cursor = "auto";
-    });
-  });
+      if (infoPanelData.length > 0) {
+        await queryInfoPanel(event, infoPanelData, 1);
+        togglePanel();
+        await goToFeature(infoPanelData[0]);
+      } else { // if no features were found under the click
+        $('#infoSpan').html('Information Panel - 0 features found.');
+        $('#informationdiv').append('<p>This query did not return any features</p>');
+      }
+    }
+    document.getElementById("mapViewDiv").style.cursor = "auto";
+  }
+
 
   // fetch all map services before loading to map
   // if service returns good, add service to map
@@ -1132,7 +1137,7 @@ require([
         map.add(layer);
       } catch (err) {
         // layer returns bad, not added to map, log error
-        console.log(layer.title + " layer failed to be returned" + err);
+        console.error(layer.title + " layer failed to be returned: " + err);
       }
     }
   }
@@ -1238,9 +1243,18 @@ require([
 
     if (feature) {
       // Go to the selected parcel
-      if (feature.geometry.type === "polygon" || feature.geometry.type === "polyline") {
+      if (feature.geometry.type === "polygon") {
+        // do nothing
+        // desired condition is to not zoom, 
+        // but that requirement may change in the future
+      } else if (feature.geometry.type === "polyline") {
         var ext = feature.geometry.extent;
         var cloneExt = ext.clone();
+
+        console.log({
+          ext,
+          cloneExt
+        });
 
         // if current scale is greater than number, 
         // go to feature and expand extent by 1.75x
@@ -2264,10 +2278,8 @@ require([
         setActiveButton(document.getElementById('areaButton'));
         activeWidget.watch("viewModel.tool.active", async function (active) {
           if (active === false) {
-
             // if identify is checked, run a drill down identifyTask
             if (document.getElementById('measureIdentify').checked) {
-
               if (mapView.scale < minimumDrawScale) {
                 document.getElementById("mapViewDiv").style.cursor = "wait";
                 mapView.graphics.removeAll();
@@ -2296,7 +2308,6 @@ require([
                       for (feature of identify.results) {
                         feature.feature.attributes.layerName = feature.layerName;
                         let result = feature.feature.attributes
-
                         // make sure only certified corners with images are identified
                         if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
                           await infoPanelData.push(feature.feature);
@@ -2306,7 +2317,7 @@ require([
                   }
                 }
                 if (infoPanelData.length > 0) {
-                  await queryInfoPanel(infoPanelData, 1);
+                  await queryInfoPanel(undefined, infoPanelData, 1);
                   togglePanel();
                   await goToFeature(infoPanelData[0]);
                 } else { // if no features were found under the click

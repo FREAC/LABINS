@@ -7,7 +7,7 @@ const opusData = async (results) => {
     });
 }
 
-async function queryInfoPanel(event, results, i) {
+async function queryInfoPanel(event = false, results, i) {
 
     if (event.mapPoint) {
         $('#informationdiv').append('<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br>');

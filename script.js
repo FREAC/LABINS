@@ -1137,7 +1137,7 @@ require([
         map.add(layer);
       } catch (err) {
         // layer returns bad, not added to map, log error
-        console.log(layer.title + " layer failed to be returned" + err);
+        console.error(layer.title + " layer failed to be returned: " + err);
       }
     }
   }
@@ -1243,9 +1243,18 @@ require([
 
     if (feature) {
       // Go to the selected parcel
-      if (feature.geometry.type === "polygon" || feature.geometry.type === "polyline") {
+      if (feature.geometry.type === "polygon") {
+        // do nothing
+        // desired condition is to not zoom, 
+        // but that requirement may change in the future
+      } else if (feature.geometry.type === "polyline") {
         var ext = feature.geometry.extent;
         var cloneExt = ext.clone();
+
+        console.log({
+          ext,
+          cloneExt
+        });
 
         // if current scale is greater than number, 
         // go to feature and expand extent by 1.75x
@@ -2269,7 +2278,6 @@ require([
         setActiveButton(document.getElementById('areaButton'));
         activeWidget.watch("viewModel.tool.active", async function (active) {
           if (active === false) {
-
             // if identify is checked, run a drill down identifyTask
             if (document.getElementById('measureIdentify').checked) {
               if (mapView.scale < minimumDrawScale) {

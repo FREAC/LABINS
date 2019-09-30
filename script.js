@@ -2036,6 +2036,7 @@ require([
   })
 
   // if screen width under 992 pixels, put legend and layerlist widget button into navigation bar menu
+  // also add screen expander class
   if (screen.availWidth < 992) {
     // Legend
     new Legend({

@@ -7,6 +7,12 @@ body,
   width: 100%;
 }
 
+#measurementDiv {
+  padding: 10px;
+  max-width: 200px;
+  background-color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1em;
+}
 
 html,
 body {

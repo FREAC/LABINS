@@ -2225,6 +2225,10 @@ require([
   // keeps track of the active widget between distance measurement and area measurement
   let activeWidget = null;
 
+  document.getElementById("drawPane").addEventListener("click", function () {
+    mapView.ui.add("measurementDiv", "bottom-left");
+
+  });
   // listen to when the distance button is clicked in order to activate the distanceMeasurement widget
   document.getElementById("distanceButton").addEventListener("click",
     function () {
@@ -2261,7 +2265,6 @@ require([
         activeWidget.viewModel.newMeasurement();
         mapView.ui.add(activeWidget, "bottom-left");
         setActiveButton(document.getElementById('distanceButton'));
-
         break;
 
         // if the area measurement button was clicked

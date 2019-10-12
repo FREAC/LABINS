@@ -2227,6 +2227,14 @@ require([
 
   document.getElementById("drawPane").addEventListener("click", function () {
     mapView.ui.add("measurementDiv", "bottom-left");
+    const megamenuDropdown = document.getElementById('megamenuDropdown');
+    const megamenuDropdownBtn = document.getElementById('megamenuDropdownBtn');
+
+    // manage menu toggle animations
+    if (megamenuDropdown.classList.contains('open')) {
+      megamenuDropdown.classList.remove('open');
+      megamenuDropdownBtn.classList.remove('open');
+    }
 
   });
   // listen to when the distance button is clicked in order to activate the distanceMeasurement widget

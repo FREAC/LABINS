@@ -2282,6 +2282,7 @@ require([
       case "area":
         activeWidget = new AreaMeasurement2D({
           view: mapView,
+          container: document.getElementById('measurementDiv')
         });
 
         // skip the initial 'new measurement' button

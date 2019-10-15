@@ -119,41 +119,59 @@
           <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelDraw"><span
               class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
         </div>
-      </div>
-      <div id="collapseDraw" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingDraw">
-        <div class="panel-body">
-          <div id="drawPanelDiv">
-
-            <!-- Measurement Buttons -->
-            <div class="form-horizontal">
-              <div class="form-group">
-                <label for="settingsLayout" class="col-xs-3 control-label">Measure: </label>
-                <div class="col-xs-4" style="display: flex; justify-content: center; align-items: center;">
-                  <button class="action-button esri-icon-minus" id="distanceButton" type="button"
-                    title="Measure distance between two or more points"></button>
-                  <button class="action-button esri-icon-polygon" id="areaButton" type="button"
-                    title="Measure area"></button>
-                </div>
-                <div class="col-xs-5"
-                  style="display: flex; justify-content: center; align-items: center; max-width: 50%;">
-                  <label class="toggle-switch modifier-class">
-                    <label>Identify: </label>
-                    <input type="checkbox" id="measureIdentify" checked>
-                  </label>
-                </div>
-              </div>
+        <!-- Measurement Buttons -->
+        <div class="form-horizontal d-none" id="bodyDraw">
+          <div class="form-group">
+            <label for="settingsLayout" class="col-xs-3 control-label">Measure: </label>
+            <div class="col-xs-4" style="display: flex; justify-content: center; align-items: center;">
+              <button class="action-button esri-icon-minus" id="distanceButton" type="button"
+                title="Measure distance between two or more points"></button>
+              <button class="action-button esri-icon-polygon" id="areaButton" type="button"
+                title="Measure area"></button>
             </div>
-
+            <div class="col-xs-5" style="display: flex; justify-content: center; align-items: center; max-width: 50%;">
+              <label class="toggle-switch modifier-class">
+                <label>Identify: </label>
+                <input type="checkbox" id="measureIdentify" checked>
+              </label>
+            </div>
           </div>
         </div>
       </div>
-      <!-- </div> -->
+      <!-- <div id="collapseDraw" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingDraw">
+        <div class="panel-body">
+          <div id="drawPanelDiv"> -->
+
+      <!-- Measurement Buttons -->
+      <!-- <div class="form-horizontal">
+        <div class="form-group">
+          <label for="settingsLayout" class="col-xs-3 control-label">Measure: </label>
+          <div class="col-xs-4" style="display: flex; justify-content: center; align-items: center;">
+            <button class="action-button esri-icon-minus" id="distanceButton" type="button"
+              title="Measure distance between two or more points"></button>
+            <button class="action-button esri-icon-polygon" id="areaButton" type="button"
+              title="Measure area"></button>
+          </div>
+          <div class="col-xs-5"
+            style="display: flex; justify-content: center; align-items: center; max-width: 50%;">
+            <label class="toggle-switch modifier-class">
+              <label>Identify: </label>
+              <input type="checkbox" id="measureIdentify" checked>
+            </label>
+          </div>
+        </div>
+      </div> -->
+
     </div>
+  </div>
+  </div>
+  <!--</div> -->
+  </div>
 
-    <button title="Clear graphics" type="button" class="btn btn-default" id="clearButton">
-      <span class="esri-icon-erase"></span>
+  <button title="Clear graphics" type="button" class="btn btn-default" id="clearButton">
+    <span class="esri-icon-erase"></span>
 
-    </button>
+  </button>
   </div>
   <div id="overviewDiv">
     <div id="extentDiv"></div>

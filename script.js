@@ -2229,11 +2229,13 @@ require([
     mapView.ui.add("measurementDiv", "bottom-left");
     const megamenuDropdown = document.getElementById('megamenuDropdown');
     const megamenuDropdownBtn = document.getElementById('megamenuDropdownBtn');
+    const bodyDraw = document.getElementById('bodyDraw');
 
     // manage menu toggle animations
     if (megamenuDropdown.classList.contains('open')) {
       megamenuDropdown.classList.remove('open');
       megamenuDropdownBtn.classList.remove('open');
+      bodyDraw.classList.remove("d-none");
     }
 
   });
@@ -2266,7 +2268,8 @@ require([
       // if the distance measurement button was clicked
       case "distance":
         activeWidget = new DistanceMeasurement2D({
-          view: mapView
+          view: mapView,
+          container: document.getElementById('measurementDiv')
         });
 
         // skip the initial 'new measurement' button

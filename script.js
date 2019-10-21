@@ -2226,18 +2226,22 @@ require([
   let activeWidget = null;
 
   document.getElementById("drawPane").addEventListener("click", function () {
+    console.log('click!')
     mapView.ui.add("measurementDiv", "bottom-left");
     const megamenuDropdown = document.getElementById('megamenuDropdown');
     const megamenuDropdownBtn = document.getElementById('megamenuDropdownBtn');
     const bodyDraw = document.getElementById('bodyDraw');
-
+    console.log(megamenuDropdown);
     // manage menu toggle animations
     if (megamenuDropdown.classList.contains('open')) {
       megamenuDropdown.classList.remove('open');
       megamenuDropdownBtn.classList.remove('open');
       bodyDraw.classList.remove("d-none");
     }
+  });
 
+  document.getElementById('measurementCloseBtn').addEventListener("click", function () {
+    mapView.ui.remove("measurementDiv");
   });
   // listen to when the distance button is clicked in order to activate the distanceMeasurement widget
   document.getElementById("distanceButton").addEventListener("click",
@@ -2269,7 +2273,7 @@ require([
       case "distance":
         activeWidget = new DistanceMeasurement2D({
           view: mapView,
-          container: document.getElementById('measurementDiv')
+          // container: document.getElementById('measurementDiv')
         });
 
         // skip the initial 'new measurement' button
@@ -2282,7 +2286,7 @@ require([
       case "area":
         activeWidget = new AreaMeasurement2D({
           view: mapView,
-          container: document.getElementById('measurementDiv')
+          // container: document.getElementById('measurementDiv')
         });
 
         // skip the initial 'new measurement' button

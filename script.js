@@ -2228,6 +2228,7 @@ require([
   document.getElementById("drawPane").addEventListener("click", function () {
     console.log('click!')
     mapView.ui.add("measurementDiv", "bottom-left");
+    document.getElementById('measurementDiv').classList.remove('d-none');
     const megamenuDropdown = document.getElementById('megamenuDropdown');
     const megamenuDropdownBtn = document.getElementById('megamenuDropdownBtn');
     const bodyDraw = document.getElementById('bodyDraw');
@@ -2241,7 +2242,8 @@ require([
   });
 
   document.getElementById('measurementCloseBtn').addEventListener("click", function () {
-    mapView.ui.remove("measurementDiv");
+    // mapView.ui.remove("measurementDiv");
+    document.getElementById('measurementDiv').classList.add('d-none');
   });
   // listen to when the distance button is clicked in order to activate the distanceMeasurement widget
   document.getElementById("distanceButton").addEventListener("click",
@@ -2353,7 +2355,7 @@ require([
       case null:
         if (activeWidget) {
           mapView.ui.remove(activeWidget);
-          activeWidget.destroy();
+          // activeWidget.destroy();
           activeWidget = null;
         }
         break;

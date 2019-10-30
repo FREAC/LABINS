@@ -2226,13 +2226,11 @@ require([
   let activeWidget = null;
 
   document.getElementById("drawPane").addEventListener("click", function () {
-    console.log('click!')
     mapView.ui.add("measurementDiv", "bottom-left");
     document.getElementById('measurementDiv').classList.remove('d-none');
     const megamenuDropdown = document.getElementById('megamenuDropdown');
     const megamenuDropdownBtn = document.getElementById('megamenuDropdownBtn');
     const bodyDraw = document.getElementById('bodyDraw');
-    console.log(megamenuDropdown);
     // manage menu toggle animations
     if (megamenuDropdown.classList.contains('open')) {
       megamenuDropdown.classList.remove('open');
@@ -2244,6 +2242,8 @@ require([
   document.getElementById('measurementCloseBtn').addEventListener("click", function () {
     // mapView.ui.remove("measurementDiv");
     document.getElementById('measurementDiv').classList.add('d-none');
+    mapView.ui.remove(activeWidget);
+    setActiveButton(null);
   });
   // listen to when the distance button is clicked in order to activate the distanceMeasurement widget
   document.getElementById("distanceButton").addEventListener("click",
@@ -2275,7 +2275,7 @@ require([
       case "distance":
         activeWidget = new DistanceMeasurement2D({
           view: mapView,
-          // container: document.getElementById('measurementDiv')
+          container: document.getElementById('widgetDraw')
         });
 
         // skip the initial 'new measurement' button
@@ -2288,7 +2288,7 @@ require([
       case "area":
         activeWidget = new AreaMeasurement2D({
           view: mapView,
-          // container: document.getElementById('measurementDiv')
+          container: document.getElementById('widgetDraw')
         });
 
         // skip the initial 'new measurement' button
@@ -2385,7 +2385,7 @@ require([
   var scaleBar = new ScaleBar({
     view: mapView
   });
-  mapView.ui.add(scaleBar, "bottom-left");
+  mapView.ui.add(scaleBar, "bottom-right");
 
   // Home Button
   var home = new Home({

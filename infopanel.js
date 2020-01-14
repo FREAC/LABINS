@@ -73,14 +73,20 @@ async function queryInfoPanel(event = false, results, i) {
                 var url = 'https://cors-anywhere.herokuapp.com/https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid;
 
                 // const opusData = async (results) => {
-                //     text = await response.text();
-                //     if (text.length > 414) {
-                //         $('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
-                //     } else {
-                //         console.log('No data returned for OPUS Datasheet');
-                //     }
+                //     console.log(url);
+
+                //     $.get(url, async function (response) {
+                //         console.log(response.length);
+
+                //         if (response.length > 428) {
+                //             console.log('its greater than 428');
+
+                //             $('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
+                //         } else {
+                //             console.log('No data returned for OPUS Datasheet');
+                //         }
+                //     });
                 // }
-                // await opusData(results[i - 1]);
 
                 // console.log(results);
 

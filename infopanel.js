@@ -2,7 +2,7 @@ const opusData = async (results) => {
     await $.get("./docs/opus-data/fl_ngs.json", async function (json_data) {
         const obj = await json_data.find(element => element.properties.pid === results.attributes.pid);
         if (obj !== undefined) {
-            $('#informationdiv').append('Opus Datasheet: <a target="_blank" href=https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a><br>');
+            $('#informationdiv').append('Opus Datasheet: <a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a><br>');
         }
     });
 }

@@ -65,7 +65,7 @@ async function queryInfoPanel(event = false, results, i) {
                     const response = await fetch(url);
                     text = await response.text();
 
-                    if (text.length > 428) {
+                    if (text.length > 428) { // response always 200, response length will be > 428 if there is an opus point
                         $('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
                     } else {
                         // no data returned

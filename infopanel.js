@@ -130,7 +130,8 @@ async function queryInfoPanel(event = false, results, i) {
 
                 // }
             } else if (results[i - 1].attributes.layerName === 'Tide Interpolation Points') {
-                var replaceWhitespace = results[i - 1].attributes.tile_name.replace(" ", "%20");
+                var replaceWhitespace = results[i - 1].attributes.tile_name.replace(/\s+/g, "%20");
+
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Interpolation Points</b></p>' +
                     '<b>Tide Interpolation Points: </b>' + results[i - 1].attributes.iden + '<br>' +
                     '<b>County: </b>' + results[i - 1].attributes.cname + '<br>' +

@@ -1,12 +1,3 @@
-const opusData = async (results) => {
-    await $.get("./docs/opus-data/fl_ngs.json", async function (json_data) {
-        const obj = await json_data.find(element => element.properties.pid === results.attributes.pid);
-        if (obj !== undefined) {
-            $('#informationdiv').append('Opus Datasheet: <a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a><br>');
-        }
-    });
-}
-
 async function queryInfoPanel(event = false, results, i) {
 
     if (event.mapPoint) {
@@ -68,30 +59,20 @@ async function queryInfoPanel(event = false, results, i) {
                     'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.data_srce + '>' + results[i - 1].attributes.pid + '</a><br>'
                 );
 
-                // https://medium.com/netscape/hacking-it-out-when-cors-wont-let-you-be-great-35f6206cc646
-                // request GeoJson data from USGS remote server
-                var url = 'https://cors-anywhere.herokuapp.com/https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid;
+                var url = 'https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid;
 
-                // const opusData = async (results) => {
-                //     console.log(url);
+                const opusData = async (url, results) => {
+                    const response = await fetch(url);
+                    text = await response.text();
 
-                //     $.get(url, async function (response) {
-                //         console.log(response.length);
+                    if (text.length > 428) {
+                        $('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
+                    } else {
+                        // no data returned
+                    }
+                }
 
-                //         if (response.length > 428) {
-                //             console.log('its greater than 428');
-
-                //             $('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
-                //         } else {
-                //             console.log('No data returned for OPUS Datasheet');
-                //         }
-                //     });
-                // }
-
-                // console.log(results);
-
-
-                await opusData(results[i - 1]);
+                await opusData(url, results[i - 1]);
 
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +

@@ -1119,6 +1119,8 @@ require([
 
             // push each feature to the infoPanelData
             for (feature of identify.results) {
+              console.log(feature);
+
               feature.feature.attributes.layerName = feature.layerName;
               let result = feature.feature.attributes
 
@@ -1131,6 +1133,10 @@ require([
         }
       }
       if (infoPanelData.length > 0) {
+        console.log({
+          infoPanelData
+        });
+
         await queryInfoPanel(event, infoPanelData, 1);
         togglePanel();
         await goToFeature(infoPanelData[0]);

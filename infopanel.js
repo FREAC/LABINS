@@ -222,9 +222,12 @@ async function queryInfoPanel(event = false, results, i) {
                     $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
                 });
 
-            } else if (results[i - 1].attributes.layerName === 'New Certified Corner Records') {
-                console.log('hey shit')
-
+            } else if (results[i - 1].attributes.layerName === 'base_and_survey.sde.pls_ptp_Mar2019_3857') {
+                $('#informationdiv').append('<p style= "font-size: 15px"><b>New CCR Layer</b></p>' +
+                    '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
+                    '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
+                    '<b>Quad Number: </b>' + results[i - 1].attributes.quad_num + '<br>'
+                );
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
                     '<b>County: </b>' + results[i - 1].attributes.COUNTY + '<br>' +

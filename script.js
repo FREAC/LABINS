@@ -274,6 +274,19 @@ require([
     popupEnabled: false
   });
 
+  const newCCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/ccp_pilot/MapServer/";
+  const newCCRLayer = new MapImageLayer({
+    url: newCCRURL,
+    minScale: minimumDrawScale,
+    title: "New Certified Corner Records",
+    sublayers: [{
+      id: 0,
+      title: "New Certified Corner Records",
+      visible: true,
+      popupEnabled: false
+    }]
+  })
+
   var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/"
   var CCCLLayer = new MapImageLayer({
     url: CCCLURL,
@@ -985,7 +998,7 @@ require([
       }
     }
 
-    const layersArr = [ /*GNISLayer, */ countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
+    const layersArr = [ /*GNISLayer, */ /*countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, */ newCCRLayer];
 
     // wait for all services to be checked in the layersArr
     await checkServices(layersArr);
@@ -1084,6 +1097,10 @@ require([
 
       // look inside of layerList layers
       let layers = layerList.operationalItems.items
+      console.log({
+        layers
+      });
+
 
       // loop through layers
       for (layer of layers) {
@@ -1094,6 +1111,8 @@ require([
 
           // if there are visible layers returned
           if (visibleLayers.length > 0) {
+            console.log('visible layers is greater than 0');
+
             const task = new IdentifyTask(layer.layer.url)
             const params = await setIdentifyParameters(visibleLayers, "click", event);
             const identify = await executeIdentifyTask(task, params);
@@ -1145,10 +1164,16 @@ require([
   async function checkVisibleLayers(service) {
     let visibleLayerIds = [];
     if (service.visible == true) {
+      console.log('is currently visible');
+
       // find the currently visible layers/sublayers
       for (sublayer of service.children.items) {
         // if sublayer is visible, add to visibleLayerIds array
         if (sublayer.visible) {
+          console.log({
+            sublayer
+          });
+
           visibleLayerIds.push(sublayer.layer.id);
         }
       }

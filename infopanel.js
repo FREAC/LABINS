@@ -1,5 +1,10 @@
 async function queryInfoPanel(event = false, results, i) {
 
+    console.log({
+        results
+    });
+
+
     if (event.mapPoint) {
         $('#informationdiv').append('<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br>');
     } else {
@@ -216,6 +221,9 @@ async function queryInfoPanel(event = false, results, i) {
                 tifFiles.map(fileName => {
                     $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
                 });
+
+            } else if (results[i - 1].attributes.layerName === 'New Certified Corner Records') {
+                console.log('hey shit')
 
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +

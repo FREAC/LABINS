@@ -274,21 +274,32 @@ require([
     popupEnabled: false
   });
 
-  const newCCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/ccp_pilot/MapServer/";
-  const newCCRLayer = new MapImageLayer({
+  const newCCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/ccp_pilot/MapServer/0";
+  const newCCRLayer = new FeatureLayer({
     url: newCCRURL,
-    minScale: minimumDrawScale,
     title: "New Certified Corner Records",
-    sublayers: [{
-      id: 0,
-      title: "New Certified Corner Records",
-      visible: true,
-      popupEnabled: false
-    }]
-  })
+    minScale: minimumDrawScale,
+    visible: true,
+    popupEnabled: false
+  });
 
-  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/"
-  var CCCLLayer = new MapImageLayer({
+  const oid = 120280;
+  ccp_rquery = {
+    outFields: ["DOCNUM"],
+    relationshipId: 0,
+    objectIds: oid
+  };
+
+  newCCRLayer.queryRelatedFeatures(ccp_rquery).then(function (result) {
+    if (result[oid]) {
+      result[oid].features.forEach(function (feature) {
+        // console.log('CCP Related features:', feature.attributes);
+      });
+    }
+  });
+
+  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/2"
+  var CCCLLayer = new FeatureLayer({
     url: CCCLURL,
     minScale: minimumDrawScale,
     title: "Coastal Construction Control Lines",
@@ -368,7 +379,7 @@ require([
       bottom: 0
     },
     center: [-82.28, 27.8],
-    zoom: 7,
+    zoom: 15,
     constraints: {
       rotationEnabled: false
     }
@@ -998,7 +1009,7 @@ require([
       }
     }
 
-    const layersArr = [ /*GNISLayer, */ /*countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, */ newCCRLayer];
+    const layersArr = [ /*GNISLayer, */ /*countyBoundariesLayer, */ labinsLayer, /* swfwmdLayer , CCCLLayer, townshipRangeSectionLayer, */ newCCRLayer];
 
     // wait for all services to be checked in the layersArr
     await checkServices(layersArr);
@@ -1112,10 +1123,18 @@ require([
           // if there are visible layers returned
           if (visibleLayers.length > 0) {
             console.log('visible layers is greater than 0');
+            console.log(visibleLayers);
+
 
             const task = new IdentifyTask(layer.layer.url)
             const params = await setIdentifyParameters(visibleLayers, "click", event);
             const identify = await executeIdentifyTask(task, params);
+
+            console.log({
+              layerurl: layer.layer.url,
+
+            });
+
 
             // push each feature to the infoPanelData
             for (feature of identify.results) {
@@ -1172,15 +1191,16 @@ require([
     if (service.visible == true) {
       console.log('is currently visible');
 
-      // find the currently visible layers/sublayers
-      for (sublayer of service.children.items) {
-        // if sublayer is visible, add to visibleLayerIds array
-        if (sublayer.visible) {
-          console.log({
-            sublayer
-          });
+      if (service.layer.type === 'feature') { // check which layer type
+        visibleLayerIds.push(service.layer.layerId);
 
-          visibleLayerIds.push(sublayer.layer.id);
+      } else if (service.layer.type === 'map-image') {
+        // find the currently visible layers/sublayers
+        for (sublayer of service.children.items) {
+          // if sublayer is visible, add to visibleLayerIds array
+          if (sublayer.visible) {
+            visibleLayerIds.push(sublayer.layer.id);
+          }
         }
       }
     }
@@ -1210,6 +1230,11 @@ require([
   }
 
   async function executeIdentifyTask(tasks, params) {
+    console.log({
+      tasks,
+      params
+    });
+
     // take in tasks
     // take in parameters
     return tasks.execute(params)
@@ -2332,6 +2357,8 @@ require([
                     // if there are visible layers returned
                     if (visibleLayers.length > 0) {
                       const task = new IdentifyTask(layer.layer.url)
+                      console.log(task);
+
                       const params = await setIdentifyParameters(visibleLayers, "polygon", activeWidget.viewModel.measurement.geometry);
                       const identify = await executeIdentifyTask(task, params);
 

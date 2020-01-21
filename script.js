@@ -283,21 +283,6 @@ require([
     popupEnabled: false
   });
 
-  const oid = 120280;
-  ccp_rquery = {
-    outFields: ["DOCNUM"],
-    relationshipId: 0,
-    objectIds: oid
-  };
-
-  newCCRLayer.queryRelatedFeatures(ccp_rquery).then(function (result) {
-    if (result[oid]) {
-      result[oid].features.forEach(function (feature) {
-        // console.log('CCP Related features:', feature.attributes);
-      });
-    }
-  });
-
   var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/2"
   var CCCLLayer = new FeatureLayer({
     url: CCCLURL,
@@ -1354,6 +1339,11 @@ require([
         }
       }
     }
+  }
+
+
+  function queryRelatedFeatures() {
+    return true;
   }
 
   //////////////////////////////////

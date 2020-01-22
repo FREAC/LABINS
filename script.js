@@ -1123,13 +1123,22 @@ require([
 
             // push each feature to the infoPanelData
             for (feature of identify.results) {
-              console.log(feature);
+              console.log({
+                feature: feature
+              });
 
               feature.feature.attributes.layerName = feature.layerName;
               let result = feature.feature.attributes
 
+              if (result.layerName === 'base_and_survey.sde.pls_ptp_Mar2019_3857') {
+                // this is where we will query the related features
+                queryRelatedFeatures(result.objectid, newCCRLayer);
+              }
+
               // make sure only certified corners with images are identified
-              if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+              if ((result.layerName !== 'Certified Corners') || (result.is_image == 'Y') || (result.layerName !== 'base_and_survey.sde.pls_ptp_Mar2019_3857')) {
+                console.log(result.layerName);
+
                 await infoPanelData.push(feature.feature);
               }
             }
@@ -1342,8 +1351,20 @@ require([
   }
 
 
-  function queryRelatedFeatures() {
-    return true;
+  function queryRelatedFeatures(oid, layer) {
+    ccp_rquery = {
+      outFields: ["DOCNUM"],
+      relationshipId: 0,
+      objectIds: oid
+    };
+
+    layer.queryRelatedFeatures(ccp_rquery).then(function (result) {
+      if (result[oid]) {
+        result[oid].features.forEach(function (feature) {
+          console.log('CCP Related features:', feature.attributes);
+        });
+      }
+    });
   }
 
   //////////////////////////////////

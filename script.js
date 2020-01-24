@@ -994,7 +994,7 @@ require([
       }
     }
 
-    const layersArr = [ /*GNISLayer, */ /*countyBoundariesLayer, */ labinsLayer, /* swfwmdLayer , CCCLLayer, townshipRangeSectionLayer, */ newCCRLayer];
+    const layersArr = [ /*GNISLayer, */ /*countyBoundariesLayer, labinsLayer, swfwmdLayer , CCCLLayer, townshipRangeSectionLayer, */ newCCRLayer];
 
     // wait for all services to be checked in the layersArr
     await checkServices(layersArr);
@@ -1120,7 +1120,6 @@ require([
 
             });
 
-
             // push each feature to the infoPanelData
             for (feature of identify.results) {
               console.log({
@@ -1132,7 +1131,30 @@ require([
 
               if (result.layerName === 'base_and_survey.sde.pls_ptp_Mar2019_3857') {
                 // this is where we will query the related features
-                queryRelatedFeatures(result.objectid, newCCRLayer);
+                // queryRelatedFeatures(result.objectid, newCCRLayer);
+
+                // const relatedFeaturesResults = await queryRelatedFeatures(120280, newCCRLayer);
+                // console.log(relatedFeaturesResults);
+
+                const ccp_rquery = {
+                  outFields: ["DOCNUM"],
+                  relationshipId: 0,
+                  objectIds: result.objectid
+                };
+
+                result.relatedFeatures = [];
+
+                newCCRLayer.queryRelatedFeatures(ccp_rquery).then(function (res) {
+                  console.log(res);
+
+                  if (res[result.objectid]) {
+                    res[result.objectid].features.forEach(function (feature) {
+                      console.log('CCP Related features:', feature.attributes);
+                      result.relatedFeatures.push(feature.attributes);
+                    });
+                  }
+                });
+
               }
 
               // make sure only certified corners with images are identified
@@ -1351,21 +1373,29 @@ require([
   }
 
 
-  function queryRelatedFeatures(oid, layer) {
-    ccp_rquery = {
+  const queryRelatedFeatures = async (oid, layer) => {
+    const ccp_rquery = {
       outFields: ["DOCNUM"],
       relationshipId: 0,
       objectIds: oid
     };
 
+    const relatedFeaturesArr = [];
+
     layer.queryRelatedFeatures(ccp_rquery).then(function (result) {
+      console.log(result);
+
       if (result[oid]) {
         result[oid].features.forEach(function (feature) {
           console.log('CCP Related features:', feature.attributes);
+          relatedFeaturesArr.push(feature.attributes);
         });
       }
+      return relatedFeaturesArr;
+
     });
   }
+
 
   //////////////////////////////////
   //// Search Widget Text Search ///

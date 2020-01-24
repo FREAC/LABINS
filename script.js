@@ -1373,30 +1373,6 @@ require([
   }
 
 
-  const queryRelatedFeatures = async (oid, layer) => {
-    const ccp_rquery = {
-      outFields: ["DOCNUM"],
-      relationshipId: 0,
-      objectIds: oid
-    };
-
-    const relatedFeaturesArr = [];
-
-    layer.queryRelatedFeatures(ccp_rquery).then(function (result) {
-      console.log(result);
-
-      if (result[oid]) {
-        result[oid].features.forEach(function (feature) {
-          console.log('CCP Related features:', feature.attributes);
-          relatedFeaturesArr.push(feature.attributes);
-        });
-      }
-      return relatedFeaturesArr;
-
-    });
-  }
-
-
   //////////////////////////////////
   //// Search Widget Text Search ///
   //////////////////////////////////

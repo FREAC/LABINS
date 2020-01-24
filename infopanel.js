@@ -223,11 +223,17 @@ async function queryInfoPanel(event = false, results, i) {
                 });
 
             } else if (results[i - 1].attributes.layerName === 'base_and_survey.sde.pls_ptp_Mar2019_3857') {
+                console.log(results[i - 1].attributes);
+
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>New CCR Layer</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
                     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
                     '<b>Quad Number: </b>' + results[i - 1].attributes.quad_num + '<br>'
                 );
+                results[i - 1].attributes.relatedFeatures.map(docnum => {
+
+                    $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccpXX/bydocno_pdf/' + docnumWithLeadingZeroes + '.pdf>afile.pdf</a><br>');
+                })
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
                     '<b>County: </b>' + results[i - 1].attributes.COUNTY + '<br>' +

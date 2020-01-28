@@ -1093,9 +1093,9 @@ require([
 
       // look inside of layerList layers
       let layers = layerList.operationalItems.items
-      console.log({
-        layers
-      });
+      // console.log({
+      //   layers
+      // });
 
 
       // loop through layers
@@ -1107,24 +1107,24 @@ require([
 
           // if there are visible layers returned
           if (visibleLayers.length > 0) {
-            console.log('visible layers is greater than 0');
-            console.log(visibleLayers);
+            // console.log('visible layers is greater than 0');
+            // console.log(visibleLayers);
 
 
             const task = new IdentifyTask(layer.layer.url)
             const params = await setIdentifyParameters(visibleLayers, "click", event);
             const identify = await executeIdentifyTask(task, params);
 
-            console.log({
-              layerurl: layer.layer.url,
+            // console.log({
+            //   layerurl: layer.layer.url,
 
-            });
+            // });
 
             // push each feature to the infoPanelData
             for (feature of identify.results) {
-              console.log({
-                feature: feature
-              });
+              // console.log({
+              //   feature: feature
+              // });
 
               feature.feature.attributes.layerName = feature.layerName;
               let result = feature.feature.attributes
@@ -1145,12 +1145,12 @@ require([
                 result.relatedFeatures = [];
 
                 newCCRLayer.queryRelatedFeatures(ccp_rquery).then(function (res) {
-                  console.log(res);
+                  // console.log(res);
 
                   if (res[result.objectid]) {
-                    res[result.objectid].features.forEach(function (feature) {
-                      console.log('CCP Related features:', feature.attributes);
-                      result.relatedFeatures.push(feature.attributes);
+                    res[result.objectid].features.forEach(async function (feature) {
+                      console.log('CCP Related features:', feature.attributes.docnum);
+                      await result.relatedFeatures.push(feature.attributes.docnum);
                     });
                   }
                 });
@@ -1159,7 +1159,7 @@ require([
 
               // make sure only certified corners with images are identified
               if ((result.layerName !== 'Certified Corners') || (result.is_image == 'Y') || (result.layerName !== 'base_and_survey.sde.pls_ptp_Mar2019_3857')) {
-                console.log(result.layerName);
+                // console.log(result.layerName);
 
                 await infoPanelData.push(feature.feature);
               }

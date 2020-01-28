@@ -233,7 +233,7 @@ async function queryInfoPanel(event = false, results, i) {
                 // );
 
                 // const relatedFeatures = await results[i - 1].attributes.relatedFeatures;
-                console.log(results[i - 1].attributes.relatedFeatures);
+                console.log(results[i - 1].attributes);
                 const relatedFeatures = results[i - 1].attributes.relatedFeatures
 
                 const addFeature = async (relatedFeatures) => {

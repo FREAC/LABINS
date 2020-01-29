@@ -1142,7 +1142,7 @@ require([
                   objectIds: result.objectid
                 };
 
-                result.relatedFeatures = [];
+                result.relatedFeatures = new Array();
 
                 newCCRLayer.queryRelatedFeatures(ccp_rquery).then(function (res) {
                   // console.log(res);

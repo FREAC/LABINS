@@ -237,10 +237,14 @@ async function queryInfoPanel(event = false, results, i) {
                 const relatedFeatures = results[i - 1].attributes.relatedFeatures
 
                 const addFeature = async (relatedFeatures) => {
-                    console.log(results[i - 1].attributes.relatedFeatures);
+                    return results[i - 1].attributes.relatedFeatures;
 
                 }
-                await addFeature(relatedFeatures);
+                await addFeature(relatedFeatures)
+                    .then(function (res) {
+                        console.log(res);
+
+                    });
 
 
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {

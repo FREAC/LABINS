@@ -1251,14 +1251,17 @@ require([
 
         console.log({
           ext,
-          cloneExt
+          cloneExt,
+          featuregeometry: feature.geometry
+
         });
 
         // Remove current selection
         selectionLayer.graphics.removeAll();
+
         // Highlight the selected parcel
         highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
-        // selectionLayer.graphics.add(highlightGraphic);
+        selectionLayer.graphics.add(highlightGraphic);
       } else if (feature.geometry.type === "point") {
         // Remove current selection
         selectionLayer.graphics.removeAll();

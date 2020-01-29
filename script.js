@@ -1114,7 +1114,7 @@ require([
       if (infoPanelData.length > 0) {
         await queryInfoPanel(event, infoPanelData, 1);
         togglePanel();
-        await goToFeature(infoPanelData[0]);
+        await highlightFeature(infoPanelData[0]);
       } else { // if no features were found under the click
         $('#infoSpan').html('Information Panel - 0 features found.');
         $('#informationdiv').append('<p>This query did not return any features</p>');
@@ -1236,6 +1236,38 @@ require([
           clearDiv('arraylengthdiv');
         }
       });
+  }
+
+  function highlightFeature(feature) {
+    if (feature) {
+      // Go to the selected parcel
+      if (feature.geometry.type === "polygon") {
+        // do nothing
+        // desired condition is to not zoom, 
+        // but that requirement may change in the future
+      } else if (feature.geometry.type === "polyline") {
+        var ext = feature.geometry.extent;
+        var cloneExt = ext.clone();
+
+        console.log({
+          ext,
+          cloneExt
+        });
+
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+        // selectionLayer.graphics.add(highlightGraphic);
+      } else if (feature.geometry.type === "point") {
+        // Remove current selection
+        selectionLayer.graphics.removeAll();
+
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(feature.geometry, highlightPoint);
+        selectionLayer.graphics.add(highlightGraphic);
+      }
+    }
   }
 
   // go to first feature of the infopaneldata array

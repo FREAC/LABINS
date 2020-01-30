@@ -243,7 +243,6 @@ async function queryInfoPanel(event = false, results, i) {
                 await addFeature(relatedFeatures)
                     .then(function (res) {
                         console.log(res);
-
                     });
 
 

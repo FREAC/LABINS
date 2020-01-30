@@ -1142,9 +1142,9 @@ require([
                   objectIds: result.objectid
                 };
 
-                result.relatedFeatures = new Array();
+                result.relatedFeatures = [];
 
-                newCCRLayer.queryRelatedFeatures(ccp_rquery).then(function (res) {
+                await newCCRLayer.queryRelatedFeatures(ccp_rquery).then(async function (res) {
                   // console.log(res);
 
                   if (res[result.objectid]) {

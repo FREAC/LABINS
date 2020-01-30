@@ -235,15 +235,29 @@ async function queryInfoPanel(event = false, results, i) {
                 // const relatedFeatures = await results[i - 1].attributes.relatedFeatures;
                 console.log(results[i - 1].attributes);
                 const relatedFeatures = results[i - 1].attributes.relatedFeatures
+                console.log(relatedFeatures);
 
-                const addFeature = async (relatedFeatures) => {
-                    return results[i - 1].attributes.relatedFeatures;
+                for (relatedFeature in relatedFeatures) {
+                    console.log({
+                        relatedFeature: relatedFeatures[relatedFeature]
+                    });
+
+                    const folderNum = Math.floor(relatedFeatures[relatedFeature] / 10000).toString().padStart(2, '0');
+                    console.log({
+                        folderNum
+                    });
+                    const docNum = relatedFeatures[relatedFeature].toString().padStart(7, '0');
+                    console.log({
+                        docNum
+                    });
+                    $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/ccp' + folderNum + '/' + docNum + '.pdf>' + docNum + '.pdf</a><br>');
+
 
                 }
-                await addFeature(relatedFeatures)
-                    .then(function (res) {
-                        console.log(res);
-                    });
+
+
+
+
 
 
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {

@@ -9,6 +9,7 @@ require([
   "esri/geometry/geometryEngine",
   "esri/geometry/Extent",
   "esri/geometry/Point",
+  "esri/geometry/support/webMercatorUtils",
   "esri/layers/GraphicsLayer",
   "esri/Graphic",
   "esri/tasks/IdentifyTask",
@@ -64,6 +65,7 @@ require([
   geometryEngine,
   Extent,
   Point,
+  webMercatorUtils,
   GraphicsLayer,
   Graphic,
   IdentifyTask,
@@ -316,7 +318,7 @@ require([
 
   var highlightLine = {
     type: "simple-line",
-    width: 2,
+    width: 4,
     color: [255, 0, 0, 1]
   };
 
@@ -355,7 +357,7 @@ require([
       bottom: 0
     },
     center: [-82.28, 27.8],
-    zoom: 7,
+    zoom: 8,
     constraints: {
       rotationEnabled: false
     }
@@ -1255,6 +1257,15 @@ require([
           featuregeometry: feature
 
         });
+        const paths = [];
+
+        for (arr in feature.geometry.paths[0]) {
+          console.log(feature.geometry.paths[0][arr]);
+          const convertedVals = webMercatorUtils.xyToLngLat(feature.geometry.paths[0][arr][0], feature.geometry.paths[0][arr][1])
+          console.log(convertedVals);
+          paths.push(convertedVals);
+
+        }
 
         // Remove current selection
         selectionLayer.graphics.removeAll();
@@ -1263,7 +1274,7 @@ require([
         var polyline = {
           type: "polyline", // autocasts as new Polyline()
           // paths: feature.geometry.paths[0]
-          paths: feature.geometry.paths
+          paths: paths
         };
 
         // Highlight the selected parcel

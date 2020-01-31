@@ -1252,15 +1252,25 @@ require([
         console.log({
           ext,
           cloneExt,
-          featuregeometry: feature.geometry
+          featuregeometry: feature
 
         });
 
         // Remove current selection
         selectionLayer.graphics.removeAll();
 
+        // First create a line geometry (this is the Keystone pipeline)
+        var polyline = {
+          type: "polyline", // autocasts as new Polyline()
+          // paths: feature.geometry.paths[0]
+          paths: feature.geometry.paths
+        };
+
         // Highlight the selected parcel
-        highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+        highlightGraphic = new Graphic({
+          geometry: polyline,
+          symbol: highlightLine
+        });
         selectionLayer.graphics.add(highlightGraphic);
       } else if (feature.geometry.type === "point") {
         // Remove current selection

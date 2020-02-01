@@ -789,13 +789,13 @@ require([
   }
 
   //Input geometry, output buffer
-  function createBuffer(response) {
+  function createBuffer(response, bufferDistance = 300, symbol = highlightSymbol) {
     var bufferGeometry = response;
-    var buffer = geometryEngine.geodesicBuffer(bufferGeometry, 300, "feet", true);
+    var buffer = geometryEngine.geodesicBuffer(bufferGeometry, bufferDistance, "feet", true);
     // add the buffer to the view as a graphic
     var bufferGraphic = new Graphic({
       geometry: buffer,
-      symbol: highlightSymbol
+      symbol: symbol
     });
     bufferLayer.graphics.removeAll();
     bufferLayer.add(bufferGraphic);
@@ -1239,6 +1239,12 @@ require([
   }
 
   function highlightFeature(feature) {
+    // this should be done at the top level of the function because
+    // anytime you try to highlight something different
+    // it should clear previous selection
+    bufferLayer.graphics.removeAll();
+    selectionLayer.graphics.removeAll();
+
     if (feature) {
       // Go to the selected parcel
       if (feature.geometry.type === "polygon") {
@@ -1246,28 +1252,10 @@ require([
         // desired condition is to not zoom, 
         // but that requirement may change in the future
       } else if (feature.geometry.type === "polyline") {
-        var ext = feature.geometry.extent;
-        var cloneExt = ext.clone();
 
-        console.log({
-          ext,
-          cloneExt,
-          featuregeometry: feature
-
-        });
-
-        // Remove current selection
-        selectionLayer.graphics.removeAll();
-
-        // Highlight the selected parcel
-        highlightGraphic = new Graphic({
-          geometry: feature.geometry,
-          symbol: highlightLine
-        });
-        selectionLayer.graphics.add(highlightGraphic);
+        createBuffer(feature.geometry, 50);
       } else if (feature.geometry.type === "point") {
         // Remove current selection
-        selectionLayer.graphics.removeAll();
 
         // Highlight the selected parcel
         highlightGraphic = new Graphic(feature.geometry, highlightPoint);
@@ -1312,8 +1300,12 @@ require([
         // Remove current selection
         selectionLayer.graphics.removeAll();
         // Highlight the selected parcel
-        highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
-        selectionLayer.graphics.add(highlightGraphic);
+        // highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+        // selectionLayer.graphics.add(highlightGraphic);
+
+        createBuffer(feature.geometry);
+
+
       } else if (feature.geometry.type === "point") {
         // Remove current selection
         selectionLayer.graphics.removeAll();

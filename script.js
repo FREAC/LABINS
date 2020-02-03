@@ -1238,7 +1238,7 @@ require([
       });
   }
 
-  function highlightFeature(feature) {
+  function highlightFeature(feature, highlightFeature = false) {
     // this should be done at the top level of the function because
     // anytime you try to highlight something different
     // it should clear previous selection
@@ -1247,11 +1247,15 @@ require([
 
     if (feature) {
       // Go to the selected parcel
-      if (feature.geometry.type === "polygon") {
-        // do nothing
-        // desired condition is to not zoom, 
-        // but that requirement may change in the future
+      if (feature.geometry.type === "polygon" && highlightFeature === true) {
+
+        highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+        selectionLayer.graphics.add(highlightGraphic);
+
       } else if (feature.geometry.type === "polyline") {
+
+        highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+        selectionLayer.graphics.add(highlightGraphic);
 
         createBuffer(feature.geometry, 50);
       } else if (feature.geometry.type === "point") {
@@ -1273,6 +1277,31 @@ require([
         // do nothing
         // desired condition is to not zoom, 
         // but that requirement may change in the future
+        var ext = feature.geometry.extent;
+        var cloneExt = ext.clone();
+
+        console.log({
+          ext,
+          cloneExt
+        });
+
+        // if current scale is greater than number, 
+        // go to feature and expand extent by 1.75x
+        if (mapView.scale > 18055.954822) {
+          mapView.goTo({
+            target: feature,
+            extent: cloneExt.expand(1.75)
+          });
+        } else {
+          // go to point at current scale
+          mapView.goTo({
+            target: feature,
+            extent: feature.extent,
+            scale: mapView.scale
+          });
+        }
+
+
       } else if (feature.geometry.type === "polyline") {
         var ext = feature.geometry.extent;
         var cloneExt = ext.clone();
@@ -1303,7 +1332,7 @@ require([
         // highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
         // selectionLayer.graphics.add(highlightGraphic);
 
-        createBuffer(feature.geometry);
+        // createBuffer(feature.geometry);
 
 
       } else if (feature.geometry.type === "point") {
@@ -2046,8 +2075,10 @@ require([
 
   // set up alert for dynamically created zoom to feature buttons
   $(document).on('click', "button[name='zoom']", function () {
-
+    console.log('click!')
     goToFeature(infoPanelData[this.id - 1]);
+    highlightFeature(infoPanelData[this.id - 1], true)
+
   });
 
   /////////////

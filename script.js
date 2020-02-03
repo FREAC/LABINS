@@ -1254,9 +1254,6 @@ require([
 
       } else if (feature.geometry.type === "polyline") {
 
-        highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
-        selectionLayer.graphics.add(highlightGraphic);
-
         createBuffer(feature.geometry, 50);
       } else if (feature.geometry.type === "point") {
         // Remove current selection

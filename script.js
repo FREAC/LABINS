@@ -2101,7 +2101,7 @@ require([
     var numberSearchPattern = /-?\d+[\.]?\d*/;
 
     // Custom Projection: FL State Plane East 
-    var statePlaneEastFL = new Format({
+    var statePlaneEastFLFeet = new Format({
       name: 'FSP E',
       conversionInfo: {
         spatialReference: new SpatialReference({
@@ -2130,10 +2130,10 @@ require([
       defaultPattern: "X, Y"
     });
 
-    ccWidget.formats.add(statePlaneEastFL);
+    ccWidget.formats.add(statePlaneEastFLFeet);
 
     // Custom Projection: FL State Plane West
-    var statePlaneWestFL = new Format({
+    var statePlaneWestFLFeet = new Format({
       name: 'FSP W',
       conversionInfo: {
         spatialReference: new SpatialReference({
@@ -2162,10 +2162,10 @@ require([
       defaultPattern: "X, Y"
     });
 
-    ccWidget.formats.add(statePlaneWestFL);
+    ccWidget.formats.add(statePlaneWestFLFeet);
 
     // Custom Projection: FL State Plane North
-    var statePlaneNorthFL = new Format({
+    var statePlaneNorthFLFeet = new Format({
       name: 'FSP N',
       conversionInfo: {
         spatialReference: new SpatialReference({
@@ -2194,7 +2194,7 @@ require([
       defaultPattern: "X, Y"
     });
 
-    ccWidget.formats.add(statePlaneNorthFL);
+    ccWidget.formats.add(statePlaneNorthFLFeet);
 
     // Add the two custom formats to the top of the widget's display
     ccWidget.conversions.splice(0, 0,

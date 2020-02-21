@@ -2097,6 +2097,8 @@ require([
       container: document.createElement("div"),
     });
 
+    ccWidget._expanded = true;
+
     // Regular expression to find a number
     var numberSearchPattern = /-?\d+[\.]?\d*/;
 

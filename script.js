@@ -2104,7 +2104,7 @@ require([
 
     // Custom Projection: FL State Plane East 
     var statePlaneEastFLFeet = new Format({
-      name: 'FSP E (feet)',
+      name: 'FSP E (ft)',
       conversionInfo: {
         spatialReference: new SpatialReference({
           wkid: 2881
@@ -2167,7 +2167,7 @@ require([
 
     // Custom Projection: FL State Plane West
     var statePlaneWestFLFeet = new Format({
-      name: 'FSP W (feet)',
+      name: 'FSP W (ft)',
       conversionInfo: {
         spatialReference: new SpatialReference({
           wkid: 2882
@@ -2231,7 +2231,7 @@ require([
 
     // Custom Projection: FL State Plane North
     var statePlaneNorthFLFeet = new Format({
-      name: 'FSP N (feet)',
+      name: 'FSP N (ft)',
       conversionInfo: {
         spatialReference: new SpatialReference({
           wkid: 2883

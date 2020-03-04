@@ -2135,7 +2135,7 @@ require([
     ccWidget.formats.add(statePlaneEastFLFeet);
 
     var statePlaneEastFLMeters = new Format({
-      name: 'FSP E (meters)',
+      name: 'FSP E (mt)',
       conversionInfo: {
         spatialReference: new SpatialReference({
           wkid: 2777
@@ -2198,7 +2198,7 @@ require([
     ccWidget.formats.add(statePlaneWestFLFeet);
 
     var statePlaneWestFLMeters = new Format({
-      name: 'FSP W (meters)',
+      name: 'FSP W (mt)',
       conversionInfo: {
         spatialReference: new SpatialReference({
           wkid: 2778
@@ -2262,7 +2262,7 @@ require([
     ccWidget.formats.add(statePlaneNorthFLFeet);
 
     var statePlaneNorthFLMeters = new Format({
-      name: 'FSP N (meters)',
+      name: 'FSP N (mt)',
       conversionInfo: {
         spatialReference: new SpatialReference({
           wkid: 2779

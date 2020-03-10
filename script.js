@@ -316,7 +316,7 @@ require([
 
   var highlightLine = {
     type: "simple-line",
-    width: 2,
+    width: 4,
     color: [255, 0, 0, 1]
   };
 
@@ -355,7 +355,7 @@ require([
       bottom: 0
     },
     center: [-82.28, 27.8],
-    zoom: 7,
+    zoom: 8,
     constraints: {
       rotationEnabled: false
     }
@@ -789,13 +789,13 @@ require([
   }
 
   //Input geometry, output buffer
-  function createBuffer(response) {
+  function createBuffer(response, bufferDistance = 300, symbol = highlightSymbol) {
     var bufferGeometry = response;
-    var buffer = geometryEngine.geodesicBuffer(bufferGeometry, 300, "feet", true);
+    var buffer = geometryEngine.geodesicBuffer(bufferGeometry, bufferDistance, "feet", true);
     // add the buffer to the view as a graphic
     var bufferGraphic = new Graphic({
       geometry: buffer,
-      symbol: highlightSymbol
+      symbol: symbol
     });
     bufferLayer.graphics.removeAll();
     bufferLayer.add(bufferGraphic);
@@ -1114,7 +1114,7 @@ require([
       if (infoPanelData.length > 0) {
         await queryInfoPanel(event, infoPanelData, 1);
         togglePanel();
-        await goToFeature(infoPanelData[0]);
+        await highlightFeature(infoPanelData[0]);
       } else { // if no features were found under the click
         $('#infoSpan').html('Information Panel - 0 features found.');
         $('#informationdiv').append('<p>This query did not return any features</p>');
@@ -1238,6 +1238,33 @@ require([
       });
   }
 
+  function highlightFeature(feature, highlightFeature = false) {
+    // this should be done at the top level of the function because
+    // anytime you try to highlight something different
+    // it should clear previous selection
+    bufferLayer.graphics.removeAll();
+    selectionLayer.graphics.removeAll();
+
+    if (feature) {
+      // Go to the selected parcel
+      if (feature.geometry.type === "polygon" && highlightFeature === true) {
+
+        highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+        selectionLayer.graphics.add(highlightGraphic);
+
+      } else if (feature.geometry.type === "polyline") {
+
+        createBuffer(feature.geometry, 50);
+      } else if (feature.geometry.type === "point") {
+        // Remove current selection
+
+        // Highlight the selected parcel
+        highlightGraphic = new Graphic(feature.geometry, highlightPoint);
+        selectionLayer.graphics.add(highlightGraphic);
+      }
+    }
+  }
+
   // go to first feature of the infopaneldata array
   function goToFeature(feature) {
 
@@ -1247,6 +1274,31 @@ require([
         // do nothing
         // desired condition is to not zoom, 
         // but that requirement may change in the future
+        var ext = feature.geometry.extent;
+        var cloneExt = ext.clone();
+
+        console.log({
+          ext,
+          cloneExt
+        });
+
+        // if current scale is greater than number, 
+        // go to feature and expand extent by 1.75x
+        if (mapView.scale > 18055.954822) {
+          mapView.goTo({
+            target: feature,
+            extent: cloneExt.expand(1.75)
+          });
+        } else {
+          // go to point at current scale
+          mapView.goTo({
+            target: feature,
+            extent: feature.extent,
+            scale: mapView.scale
+          });
+        }
+
+
       } else if (feature.geometry.type === "polyline") {
         var ext = feature.geometry.extent;
         var cloneExt = ext.clone();
@@ -1274,8 +1326,12 @@ require([
         // Remove current selection
         selectionLayer.graphics.removeAll();
         // Highlight the selected parcel
-        highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
-        selectionLayer.graphics.add(highlightGraphic);
+        // highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+        // selectionLayer.graphics.add(highlightGraphic);
+
+        // createBuffer(feature.geometry);
+
+
       } else if (feature.geometry.type === "point") {
         // Remove current selection
         selectionLayer.graphics.removeAll();
@@ -2016,8 +2072,10 @@ require([
 
   // set up alert for dynamically created zoom to feature buttons
   $(document).on('click', "button[name='zoom']", function () {
-
+    console.log('click!')
     goToFeature(infoPanelData[this.id - 1]);
+    highlightFeature(infoPanelData[this.id - 1], true)
+
   });
 
   /////////////

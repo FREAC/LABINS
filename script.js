@@ -414,9 +414,6 @@ require([
   // var extentDiv = dom.byId("extentDiv");
 
   overView.when(function () {
-    // Update the overview extent whenever the MapView or SceneView extent changes
-    //   mapView.watch("extent", updateOverviewExtent);
-    //   overView.watch("extent", updateOverviewExtent);
 
     // Update the minimap overview when the main view becomes stationary
     watchUtils.when(mapView, "stationary", updateOverview);
@@ -432,21 +429,6 @@ require([
           mapView.height / overView.height)
       });
     }
-
-    // function updateOverviewExtent() {
-    //   // Update the overview extent by converting the SceneView extent to the
-    //   // MapView screen coordinates and updating the extentDiv position.
-    //   var extent = mapView.extent;
-
-    //   var bottomLeft = overView.toScreen(extent.xmin, extent.ymin);
-    //   var topRight = overView.toScreen(extent.xmax, extent.ymax);
-
-    //   extentDiv.style.top = topRight.y + "px";
-    //   extentDiv.style.left = bottomLeft.x + "px";
-
-    //   extentDiv.style.height = (bottomLeft.y - topRight.y) + "px";
-    //   extentDiv.style.width = (topRight.x - bottomLeft.x) + "px";
-    // }
   });
 
 

@@ -373,12 +373,47 @@ require([
 
   overView.ui.components = [];
 
-  var extentDiv = dom.byId("extentDiv");
 
   overView.when(function () {
-    // Update the overview extent whenever the MapView or SceneView extent changes
-    mapView.watch("extent", updateOverviewExtent);
-    overView.watch("extent", updateOverviewExtent);
+    mapView.when(function () {
+      setup();
+    });
+  });
+
+  function setup() {
+    const extentGraphic = new Graphic({
+      geometry: null,
+      symbol: {
+        type: "simple-fill",
+        color: [0, 0, 0, 0.5],
+        outline: null
+      }
+    });
+    overView.graphics.add(extentGraphic);
+
+    watchUtils.init(mapView, "extent", function (extent) {
+      // Sync the overview map location
+      // whenever the 3d view is stationary
+      if (mapView.stationary) {
+        overView.goTo({
+          center: mapView.center,
+          scale:
+            mapView.scale *
+            2 *
+            Math.max(
+              mapView.width / mapView.width,
+              mapView.height / mapView.height
+            )
+        });
+      }
+
+      extentGraphic.geometry = extent;
+    });
+  }
+
+  // var extentDiv = dom.byId("extentDiv");
+
+  overView.when(function () {
 
     // Update the minimap overview when the main view becomes stationary
     watchUtils.when(mapView, "stationary", updateOverview);
@@ -394,22 +429,9 @@ require([
           mapView.height / overView.height)
       });
     }
-
-    function updateOverviewExtent() {
-      // Update the overview extent by converting the SceneView extent to the
-      // MapView screen coordinates and updating the extentDiv position.
-      var extent = mapView.extent;
-
-      var bottomLeft = overView.toScreen(extent.xmin, extent.ymin);
-      var topRight = overView.toScreen(extent.xmax, extent.ymax);
-
-      extentDiv.style.top = topRight.y + "px";
-      extentDiv.style.left = bottomLeft.x + "px";
-
-      extentDiv.style.height = (bottomLeft.y - topRight.y) + "px";
-      extentDiv.style.width = (topRight.x - bottomLeft.x) + "px";
-    }
   });
+
+
 
   // Bookmark data objects
   var bookmarkJSON = {
@@ -628,10 +650,10 @@ require([
 
     // find all dropdowns
     $("select").each(function () {
-        if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
-          this.selectedIndex = 0
-        }
-      },
+      if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
+        this.selectedIndex = 0
+      }
+    },
       // find all inputs
       $("input").each(function () {
         if (this != currentElement) {
@@ -2447,7 +2469,7 @@ require([
         setActiveButton(document.getElementById('distanceButton'));
         break;
 
-        // if the area measurement button was clicked
+      // if the area measurement button was clicked
       case "area":
         activeWidget = new AreaMeasurement2D({
           view: mapView,

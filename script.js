@@ -381,7 +381,7 @@ require([
   });
 
   function setup() {
-    const extent3Dgraphic = new Graphic({
+    const extentGraphic = new Graphic({
       geometry: null,
       symbol: {
         type: "simple-fill",
@@ -389,7 +389,7 @@ require([
         outline: null
       }
     });
-    overView.graphics.add(extent3Dgraphic);
+    overView.graphics.add(extentGraphic);
 
     watchUtils.init(mapView, "extent", function (extent) {
       // Sync the overview map location
@@ -407,7 +407,7 @@ require([
         });
       }
 
-      extent3Dgraphic.geometry = extent;
+      extentGraphic.geometry = extent;
     });
   }
 

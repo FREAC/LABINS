@@ -397,8 +397,7 @@ require([
       if (mapView.stationary) {
         overView.goTo({
           center: mapView.center,
-          scale:
-            mapView.scale *
+          scale: mapView.scale *
             2 *
             Math.max(
               mapView.width / mapView.width,
@@ -650,10 +649,10 @@ require([
 
     // find all dropdowns
     $("select").each(function () {
-      if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
-        this.selectedIndex = 0
-      }
-    },
+        if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
+          this.selectedIndex = 0
+        }
+      },
       // find all inputs
       $("input").each(function () {
         if (this != currentElement) {
@@ -1521,8 +1520,14 @@ require([
 
     // data query by text
     async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement) {
-      var whereStatement;
-
+      let whereStatement;
+      console.log({
+        url,
+        attribute,
+        queryStatement,
+        idAttribute,
+        idQueryStatement
+      })
       if (queryStatement != '' || idQueryStatement != '') {
         whereStatement = "Upper(" + attribute + ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute + ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%'";
       }
@@ -1682,6 +1687,8 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
+        console.log("happening")
+
         getGeometry(labinsURL + '/8', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
@@ -1691,6 +1698,7 @@ require([
                   response.features[i].attributes.layerName = 'NGS Control Points';
                   infoPanelData.push(response.features[i]);
                 }
+                console.log(response);
                 goToFeature(infoPanelData[0]);
                 queryInfoPanel(infoPanelData, 1);
                 togglePanel();
@@ -1901,19 +1909,22 @@ require([
       query(submitButton).on('click', function (e) {
         infoPanelData = [];
         var textValue = inputAfter.value;
+        try {
+          multiTextQuerytask(labinsURL + '3', 'id', textValue, 'name', textValue)
+            .then(function (response) {
+              clearDiv('informationdiv');
+              for (i = 0; i < response.features.length; i++) {
+                response.features[i].attributes.layerName = 'Tide Stations';
+                infoPanelData.push(response.features[i]);
+              }
+              goToFeature(infoPanelData[0]);
+              queryInfoPanel(infoPanelData, 1);
+              togglePanel();
+            });
+        } catch (err) {
+          console.error(err);
+        }
 
-        multiTextQuerytask(labinsURL + '3', 'id', textValue, 'name', textValue)
-
-          .then(function (response) {
-            clearDiv('informationdiv');
-            for (i = 0; i < response.features.length; i++) {
-              response.features[i].attributes.layerName = 'Tide Stations';
-              infoPanelData.push(response.features[i]);
-            }
-            goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
-            togglePanel();
-          });
       });
 
     } else if (layerSelection === 'Erosion Control Line') {
@@ -2469,7 +2480,7 @@ require([
         setActiveButton(document.getElementById('distanceButton'));
         break;
 
-      // if the area measurement button was clicked
+        // if the area measurement button was clicked
       case "area":
         activeWidget = new AreaMeasurement2D({
           view: mapView,
@@ -2523,7 +2534,7 @@ require([
                   }
                 }
                 if (infoPanelData.length > 0) {
-                  await queryInfoPanel(undefined, infoPanelData, 1);
+                  await queryInfoPanel(infoPanelData, 1, undefineda);
                   togglePanel();
                   await goToFeature(infoPanelData[0]);
                 } else { // if no features were found under the click

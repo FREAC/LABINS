@@ -969,7 +969,8 @@ require([
 
       var item = event.item;
 
-      if (item.title === "Certified Corners") {
+      if (["Certified Corners", "Hi-Res Imagery Grid State Plane East",
+       "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"].includes(item.title)) {
 
         // An array of objects defining actions to place in the LayerList.
         // By making this array two-dimensional, you can separate similar
@@ -1035,31 +1036,39 @@ require([
       }
     });
 
+    function haloLabelInfo(labelExpr, labelColor) {
+      return [{
+        labelExpression: labelExpr,
+        labelPlacement: "above-center",
+        symbol: {
+          type: "text",
+          color: labelColor,
+          haloColor: [255, 255, 255],
+          haloSize: 2,
+          font: {
+            size: 8
+          }
+        }
+      }];
+    }
+
     // event to listen for action button on layerlist
     layerList.on("trigger-action", function (event) {
-      // var labelToggle = $('.esri-layer-list__item-actions-menu-item');
-      const targetLayer = layerList.operationalItems.items[2].children.items[2]
-      // if the certified corners are visible and the mapView.scale is less than the minimum draw scale
-      // enable toggling
+      const targetLayer = layerList.operationalItems.items[2].children.items.filter(function (layer) {
+        return layer.title === event.item.title
+      })[0];
+      // if the selected layer is visible and the mapView.scale is less than the minimum draw scale enable toggling
       if ((targetLayer.visible === true) && (mapView.scale < minimumDrawScale)) {
         // if labels are not already visible, turn them on
         if ((targetLayer.layer.labelsVisible === false) || (targetLayer.layer.labelsVisible === undefined)) {
 
-          // handle focus toggle of action button on CCR sublayer
           targetLayer.layer.labelsVisible = true;
-          targetLayer.layer.labelingInfo = [{
-            labelExpression: "[blmid]",
-            labelPlacement: "above-center",
-            symbol: {
-              type: "text", // autocasts as new TextSymbol()
-              color: [0, 0, 255, 1],
-              haloColor: [255, 255, 255],
-              haloSize: 2,
-              font: {
-                size: 8
-              }
-            }
-          }]
+          if (targetLayer.title === "Certified Corners") {
+            targetLayer.layer.labelingInfo = haloLabelInfo("[blmid]", [0, 0 , 255, 255]);
+          } else {
+            const d = targetLayer.title.split(" ").slice(-1)[0].charAt(0).toLowerCase();
+            targetLayer.layer.labelingInfo = haloLabelInfo("[sp" + d + "_id]", [230, 76, 0, 255]);
+          }
         } else { // if labels are visible, toggle them off
           targetLayer.layer.labelsVisible = false;
         }

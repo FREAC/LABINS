@@ -1067,7 +1067,7 @@ require([
             targetLayer.layer.labelingInfo = haloLabelInfo("[blmid]", [0, 0 , 255, 255]);
           } else {
             const d = targetLayer.title.split(" ").slice(-1)[0].charAt(0).toLowerCase();
-            targetLayer.layer.labelingInfo = haloLabelInfo("[sp" + d + "_id]", [230, 75, 0, 255]);
+            targetLayer.layer.labelingInfo = haloLabelInfo("[sp" + d + "_id]", [230, 76, 0, 255]);
           }
         } else { // if labels are visible, toggle them off
           targetLayer.layer.labelsVisible = false;

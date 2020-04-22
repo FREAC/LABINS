@@ -1133,7 +1133,9 @@ require([
         }
       }
       if (infoPanelData.length > 0) {
-        await queryInfoPanel(event, infoPanelData, 1);
+        console.log(infoPanelData);
+
+        await queryInfoPanel(infoPanelData, 1, true);
         togglePanel();
         await highlightFeature(infoPanelData[0]);
       } else { // if no features were found under the click
@@ -1255,7 +1257,10 @@ require([
           $('#infoSpan').html('Information Panel - 0 features found.');
           $('#informationdiv').append('<p>This query did not return any features</p>');
           clearDiv('arraylengthdiv');
+          return;
         }
+      }).catch(function (error) {
+        console.error
       });
   }
 
@@ -1323,11 +1328,6 @@ require([
       } else if (feature.geometry.type === "polyline") {
         var ext = feature.geometry.extent;
         var cloneExt = ext.clone();
-
-        console.log({
-          ext,
-          cloneExt
-        });
 
         // if current scale is greater than number, 
         // go to feature and expand extent by 1.75x
@@ -1722,6 +1722,10 @@ require([
 
         multiTextQuerytask(labinsURL + '/0', 'pid', textValue, 'name', textValue)
           .then(function (response) {
+            console.log({
+              response
+            });
+
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'NGS Control Points';
               infoPanelData.push(response.features[i]);
@@ -1778,15 +1782,27 @@ require([
         getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
+            console.log({
+              unionGeometriesRes: response
+            });
+
             dataQueryQuerytask(labinsURL + '4', response)
               .then(function (response) {
-                for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'Tide Interpolation Points';
-                  infoPanelData.push(response.features[i]);
+                console.log({
+                  dataquerytaskres: response
+                });
+                if (response.features.length) {
+                  for (i = 0; i < response.features.length; i++) {
+                    response.features[i].attributes.layerName = 'Tide Interpolation Points';
+                    infoPanelData.push(response.features[i]);
+                  }
+                  goToFeature(infoPanelData[0]);
+                  queryInfoPanel(infoPanelData, 1);
+                  togglePanel();
+                } else {
+                  return;
                 }
-                goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
-                togglePanel();
+
               });
           });
       });
@@ -2534,7 +2550,7 @@ require([
                   }
                 }
                 if (infoPanelData.length > 0) {
-                  await queryInfoPanel(infoPanelData, 1, undefineda);
+                  await queryInfoPanel(infoPanelData, 1, undefined);
                   togglePanel();
                   await goToFeature(infoPanelData[0]);
                 } else { // if no features were found under the click

@@ -237,6 +237,7 @@ async function queryInfoPanel(results, i, event = false) {
         // $('#arraylengthdiv').html((parseInt(i - 1)) + ' feature found.');
         $('#infoSpan').html('Information Panel - ' + (parseInt(i - 1)) + ' feature found.');
     } else {
+        console.log('is this undefined');
         $('#infoSpan').html('Information Panel - ' + (parseInt(i - 1)) + ' features found. ');
     }
 }

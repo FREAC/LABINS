@@ -728,13 +728,16 @@ require([
 
   // Union geometries of multi polygon features
   async function unionGeometries(response) {
+    console.log(response);
+
     // Array to store polygons in
     var multiPolygonGeometries = [];
     for (i = 0; i < response.features.length; i++) {
       multiPolygonGeometries.push(response.features[i].geometry);
     }
     var union = await geometryEngine.union(multiPolygonGeometries);
-    return union;
+    var generalize = await geometryEngine.generalize(union)
+    return generalize;
   }
 
   // when a section feature is choses, a matching TRS combination is queried, highlighted and zoomed to
@@ -1251,9 +1254,13 @@ require([
 
     return queryTask.execute(params)
       .then(function (response) {
+        console.log(response);
+
         if (response.features.length > 0) {
-          return queryTask.execute(params);
+          return response;
         } else { // if no features were found
+          console.log('no features returned');
+
           $('#infoSpan').html('Information Panel - 0 features found.');
           $('#informationdiv').append('<p>This query did not return any features</p>');
           clearDiv('arraylengthdiv');
@@ -1293,6 +1300,7 @@ require([
 
   // go to first feature of the infopaneldata array
   function goToFeature(feature) {
+    console.log('gotofeaturereached')
 
     if (feature) {
       // Go to the selected parcel
@@ -1364,12 +1372,12 @@ require([
         // TODO: NOt working properly, else if not being triggered
         if (mapView.scale > 18055.954822) {
           mapView.goTo({
-            target: infoPanelData[0].geometry,
+            target: feature.geometry,
             zoom: 15
           });
         } else { // go to point at the current scale
           mapView.goTo({
-            target: infoPanelData[0].geometry,
+            target: feature.geometry,
             scale: mapView.scale
           });
         }
@@ -1577,7 +1585,7 @@ require([
         where: whereStatement,
         returnGeometry: true,
         // possibly could be limited to return only necessary outfields
-        outFields: '*'
+        outFields: ['*']
       });
       return queryTask.execute(params)
         .then(function (response) {
@@ -1848,6 +1856,9 @@ require([
 
         textQueryQuerytask(labinsURL + '4', 'iden', textValue)
           .then(function (response) {
+            if (response) {
+
+            }
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Tide Interpolation Points';
               infoPanelData.push(response.features[i]);
@@ -1871,11 +1882,14 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
+        console.log('hooowhoo');
 
         getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(labinsURL + '3', response)
+            console.log(response);
+
+            dataQueryQuerytask(labinsURL + '3', response.features[0].geometry)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Tide Stations';
@@ -2122,6 +2136,9 @@ require([
   // set up alert for dynamically created zoom to feature buttons
   $(document).on('click', "button[name='zoom']", function () {
     console.log('click!')
+    console.log({
+      thisid: this.id
+    })
     goToFeature(infoPanelData[this.id - 1]);
     highlightFeature(infoPanelData[this.id - 1], true)
 

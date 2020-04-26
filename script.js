@@ -1888,7 +1888,6 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        console.log('hooowhoo');
 
         getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)

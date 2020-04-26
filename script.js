@@ -736,8 +736,7 @@ require([
       multiPolygonGeometries.push(response.features[i].geometry);
     }
     var union = await geometryEngine.union(multiPolygonGeometries);
-    var generalize = await geometryEngine.generalize(union)
-    return generalize;
+    return union;
   }
 
   // when a section feature is choses, a matching TRS combination is queried, highlighted and zoomed to
@@ -1260,10 +1259,10 @@ require([
           return response;
         } else { // if no features were found
           console.log('no features returned');
-
+          clearDiv('arraylengthdiv');
+          $('<br><div">No results found</div>').insertBefore('#parametersQuery').delay(4000).fadeOut();
           $('#infoSpan').html('Information Panel - 0 features found.');
           $('#informationdiv').append('<p>This query did not return any features</p>');
-          clearDiv('arraylengthdiv');
           return;
         }
       }).catch(function (error) {
@@ -1675,14 +1674,16 @@ require([
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '/0', response)
               .then(function (response) {
-                for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'NGS Control Points';
-                  infoPanelData.push(response.features[i]);
+                if (response) {
+                  for (i = 0; i < response.features.length; i++) {
+                    response.features[i].attributes.layerName = 'NGS Control Points';
+                    infoPanelData.push(response.features[i]);
+                  }
+                  goToFeature(infoPanelData[0]);
+                  queryInfoPanel(infoPanelData, 1);
+                  togglePanel();
+                  document.getElementById("mapViewDiv").style.cursor = "auto";
                 }
-                goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
-                togglePanel();
-                document.getElementById("mapViewDiv").style.cursor = "auto";
               });
           });
       });
@@ -1702,14 +1703,18 @@ require([
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '/0', response)
               .then(function (response) {
-                for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'NGS Control Points';
-                  infoPanelData.push(response.features[i]);
+                if (response) {
+                  for (i = 0; i < response.features.length; i++) {
+                    response.features[i].attributes.layerName = 'NGS Control Points';
+                    infoPanelData.push(response.features[i]);
+                  }
+                  console.log(response);
+                  goToFeature(infoPanelData[0]);
+                  queryInfoPanel(infoPanelData, 1);
+                  togglePanel();
+                } else {
+                  return;
                 }
-                console.log(response);
-                goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
-                togglePanel();
               });
           });
       });
@@ -1796,10 +1801,7 @@ require([
 
             dataQueryQuerytask(labinsURL + '4', response)
               .then(function (response) {
-                console.log({
-                  dataquerytaskres: response
-                });
-                if (response.features.length) {
+                if (response) {
                   for (i = 0; i < response.features.length; i++) {
                     response.features[i].attributes.layerName = 'Tide Interpolation Points';
                     infoPanelData.push(response.features[i]);
@@ -1828,13 +1830,17 @@ require([
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)
               .then(function (response) {
-                for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'Tide Interpolation Points';
-                  infoPanelData.push(response.features[i]);
+                if (response) {
+                  for (i = 0; i < response.features.length; i++) {
+                    response.features[i].attributes.layerName = 'Tide Interpolation Points';
+                    infoPanelData.push(response.features[i]);
+                  }
+                  goToFeature(infoPanelData[0]);
+                  queryInfoPanel(infoPanelData, 1);
+                  togglePanel();
+                } else {
+                  return;
                 }
-                goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
-                togglePanel();
               });
           });
       });
@@ -1891,13 +1897,17 @@ require([
 
             dataQueryQuerytask(labinsURL + '3', response.features[0].geometry)
               .then(function (response) {
-                for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'Tide Stations';
-                  infoPanelData.push(response.features[i]);
+                if (response) {
+                  for (i = 0; i < response.features.length; i++) {
+                    response.features[i].attributes.layerName = 'Tide Stations';
+                    infoPanelData.push(response.features[i]);
+                  }
+                  goToFeature(infoPanelData[0]);
+                  queryInfoPanel(infoPanelData, 1);
+                  togglePanel();
+                } else {
+                  return;
                 }
-                goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
-                togglePanel();
               });
           });
       });
@@ -1915,13 +1925,17 @@ require([
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
               .then(function (response) {
-                for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'Tide Stations';
-                  infoPanelData.push(response.features[i]);
+                if (response) {
+                  for (i = 0; i < response.features.length; i++) {
+                    response.features[i].attributes.layerName = 'Tide Stations';
+                    infoPanelData.push(response.features[i]);
+                  }
+                  goToFeature(infoPanelData[0]);
+                  queryInfoPanel(infoPanelData, 1);
+                  togglePanel();
+                } else {
+                  return;
                 }
-                goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
-                togglePanel();
               });
           });
       });
@@ -1983,13 +1997,17 @@ require([
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '7', response)
               .then(function (response) {
-                for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'Erosion Control Line';
-                  infoPanelData.push(response.features[i]);
+                if (response) {
+                  for (i = 0; i < response.features.length; i++) {
+                    response.features[i].attributes.layerName = 'Erosion Control Line';
+                    infoPanelData.push(response.features[i]);
+                  }
+                  goToFeature(infoPanelData[0]);
+                  queryInfoPanel(infoPanelData, 1);
+                  togglePanel();
+                } else {
+                  return;
                 }
-                goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
-                togglePanel();
               });
           });
       });

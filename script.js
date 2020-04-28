@@ -274,8 +274,17 @@ require([
     popupEnabled: false
   });
 
-  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/"
-  var CCCLLayer = new MapImageLayer({
+  const newCCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/ccp_pilot/MapServer/0";
+  const newCCRLayer = new FeatureLayer({
+    url: newCCRURL,
+    title: "New Certified Corner Records",
+    minScale: minimumDrawScale,
+    visible: true,
+    popupEnabled: false
+  });
+
+  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/2"
+  var CCCLLayer = new FeatureLayer({
     url: CCCLURL,
     minScale: minimumDrawScale,
     title: "Coastal Construction Control Lines",
@@ -355,7 +364,7 @@ require([
       bottom: 0
     },
     center: [-82.28, 27.8],
-    zoom: 7,
+    zoom: 15,
     constraints: {
       rotationEnabled: false
     }
@@ -986,7 +995,7 @@ require([
       }
     }
 
-    const layersArr = [ /*GNISLayer, */ countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
+    const layersArr = [ /*GNISLayer, */ /*countyBoundariesLayer, labinsLayer, swfwmdLayer , CCCLLayer, townshipRangeSectionLayer, */ newCCRLayer];
 
     // wait for all services to be checked in the layersArr
     await checkServices(layersArr);
@@ -1093,6 +1102,10 @@ require([
 
       // look inside of layerList layers
       let layers = layerList.operationalItems.items
+      // console.log({
+      //   layers
+      // });
+
 
       // loop through layers
       for (layer of layers) {
@@ -1103,17 +1116,60 @@ require([
 
           // if there are visible layers returned
           if (visibleLayers.length > 0) {
+            // console.log('visible layers is greater than 0');
+            // console.log(visibleLayers);
+
+
             const task = new IdentifyTask(layer.layer.url)
             const params = await setIdentifyParameters(visibleLayers, "click", event);
             const identify = await executeIdentifyTask(task, params);
 
+            // console.log({
+            //   layerurl: layer.layer.url,
+
+            // });
+
             // push each feature to the infoPanelData
             for (feature of identify.results) {
+              // console.log({
+              //   feature: feature
+              // });
+
               feature.feature.attributes.layerName = feature.layerName;
               let result = feature.feature.attributes
 
+              if (result.layerName === 'base_and_survey.sde.pls_ptp_Mar2019_3857') {
+                // this is where we will query the related features
+                // queryRelatedFeatures(result.objectid, newCCRLayer);
+
+                // const relatedFeaturesResults = await queryRelatedFeatures(120280, newCCRLayer);
+                // console.log(relatedFeaturesResults);
+
+                const ccp_rquery = {
+                  outFields: ["DOCNUM"],
+                  relationshipId: 0,
+                  objectIds: result.objectid
+                };
+
+                result.relatedFeatures = [];
+
+                await newCCRLayer.queryRelatedFeatures(ccp_rquery).then(async function (res) {
+                  // console.log(res);
+
+                  if (res[result.objectid]) {
+                    res[result.objectid].features.forEach(async function (feature) {
+                      console.log('CCP Related features:', feature.attributes.docnum);
+                      await result.relatedFeatures.push(feature.attributes.docnum);
+                    });
+                  }
+                });
+
+              }
+
               // make sure only certified corners with images are identified
-              if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+              if ((result.layerName !== 'Certified Corners') || (result.is_image == 'Y') || (result.layerName !== 'base_and_survey.sde.pls_ptp_Mar2019_3857')) {
+                // console.log(result.layerName);
+
                 await infoPanelData.push(feature.feature);
               }
             }
@@ -1121,6 +1177,10 @@ require([
         }
       }
       if (infoPanelData.length > 0) {
+        console.log({
+          infoPanelData
+        });
+
         await queryInfoPanel(event, infoPanelData, 1);
         togglePanel();
         await goToFeature(infoPanelData[0]);
@@ -1154,11 +1214,18 @@ require([
   async function checkVisibleLayers(service) {
     let visibleLayerIds = [];
     if (service.visible == true) {
-      // find the currently visible layers/sublayers
-      for (sublayer of service.children.items) {
-        // if sublayer is visible, add to visibleLayerIds array
-        if (sublayer.visible) {
-          visibleLayerIds.push(sublayer.layer.id);
+      console.log('is currently visible');
+
+      if (service.layer.type === 'feature') { // check which layer type
+        visibleLayerIds.push(service.layer.layerId);
+
+      } else if (service.layer.type === 'map-image') {
+        // find the currently visible layers/sublayers
+        for (sublayer of service.children.items) {
+          // if sublayer is visible, add to visibleLayerIds array
+          if (sublayer.visible) {
+            visibleLayerIds.push(sublayer.layer.id);
+          }
         }
       }
     }
@@ -1188,6 +1255,11 @@ require([
   }
 
   async function executeIdentifyTask(tasks, params) {
+    console.log({
+      tasks,
+      params
+    });
+
     // take in tasks
     // take in parameters
     return tasks.execute(params)
@@ -1308,6 +1380,7 @@ require([
       }
     }
   }
+
 
   //////////////////////////////////
   //// Search Widget Text Search ///
@@ -2310,6 +2383,8 @@ require([
                     // if there are visible layers returned
                     if (visibleLayers.length > 0) {
                       const task = new IdentifyTask(layer.layer.url)
+                      console.log(task);
+
                       const params = await setIdentifyParameters(visibleLayers, "polygon", activeWidget.viewModel.measurement.geometry);
                       const identify = await executeIdentifyTask(task, params);
 

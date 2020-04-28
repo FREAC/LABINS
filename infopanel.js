@@ -1,5 +1,10 @@
 async function queryInfoPanel(event = false, results, i) {
 
+    console.log({
+        results
+    });
+
+
     if (event.mapPoint) {
         $('#informationdiv').append('<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br>');
     } else {
@@ -216,6 +221,44 @@ async function queryInfoPanel(event = false, results, i) {
                 tifFiles.map(fileName => {
                     $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
                 });
+
+            } else if (results[i - 1].attributes.layerName === 'base_and_survey.sde.pls_ptp_Mar2019_3857') {
+                console.log(results[i - 1].attributes);
+
+
+                // $('#informationdiv').append('<p style= "font-size: 15px"><b>New CCR Layer</b></p>' +
+                //     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
+                //     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
+                //     '<b>Quad Number: </b>' + results[i - 1].attributes.quad_num + '<br>'
+                // );
+
+                // const relatedFeatures = await results[i - 1].attributes.relatedFeatures;
+                console.log(results[i - 1].attributes);
+                const relatedFeatures = results[i - 1].attributes.relatedFeatures.sort();
+                console.log(relatedFeatures);
+
+                for (relatedFeature in relatedFeatures) {
+                    console.log({
+                        relatedFeature: relatedFeatures[relatedFeature]
+                    });
+
+                    const folderNum = Math.floor(relatedFeatures[relatedFeature] / 10000).toString().padStart(2, '0');
+                    console.log({
+                        folderNum
+                    });
+                    const docNum = relatedFeatures[relatedFeature].toString().padStart(7, '0');
+                    console.log({
+                        docNum
+                    });
+                    $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/ccp' + folderNum + '/' + docNum + '.pdf>' + docNum + '.pdf</a><br>');
+
+
+                }
+
+
+
+
+
 
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +

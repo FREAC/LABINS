@@ -362,7 +362,7 @@ require([
       bottom: 0
     },
     center: [-82.28, 27.8],
-    zoom: 15,
+    zoom: 7,
     constraints: {
       rotationEnabled: false
     }
@@ -1095,7 +1095,6 @@ require([
       mapView.graphics.removeAll();
       selectionLayer.graphics.removeAll();
       clearDiv('informationdiv');
-      clearDiv('arraylengthdiv');
       infoPanelData = [];
 
       // look inside of layerList layers
@@ -1270,7 +1269,6 @@ require([
         } else { // if no features were found
           $('#infoSpan').html('Information Panel - 0 features found.');
           $('#informationdiv').append('<p>This query did not return any features</p>');
-          clearDiv('arraylengthdiv');
         }
       });
   }
@@ -1499,7 +1497,6 @@ require([
             togglePanel();
             $('#infoSpan').html('Information Panel - 0 features found.');
             $('#informationdiv').append('<p>This query did not return any features</p>');
-            clearDiv('arraylengthdiv');
           }
         });
     }
@@ -1536,7 +1533,6 @@ require([
             togglePanel();
             $('#infoSpan').html('Information Panel - 0 features found.');
             $('#informationdiv').append('<p>This query did not return any features</p>');
-            clearDiv('arraylengthdiv');
           }
         });
     }
@@ -2016,7 +2012,6 @@ require([
     bufferLayer.graphics.removeAll();
     clearDiv('informationdiv');
     $('#numinput').val('');
-    $('#arraylengthdiv').html('');
     $('#infoSpan').html('Information Panel');
   });
 
@@ -2035,7 +2030,6 @@ require([
       //clear content of information panel
       clearDiv('informationdiv');
       $('#numinput').val('');
-      $('#arraylengthdiv').html('');
       $('#infoSpan').html('Information Panel');
 
       // push query results of search bar to information panel
@@ -2317,7 +2311,6 @@ require([
                 mapView.graphics.removeAll();
                 selectionLayer.graphics.removeAll();
                 clearDiv('informationdiv');
-                clearDiv('arraylengthdiv');
                 infoPanelData = [];
 
                 // look inside of layerList layers

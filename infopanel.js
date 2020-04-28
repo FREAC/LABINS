@@ -1,16 +1,8 @@
 async function queryInfoPanel(event = false, results, i) {
 
-    console.log({
-        results
-    });
-
-
     if (event.mapPoint) {
         $('#informationdiv').append('<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br>');
-    } else {
-        // console.log(event)
     }
-
 
     if (results.length > 0) {
         // Set append templates for information panel
@@ -54,8 +46,6 @@ async function queryInfoPanel(event = false, results, i) {
                     '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
-
-
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
                     'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
                     'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +
@@ -69,14 +59,10 @@ async function queryInfoPanel(event = false, results, i) {
                 const opusData = async (url, results) => {
                     const response = await fetch(url);
                     text = await response.text();
-
                     if (text.length > 428) { // response always 200, response length will be > 428 if there is an opus point
                         $('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
-                    } else {
-                        // no data returned
                     }
                 }
-
                 await opusData(url, results[i - 1]);
 
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
@@ -121,19 +107,6 @@ async function queryInfoPanel(event = false, results, i) {
                     '<b>MLW (feet): </b>' + results[i - 1].attributes.navd88mlw_ft + '<br>' +
                     "<b>Steven's ID: </b>" + results[i - 1].attributes.stevens_id + '<br>'
                 );
-                // Do not include link to DEP report if the old link is present
-                // if (results[i - 1].attributes.report_dep.substring(0, 36) == 'ftp://ftp.labins.org/tide/NewReports') {
-                //     $('#informationdiv').append('DEP Report: ' + '<a target="_blank" href=' + results[i - 1].attributes.report_dep + '>' + results[i - 1].attributes.filename + '</a><br>');
-                // }
-                // // A null value here will return an object, otherwise, number will be returned
-                // if (typeof results[i - 1].attributes.navd88mhw_ft != 'object' && results[i - 1].attributes.navd88mlw_ft != 'object') {
-                //     // mhw and mlw are null
-                //     $('#informationdiv').append(' <a target="_blank" href=https://www.labins.org/survey_data/water/procedures_and_forms/Forms/MHW%20Procedural%20Approval%20-%20Map.pdf><b>MHW Procedural Approval Form if data IS available</b></a><br>');
-                // } else {
-                //     // mhw and mlw are null
-                //     $('#informationdiv').append('<a target="_blank" href=http://labins.org/survey_data/water/procedures_and_forms/Forms/MHW_Procedural_Approval_noelevation.pdf><b>MHW Procedural Approval Form if data IS NOT available</b></a><br>');
-
-                // }
             } else if (results[i - 1].attributes.layerName === 'Tide Interpolation Points') {
                 var replaceWhitespace = results[i - 1].attributes.tile_name.replace(/\s+/g, "%20");
 
@@ -142,8 +115,6 @@ async function queryInfoPanel(event = false, results, i) {
                     '<b>County: </b>' + results[i - 1].attributes.cname + '<br>' +
                     '<b>Quad: </b>' + results[i - 1].attributes.tile_name + '<br>' +
                     '<b>Method: </b>' + results[i - 1].attributes.method + '<br>' +
-                    // '<b>MHW (feet): </b>' + results[i - 1].attributes.mhw2_ft + '<br>' +
-                    // '<b>MLW (feet): </b>' + results[i - 1].attributes.mlw2_ft + '<br>' +
                     '<b>Station 1: </b>' + results[i - 1].attributes.station1 + '<br>' +
                     '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>'
                 );
@@ -197,7 +168,6 @@ async function queryInfoPanel(event = false, results, i) {
                 );
 
             } else if (results[i - 1].attributes.layerName === 'Certified Corners' && results[i - 1].attributes.is_image === 'Y') {
-                console.log(results[i - 1].attributes);
 
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
@@ -223,43 +193,13 @@ async function queryInfoPanel(event = false, results, i) {
                 });
 
             } else if (results[i - 1].attributes.layerName === 'base_and_survey.sde.pls_ptp_Mar2019_3857') {
-                console.log(results[i - 1].attributes);
-
-
-                // $('#informationdiv').append('<p style= "font-size: 15px"><b>New CCR Layer</b></p>' +
-                //     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
-                //     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
-                //     '<b>Quad Number: </b>' + results[i - 1].attributes.quad_num + '<br>'
-                // );
-
-                // const relatedFeatures = await results[i - 1].attributes.relatedFeatures;
-                console.log(results[i - 1].attributes);
+                
                 const relatedFeatures = results[i - 1].attributes.relatedFeatures.sort();
-                console.log(relatedFeatures);
-
                 for (relatedFeature in relatedFeatures) {
-                    console.log({
-                        relatedFeature: relatedFeatures[relatedFeature]
-                    });
-
                     const folderNum = Math.floor(relatedFeatures[relatedFeature] / 10000).toString().padStart(2, '0');
-                    console.log({
-                        folderNum
-                    });
                     const docNum = relatedFeatures[relatedFeature].toString().padStart(7, '0');
-                    console.log({
-                        docNum
-                    });
                     $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/ccp' + folderNum + '/' + docNum + '.pdf>' + docNum + '.pdf</a><br>');
-
-
                 }
-
-
-
-
-
-
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
                     '<b>County: </b>' + results[i - 1].attributes.COUNTY + '<br>' +
@@ -270,14 +210,12 @@ async function queryInfoPanel(event = false, results, i) {
             $('#informationdiv').append('<br>');
             $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
             $('#informationdiv').append('<hr>');
-
         }
     } else {
         $('#informationdiv').append('<p>This query did not return any features</p>');
         $('#infoSpan').html('Information Panel - 0 features found. ');
     }
     if (i == 1) {
-        // $('#arraylengthdiv').html((parseInt(i - 1)) + ' feature found.');
         $('#infoSpan').html('Information Panel - ' + (parseInt(i - 1)) + ' feature found.');
     } else {
         $('#infoSpan').html('Information Panel - ' + (parseInt(i - 1)) + ' features found. ');

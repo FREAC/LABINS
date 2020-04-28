@@ -97,7 +97,6 @@ require([
     symbol: {
       type: "simple-fill", // autocasts as new SimpleLineSymbol()
       style: "none",
-      // width: 0.7,
       color: "none",
       outline: {
         style: "dash-dot",
@@ -111,7 +110,6 @@ require([
   var countyBoundariesLayer = new MapImageLayer({
     url: countyBoundariesURL,
     title: "County Boundaries",
-
     minScale: 2000000,
     sublayers: [{
       id: 0,
@@ -995,7 +993,7 @@ require([
       }
     }
 
-    const layersArr = [ /*GNISLayer, */ /*countyBoundariesLayer, labinsLayer, swfwmdLayer , CCCLLayer, townshipRangeSectionLayer, */ newCCRLayer];
+    const layersArr = [countyBoundariesLayer, labinsLayer, swfwmdLayer , CCCLLayer, townshipRangeSectionLayer, newCCRLayer];
 
     // wait for all services to be checked in the layersArr
     await checkServices(layersArr);
@@ -1102,11 +1100,6 @@ require([
 
       // look inside of layerList layers
       let layers = layerList.operationalItems.items
-      // console.log({
-      //   layers
-      // });
-
-
       // loop through layers
       for (layer of layers) {
         let visibleLayers
@@ -1116,35 +1109,18 @@ require([
 
           // if there are visible layers returned
           if (visibleLayers.length > 0) {
-            // console.log('visible layers is greater than 0');
-            // console.log(visibleLayers);
-
 
             const task = new IdentifyTask(layer.layer.url)
             const params = await setIdentifyParameters(visibleLayers, "click", event);
             const identify = await executeIdentifyTask(task, params);
 
-            // console.log({
-            //   layerurl: layer.layer.url,
-
-            // });
-
             // push each feature to the infoPanelData
             for (feature of identify.results) {
-              // console.log({
-              //   feature: feature
-              // });
 
               feature.feature.attributes.layerName = feature.layerName;
               let result = feature.feature.attributes
 
               if (result.layerName === 'base_and_survey.sde.pls_ptp_Mar2019_3857') {
-                // this is where we will query the related features
-                // queryRelatedFeatures(result.objectid, newCCRLayer);
-
-                // const relatedFeaturesResults = await queryRelatedFeatures(120280, newCCRLayer);
-                // console.log(relatedFeaturesResults);
-
                 const ccp_rquery = {
                   outFields: ["DOCNUM"],
                   relationshipId: 0,
@@ -1152,10 +1128,7 @@ require([
                 };
 
                 result.relatedFeatures = [];
-
                 await newCCRLayer.queryRelatedFeatures(ccp_rquery).then(async function (res) {
-                  // console.log(res);
-
                   if (res[result.objectid]) {
                     res[result.objectid].features.forEach(async function (feature) {
                       console.log('CCP Related features:', feature.attributes.docnum);
@@ -1163,13 +1136,10 @@ require([
                     });
                   }
                 });
-
               }
 
               // make sure only certified corners with images are identified
               if ((result.layerName !== 'Certified Corners') || (result.is_image == 'Y') || (result.layerName !== 'base_and_survey.sde.pls_ptp_Mar2019_3857')) {
-                // console.log(result.layerName);
-
                 await infoPanelData.push(feature.feature);
               }
             }
@@ -1177,10 +1147,6 @@ require([
         }
       }
       if (infoPanelData.length > 0) {
-        console.log({
-          infoPanelData
-        });
-
         await queryInfoPanel(event, infoPanelData, 1);
         togglePanel();
         await goToFeature(infoPanelData[0]);
@@ -1192,11 +1158,9 @@ require([
     document.getElementById("mapViewDiv").style.cursor = "auto";
   }
 
-
   // fetch all map services before loading to map
   // if service returns good, add service to map
   async function checkServices(layersArr) {
-    // let layers = map.layers.items
     let layers = layersArr
     for (layer of layers) {
       try {
@@ -1214,7 +1178,6 @@ require([
   async function checkVisibleLayers(service) {
     let visibleLayerIds = [];
     if (service.visible == true) {
-      console.log('is currently visible');
 
       if (service.layer.type === 'feature') { // check which layer type
         visibleLayerIds.push(service.layer.layerId);
@@ -1255,14 +1218,7 @@ require([
   }
 
   async function executeIdentifyTask(tasks, params) {
-    console.log({
-      tasks,
-      params
-    });
-
-    // take in tasks
-    // take in parameters
-    return tasks.execute(params)
+     return tasks.execute(params)
   }
 
   // collapse any of the current panels and switch to the identifyResults panel
@@ -1332,11 +1288,6 @@ require([
         var ext = feature.geometry.extent;
         var cloneExt = ext.clone();
 
-        console.log({
-          ext,
-          cloneExt
-        });
-
         // if current scale is greater than number, 
         // go to feature and expand extent by 1.75x
         if (mapView.scale > 18055.954822) {
@@ -1368,12 +1319,12 @@ require([
         // TODO: NOt working properly, else if not being triggered
         if (mapView.scale > 18055.954822) {
           mapView.goTo({
-            target: infoPanelData[0].geometry,
+            target: feature.geometry,
             zoom: 15
           });
         } else { // go to point at the current scale
           mapView.goTo({
-            target: infoPanelData[0].geometry,
+            target: feature.geometry,
             scale: mapView.scale
           });
         }
@@ -1516,7 +1467,6 @@ require([
       });
       var query = new Query();
       query.returnGeometry = true;
-      //query.outFields = ['*'];
       query.where = "Upper(" + attribute + ") LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
 
       const results = task.execute(query);

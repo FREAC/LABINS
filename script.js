@@ -114,7 +114,7 @@ require([
 
     minScale: 2000000,
     sublayers: [{
-      id: 0,
+      id: 2,
       title: "County Boundaries",
       visible: true,
       popupEnabled: false,

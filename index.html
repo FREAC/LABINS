@@ -23,9 +23,19 @@
   <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 </head>
 
 <body class="calcite-maps calcite-nav-top">
+  
+  <!-- This is code for the IE11 alert window -->
+  <script>
+    if (!!window.MSInputMethodContext && !!document.documentMode){
+      swal('Please use a different browser', 'Because the LABINS map uses modern web technologies, it is incompatible with Internet Explorer 11.', 'error', {button: false,});
+    }
+  </script>
+
   <!-- Navbar -->
 
   <nav class="navbar calcite-navbar navbar-fixed-top calcite-text-light calcite-bg-custom"

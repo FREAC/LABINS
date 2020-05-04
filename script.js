@@ -92,6 +92,22 @@ require([
   var minimumDrawScale = 95000;
   var extents = [];
 
+  function haloLabelInfo(labelExpr, labelColor) {
+    return [{
+      labelExpression: labelExpr,
+      labelPlacement: "above-center",
+      symbol: {
+        type: "text",
+        color: labelColor,
+        haloColor: [255, 255, 255],
+        haloSize: 2,
+        font: {
+          size: 8
+        }
+      }
+    }];
+  }
+
   const countiesRenderer = {
     type: "simple", // autocasts as new SimpleRenderer()
     symbol: {
@@ -134,19 +150,25 @@ require([
       title: "Hi-Res Imagery Grid State Plane East",
       visible: true,
       popupEnabled: false,
-      minScale: minimumDrawScale
+      minScale: minimumDrawScale,
+      labelingInfo: haloLabelInfo("[spe_id]", [230, 76, 0, 255]),
+      labelsVisible: false
     }, {
       id: 14,
       title: "Hi-Res Imagery Grid: State Plane North",
       visible: true,
       popupEnabled: false,
-      minScale: minimumDrawScale
+      minScale: minimumDrawScale,
+      labelingInfo: haloLabelInfo("[spn_id]", [230, 76, 0, 255]),
+      labelsVisible: false
     }, {
       id: 13,
       title: "Hi-Res Imagery Grid: State Plane West",
       visible: true,
       popupEnabled: false,
-      minScale: minimumDrawScale
+      minScale: minimumDrawScale,
+      labelingInfo: haloLabelInfo("[spw_id]", [230, 76, 0, 255]),
+      labelsVisible: false
     }, {
       id: 12,
       title: "Parcels",
@@ -272,7 +294,9 @@ require([
     title: "Certified Corners",
     minScale: minimumDrawScale,
     visible: true,
-    popupEnabled: false
+    popupEnabled: false,
+    labelingInfo: haloLabelInfo("[blmid]", [0, 0 , 255, 255]),
+    labelsVisible: false
   });
 
   var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/2"
@@ -1037,48 +1061,10 @@ require([
       }
     });
 
-    function haloLabelInfo(labelExpr, labelColor) {
-      return [{
-        labelExpression: labelExpr,
-        labelPlacement: "above-center",
-        symbol: {
-          type: "text",
-          color: labelColor,
-          haloColor: [255, 255, 255],
-          haloSize: 2,
-          font: {
-            size: 8
-          }
-        }
-      }];
-    }
-
+    // Toggle labels from LayerList widget
     layerList.on("trigger-action", function (event) {
-      var targetLayer;
-      if (event.item.title !== "Certified Corners") {
-        // Selected sublayer of a MapImageLayer
-        targetLayer = layerList.operationalItems.items[3].children.items.filter(function (layer) {
-          return layer.title === event.item.title
-        })[0];
-      } else {
-        // Selected a FeatureLayer
-        targetLayer = layerList.operationalItems.items[0];
-      }
-      // if the selected layer is visible and the mapView.scale is less than the minimum draw scale enable toggling
-      if ((targetLayer.visible === true) && (mapView.scale < minimumDrawScale)) {
-        // if labels are not already visible, turn them on
-        if ((targetLayer.layer.labelsVisible === false) || (targetLayer.layer.labelsVisible === undefined)) {
-
-          targetLayer.layer.labelsVisible = true;
-          if (targetLayer.title === "Certified Corners") {
-            targetLayer.layer.labelingInfo = haloLabelInfo("[blmid]", [0, 0 , 255, 255]);
-          } else {
-            const d = targetLayer.title.split(" ").slice(-1)[0].charAt(0).toLowerCase();
-            targetLayer.layer.labelingInfo = haloLabelInfo("[sp" + d + "_id]", [230, 76, 0, 255]);
-          }
-        } else { // if labels are visible, toggle them off
-          targetLayer.layer.labelsVisible = false;
-        }
+      if (mapView.scale < minimumDrawScale) {
+        event.item.layer.labelsVisible = !event.item.layer.labelsVisible;
       }
     });
 

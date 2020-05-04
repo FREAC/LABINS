@@ -17,6 +17,7 @@ require([
   "esri/symbols/SimpleLineSymbol",
   "esri/tasks/Locator",
   "esri/geometry/SpatialReference",
+  "esri/renderers/UniqueValueRenderer",
 
   // Widgets
   "esri/widgets/CoordinateConversion",
@@ -72,6 +73,7 @@ require([
   SimpleLineSymbol,
   Locator,
   SpatialReference,
+  UniqueValueRenderer,
   CoordinateConversion,
   Format,
   Conversion,
@@ -984,24 +986,11 @@ require([
   // if service is offline, ignore
   mapView.when(async function () {
 
-    // action definition for toggling labels on Certified Corner LABINS's sublayer
+    // Add label toggles in Layerlist widget
     function defineActions(event) {
-
-      // The event object contains an item property.
-      // is is a ListItem referencing the associated layer
-      // and other properties. You can control the visibility of the
-      // item, its title, and actions using this object.
-
-      var item = event.item;
-
       if (["Certified Corners", "Hi-Res Imagery Grid State Plane East",
-       "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"].includes(item.title)) {
-
-        // An array of objects defining actions to place in the LayerList.
-        // By making this array two-dimensional, you can separate similar
-        // actions into separate groups with a breaking line.
-
-        item.actionsSections = [
+       "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"].includes(event.item.title)) {
+        event.item.actionsSections = [
           [{
             title: "Toggle labels",
             className: "esri-icon-labels",

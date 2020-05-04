@@ -120,7 +120,7 @@ require([
     }]
   });
 
-  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/";
+  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_200428/MapServer/";
   var labinsLayer = new MapImageLayer({
     url: labinsURL,
     sublayers: [{
@@ -228,12 +228,6 @@ require([
       popupEnabled: false,
       minScale: minimumDrawScale
     }, {
-      id: 2,
-      title: "Certified Corners",
-      visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
       id: 1,
       title: "Preliminary NGS Points",
       visible: false,
@@ -262,7 +256,7 @@ require([
   });
 
   // Layers needed for dependent dropdowns
-  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/10"
+  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_200428/MapServer/10"
   var townshipRangeSectionLayer = new FeatureLayer({
     url: townshipRangeSectionURL,
     outFields: ["twn_ch", "rng_ch", "sec_ch"],
@@ -272,10 +266,10 @@ require([
     popupEnabled: false
   });
 
-  const newCCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/ccp_pilot/MapServer/0";
-  const newCCRLayer = new FeatureLayer({
-    url: newCCRURL,
-    title: "New Certified Corner Records",
+  const CCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_200428/MapServer/2";
+  const CCRLayer = new FeatureLayer({
+    url: CCRURL,
+    title: "Certified Corners",
     minScale: minimumDrawScale,
     visible: true,
     popupEnabled: false
@@ -362,7 +356,7 @@ require([
       bottom: 0
     },
     center: [-82.28, 27.8],
-    zoom: 7,
+    zoom: 15,
     constraints: {
       rotationEnabled: false
     }
@@ -993,7 +987,7 @@ require([
       }
     }
 
-    const layersArr = [countyBoundariesLayer, labinsLayer, swfwmdLayer , CCCLLayer, townshipRangeSectionLayer, newCCRLayer];
+    const layersArr = [countyBoundariesLayer, labinsLayer, swfwmdLayer , CCCLLayer, townshipRangeSectionLayer, CCRLayer];
 
     // wait for all services to be checked in the layersArr
     await checkServices(layersArr);
@@ -1059,11 +1053,17 @@ require([
       }];
     }
 
-    // event to listen for action button on layerlist
     layerList.on("trigger-action", function (event) {
-      const targetLayer = layerList.operationalItems.items[2].children.items.filter(function (layer) {
-        return layer.title === event.item.title
-      })[0];
+      var targetLayer;
+      if (event.item.title !== "Certified Corners") {
+        // Selected sublayer of a MapImageLayer
+        targetLayer = layerList.operationalItems.items[3].children.items.filter(function (layer) {
+          return layer.title === event.item.title
+        })[0];
+      } else {
+        // Selected a FeatureLayer
+        targetLayer = layerList.operationalItems.items[0];
+      }
       // if the selected layer is visible and the mapView.scale is less than the minimum draw scale enable toggling
       if ((targetLayer.visible === true) && (mapView.scale < minimumDrawScale)) {
         // if labels are not already visible, turn them on
@@ -1119,7 +1119,7 @@ require([
               feature.feature.attributes.layerName = feature.layerName;
               let result = feature.feature.attributes
 
-              if (result.layerName === 'base_and_survey.sde.pls_ptp_Mar2019_3857') {
+              if (result.layerName === 'Certified Corners') {
                 const ccp_rquery = {
                   outFields: ["DOCNUM"],
                   relationshipId: 0,
@@ -1127,7 +1127,7 @@ require([
                 };
 
                 result.relatedFeatures = [];
-                await newCCRLayer.queryRelatedFeatures(ccp_rquery).then(async function (res) {
+                await CCRLayer.queryRelatedFeatures(ccp_rquery).then(async function (res) {
                   if (res[result.objectid]) {
                     res[result.objectid].features.forEach(async function (feature) {
                       console.log('CCP Related features:', feature.attributes.docnum);
@@ -1138,7 +1138,7 @@ require([
               }
 
               // make sure only certified corners with images are identified
-              if ((result.layerName !== 'Certified Corners') || (result.is_image == 'Y') || (result.layerName !== 'base_and_survey.sde.pls_ptp_Mar2019_3857')) {
+              if ((result.layerName !== 'Certified Corners') || (result.is_image == 'Y')) {
                 await infoPanelData.push(feature.feature);
               }
             }

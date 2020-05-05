@@ -1101,12 +1101,16 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
-      identifyTaskFlow(event, coordExpand.expanded !== true);
+      if (screen.availWidth < 992) {
+        identifyTaskFlow(event, false, true);
+      } else {
+        identifyTaskFlow(event, coordExpand.expanded !== true, false);
+      }
     });
   });
 
-  async function identifyTaskFlow(event, coordExpanParam) {
-    if ((mapView.scale < minimumDrawScale) && (coordExpanParam)) {
+  async function identifyTaskFlow(event, coordExpanParam, mobileView) {
+    if ((mapView.scale < minimumDrawScale) && (coordExpanParam || mobileView)) {
       document.getElementById("mapViewDiv").style.cursor = "wait";
       mapView.graphics.removeAll();
       selectionLayer.graphics.removeAll();

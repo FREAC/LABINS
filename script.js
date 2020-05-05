@@ -970,8 +970,7 @@ require([
       var item = event.item;
 
       if (["Certified Corners", "Hi-Res Imagery Grid State Plane East",
-          "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"
-        ].includes(item.title)) {
+       "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"].includes(item.title)) {
 
         // An array of objects defining actions to place in the LayerList.
         // By making this array two-dimensional, you can separate similar
@@ -1065,7 +1064,7 @@ require([
 
           targetLayer.layer.labelsVisible = true;
           if (targetLayer.title === "Certified Corners") {
-            targetLayer.layer.labelingInfo = haloLabelInfo("[blmid]", [0, 0, 255, 255]);
+            targetLayer.layer.labelingInfo = haloLabelInfo("[blmid]", [0, 0 , 255, 255]);
           } else {
             const d = targetLayer.title.split(" ").slice(-1)[0].charAt(0).toLowerCase();
             targetLayer.layer.labelingInfo = haloLabelInfo("[sp" + d + "_id]", [230, 76, 0, 255]);
@@ -1079,16 +1078,12 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
-      if (screen.availWidth < 992) {
-        identifyTaskFlow(event, false, true);
-      } else {
-        identifyTaskFlow(event, coordExpand.expanded !== true, false);
-      }
+      identifyTaskFlow(event, coordExpand.expanded !== true);
     });
   });
 
-  async function identifyTaskFlow(event, coordExpanParam, mobileView) {
-    if ((mapView.scale < minimumDrawScale) && (coordExpanParam || mobileView)) {
+  async function identifyTaskFlow(event, coordExpanParam) {
+    if ((mapView.scale < minimumDrawScale) && (coordExpanParam)) {
       document.getElementById("mapViewDiv").style.cursor = "wait";
       mapView.graphics.removeAll();
       selectionLayer.graphics.removeAll();

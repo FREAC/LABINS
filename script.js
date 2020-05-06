@@ -52,7 +52,7 @@ require([
   // Bootstrap
   "bootstrap/Collapse",
   "bootstrap/Dropdown",
-
+  
   "dojo/domReady!"
 ], function (
   Map,
@@ -92,33 +92,16 @@ require([
   var minimumDrawScale = 95000;
   var extents = [];
 
-  const countiesRenderer = {
-    type: "simple", // autocasts as new SimpleRenderer()
-    symbol: {
-      type: "simple-fill", // autocasts as new SimpleLineSymbol()
-      style: "none",
-      // width: 0.7,
-      color: "none",
-      outline: {
-        style: "dash-dot",
-        width: 1,
-        color: "dimgray"
-      }
-    }
-  };
-
   var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/";
   var countyBoundariesLayer = new MapImageLayer({
     url: countyBoundariesURL,
     title: "County Boundaries",
-
-    minScale: 2000000,
+    minScale: minimumDrawScale,
     sublayers: [{
       id: 0,
       title: "County Boundaries",
-      visible: true,
-      popupEnabled: false,
-      renderer: countiesRenderer
+      visible: false,
+      popupEnabled: false
     }]
   });
 
@@ -340,6 +323,7 @@ require([
 
   var map = new Map({
     basemap: "topo",
+    // layers: [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, selectionLayer, bufferLayer]
     layers: [selectionLayer, bufferLayer]
   });
 
@@ -755,7 +739,7 @@ require([
 
   // Modified zoomToFeature function to zoom once the Township and Range has been chosen
   function zoomToTRFeature(panelurl, location, attribute) {
-
+    
     multiPolygonGeometries = [];
 
     var township = document.getElementById("selectTownship");
@@ -851,7 +835,7 @@ require([
     });
     try {
       const results = await townshipRangeSectionLayer.queryFeatures(townshipQuery);
-      await buildTownshipDropdown(results);
+      await addToSelect(results);
     } catch (err) {
       console.log('Township load failed: ', err);
     }
@@ -860,7 +844,7 @@ require([
   // Add the unique values to the subregion
   // select element. This will allow the user
   // to filter states by subregion.
-  function buildTownshipDropdown(values) {
+  function addToSelect(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Township";
     townshipSelect.add(option);
@@ -875,7 +859,7 @@ require([
 
   // Add the unique values to the
   // range selection element.
-  function buildRangeDropdown(values) {
+  function addToSelect2(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Range";
     rangeSelect.add(option);
@@ -890,7 +874,7 @@ require([
 
   // Add the unique values to the
   // section selection element.
-  function buildSectionDropdown(values) {
+  function addToSelect3(values) {
     var option = domConstruct.create("option");
     option.text = "Zoom to a Section";
     sectionSelect.add(option);
@@ -916,7 +900,7 @@ require([
       returnDistinctValues: true,
       orderByFields: ["rng_ch", "rdir"]
     });
-    return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(buildRangeDropdown);
+    return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(addToSelect2);
   })
 
   // when range changes, reset the section dropdown.
@@ -936,7 +920,7 @@ require([
     selectQuery.outFields = ["sec_ch"];
     selectQuery.returnDistinctValues = true;
     selectQuery.orderByFields = ["sec_ch"];
-    return townshipRangeSectionLayer.queryFeatures(selectQuery).then(buildSectionDropdown);
+    return townshipRangeSectionLayer.queryFeatures(selectQuery).then(addToSelect3);
   });
 
   var querySection = dom.byId("selectSection");
@@ -969,9 +953,7 @@ require([
 
       var item = event.item;
 
-      if (["Certified Corners", "Hi-Res Imagery Grid State Plane East",
-          "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"
-        ].includes(item.title)) {
+      if (item.title === "Certified Corners") {
 
         // An array of objects defining actions to place in the LayerList.
         // By making this array two-dimensional, you can separate similar
@@ -1037,39 +1019,31 @@ require([
       }
     });
 
-    function haloLabelInfo(labelExpr, labelColor) {
-      return [{
-        labelExpression: labelExpr,
-        labelPlacement: "above-center",
-        symbol: {
-          type: "text",
-          color: labelColor,
-          haloColor: [255, 255, 255],
-          haloSize: 2,
-          font: {
-            size: 8
-          }
-        }
-      }];
-    }
-
     // event to listen for action button on layerlist
     layerList.on("trigger-action", function (event) {
-      const targetLayer = layerList.operationalItems.items[2].children.items.filter(function (layer) {
-        return layer.title === event.item.title
-      })[0];
-      // if the selected layer is visible and the mapView.scale is less than the minimum draw scale enable toggling
+      // var labelToggle = $('.esri-layer-list__item-actions-menu-item');
+      const targetLayer = layerList.operationalItems.items[2].children.items[2]
+      // if the certified corners are visible and the mapView.scale is less than the minimum draw scale
+      // enable toggling
       if ((targetLayer.visible === true) && (mapView.scale < minimumDrawScale)) {
         // if labels are not already visible, turn them on
         if ((targetLayer.layer.labelsVisible === false) || (targetLayer.layer.labelsVisible === undefined)) {
-
+          
+          // handle focus toggle of action button on CCR sublayer
           targetLayer.layer.labelsVisible = true;
-          if (targetLayer.title === "Certified Corners") {
-            targetLayer.layer.labelingInfo = haloLabelInfo("[blmid]", [0, 0, 255, 255]);
-          } else {
-            const d = targetLayer.title.split(" ").slice(-1)[0].charAt(0).toLowerCase();
-            targetLayer.layer.labelingInfo = haloLabelInfo("[sp" + d + "_id]", [230, 76, 0, 255]);
-          }
+          targetLayer.layer.labelingInfo = [{
+            labelExpression: "[blmid]",
+            labelPlacement: "above-center",
+            symbol: {
+              type: "text", // autocasts as new TextSymbol()
+              color: [0, 0, 255, 1],
+              haloColor: [255, 255, 255],
+              haloSize: 2,
+              font: {
+                size: 8
+              }
+            }
+          }]
         } else { // if labels are visible, toggle them off
           targetLayer.layer.labelsVisible = false;
         }
@@ -1079,64 +1053,55 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
-      if (screen.availWidth < 992) {
-        identifyTaskFlow(event, false, true);
-      } else {
-        identifyTaskFlow(event, coordExpand.expanded !== true, false);
-      }
-    });
-  });
+      if ((mapView.scale < minimumDrawScale) && (coordExpand.expanded !== true)) {
+        document.getElementById("mapViewDiv").style.cursor = "wait";
+        mapView.graphics.removeAll();
+        selectionLayer.graphics.removeAll();
+        clearDiv('informationdiv');
+        clearDiv('arraylengthdiv');
+        infoPanelData = [];
 
-  async function identifyTaskFlow(event, coordExpanParam, mobileView) {
-    if ((mapView.scale < minimumDrawScale) && (coordExpanParam || mobileView)) {
-      document.getElementById("mapViewDiv").style.cursor = "wait";
-      mapView.graphics.removeAll();
-      selectionLayer.graphics.removeAll();
-      clearDiv('informationdiv');
-      clearDiv('arraylengthdiv');
-      infoPanelData = [];
+        // look inside of layerList layers
+        let layers = layerList.operationalItems.items
 
-      // look inside of layerList layers
-      let layers = layerList.operationalItems.items
+        // loop through layers
+        for (layer of layers) {
+          let visibleLayers
+          // exclude geographic names layer from identify operation
+          if (layer.title !== 'Geographic Names') {
+            visibleLayers = await checkVisibleLayers(layer);
 
-      // loop through layers
-      for (layer of layers) {
-        let visibleLayers
-        // exclude geographic names layer from identify operation
-        if (layer.title !== 'Geographic Names') {
-          visibleLayers = await checkVisibleLayers(layer);
+            // if there are visible layers returned
+            if (visibleLayers.length > 0) {
+              const task = new IdentifyTask(layer.layer.url)
+              const params = await setIdentifyParameters(visibleLayers, "click", event);
+              const identify = await executeIdentifyTask(task, params);
 
-          // if there are visible layers returned
-          if (visibleLayers.length > 0) {
-            const task = new IdentifyTask(layer.layer.url)
-            const params = await setIdentifyParameters(visibleLayers, "click", event);
-            const identify = await executeIdentifyTask(task, params);
+              // push each feature to the infoPanelData
+              for (feature of identify.results) {
+                feature.feature.attributes.layerName = feature.layerName;
+                let result = feature.feature.attributes
 
-            // push each feature to the infoPanelData
-            for (feature of identify.results) {
-              feature.feature.attributes.layerName = feature.layerName;
-              let result = feature.feature.attributes
-
-              // make sure only certified corners with images are identified
-              if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
-                await infoPanelData.push(feature.feature);
+                // make sure only certified corners with images are identified
+                if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+                  await infoPanelData.push(feature.feature);
+                }
               }
             }
           }
         }
+        if (infoPanelData.length > 0) {
+          await queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+          await goToFeature(infoPanelData[0]);
+        } else { // if no features were found under the click
+          $('#infoSpan').html('Information Panel - 0 features found.');
+          $('#informationdiv').append('<p>This query did not return any features</p>');
+        }
       }
-      if (infoPanelData.length > 0) {
-        await queryInfoPanel(event, infoPanelData, 1);
-        togglePanel();
-        await goToFeature(infoPanelData[0]);
-      } else { // if no features were found under the click
-        $('#infoSpan').html('Information Panel - 0 features found.');
-        $('#informationdiv').append('<p>This query did not return any features</p>');
-      }
-    }
-    document.getElementById("mapViewDiv").style.cursor = "auto";
-  }
-
+      document.getElementById("mapViewDiv").style.cursor = "auto";
+    });
+  });
 
   // fetch all map services before loading to map
   // if service returns good, add service to map
@@ -1151,7 +1116,7 @@ require([
         map.add(layer);
       } catch (err) {
         // layer returns bad, not added to map, log error
-        console.error(layer.title + " layer failed to be returned: " + err);
+        console.log(layer.title + " layer failed to be returned" + err);
       }
     }
   }
@@ -1257,18 +1222,9 @@ require([
 
     if (feature) {
       // Go to the selected parcel
-      if (feature.geometry.type === "polygon") {
-        // do nothing
-        // desired condition is to not zoom, 
-        // but that requirement may change in the future
-      } else if (feature.geometry.type === "polyline") {
+      if (feature.geometry.type === "polygon" || feature.geometry.type === "polyline") {
         var ext = feature.geometry.extent;
         var cloneExt = ext.clone();
-
-        console.log({
-          ext,
-          cloneExt
-        });
 
         // if current scale is greater than number, 
         // go to feature and expand extent by 1.75x
@@ -1946,7 +1902,6 @@ require([
     var identifyPanel = document.getElementById('panelPopup');
     var identifyStyle = document.getElementById('collapsePopup');
     var dataQueryPanel = document.getElementById('panelQuery');
-    let dataQueryPanelBody = document.getElementById('collapseQuery');
 
     identifyPanel.setAttribute('class', 'panel collapse');
     identifyPanel.setAttribute('style', 'height:0px;');
@@ -1956,9 +1911,6 @@ require([
 
     dataQueryPanel.setAttribute('class', 'panel collapse in');
     dataQueryPanel.setAttribute('style', 'height:auto;');
-
-    dataQueryPanelBody.setAttribute('class', 'panel collapse in');
-    dataQueryPanelBody.setAttribute('style', 'height:auto;');
   });
 
   // Switch panel to zoom to feature panel
@@ -2044,7 +1996,7 @@ require([
   });
 
   // Basemaps
-  new Basemaps({
+  var basemaps = new Basemaps({
     container: "basemapGalleryDiv",
     view: mapView
   })
@@ -2052,7 +2004,7 @@ require([
   // if screen width under 992 pixels, put legend and layerlist widget button into navigation bar menu
   if (screen.availWidth < 992) {
     // Legend
-    new Legend({
+    const legendWidget = new Legend({
       container: "legendDiv",
       view: mapView
     });
@@ -2292,8 +2244,10 @@ require([
         setActiveButton(document.getElementById('areaButton'));
         activeWidget.watch("viewModel.tool.active", async function (active) {
           if (active === false) {
+
             // if identify is checked, run a drill down identifyTask
             if (document.getElementById('measureIdentify').checked) {
+
               if (mapView.scale < minimumDrawScale) {
                 document.getElementById("mapViewDiv").style.cursor = "wait";
                 mapView.graphics.removeAll();
@@ -2322,6 +2276,7 @@ require([
                       for (feature of identify.results) {
                         feature.feature.attributes.layerName = feature.layerName;
                         let result = feature.feature.attributes
+
                         // make sure only certified corners with images are identified
                         if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
                           await infoPanelData.push(feature.feature);
@@ -2331,7 +2286,7 @@ require([
                   }
                 }
                 if (infoPanelData.length > 0) {
-                  await queryInfoPanel(undefined, infoPanelData, 1);
+                  await queryInfoPanel(infoPanelData, 1);
                   togglePanel();
                   await goToFeature(infoPanelData[0]);
                 } else { // if no features were found under the click
@@ -2368,7 +2323,7 @@ require([
   }
 
   // Print
-  new Print({
+  var printWidget = new Print({
     container: "printDiv",
     view: mapView,
     printServiceUrl: "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"

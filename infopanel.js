@@ -1,12 +1,4 @@
-async function queryInfoPanel(event = false, results, i) {
-
-    if (event.mapPoint) {
-        $('#informationdiv').append('<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br>');
-    } else {
-        // console.log(event)
-    }
-
-
+function queryInfoPanel(results, i) {
     if (results.length > 0) {
         // Set append templates for information panel
         for (var i = 1; i <= results.length; i++) {
@@ -17,12 +9,12 @@ async function queryInfoPanel(event = false, results, i) {
                     '<b>Latitude, Longitude:</b> ' + results[i - 1].attributes.latitude + ', ' + results[i - 1].attributes.longitude + '<br>' +
                     '<b>Layer Name:</b> ' + results[i - 1].attributes.layerName + '<br>'
                 );
-            } else if (results[i - 1].attributes.layerName === 'County_Boundaries_Shoreline') {
+            } else if (results[i - 1].attributes.layerName === 'County Boundaries') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>County Boundaries</b></p>' +
-                    '<b>County Name:</b> ' + results[i - 1].attributes.tigername + '<br>' +
-                    '<b>FIPS:</b> ' + results[i - 1].attributes.fips + '<br>' +
-                    '<b>Area:</b> ' + results[i - 1].attributes.st_area_shape_ + '<br>' +
-                    '<b>Layer Name:</b>County Boundaries<br>'
+                    '<b>County Name:</b> ' + results[i - 1].attributes.ctyname + '<br>' +
+                    '<b>FIPS:</b> ' + results[i - 1].attributes.cfips + '<br>' +
+                    '<b>Area:</b> ' + results[i - 1].attributes.st_area + '<br>' +
+                    '<b>Layer Name:</b> ' + results[i - 1].attributes.layerName + '<br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Soils June 2012 - Dept. of Agriculture') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Soils June 2012 - Dept. of Agriculture</b></p>' +
@@ -49,38 +41,13 @@ async function queryInfoPanel(event = false, results, i) {
                     '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
-
-
+                console.log('looking at control points');
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
                     'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
                     'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +
                     'County: ' + results[i - 1].attributes.county + '<br>' +
                     'PID: ' + results[i - 1].attributes.pid + '<br>' +
-                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.data_srce + '>' + results[i - 1].attributes.pid + '</a><br>'
-                );
-
-                var url = 'https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid;
-
-                const opusData = async (url, results) => {
-                    const response = await fetch(url);
-                    text = await response.text();
-
-                    if (text.length > 428) { // response always 200, response length will be > 428 if there is an opus point
-                        $('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
-                    } else {
-                        // no data returned
-                    }
-                }
-
-                await opusData(url, results[i - 1]);
-
-            } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
-                $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
-                    'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
-                    'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +
-                    'County: ' + results[i - 1].attributes.county + '<br>' +
-                    'PID: ' + results[i - 1].attributes.pid + '<br>' +
-                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.datasheet2 + '>' + results[i - 1].attributes.pid + '</a><br>'
+                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.data_srce + '>' + results[i - 1].attributes.pid + '</a><br>',
                 );
             } else if (results[i - 1].attributes.layerName === 'City Limits') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>City Limits</b></p>' +
@@ -103,7 +70,7 @@ async function queryInfoPanel(event = false, results, i) {
                     '<b>Latitude: </b>' + results[i - 1].attributes.latdecdeg + '<br>' +
                     '<b>Longitude: </b>' + results[i - 1].attributes.londecdeg + '<br>' +
                     'Abstract: ' + '<a href=' + results[i - 1].attributes.abstract + '>' + results[i - 1].attributes.l_number + '</a><br>',
-                    'Description: ' + '<a href=' + results[i - 1].attributes.description2 + '>' + results[i - 1].attributes.l_number + '</a><br>'
+                    'Description: ' + '<a href=' + results[i - 1].attributes.description2 + '>' + results[i - 1].attributes.l_number + '</a><br>',
                 );
             } else if (results[i - 1].attributes.layerName === 'Tide Stations') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Stations</b></p>' +
@@ -112,9 +79,10 @@ async function queryInfoPanel(event = false, results, i) {
                     '<b>County: </b>' + results[i - 1].attributes.countyname + '<br>' +
                     '<b>Quad: </b>' + results[i - 1].attributes.quadname + '<br>' +
                     '<b>Status: </b>' + results[i - 1].attributes.status + '<br>' +
-                    '<b>MHW (feet): </b>' + results[i - 1].attributes.navd88mhw_ft + '<br>' +
-                    '<b>MLW (feet): </b>' + results[i - 1].attributes.navd88mlw_ft + '<br>' +
-                    "<b>Steven's ID: </b>" + results[i - 1].attributes.stevens_id + '<br>'
+                    // '<b>MHW (feet): </b>' + results[i - 1].attributes.navd88mhw_ft + '<br>' +
+                    // '<b>MLW (feet): </b>' + results[i - 1].attributes.navd88mlw_ft + '<br>' +
+                    "<b>Steven's ID: </b>" + results[i - 1].attributes.stevens_id + '<br>',
+                    "<b>For MHW and MLW data, please request: </b> <a target='_blank' href='https://www.labins.org/survey_data/water/procedures_and_forms/Forms/MHW_MLW_RequestForm.pdf'>here</a><br>"
                 );
                 // Do not include link to DEP report if the old link is present
                 // if (results[i - 1].attributes.report_dep.substring(0, 36) == 'ftp://ftp.labins.org/tide/NewReports') {
@@ -130,8 +98,7 @@ async function queryInfoPanel(event = false, results, i) {
 
                 // }
             } else if (results[i - 1].attributes.layerName === 'Tide Interpolation Points') {
-                var replaceWhitespace = results[i - 1].attributes.tile_name.replace(/\s+/g, "%20");
-
+                var replaceWhitespace = results[i - 1].attributes.tile_name.replace(" ", "%20");
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Interpolation Points</b></p>' +
                     '<b>Tide Interpolation Points: </b>' + results[i - 1].attributes.iden + '<br>' +
                     '<b>County: </b>' + results[i - 1].attributes.cname + '<br>' +
@@ -140,18 +107,21 @@ async function queryInfoPanel(event = false, results, i) {
                     // '<b>MHW (feet): </b>' + results[i - 1].attributes.mhw2_ft + '<br>' +
                     // '<b>MLW (feet): </b>' + results[i - 1].attributes.mlw2_ft + '<br>' +
                     '<b>Station 1: </b>' + results[i - 1].attributes.station1 + '<br>' +
-                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>'
+                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>',
+                    "<b>For MHW and MLW data, please request: </b> <a target='_blank' href='https://www.labins.org/survey_data/water/procedures_and_forms/Forms/MHW_MLW_RequestForm.pdf'>here</a><br>"
+
                 );
-                if (results[i - 1].attributes.status_col === "1") {
-                    // This is not a tidal point
-                } else if (results[i - 1].attributes.status_col === "2") {
-                    // The point has data, fill in the report as you are currently doing
-                    $('#informationdiv').append('<b>Download Approval Form: </b><a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin=' + results[i - 1].attributes.iden + '&mCountyName=' + results[i - 1].attributes.cname + '&mQuad=' + replaceWhitespace + '&mhw=' + results[i - 1].attributes.mhw2_ft + '&mlw=' + results[i - 1].attributes.mlw2_ft + '>here</a><br>');
-                } else if (results[i - 1].attributes.status_col === "3") {
-                    // This point needs a study
-                    $('#informationdiv').append('This point needs a study. Click <a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/MHW_Procedures_wo_29_or_88_data_May_2009_with_checklist.pdf>here</a> to open approval form.<br>');
-                }
-            } else if (results[i - 1].attributes.layerName === 'R-Monuments') {
+                // if (results[i - 1].attributes.status_col === "1") {
+                //     // This is not a tidal point
+                // } else if (results[i - 1].attributes.status_col === "2") {
+                //     // The point has data, fill in the report as you are currently doing
+                //     // $('#informationdiv').append('<b>Download Approval Form: </b><a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin=' + results[i - 1].attributes.iden + '&mCountyName=' + results[i - 1].attributes.cname + '&mQuad=' + replaceWhitespace + '&mhw=' + results[i - 1].attributes.mhw2_ft + '&mlw=' + results[i - 1].attributes.mlw2_ft + '>here</a><br>');
+                //     $('#informationdiv').append('<b>Download Approval Form: </b><a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin=' + results[i - 1].attributes.iden + '&mCountyName=' + results[i - 1].attributes.cname + '&mQuad=' + replaceWhitespace + '&mhw=-99.99&mlw=-99.99>here</a><br>');
+                // } else if (results[i - 1].attributes.status_col === "3") {
+                //     // This point needs a study
+                //     $('#informationdiv').append('This point needs a study. Click <a target="_blank" href=http://www.labins.org/survey_data/water/FlexMap_docs/MHW_Procedures_wo_29_or_88_data_May_2009_with_checklist.pdf>here</a> to open approval form.<br>');
+                // }
+            } else if (results[i - 1].attributes.layerName === 'Coastal Range Monuments') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Regional Coastal Monitoring Data</b> </p>' +
                     '<b>Feature ID: </b>' + results[i - 1].attributes.unique_id + '<br>' +
                     '<b>Monument Name: </b>' + results[i - 1].attributes.monument_name + '<br>' +
@@ -190,10 +160,9 @@ async function queryInfoPanel(event = false, results, i) {
                     '<b>Feature Name: </b>' + results[i - 1].attributes.feature_na + '<br>' +
                     '<b>Feature Class: </b>' + results[i - 1].attributes.feature_cl + '<br>'
                 );
-
             } else if (results[i - 1].attributes.layerName === 'Certified Corners' && results[i - 1].attributes.is_image === 'Y') {
                 console.log(results[i - 1].attributes);
-
+                
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
                     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
@@ -204,8 +173,8 @@ async function queryInfoPanel(event = false, results, i) {
                 const tifFiles = [];
                 imageIds.map(prop => {
                     if (prop.startsWith('image') && results[i - 1].attributes[prop].length > 1) {
-                        pdfFiles.add(results[i - 1].attributes[prop].slice(-18, -5));
-                        tifFiles.push(results[i - 1].attributes[prop]);
+                            pdfFiles.add(results[i - 1].attributes[prop].slice(-18,-5));
+                            tifFiles.push(results[i - 1].attributes[prop]);
                     }
                 });
                 // convert back to array using spread operator and add to popup
@@ -214,7 +183,7 @@ async function queryInfoPanel(event = false, results, i) {
                 });
                 // add .tif files to popup
                 tifFiles.map(fileName => {
-                    $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
+                    $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12,-4) + '.tif</a><br>');
                 });
 
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {

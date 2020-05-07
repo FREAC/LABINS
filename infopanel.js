@@ -1,4 +1,12 @@
-function queryInfoPanel(results, i) {
+function queryInfoPanel(results, i, event=false) {
+
+    if (event.mapPoint) {
+        $('#informationdiv').append('<a target="_blank" href=https://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br>');
+    } else {
+        // console.log(event)
+    }
+
+
     if (results.length > 0) {
         // Set append templates for information panel
         for (var i = 1; i <= results.length; i++) {
@@ -41,14 +49,21 @@ function queryInfoPanel(results, i) {
                     '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
-                console.log('looking at control points');
-                $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
-                    'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
+            	$('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
+                	'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
                     'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +
                     'County: ' + results[i - 1].attributes.county + '<br>' +
                     'PID: ' + results[i - 1].attributes.pid + '<br>' +
-                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.data_srce + '>' + results[i - 1].attributes.pid + '</a><br>',
+                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.datasheet2 + '>' + results[i - 1].attributes.pid + '</a><br>'
                 );
+                var url = 'https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid;
+                const opusData = async (url, results) => {
+                	const response = await fetch(url);
+                	text = await response.text();
+                	if (text.length > 428) { // response always 200, response length will be > 428 if there is an opus point
+                		$('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
+                	}
+                }
             } else if (results[i - 1].attributes.layerName === 'City Limits') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>City Limits</b></p>' +
                     '<b>City limits:</b> ' + results[i - 1].attributes.name + '<br>' +
@@ -70,7 +85,7 @@ function queryInfoPanel(results, i) {
                     '<b>Latitude: </b>' + results[i - 1].attributes.latdecdeg + '<br>' +
                     '<b>Longitude: </b>' + results[i - 1].attributes.londecdeg + '<br>' +
                     'Abstract: ' + '<a href=' + results[i - 1].attributes.abstract + '>' + results[i - 1].attributes.l_number + '</a><br>',
-                    'Description: ' + '<a href=' + results[i - 1].attributes.description2 + '>' + results[i - 1].attributes.l_number + '</a><br>',
+                    'Description: ' + '<a href=' + results[i - 1].attributes.description2 + '>' + results[i - 1].attributes.l_number + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Tide Stations') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Stations</b></p>' +
@@ -81,7 +96,7 @@ function queryInfoPanel(results, i) {
                     '<b>Status: </b>' + results[i - 1].attributes.status + '<br>' +
                     // '<b>MHW (feet): </b>' + results[i - 1].attributes.navd88mhw_ft + '<br>' +
                     // '<b>MLW (feet): </b>' + results[i - 1].attributes.navd88mlw_ft + '<br>' +
-                    "<b>Steven's ID: </b>" + results[i - 1].attributes.stevens_id + '<br>',
+                    //"<b>Steven's ID: </b>" + results[i - 1].attributes.stevens_id + '<br>',
                     "<b>For MHW and MLW data, please request: </b> <a target='_blank' href='https://www.labins.org/survey_data/water/procedures_and_forms/Forms/MHW_MLW_RequestForm.pdf'>here</a><br>"
                 );
                 // Do not include link to DEP report if the old link is present
@@ -98,7 +113,8 @@ function queryInfoPanel(results, i) {
 
                 // }
             } else if (results[i - 1].attributes.layerName === 'Tide Interpolation Points') {
-                var replaceWhitespace = results[i - 1].attributes.tile_name.replace(" ", "%20");
+                var replaceWhitespace = results[i - 1].attributes.tile_name.replace(/\s+/g, "%20");
+
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Interpolation Points</b></p>' +
                     '<b>Tide Interpolation Points: </b>' + results[i - 1].attributes.iden + '<br>' +
                     '<b>County: </b>' + results[i - 1].attributes.cname + '<br>' +
@@ -162,7 +178,7 @@ function queryInfoPanel(results, i) {
                 );
             } else if (results[i - 1].attributes.layerName === 'Certified Corners' && results[i - 1].attributes.is_image === 'Y') {
                 console.log(results[i - 1].attributes);
-                
+
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
                     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
@@ -173,8 +189,8 @@ function queryInfoPanel(results, i) {
                 const tifFiles = [];
                 imageIds.map(prop => {
                     if (prop.startsWith('image') && results[i - 1].attributes[prop].length > 1) {
-                            pdfFiles.add(results[i - 1].attributes[prop].slice(-18,-5));
-                            tifFiles.push(results[i - 1].attributes[prop]);
+                        pdfFiles.add(results[i - 1].attributes[prop].slice(-18, -5));
+                        tifFiles.push(results[i - 1].attributes[prop]);
                     }
                 });
                 // convert back to array using spread operator and add to popup

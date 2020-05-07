@@ -7,22 +7,9 @@ body,
   width: 100%;
 }
 
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
-
-html,
-body,
-#viewDiv {
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  width: 100%;
+.esri-ui-top-left {
+  top: 100;
+  left: 500;
 }
 
 .esri-ui-bottom-left {
@@ -41,12 +28,6 @@ body,
 .esri-popup .esri-popup-body .esri-popup-content {
   font-size: 14px;
 }
-
-.esri-ui-top-left {
-  top: 100;
-  left: 500;
-}
-
 
 .esri-icon-erase {
   position: absolute;
@@ -71,7 +52,6 @@ body,
   outline: none;
 }
 
-
 #overviewDiv {
   position: absolute;
   bottom: 20px;
@@ -89,7 +69,6 @@ body,
 }
 
 /* set styles for legend */
-
 #legendDiv {
   margin-left: 40px;
   overflow: auto;
@@ -148,7 +127,6 @@ body,
   padding: 8px;
 }
 
-
 @media only screen and (max-width: 1026px) {
   #overviewDiv {
     display: none;
@@ -157,7 +135,6 @@ body,
   #extentDiv {
     display: none;
   }
-
 
   #layersMenuID {
     display: flex;
@@ -183,7 +160,6 @@ body,
     overflow: auto;
   }
 }
-
 
 .switch {
   position: relative;
@@ -224,7 +200,6 @@ body,
 h3.esri-widget__heading {
   color: white;
 }
-
 
 .esri-legend__service {
   background-color: #0d3b4b;
@@ -274,19 +249,13 @@ h3.esri-widget__heading {
   text-align: center;
 }
 
-/* .esri-coordinate-conversion__mode-toggle {
-  display: none;
-} */
-
+/* Coordinate Conversion Widget */
 .esri-coordinate-conversion__heading,
 .esri-widget__heading {
   color: #4e4e4e;
 }
 
-/*
-Print Widget
-*/
-
+/* Print Widget */
 .esri-print__layout-tab {
   border: 1px solid #617f8a;
   color: #d1d9db;
@@ -336,62 +305,18 @@ Print Widget
   color: #ffffff;
 }
 
-/*
-Popup Styling
-.esri-popup__feature-buttons .esri-popup__actions {
-  display: contents;
-}
-
-*/
-
-/*
-Legend styling
-*/
-
-/*
-.esri-legend__message {
-  display:none;
-}
-*/
-/*
-Info Panel
-*/
+/* Info Panel */
 .leader-1 {
   display: flex;
   justify-content: space-around;
 }
 
-
-/*
-::-webkit-scrollbar {
-  width: 12px;
-}
-
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(49,88,102,1); 
-  background-color:#fff;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background-color:#0d3b4b;
-  -webkit-box-shadow: inset 0 0 6px rgba(13,59,75,1); 
-}
-*/
-
-/*
-Change color of link text
-*/
-
+/* Change color of link text */
 .calcite-panels.calcite-text-light a {
   color: #7fc4ff;
 }
 
-/*
-Bookmark Styles
-*/
-
+/* Bookmark Styles */
 .bookmark-container {
   position: relative;
   background: #0d3b4b;
@@ -517,10 +442,7 @@ Bookmark Styles
   clear: both;
 }
 
-/* Measurement Button CSS rules */
-
 /* Action button configurations*/
-
 .action-button {
   font-size: 16px;
   background-color: transparent;

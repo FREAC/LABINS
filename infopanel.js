@@ -1,14 +1,10 @@
-function queryInfoPanel(results, i, event=false) {
+async function queryInfoPanel(results, i, event=false) {
 
     if (event.mapPoint) {
         $('#informationdiv').append('<a target="_blank" href=https://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br>');
-    } else {
-        // console.log(event)
     }
 
-
     if (results.length > 0) {
-        // Set append templates for information panel
         for (var i = 1; i <= results.length; i++) {
             if (results[i - 1].attributes.layerName === 'USGS Quads') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>USGS Quads</b></p>' +
@@ -34,19 +30,19 @@ function queryInfoPanel(results, i, event=false) {
                     '<b>Mapunit Kind:</b> ' + results[i - 1].attributes.mukind + '<br>' +
                     '<b>Flooding Frequency ‐ Dominant Condition:</b> ' + results[i - 1].attributes.flodfreqdc + '<br>' +
                     '<b>Flooding Frequency ‐ Maximum:</b> ' + results[i - 1].attributes.flodfreqma + '<br>' +
-                    '<b>Description:</b> ' + results[i - 1].attributes.descript + '<br>',
+                    '<b>Description:</b> ' + results[i - 1].attributes.descript + '<br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane West') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane West<b></b></p>' +
-                    '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=W&gridid=' + results[i - 1].attributes.spw_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spw_id + '</a><br>'
+                    '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=W&gridid=' + results[i - 1].attributes.spw_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spw_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane East') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane East</b></p>' +
-                    '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=E&gridid=' + results[i - 1].attributes.spe_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spe_id + '</a><br>'
+                    '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=E&gridid=' + results[i - 1].attributes.spe_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spe_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane North') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane North</b></p>' +
-                    '<a target="_blank" href=' + 'http://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
+                    '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
             	$('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
@@ -64,6 +60,17 @@ function queryInfoPanel(results, i, event=false) {
                 		$('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
                 	}
                 }
+
+                await opusData(url, results[i - 1]);
+
+            } else if (results[i - 1].attributes.layerName === 'NGS Control Points QueryTask') {
+                $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
+                    'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
+                    'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +
+                    'County: ' + results[i - 1].attributes.county + '<br>' +
+                    'PID: ' + results[i - 1].attributes.pid + '<br>' +
+                    'Datasheet: ' + '<a target="_blank" href=' + results[i - 1].attributes.datasheet2 + '>' + results[i - 1].attributes.pid + '</a><br>'
+                );
             } else if (results[i - 1].attributes.layerName === 'City Limits') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>City Limits</b></p>' +
                     '<b>City limits:</b> ' + results[i - 1].attributes.name + '<br>' +

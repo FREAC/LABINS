@@ -46,7 +46,6 @@ require([
 
   // Calcite Maps ArcGIS Support
   "calcite-maps/calcitemaps-arcgis-support-v0.6",
-  // Calcite Maps
   "calcite-maps/calcitemaps-v0.6",
 
   // Bootstrap
@@ -93,11 +92,10 @@ require([
   var extents = [];
 
   const countiesRenderer = {
-    type: "simple", // autocasts as new SimpleRenderer()
+    type: "simple",
     symbol: {
-      type: "simple-fill", // autocasts as new SimpleLineSymbol()
+      type: "simple-fill",
       style: "none",
-      // width: 0.7,
       color: "none",
       outline: {
         style: "dash-dot",
@@ -111,7 +109,6 @@ require([
   var countyBoundariesLayer = new MapImageLayer({
     url: countyBoundariesURL,
     title: "County Boundaries",
-
     minScale: 2000000,
     sublayers: [{
       id: 0,
@@ -189,7 +186,7 @@ require([
         labelExpression: "[tr_dissolve]",
         labelPlacement: "always-horizontal",
         symbol: {
-          type: "text", // autocasts as new TextSymbol()
+          type: "text",
           color: [0, 0, 255, 1],
           haloColor: [255, 255, 255],
           haloSize: 2,
@@ -372,7 +369,6 @@ require([
   });
 
   overView.ui.components = [];
-
   var extentDiv = dom.byId("extentDiv");
 
   overView.when(function () {
@@ -454,7 +450,7 @@ require([
     on(bmadditemdiv, "mouseover", addMouseOverClass);
     on(bmadditemdiv, "mouseout", removeMouseOverClass);
 
-    //process the bookmarkJSON
+    // Process the bookmarkJSON
     Object.keys(bookmarkJSON).forEach(function (bookmark) {
       var bmName = bookmarkJSON[bookmark].name || "Bookmark " + (index + 1).toString();
       var theExtent = Extent.fromJSON(bookmarkJSON[bookmark].extent);
@@ -470,7 +466,7 @@ require([
       bookmarkJSON[bookmark];
     });
 
-    //process the local storage bookmarks
+    // Process the local storage bookmarks
     readBookmarks();
   }
 
@@ -489,13 +485,11 @@ require([
   function removeBookmark(evt) {
     evt.stopPropagation();
     var bmItem = evt.target.parentNode;
-
     var bmEditItem = query(".esriBookmarkEditBox")[0];
     if (bmEditItem) {
       domConstruct.destroy(bmEditItem);
     }
     domConstruct.destroy(bmItem);
-
     setTimeout(writeCurrentBookmarks, 200);
   }
 
@@ -551,7 +545,6 @@ require([
       var bmTable = query(".esriBookmarkTable")[0];
       var item = domConstruct.toDom('<div class="esriBookmarkItem" data-fromuser="true" data-extent="' + mapView.extent.xmin + ',' + mapView.extent.ymin + ',' + mapView.extent.xmax + ',' + mapView.extent.ymax + ',' + mapView.extent.spatialReference.wkid +
         '"><div class="esriBookmarkLabel"></div><div title="Remove" class="esriBookmarkRemoveImage"></div><div title="Edit" class="esriBookmarkEditImage"></div></div>');
-
       domConstruct.place(item, bmTable, "last");
       var output = domGeom.position(item, true);
       var editItem = domConstruct.toDom('<input class="esriBookmarkEditBox" style="top: ' + (output.y + 1) + 'px; left: ' + output.x + 'px;">');
@@ -625,7 +618,6 @@ require([
   function resetElements(currentElement) {
     // if elements are not equal to the current element
     // then reset to the initial values
-
     // find all dropdowns
     $("select").each(function () {
         if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
@@ -669,7 +661,6 @@ require([
           return feature.attributes[attribute];
         });
         return values;
-
       })
       .then(function (uniqueValues) {
         uniqueValues.sort();
@@ -683,7 +674,6 @@ require([
 
   // Input location from drop down, zoom to it and highlight
   async function zoomToFeature(panelurl, location, attribute) {
-
     // union features so that they can be returned as a single geometry
     var task = new QueryTask({
       url: panelurl
@@ -696,12 +686,10 @@ require([
     mapView.goTo(response.features);
     selectionLayer.graphics.removeAll();
     graphicArray = [];
-
     for (feature of response.features) {
       highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
       graphicArray.push(highlightGraphic);
     }
-
     selectionLayer.graphics.addMany(graphicArray);
   }
 
@@ -987,9 +975,8 @@ require([
       }
     }
 
-    const layersArr = [ /*GNISLayer, */ countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
-
     // wait for all services to be checked in the layersArr
+    const layersArr = [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
     await checkServices(layersArr);
 
     // declare layerlist
@@ -1022,7 +1009,6 @@ require([
 
         const closebtn = document.getElementById('closeLyrBtn');
         on(closebtn, "click", function (event) {
-          // remove the layerlist header
           $("#layerlistHeader").remove();
           mapView.ui.remove(layerList);
           layerlistStatus = 0;
@@ -1030,9 +1016,7 @@ require([
         layerlistStatus = 1;
       } else {
         $("#layerlistHeader").remove();
-
         mapView.ui.remove(layerList);
-
         layerlistStatus = 0;
       }
     });
@@ -1126,10 +1110,10 @@ require([
         }
       }
       if (infoPanelData.length > 0) {
-        await queryInfoPanel(event, infoPanelData, 1);
+        await queryInfoPanel(infoPanelData, 1, event);
         togglePanel();
         await goToFeature(infoPanelData[0]);
-      } else { // if no features were found under the click
+      } else {
         $('#infoSpan').html('Information Panel - 0 features found.');
         $('#informationdiv').append('<p>This query did not return any features</p>');
       }
@@ -1137,11 +1121,9 @@ require([
     document.getElementById("mapViewDiv").style.cursor = "auto";
   }
 
-
   // fetch all map services before loading to map
   // if service returns good, add service to map
   async function checkServices(layersArr) {
-    // let layers = map.layers.items
     let layers = layersArr
     for (layer of layers) {
       try {
@@ -1161,13 +1143,11 @@ require([
     if (service.visible == true) {
       // find the currently visible layers/sublayers
       for (sublayer of service.children.items) {
-        // if sublayer is visible, add to visibleLayerIds array
         if (sublayer.visible) {
           visibleLayerIds.push(sublayer.layer.id);
         }
       }
     }
-    // return visibleLayerIds
     return visibleLayerIds;
   }
 
@@ -1189,24 +1169,20 @@ require([
       params.geometry = event
       params.mapExtent = mapView.extent;
     }
-    return params; // return parameter array 
+    return params;
   }
 
   async function executeIdentifyTask(tasks, params) {
-    // take in tasks
-    // take in parameters
     return tasks.execute(params)
   }
 
   // collapse any of the current panels and switch to the identifyResults panel
   function togglePanel() {
-
     $('#allpanelsDiv > div').each(function () {
       // turn off all panels that are not target
       if (this.id != 'panelPopup') {
         this.setAttribute('class', 'panel collapse');
         this.setAttribute('style', 'height:0px;');
-
       } else {
         this.setAttribute('class', 'panel collapse in');
         this.setAttribute('style', 'height:auto;');
@@ -1244,7 +1220,7 @@ require([
       .then(function (response) {
         if (response.features.length > 0) {
           return queryTask.execute(params);
-        } else { // if no features were found
+        } else {
           $('#infoSpan').html('Information Panel - 0 features found.');
           $('#informationdiv').append('<p>This query did not return any features</p>');
           clearDiv('arraylengthdiv');
@@ -1264,12 +1240,6 @@ require([
       } else if (feature.geometry.type === "polyline") {
         var ext = feature.geometry.extent;
         var cloneExt = ext.clone();
-
-        console.log({
-          ext,
-          cloneExt
-        });
-
         // if current scale is greater than number, 
         // go to feature and expand extent by 1.75x
         if (mapView.scale > 18055.954822) {
@@ -1298,7 +1268,7 @@ require([
         highlightGraphic = new Graphic(feature.geometry, highlightPoint);
         selectionLayer.graphics.add(highlightGraphic);
 
-        // TODO: NOt working properly, else if not being triggered
+        // TODO: Not working properly, else if not being triggered
         if (mapView.scale > 18055.954822) {
           mapView.goTo({
             target: infoPanelData[0].geometry,
@@ -1436,7 +1406,7 @@ require([
   for (var i = 0; i < layerChoices.length; i++) {
     $('<option/>').val(layerChoices[i]).text(layerChoices[i]).appendTo('#selectLayerDropdown');
   }
-  query("#selectLayerDropdown").on("change", function (e) {
+  query("#selectLayerDropdown").on("change", function (event) {
 
     // get geometry based on query results
     async function getGeometry(url, attribute, value) {
@@ -1448,7 +1418,6 @@ require([
       });
       var query = new Query();
       query.returnGeometry = true;
-      //query.outFields = ['*'];
       query.where = "Upper(" + attribute + ") LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
 
       const results = task.execute(query);
@@ -1458,7 +1427,6 @@ require([
     // data query by text
     async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement) {
       var whereStatement;
-
       if (queryStatement != '' || idQueryStatement != '') {
         whereStatement = "Upper(" + attribute + ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute + ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%'";
       }
@@ -1488,7 +1456,6 @@ require([
 
     // data query by text
     function textQueryQuerytask(url, attribute, queryStatement, flag = true) {
-
       var whereStatement;
       if (queryStatement != '') {
         if (typeof queryStatement == 'string' && flag === true) {
@@ -1569,9 +1536,8 @@ require([
       $('#parametersQuery').html('<br><p>Filter by the following options: </p><br>');
     }
 
-    var layerSelection = e.target.value;
+    var layerSelection = event.target.value;
     if (layerSelection === "Select Layer") {
-      //clear div
       clearDiv();
 
     } else if (layerSelection === 'NGS Control Points') {
@@ -1586,14 +1552,14 @@ require([
 
       var countyDropdownAfter = document.getElementById('countyQuery');
       // county event listener
-      query(countyDropdownAfter).on('change', function (e) {
+      query(countyDropdownAfter).on('change', function (event) {
         // cursor wait button
         document.getElementById("mapViewDiv").style.cursor = "wait";
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '/0', 'Upper(name)', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '/2', 'Upper(name)', event.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '/0', response)
@@ -1613,12 +1579,11 @@ require([
       // Query the quad dropdown
       var quadDropdownAfter = document.getElementById('quadQuery');
 
-      query(quadDropdownAfter).on('change', function (e) {
+      query(quadDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
-
-        getGeometry(labinsURL + '/8', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '/8', 'tile_name', event.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '/0', response)
@@ -1636,18 +1601,16 @@ require([
 
       // Textbox Query of NGS Control Points
       var textboxAfter = document.getElementById('textQuery');
-
       query(textboxAfter).on('keypress', function () {
         // once typing begins, all of the other elements in the map will reset
         resetElements(textboxAfter);
       });
 
       var submitAfter = document.getElementById('submitQuery');
-      query(submitAfter).on('click', function (e) {
+      query(submitAfter).on('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('textQuery').value;
-
         multiTextQuerytask(labinsURL + '/0', 'pid', textValue, 'name', textValue)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
@@ -1655,7 +1618,7 @@ require([
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
+            queryInfoPanel(infoPanelData, 1, event);
             togglePanel();
           });
       });
@@ -1668,13 +1631,11 @@ require([
       createTextBox('IDQuery', 'Enter a Certified Corner BLMID.');
       createSubmit();
       var textboxAfter = document.getElementById('IDQuery');
-
       var submitAfter = document.getElementById('submitQuery');
-      query(submitAfter).on('click', function (e) {
+      query(submitAfter).on('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('IDQuery').value;
-
         textQueryQuerytask(labinsURL + '2', 'blmid', textValue)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
@@ -1682,7 +1643,7 @@ require([
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
+            queryInfoPanel(infoPanelData, 1, event);
             togglePanel();
           });
       });
@@ -1697,13 +1658,12 @@ require([
       createSubmit();
 
       var countyDropdownAfter = document.getElementById('countyQuery');
-
-      query(countyDropdownAfter).on('change', function (e) {
+      query(countyDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '2', 'name', event.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)
@@ -1722,12 +1682,12 @@ require([
       // Query the quad dropdown
       var quadDropdownAfter = document.getElementById('quadQuery');
 
-      query(quadDropdownAfter).on('change', function (e) {
+      query(quadDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(labinsURL + '8', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '8', 'tile_name', event.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)
@@ -1745,19 +1705,17 @@ require([
 
       // Textbox Query
       var textboxAfter = document.getElementById('IDQuery');
-
       query(textboxAfter).on('keypress', function () {
         clearDiv('informationdiv');
         resetElements(textboxAfter);
       });
 
       var submitAfter = document.getElementById('submitQuery');
-      query(submitAfter).on('click', function (e) {
+      query(submitAfter).on('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('IDQuery').value;
         textValue = parseInt(textValue);
-
         textQueryQuerytask(labinsURL + '4', 'iden', textValue)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
@@ -1769,7 +1727,6 @@ require([
             togglePanel();
           });
       });
-
     } else if (layerSelection === 'Tide Stations') {
       clearDiv('parametersQuery');
       addDescript();
@@ -1778,13 +1735,12 @@ require([
       createTextBox('textQuery', 'Enter Tide Station ID or Name');
       createSubmit();
       var countyDropdownAfter = document.getElementById('countyQuery');
-
-      query(countyDropdownAfter).on('change', function (e) {
+      query(countyDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '2', 'name', event.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
@@ -1802,13 +1758,12 @@ require([
 
       // Query the quad dropdown
       var quadDropdownAfter = document.getElementById('quadQuery');
-
-      query(quadDropdownAfter).on('change', function (e) {
+      query(quadDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(labinsURL + '8', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '8', 'tile_name', event.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
@@ -1834,12 +1789,10 @@ require([
         resetElements(inputAfter);
       });
 
-      query(submitButton).on('click', function (e) {
+      query(submitButton).on('click', function (event) {
         infoPanelData = [];
         var textValue = inputAfter.value;
-
         multiTextQuerytask(labinsURL + '3', 'id', textValue, 'name', textValue)
-
           .then(function (response) {
             clearDiv('informationdiv');
             for (i = 0; i < response.features.length; i++) {
@@ -1869,11 +1822,11 @@ require([
         resetElements(inputAfter);
       });
 
-      query(countyDropdownAfter).on('change', function (e) {
+      query(countyDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '2', 'name', event.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '7', response)
@@ -1889,7 +1842,7 @@ require([
           });
       });
 
-      query(submitButton).on('click', function (e) {
+      query(submitButton).on('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         textQueryQuerytask(labinsURL + '7', 'ecl_name', inputAfter.value)
@@ -1899,7 +1852,7 @@ require([
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
+            queryInfoPanel(infoPanelData, 1, event);
             togglePanel();
           });
       });
@@ -1912,14 +1865,13 @@ require([
 
       var submitButton = document.getElementById('submitNameQuery');
       var inputAfter = document.getElementById('textQuery');
-
       // clear other elements when keypress happens
       query(inputAfter).on('keypress', function () {
         clearDiv('informationdiv');
         resetElements(inputAfter);
       });
 
-      query(submitButton).on('click', function (e) {
+      query(submitButton).on('click', function (event) {
         infoPanelData = [];
         textQueryQuerytask(swfwmdURL + '/0', 'BENCHMARK_NAME', inputAfter.value)
           .then(function (response) {
@@ -1928,7 +1880,7 @@ require([
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
+            queryInfoPanel(infoPanelData, 1, event);
             togglePanel();
           });
       });
@@ -2006,7 +1958,6 @@ require([
   searchWidget.on("search-complete", async function (event) {
 
     infoPanelData = [];
-
     if (event.results["0"].source.locator) {
       // let native functionality work
     } else {
@@ -2022,7 +1973,7 @@ require([
 
       // push query results of search bar to information panel
       infoPanelData.push(event.results["0"].results["0"].feature);
-      await queryInfoPanel(infoPanelData, 1);
+      await queryInfoPanel(infoPanelData, 1, event);
       goToFeature(infoPanelData[0]);
       togglePanel();
     }
@@ -2030,7 +1981,6 @@ require([
 
   // set up alert for dynamically created zoom to feature buttons
   $(document).on('click', "button[name='zoom']", function () {
-
     goToFeature(infoPanelData[this.id - 1]);
   });
 
@@ -2051,29 +2001,22 @@ require([
 
   // if screen width under 992 pixels, put legend and layerlist widget button into navigation bar menu
   if (screen.availWidth < 992) {
-    // Legend
     new Legend({
       container: "legendDiv",
       view: mapView
     });
-
     mapView.ui.add(searchWidget, "top-right");
-
   } else {
-
     // if screen size normal, legend and layerlist will be buttons on nav bar
     const legendWidget = new Legend({
       container: "legendDiv",
       view: mapView
     });
-
     let legendStatus;
-    on(dom.byId("desktopLegend"), "click", function (evt) {
+    on(dom.byId("desktopLegend"), "click", function (event) {
       // if legend status != 1 (not currently being displayed), add it to the map
-
       if (legendStatus != 1) {
         mapView.ui.remove(scaleBar);
-
         // custom header to display a header and close button
         const header = `
         <div id="legendHeader" style="background-color:#315866; padding-bottom: 5px; position: sticky; top: 0;">
@@ -2084,19 +2027,15 @@ require([
           </button>
         </div>
         `
-
         mapView.ui.add([legendWidget, scaleBar], "bottom-left");
         // add legend header to beginning of div
         $("#legendDiv").prepend(header);
-
         const closebtn = document.getElementById('closeLgdBtn');
         on(closebtn, "click", function (event) {
-          // remove the legend header
           $("#legendHeader").remove();
           mapView.ui.remove(legendWidget);
           legendStatus = 0;
         });
-
         legendStatus = 1;
       } else {
         $("#legendHeader").remove();
@@ -2143,7 +2082,6 @@ require([
       }],
       defaultPattern: "X, Y"
     });
-
     ccWidget.formats.add(statePlaneEastFL);
 
     // Custom Projection: FL State Plane West
@@ -2175,7 +2113,6 @@ require([
       }],
       defaultPattern: "X, Y"
     });
-
     ccWidget.formats.add(statePlaneWestFL);
 
     // Custom Projection: FL State Plane North
@@ -2207,7 +2144,6 @@ require([
       }],
       defaultPattern: "X, Y"
     });
-
     ccWidget.formats.add(statePlaneNorthFL);
 
     // Add the two custom formats to the top of the widget's display
@@ -2232,7 +2168,6 @@ require([
       collapseTooltip: "Coordinates",
       group: "left",
     });
-
     mapView.ui.add(coordExpand, "top-left");
   }
 
@@ -2264,29 +2199,23 @@ require([
   // function to switch active widget between areaMeasurement and distanceMeasurement widgets
   function setActiveWidget(type) {
     switch (type) {
-
       // if the distance measurement button was clicked
       case "distance":
         activeWidget = new DistanceMeasurement2D({
           view: mapView
         });
-
         // skip the initial 'new measurement' button
         activeWidget.viewModel.newMeasurement();
         mapView.ui.add(activeWidget, "bottom-left");
         setActiveButton(document.getElementById('distanceButton'));
-
         break;
-
         // if the area measurement button was clicked
       case "area":
         activeWidget = new AreaMeasurement2D({
           view: mapView,
         });
-
         // skip the initial 'new measurement' button
         activeWidget.viewModel.newMeasurement();
-
         // add the widget UI to the screen
         mapView.ui.add(activeWidget, "bottom-left");
         setActiveButton(document.getElementById('areaButton'));
@@ -2304,20 +2233,17 @@ require([
 
                 // look inside of layerList layers
                 let layers = layerList.operationalItems.items
-
                 // loop through layers
                 for (layer of layers) {
                   let visibleLayers
                   // exclude geographic names layer from identify operation
                   if (layer.title !== 'Geographic Names') {
                     visibleLayers = await checkVisibleLayers(layer);
-
                     // if there are visible layers returned
                     if (visibleLayers.length > 0) {
                       const task = new IdentifyTask(layer.layer.url)
                       const params = await setIdentifyParameters(visibleLayers, "polygon", activeWidget.viewModel.measurement.geometry);
                       const identify = await executeIdentifyTask(task, params);
-
                       // push each feature to the infoPanelData
                       for (feature of identify.results) {
                         feature.feature.attributes.layerName = feature.layerName;
@@ -2331,7 +2257,7 @@ require([
                   }
                 }
                 if (infoPanelData.length > 0) {
-                  await queryInfoPanel(undefined, infoPanelData, 1);
+                  await queryInfoPanel(infoPanelData, 1);
                   togglePanel();
                   await goToFeature(infoPanelData[0]);
                 } else { // if no features were found under the click
@@ -2343,7 +2269,6 @@ require([
             }
           }
         });
-
         break;
       case null:
         if (activeWidget) {

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -10,25 +9,20 @@
 
   <!-- Calcite Maps Bootstrap -->
   <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-bootstrap.min-v0.8.css">
-
   <!-- Calcite Maps -->
   <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-arcgis-4.x.min-v0.8.css">
-
   <!-- ArcGIS JS 4 -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
-
-
   <link rel="stylesheet" href="styles.css">
 
   <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
+  <!-- SweetAlert -->
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 </head>
-
 <body class="calcite-maps calcite-nav-top">
-  
+
   <!-- This is code for the IE11 alert window -->
   <script>
     if (!!window.MSInputMethodContext && !!document.documentMode){
@@ -37,9 +31,8 @@
   </script>
 
   <!-- Navbar -->
+  <nav class="navbar calcite-navbar navbar-fixed-top calcite-text-light calcite-bg-custom" style="background-color: #0d3b4b">
 
-  <nav class="navbar calcite-navbar navbar-fixed-top calcite-text-light calcite-bg-custom"
-    style="background-color: #0d3b4b">
     <!-- Menu -->
     <div class="dropdown calcite-dropdown calcite-text-light calcite-bg-custom" role="presentation"
       style="background-color: #0d3b4b">
@@ -53,7 +46,6 @@
         </div>
       </a>
       <ul class="dropdown-menu" role="menu">
-
         <li><a role="menuitem" data-target="#panelLayer" aria-haspopup="true"><span
               class="glyphicon glyphicon-flag"></span>
             Zoom to Feature</a></li>
@@ -88,6 +80,7 @@
             Toggle Navigation Bar</a></li>
       </ul>
     </div>
+
     <!-- Title -->
     <div class="calcite-title calcite-overflow-hidden">
       <span class="calcite-title-main">LABINS</span>
@@ -95,6 +88,7 @@
       <span class="calcite-title-sub hidden-xs">Land Boundary Information System: Online Information and Maps for the
         State of Florida</span>
     </div>
+
     <!-- Search/Legend/LayerList -->
     <ul class="nav navbar-nav calcite-nav">
       <li><a id="desktopLayerlist" class="hidden-xs hidden-sm" href="#" aria-controls="Layerlist" aria-expanded="true"
@@ -111,28 +105,20 @@
   <!--/.calcite-navbar -->
 
   <!-- Map  -->
-
   <div class="calcite-map calcite-map-absolute">
-
-    <div id="mapViewDiv">
-    </div>
-
+    <div id="mapViewDiv"></div>
     <button title="Clear graphics" type="button" class="btn btn-default" id="clearButton">
       <span class="esri-icon-erase"></span>
-
     </button>
+    </div>
+    <div id="overviewDiv">
+      <div id="extentDiv"></div>
+    </div>
   </div>
-  <div id="overviewDiv">
-    <div id="extentDiv"></div>
-  </div>
-  </div>
-
   <!-- /.calcite-map -->
 
   <!-- Panels -->
-
-  <div id="allpanelsDiv" class="calcite-panels calcite-panels-right calcite-text-light calcite-bg-custom panel-group"
-    style="background-color: #0d3b4b">
+  <div id="allpanelsDiv" class="calcite-panels calcite-panels-right calcite-text-light calcite-bg-custom panel-group" style="background-color: #0d3b4b">
 
     <!-- Zoom to Feature Panel -->
     <div id="panelLayer" class="panel collapse">
@@ -194,9 +180,7 @@
           <button id="goToIdentify" class="btn btn-primary">Results</button>
         </div>
       </div>
-
     </div>
-
 
     <!-- Info Panel -->
     <div id="panelInfo" class="panel collapse">
@@ -257,8 +241,6 @@
           </p>
         </div>
       </div>
-
-
     </div>
 
     <!-- Measurement Panel -->
@@ -275,7 +257,6 @@
       <div id="collapseDraw" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingDraw">
         <div class="panel-body">
           <div id="drawPanelDiv">
-
             <!-- Measurement Buttons -->
             <div class="form-horizontal">
               <div class="form-group">
@@ -295,14 +276,12 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
     </div>
 
     <!-- Panel - Basemaps -->
-
     <div id="panelBasemaps" class="panel collapse">
       <div id="headingBasemaps" class="panel-heading" role="tab">
         <div class="panel-title">
@@ -321,9 +300,7 @@
       </div>
     </div>
 
-
     <!-- Panel - Legend -->
-
     <div id="panelLegend" class="panel collapse">
       <div id="headingLegend" class="panel-heading" role="tab">
         <div class="panel-title">
@@ -341,10 +318,7 @@
       </div>
     </div>
 
-
-
     <!-- Panel - Layers -->
-
     <div id="panelLayers" class="panel collapse">
       <div id="headingLayers" class="panel-heading" role="tab">
         <div class="panel-title">
@@ -363,7 +337,6 @@
     </div>
 
     <!-- Panel - Print -->
-
     <div id="panelPrint" class="panel collapse">
       <div id="headingPrint" class="panel-heading">
         <div class="panel-title">
@@ -382,7 +355,6 @@
     </div>
 
     <!-- Panel Bookmarks -->
-
     <div id="panelBookmarks" class="panel collapse">
       <div id="headingBookmarks" class="panel-heading" role="tab">
         <div class="panel-title">
@@ -404,11 +376,10 @@
         </div>
       </div>
     </div>
-
   </div>
-
   <!-- /.calcite-panels -->
 
+  <!-- Calcite Maps -->
   <script type="text/javascript">
     var dojoConfig = {
       packages: [{
@@ -422,15 +393,23 @@
       ]
     };
   </script>
-
   <!-- ArcGIS JS 4 -->
   <script src="https://js.arcgis.com/4.10/"></script>
-
   <!-- Parcel Information Templates -->
   <script src="infopanel.js"></script>
   <!-- Main script-->
   <script src="script.js"></script>
-
+  <!-- Google Analytics -->
+  <script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+    try {
+      var pageTracker = _gat._getTracker("UA-12990511-1");
+      pageTracker._setDomainName(".labins.org");
+      pageTracker._trackPageview();
+    } catch(err) {}
+  </script>
 </body>
-
 </html>

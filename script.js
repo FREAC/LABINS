@@ -1406,7 +1406,7 @@ require([
   for (var i = 0; i < layerChoices.length; i++) {
     $('<option/>').val(layerChoices[i]).text(layerChoices[i]).appendTo('#selectLayerDropdown');
   }
-  query("#selectLayerDropdown").on("change", function (e) {
+  query("#selectLayerDropdown").on("change", function (event) {
 
     // get geometry based on query results
     async function getGeometry(url, attribute, value) {
@@ -1536,7 +1536,7 @@ require([
       $('#parametersQuery').html('<br><p>Filter by the following options: </p><br>');
     }
 
-    var layerSelection = e.target.value;
+    var layerSelection = event.target.value;
     if (layerSelection === "Select Layer") {
       clearDiv();
 
@@ -1552,14 +1552,14 @@ require([
 
       var countyDropdownAfter = document.getElementById('countyQuery');
       // county event listener
-      query(countyDropdownAfter).on('change', function (e) {
+      query(countyDropdownAfter).on('change', function (event) {
         // cursor wait button
         document.getElementById("mapViewDiv").style.cursor = "wait";
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '/2', 'Upper(name)', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '/2', 'Upper(name)', event.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '/0', response)
@@ -1579,11 +1579,11 @@ require([
       // Query the quad dropdown
       var quadDropdownAfter = document.getElementById('quadQuery');
 
-      query(quadDropdownAfter).on('change', function (e) {
+      query(quadDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
-        getGeometry(labinsURL + '/8', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '/8', 'tile_name', event.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '/0', response)
@@ -1658,12 +1658,12 @@ require([
       createSubmit();
 
       var countyDropdownAfter = document.getElementById('countyQuery');
-      query(countyDropdownAfter).on('change', function (e) {
+      query(countyDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '2', 'name', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '2', 'name', event.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)
@@ -1682,12 +1682,12 @@ require([
       // Query the quad dropdown
       var quadDropdownAfter = document.getElementById('quadQuery');
 
-      query(quadDropdownAfter).on('change', function (e) {
+      query(quadDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(labinsURL + '8', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '8', 'tile_name', event.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)
@@ -1735,12 +1735,12 @@ require([
       createTextBox('textQuery', 'Enter Tide Station ID or Name');
       createSubmit();
       var countyDropdownAfter = document.getElementById('countyQuery');
-      query(countyDropdownAfter).on('change', function (e) {
+      query(countyDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '2', 'name', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '2', 'name', event.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
@@ -1758,12 +1758,12 @@ require([
 
       // Query the quad dropdown
       var quadDropdownAfter = document.getElementById('quadQuery');
-      query(quadDropdownAfter).on('change', function (e) {
+      query(quadDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(labinsURL + '8', 'tile_name', e.target.value)
+        getGeometry(labinsURL + '8', 'tile_name', event.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
@@ -1822,11 +1822,11 @@ require([
         resetElements(inputAfter);
       });
 
-      query(countyDropdownAfter).on('change', function (e) {
+      query(countyDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        getGeometry(countyBoundariesURL + '2', 'name', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '2', 'name', event.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '7', response)
@@ -2013,7 +2013,7 @@ require([
       view: mapView
     });
     let legendStatus;
-    on(dom.byId("desktopLegend"), "click", function (evt) {
+    on(dom.byId("desktopLegend"), "click", function (event) {
       // if legend status != 1 (not currently being displayed), add it to the map
       if (legendStatus != 1) {
         mapView.ui.remove(scaleBar);

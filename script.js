@@ -1559,7 +1559,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '/0', 'Upper(name)', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '/2', 'Upper(name)', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '/0', response)
@@ -1663,7 +1663,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '2', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)
@@ -1740,7 +1740,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '2', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
@@ -1826,7 +1826,7 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '2', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '7', response)

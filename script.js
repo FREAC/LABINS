@@ -114,7 +114,7 @@ require([
 
     minScale: 2000000,
     sublayers: [{
-      id: 2,
+      id: 0,
       title: "County Boundaries",
       visible: true,
       popupEnabled: false,
@@ -643,20 +643,14 @@ require([
   }
 
   // reset dropdowns and all inputs that are not equal to the current element. 
-  function resetElements(currentElement, trs = false) {
+  function resetElements(currentElement) {
     // if elements are not equal to the current element
     // then reset to the initial values
 
     // find all dropdowns
     $("select").each(function () {
-        if (trs) {
-          if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown')) && (this != document.getElementById('selectTownship')) && (this != document.getElementById('selectRange')) && (this != document.getElementById('selectSection'))) {
-            this.selectedIndex = 0
-          }
-        } else {
-          if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
-            this.selectedIndex = 0
-          }
+        if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
+          this.selectedIndex = 0
         }
       },
       // find all inputs
@@ -734,8 +728,6 @@ require([
 
   // Union geometries of multi polygon features
   async function unionGeometries(response) {
-    console.log(response);
-
     // Array to store polygons in
     var multiPolygonGeometries = [];
     for (i = 0; i < response.features.length; i++) {
@@ -933,7 +925,6 @@ require([
 
   // when township changes, reset the other dropdowns.
   on(townshipSelect, "change", function (evt) {
-    resetElements(townshipSelect, true)
     var type = evt.target.value;
     var i;
     for (i = rangeSelect.options.length - 1; i >= 0; i--) {
@@ -951,7 +942,6 @@ require([
 
   // when range changes, reset the section dropdown.
   on(rangeSelect, "change", function (evt) {
-    resetElements(rangeSelect, true)
     var type = evt.target.value;
     var j;
     for (j = sectionSelect.options.length - 1; j >= 0; j--) {
@@ -972,7 +962,6 @@ require([
 
   var querySection = dom.byId("selectSection");
   on(querySection, "change", function (e) {
-    resetElements(sectionSelect, true)
     var type = e.target.value;
     zoomToSectionFeature(townshipRangeSectionURL, type, "sec_ch");
   });
@@ -1101,16 +1090,12 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
-      if (screen.availWidth < 992) {
-        identifyTaskFlow(event, false, true);
-      } else {
-        identifyTaskFlow(event, coordExpand.expanded !== true, false);
-      }
+      identifyTaskFlow(event, coordExpand.expanded !== true);
     });
   });
 
-  async function identifyTaskFlow(event, coordExpanParam, mobileView) {
-    if ((mapView.scale < minimumDrawScale) && (coordExpanParam || mobileView)) {
+  async function identifyTaskFlow(event, coordExpanParam) {
+    if ((mapView.scale < minimumDrawScale) && (coordExpanParam)) {
       document.getElementById("mapViewDiv").style.cursor = "wait";
       mapView.graphics.removeAll();
       selectionLayer.graphics.removeAll();
@@ -1148,9 +1133,7 @@ require([
         }
       }
       if (infoPanelData.length > 0) {
-        console.log(infoPanelData);
-
-        await queryInfoPanel(infoPanelData, 1, true);
+        await queryInfoPanel(event, infoPanelData, 1);
         togglePanel();
         await highlightFeature(infoPanelData[0]);
       } else { // if no features were found under the click
@@ -1266,20 +1249,13 @@ require([
 
     return queryTask.execute(params)
       .then(function (response) {
-        console.log(response);
-
         if (response.features.length > 0) {
-          return response;
+          return queryTask.execute(params);
         } else { // if no features were found
-          console.log('no features returned');
-          clearDiv('arraylengthdiv');
-          $('<br><div">No results found</div>').insertBefore('#parametersQuery').delay(4000).fadeOut();
           $('#infoSpan').html('Information Panel - 0 features found.');
           $('#informationdiv').append('<p>This query did not return any features</p>');
-          return;
+          clearDiv('arraylengthdiv');
         }
-      }).catch(function (error) {
-        console.error
       });
   }
 
@@ -1312,7 +1288,6 @@ require([
 
   // go to first feature of the infopaneldata array
   function goToFeature(feature) {
-    console.log('gotofeaturereached')
 
     if (feature) {
       // Go to the selected parcel
@@ -1349,6 +1324,11 @@ require([
         var ext = feature.geometry.extent;
         var cloneExt = ext.clone();
 
+        console.log({
+          ext,
+          cloneExt
+        });
+
         // if current scale is greater than number, 
         // go to feature and expand extent by 1.75x
         if (mapView.scale > 18055.954822) {
@@ -1384,12 +1364,12 @@ require([
         // TODO: NOt working properly, else if not being triggered
         if (mapView.scale > 18055.954822) {
           mapView.goTo({
-            target: feature.geometry,
+            target: infoPanelData[0].geometry,
             zoom: 15
           });
         } else { // go to point at the current scale
           mapView.goTo({
-            target: feature.geometry,
+            target: infoPanelData[0].geometry,
             scale: mapView.scale
           });
         }
@@ -1408,9 +1388,10 @@ require([
     popupEnabled: false,
     allPlaceholder: "Text search for NGS, DEP, and SWFWMD Data",
     sources: [{
-      featureLayer: {
+      layer: new FeatureLayer({
         url: labinsURL + '2',
-      },
+        name: 'Certified Corners'
+      }),
       searchFields: ["blmid", "tile_name"],
       displayField: "blmid",
       suggestionTemplate: "BLMID: {blmid}, Quad Name: {tile_name}",
@@ -1422,9 +1403,9 @@ require([
       name: "Certified Corners",
       placeholder: "T07NR10W600700",
     }, {
-      featureLayer: {
+      layer: new FeatureLayer({
         url: labinsURL + '0',
-      },
+      }),
       searchFields: ["name"],
       suggestionTemplate: "Designation: {name}, County {county}",
       displayField: "name",
@@ -1436,9 +1417,9 @@ require([
       name: "NGS Control Points",
       placeholder: "Search by Designation",
     }, {
-      featureLayer: {
+      layer: new FeatureLayer({
         url: labinsURL + '3',
-      },
+      }),
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",
       zoomScale: 100000,
@@ -1449,9 +1430,9 @@ require([
       name: "Tide Stations",
       placeholder: "Search by ID, County Name, or Quad Name",
     }, {
-      featureLayer: {
+      layer: new FeatureLayer({
         url: labinsURL + '4',
-      },
+      }),
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
       suggestionTemplate: "ID: {iden}, County: {cname}",
       displayField: "iden",
@@ -1463,9 +1444,9 @@ require([
       name: "Tide Interpolation Points",
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
     }, {
-      featureLayer: {
+      layer: new FeatureLayer({
         url: labinsURL + '8',
-      },
+      }),
       searchFields: ["ecl_name", "county"],
       suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
       zoomScale: 150000,
@@ -1476,9 +1457,9 @@ require([
       name: "Erosion Control Lines",
       placeholder: "Search by County Name or Town Name",
     }, {
-      featureLayer: {
-        url: swfwmdURL
-      },
+      layer: new FeatureLayer({
+        url: swfwmdURL,
+      }),
       searchFields: ["BENCHMARK_NAME"],
       suggestionTemplate: "Benchmark Name: {BENCHMARK_NAME}, File Name: {FILE_NAME}",
       zoomScale: 100000,
@@ -1540,14 +1521,8 @@ require([
 
     // data query by text
     async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement) {
-      let whereStatement;
-      console.log({
-        url,
-        attribute,
-        queryStatement,
-        idAttribute,
-        idQueryStatement
-      })
+      var whereStatement;
+
       if (queryStatement != '' || idQueryStatement != '') {
         whereStatement = "Upper(" + attribute + ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute + ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%'";
       }
@@ -1597,7 +1572,7 @@ require([
         where: whereStatement,
         returnGeometry: true,
         // possibly could be limited to return only necessary outfields
-        outFields: ['*']
+        outFields: '*'
       });
       return queryTask.execute(params)
         .then(function (response) {
@@ -1682,21 +1657,19 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '/2', 'Upper(name)', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '/0', 'Upper(name)', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '/0', response)
               .then(function (response) {
-                if (response) {
-                  for (i = 0; i < response.features.length; i++) {
-                    response.features[i].attributes.layerName = 'NGS Control Points';
-                    infoPanelData.push(response.features[i]);
-                  }
-                  goToFeature(infoPanelData[0]);
-                  queryInfoPanel(infoPanelData, 1);
-                  togglePanel();
-                  document.getElementById("mapViewDiv").style.cursor = "auto";
+                for (i = 0; i < response.features.length; i++) {
+                  response.features[i].attributes.layerName = 'NGS Control Points';
+                  infoPanelData.push(response.features[i]);
                 }
+                goToFeature(infoPanelData[0]);
+                queryInfoPanel(infoPanelData, 1);
+                togglePanel();
+                document.getElementById("mapViewDiv").style.cursor = "auto";
               });
           });
       });
@@ -1709,25 +1682,18 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
-        console.log("happening")
-
         getGeometry(labinsURL + '/8', 'tile_name', e.target.value)
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '/0', response)
               .then(function (response) {
-                if (response) {
-                  for (i = 0; i < response.features.length; i++) {
-                    response.features[i].attributes.layerName = 'NGS Control Points';
-                    infoPanelData.push(response.features[i]);
-                  }
-                  console.log(response);
-                  goToFeature(infoPanelData[0]);
-                  queryInfoPanel(infoPanelData, 1);
-                  togglePanel();
-                } else {
-                  return;
+                for (i = 0; i < response.features.length; i++) {
+                  response.features[i].attributes.layerName = 'NGS Control Points';
+                  infoPanelData.push(response.features[i]);
                 }
+                goToFeature(infoPanelData[0]);
+                queryInfoPanel(infoPanelData, 1);
+                togglePanel();
               });
           });
       });
@@ -1748,10 +1714,6 @@ require([
 
         multiTextQuerytask(labinsURL + '/0', 'pid', textValue, 'name', textValue)
           .then(function (response) {
-            console.log({
-              response
-            });
-
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'NGS Control Points';
               infoPanelData.push(response.features[i]);
@@ -1805,27 +1767,18 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '2', 'name', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
-            console.log({
-              unionGeometriesRes: response
-            });
-
             dataQueryQuerytask(labinsURL + '4', response)
               .then(function (response) {
-                if (response) {
-                  for (i = 0; i < response.features.length; i++) {
-                    response.features[i].attributes.layerName = 'Tide Interpolation Points';
-                    infoPanelData.push(response.features[i]);
-                  }
-                  goToFeature(infoPanelData[0]);
-                  queryInfoPanel(infoPanelData, 1);
-                  togglePanel();
-                } else {
-                  return;
+                for (i = 0; i < response.features.length; i++) {
+                  response.features[i].attributes.layerName = 'Tide Interpolation Points';
+                  infoPanelData.push(response.features[i]);
                 }
-
+                goToFeature(infoPanelData[0]);
+                queryInfoPanel(infoPanelData, 1);
+                togglePanel();
               });
           });
       });
@@ -1843,17 +1796,13 @@ require([
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '4', response)
               .then(function (response) {
-                if (response) {
-                  for (i = 0; i < response.features.length; i++) {
-                    response.features[i].attributes.layerName = 'Tide Interpolation Points';
-                    infoPanelData.push(response.features[i]);
-                  }
-                  goToFeature(infoPanelData[0]);
-                  queryInfoPanel(infoPanelData, 1);
-                  togglePanel();
-                } else {
-                  return;
+                for (i = 0; i < response.features.length; i++) {
+                  response.features[i].attributes.layerName = 'Tide Interpolation Points';
+                  infoPanelData.push(response.features[i]);
                 }
+                goToFeature(infoPanelData[0]);
+                queryInfoPanel(infoPanelData, 1);
+                togglePanel();
               });
           });
       });
@@ -1875,9 +1824,6 @@ require([
 
         textQueryQuerytask(labinsURL + '4', 'iden', textValue)
           .then(function (response) {
-            if (response) {
-
-            }
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Tide Interpolation Points';
               infoPanelData.push(response.features[i]);
@@ -1902,24 +1848,18 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
 
-        getGeometry(countyBoundariesURL + '2', 'name', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
-            console.log(response);
-
             dataQueryQuerytask(labinsURL + '3', response)
               .then(function (response) {
-                if (response) {
-                  for (i = 0; i < response.features.length; i++) {
-                    response.features[i].attributes.layerName = 'Tide Stations';
-                    infoPanelData.push(response.features[i]);
-                  }
-                  goToFeature(infoPanelData[0]);
-                  queryInfoPanel(infoPanelData, 1);
-                  togglePanel();
-                } else {
-                  return;
+                for (i = 0; i < response.features.length; i++) {
+                  response.features[i].attributes.layerName = 'Tide Stations';
+                  infoPanelData.push(response.features[i]);
                 }
+                goToFeature(infoPanelData[0]);
+                queryInfoPanel(infoPanelData, 1);
+                togglePanel();
               });
           });
       });
@@ -1937,17 +1877,13 @@ require([
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '3', response)
               .then(function (response) {
-                if (response) {
-                  for (i = 0; i < response.features.length; i++) {
-                    response.features[i].attributes.layerName = 'Tide Stations';
-                    infoPanelData.push(response.features[i]);
-                  }
-                  goToFeature(infoPanelData[0]);
-                  queryInfoPanel(infoPanelData, 1);
-                  togglePanel();
-                } else {
-                  return;
+                for (i = 0; i < response.features.length; i++) {
+                  response.features[i].attributes.layerName = 'Tide Stations';
+                  infoPanelData.push(response.features[i]);
                 }
+                goToFeature(infoPanelData[0]);
+                queryInfoPanel(infoPanelData, 1);
+                togglePanel();
               });
           });
       });
@@ -1965,22 +1901,19 @@ require([
       query(submitButton).on('click', function (e) {
         infoPanelData = [];
         var textValue = inputAfter.value;
-        try {
-          multiTextQuerytask(labinsURL + '3', 'id', textValue, 'name', textValue)
-            .then(function (response) {
-              clearDiv('informationdiv');
-              for (i = 0; i < response.features.length; i++) {
-                response.features[i].attributes.layerName = 'Tide Stations';
-                infoPanelData.push(response.features[i]);
-              }
-              goToFeature(infoPanelData[0]);
-              queryInfoPanel(infoPanelData, 1);
-              togglePanel();
-            });
-        } catch (err) {
-          console.error(err);
-        }
 
+        multiTextQuerytask(labinsURL + '3', 'id', textValue, 'name', textValue)
+
+          .then(function (response) {
+            clearDiv('informationdiv');
+            for (i = 0; i < response.features.length; i++) {
+              response.features[i].attributes.layerName = 'Tide Stations';
+              infoPanelData.push(response.features[i]);
+            }
+            goToFeature(infoPanelData[0]);
+            queryInfoPanel(infoPanelData, 1);
+            togglePanel();
+          });
       });
 
     } else if (layerSelection === 'Erosion Control Line') {
@@ -2004,22 +1937,18 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        getGeometry(countyBoundariesURL + '2', 'name', e.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '0', 'name', e.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '7', response)
               .then(function (response) {
-                if (response) {
-                  for (i = 0; i < response.features.length; i++) {
-                    response.features[i].attributes.layerName = 'Erosion Control Line';
-                    infoPanelData.push(response.features[i]);
-                  }
-                  goToFeature(infoPanelData[0]);
-                  queryInfoPanel(infoPanelData, 1);
-                  togglePanel();
-                } else {
-                  return;
+                for (i = 0; i < response.features.length; i++) {
+                  response.features[i].attributes.layerName = 'Erosion Control Line';
+                  infoPanelData.push(response.features[i]);
                 }
+                goToFeature(infoPanelData[0]);
+                queryInfoPanel(infoPanelData, 1);
+                togglePanel();
               });
           });
       });
@@ -2139,6 +2068,8 @@ require([
 
   // after a query typed into search bar
   searchWidget.on("search-complete", async function (event) {
+    console.log(event);
+
 
     infoPanelData = [];
 
@@ -2146,7 +2077,7 @@ require([
       // let native functionality work
     } else {
       // change the layername based on which layer is searched on (because the search query looks at )
-      var layerName = event.results["0"].source.featureLayer.source.layerDefinition.name;
+      var layerName = event.results["0"].results[0].feature.layer.name;
       event.results["0"].results["0"].feature.attributes.layerName = layerName;
 
       //clear content of information panel
@@ -2166,9 +2097,6 @@ require([
   // set up alert for dynamically created zoom to feature buttons
   $(document).on('click', "button[name='zoom']", function () {
     console.log('click!')
-    console.log({
-      thisid: this.id
-    })
     goToFeature(infoPanelData[this.id - 1]);
     highlightFeature(infoPanelData[this.id - 1], true)
 
@@ -2597,7 +2525,7 @@ require([
                   }
                 }
                 if (infoPanelData.length > 0) {
-                  await queryInfoPanel(infoPanelData, 1, undefined);
+                  await queryInfoPanel(undefined, infoPanelData, 1);
                   togglePanel();
                   await goToFeature(infoPanelData[0]);
                 } else { // if no features were found under the click

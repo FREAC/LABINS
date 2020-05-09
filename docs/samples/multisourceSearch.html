@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Search widget with multiple sources - 4.15</title>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    .esri-popup .esri-popup-header .esri-title {
+      font-size: 18px;
+      font-weight: bolder;
+    }
+
+    .esri-popup .esri-popup-body .esri-popup-content {
+      font-size: 14px;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.10/"></script>
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+  <script>
+    var promises, tasks;
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/layers/MapImageLayer",
+      "esri/tasks/IdentifyTask",
+      "esri/tasks/support/IdentifyParameters",
+      "esri/widgets/LayerList",
+      "esri/widgets/Search",
+      "dojo/_base/array",
+      "dojo/on",
+      "dojo/dom",
+      "dojo/promise/all",
+      "dojo/domReady!"
+    ], function (
+      Map, MapView, MapImageLayer, FeatureLayer,
+      IdentifyTask, IdentifyParameters, LayerList, Search,
+      arrayUtils, on, dom, all
+    ) {
+
+      let minimumDrawScale = 100000;
+
+
+      var identifyTask, params;
+
+      var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/";
+      var labinsLayer = new MapImageLayer({
+        url: labinsURL,
+        //minScale: minimumDrawScale,
+        sublayers: [{
+          id: 4,
+          title: "Tide Interpolation Points",
+          visible: true,
+          popupEnabled: false,
+          minScale: minimumDrawScale
+        }, {
+          id: 3,
+          title: "Tide Stations",
+          visible: true,
+          popupEnabled: false,
+          minScale: minimumDrawScale
+        }, {
+          id: 2,
+          title: "Certified Corners",
+          visible: true,
+          popupEnabled: false,
+          minScale: minimumDrawScale
+        }, {
+          id: 1,
+          title: "Preliminary NGS Points",
+          visible: false,
+          popupEnabled: false,
+          minScale: minimumDrawScale
+        }, {
+          id: 0,
+          title: "NGS Control Points",
+          visible: true,
+          popupEnabled: false,
+          minScale: minimumDrawScale
+        }]
+      });
+
+      const testESRILayerUrl = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/";
+      var testESRILayer = new MapImageLayer({
+        url: testESRILayerUrl,
+        sublayers: [{
+            id: 3,
+            visible: false
+          },
+          {
+            id: 2,
+            visible: true
+          },
+          {
+            id: 1,
+            visible: true
+          },
+          {
+            id: 0,
+            visible: true
+          }
+        ]
+      });
+
+      var map = new Map({
+        basemap: "osm"
+      });
+
+      const layersArr = [labinsLayer, testESRILayer];
+
+
+      var view = new MapView({
+        map: map,
+        container: "viewDiv",
+        center: [-82.5018310546875, 29.559123451577964],
+        zoom: 15
+      });
+      // var searchWidget = new Search({
+      //   view: view,
+      //   allPlaceholder: "District or Senator",
+      //   sources: [{
+      //       layer: new FeatureLayer({
+      //         url: labinsURL + '4',
+      //         outFields: ['*']
+      //       }),
+      //       searchFields: ["iden"],
+      //       displayField: "iden",
+      //       exactMatch: false,
+      //       outFields: ['*'],
+      //       name: "Tide interpolation pts",
+      //       placeholder: "example: 2821"
+      //     },
+      //     {
+      //       layer: new FeatureLayer({
+      //         url: labinsURL + '4',
+      //         outFields: ['*']
+      //       }),
+      //       searchFields: ["id"],
+      //       suggestionTemplate: "ID: {id}",
+      //       exactMatch: false,
+      //       outFields: ["*"],
+      //       placeholder: "example: 4062",
+      //       name: "Tide Stations",
+      //       zoomScale: 500000,
+      //     }
+      //   ]
+      // });
+
+      // Example of multiple sources[]
+
+      var searchWidget = new Search({
+        view: view,
+        allPlaceholder: "District or Senator",
+        sources: [{
+            layer: new FeatureLayer({
+              url: testESRILayerUrl + '2',
+            }),
+            searchFields: ["state_name"],
+            displayField: "state_name ",
+            exactMatch: false,
+            outFields: ['*'],
+            name: "States",
+            placeholder: "example: Florida"
+          },
+          {
+            layer: new FeatureLayer({
+              url: testESRILayerUrl + '3',
+            }),
+            searchFields: ["name"],
+            suggestionTemplate: "ID: {name}",
+            exactMatch: false,
+            outFields: ["*"],
+            placeholder: "example: 4062",
+            name: "Cities",
+            zoomScale: 500000,
+          }
+        ]
+      });
+
+      // Add the search widget to the top left corner of the view
+      view.ui.add(searchWidget, {
+        position: "top-right"
+      });
+
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>

@@ -1,4 +1,6 @@
 async function queryInfoPanel(results, i, event = false) {
+    console.log(results);
+
 
     if (event.mapPoint) {
         $('#informationdiv').append('<a target="_blank" href=http://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br>');
@@ -191,7 +193,8 @@ async function queryInfoPanel(results, i, event = false) {
                     '<b>Feature Class: </b>' + results[i - 1].attributes.feature_cl + '<br>'
                 );
 
-            } else if (results[i - 1].attributes.layerName === 'Certified Corners' && results[i - 1].attributes.is_image === 'Y') {
+                // } else if (results[i - 1].attributes.layerName === 'Certified Corners' && results[i - 1].attributes.is_image === 'Y') {
+            } else if (results[i - 1].attributes.layerName === 'Certified Corners') {
                 console.log(results[i - 1].attributes);
 
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
@@ -237,7 +240,6 @@ async function queryInfoPanel(results, i, event = false) {
         // $('#arraylengthdiv').html((parseInt(i - 1)) + ' feature found.');
         $('#infoSpan').html('Information Panel - ' + (parseInt(i - 1)) + ' feature found.');
     } else {
-        console.log('is this undefined');
         $('#infoSpan').html('Information Panel - ' + (parseInt(i - 1)) + ' features found. ');
     }
 }

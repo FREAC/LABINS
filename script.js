@@ -1233,11 +1233,11 @@ require([
 
     if (feature) {
       // Go to the selected parcel
-      if (feature.geometry.type === "polygon") {
-        // do nothing
-        // desired condition is to not zoom, 
-        // but that requirement may change in the future
-      } else if (feature.geometry.type === "polyline") {
+      // if (feature.geometry.type === "polygon") {
+      // do nothing
+      // desired condition is to not zoom, 
+      // but that requirement may change in the future
+      if (feature.geometry.type === "polyline" || feature.geometry.type === "polygon") {
         var ext = feature.geometry.extent;
         var cloneExt = ext.clone();
         // if current scale is greater than number, 

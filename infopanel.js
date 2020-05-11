@@ -1,4 +1,4 @@
-function queryInfoPanel(results, i, event=false) {
+function queryInfoPanel(results, i, event = false) {
 
     if (event.mapPoint) {
         $('#informationdiv').append('<a target="_blank" href=https://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br>');
@@ -19,6 +19,11 @@ function queryInfoPanel(results, i, event=false) {
                     '<b>FIPS:</b> ' + results[i - 1].attributes.cfips + '<br>' +
                     '<b>Area:</b> ' + results[i - 1].attributes.st_area + '<br>' +
                     '<b>Layer Name:</b> ' + results[i - 1].attributes.layerName + '<br>'
+                );
+            } else if (results[i - 1].attributes.layerName === 'County_Boundaries_Shoreline') {
+                $('#informationdiv').append('<p style= "font-size: 15px"><b>County Boundary</b></p>' +
+                    '<b>County Name:</b> ' + results[i - 1].attributes.tigername + '<br>' +
+                    '<b>FIPS:</b> ' + results[i - 1].attributes.fips + '<br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Soils June 2012 - Dept. of Agriculture') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Soils June 2012 - Dept. of Agriculture</b></p>' +
@@ -45,8 +50,8 @@ function queryInfoPanel(results, i, event=false) {
                     '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'NGS Control Points') {
-            	$('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
-                	'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
+                $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
+                    'Control Point Name: ' + results[i - 1].attributes.name + '<br>' +
                     'Latitude, Longitude: ' + results[i - 1].attributes.dec_lat + ', ' + results[i - 1].attributes.dec_long + '<br>' +
                     'County: ' + results[i - 1].attributes.county + '<br>' +
                     'PID: ' + results[i - 1].attributes.pid + '<br>' +
@@ -164,7 +169,7 @@ function queryInfoPanel(results, i, event=false) {
                 });
                 // add .tif files to popup
                 tifFiles.map(fileName => {
-                    $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12,-4) + '.tif</a><br>');
+                    $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
                 });
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
@@ -173,9 +178,15 @@ function queryInfoPanel(results, i, event=false) {
                     '<b>MHW: </b>' + results[i - 1].attributes.OBJECTID + '<br>'
                 );
             }
-            $('#informationdiv').append('<br>');
-            $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
-            $('#informationdiv').append('<hr>');
+
+            if (results[i - 1].geometry.type !== 'polygon') {
+                $('#informationdiv').append('<br>');
+                $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
+                $('#informationdiv').append('<hr>');
+            } else {
+                $('#informationdiv').append('<br>');
+                $('#informationdiv').append('<hr>');
+            }
         }
     } else {
         $('#informationdiv').append('<p>This query did not return any features</p>');

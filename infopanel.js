@@ -179,15 +179,10 @@ function queryInfoPanel(results, i, event = false) {
                 );
             }
 
-            if (results[i - 1].geometry.type !== 'polygon') {
-                $('#informationdiv').append('<br>');
-                $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
-                $('#informationdiv').append('<hr>');
-            } else {
-                $('#informationdiv').append('<br>');
-                $('#informationdiv').append('<button id= "' + i + '" name="highlight" class="btn btn-primary">Highlight Feature</button>');
-                $('#informationdiv').append('<hr>');
-            }
+            $('#informationdiv').append('<br>');
+            $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
+            $('#informationdiv').append('<hr>');
+
         }
     } else {
         $('#informationdiv').append('<p>This query did not return any features</p>');

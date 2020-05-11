@@ -1984,16 +1984,6 @@ require([
     goToFeature(infoPanelData[this.id - 1]);
   });
 
-  // set up alert for dynamically created zoom to feature buttons
-  $(document).on('click', "button[name='highlight']", function () {
-    mapView.graphics.removeAll();
-    selectionLayer.graphics.removeAll();
-    graphicArray = [];
-    highlightGraphic = new Graphic(infoPanelData[this.id - 1].geometry, highlightSymbol);
-    graphicArray.push(highlightGraphic);
-    selectionLayer.graphics.addMany(graphicArray);
-  });
-
   /////////////
   // Widgets //
   /////////////

@@ -185,6 +185,7 @@ function queryInfoPanel(results, i, event = false) {
                 $('#informationdiv').append('<hr>');
             } else {
                 $('#informationdiv').append('<br>');
+                $('#informationdiv').append('<button id= "' + i + '" name="highlight" class="btn btn-primary">Highlight Feature</button>');
                 $('#informationdiv').append('<hr>');
             }
         }

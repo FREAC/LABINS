@@ -1112,7 +1112,7 @@ require([
       if (infoPanelData.length > 0) {
         await queryInfoPanel(infoPanelData, 1, event);
         togglePanel();
-        await goToFeature(infoPanelData[0]);
+        await goToFeature(infoPanelData[0], button=false);
       } else {
         $('#infoSpan').html('Information Panel - 0 features found.');
         $('#informationdiv').append('<p>This query did not return any features</p>');
@@ -1229,7 +1229,7 @@ require([
   }
 
   // go to first feature of the infopaneldata array
-  function goToFeature(feature) {
+  function goToFeature(feature, button=true) {
 
     if (feature) {
       // Go to the selected parcel
@@ -1237,7 +1237,7 @@ require([
       // do nothing
       // desired condition is to not zoom, 
       // but that requirement may change in the future
-      if (feature.geometry.type === "polyline" || feature.geometry.type === "polygon") {
+      if (feature.geometry.type === "polyline" || (feature.geometry.type === "polygon" && button)) {
         var ext = feature.geometry.extent;
         var cloneExt = ext.clone();
         // if current scale is greater than number, 

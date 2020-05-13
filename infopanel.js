@@ -179,9 +179,14 @@ function queryInfoPanel(results, i, event = false) {
                 );
             }
 
-            $('#informationdiv').append('<br>');
-            $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
-            $('#informationdiv').append('<hr>');
+            if (results[i - 1].attributes.layerName !== 'Township-Range' && results[i - 1].attributes.layerName !== 'County_Boundaries_Shoreline') {
+                $('#informationdiv').append('<br>');
+                $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
+                $('#informationdiv').append('<hr>');
+            } else {
+                $('#informationdiv').append('<br>');
+                $('#informationdiv').append('<hr>');
+            }
 
         }
     } else {

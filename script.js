@@ -91,6 +91,91 @@ require([
   var minimumDrawScale = 95000;
   var extents = [];
 
+     function buildNGSRenderer() {
+
+      const default_symbol = {
+          type: "simple-marker",
+          size: 8,
+          color: 'black',
+          style: 'square',
+          outline: {
+              width: 0
+          }
+      };
+
+      function buildValueInfos() {
+
+          const valueInfos = [];
+          const styles = ['Horizontal', 'Vertical', 'Hor. & Ver.', 'Not Classified'];
+          styles.forEach(function (style) {
+              const info = {
+                  value: style,
+                  // Make a shallow copy so that symbols do not influence one another
+                  symbol: {...default_symbol}
+              };
+              switch (style) {
+                  case 'Vertical':
+                      info.symbol.color = '#009933';
+                      info.symbol.style = 'square';
+                      valueInfos.push(info);
+                      break;
+                  case 'Horizontal':
+                      info.symbol.color = '#FF00CA';
+                      info.symbol.style = 'triangle';
+                      valueInfos.push(info);
+                      break;
+                  case 'Hor. & Ver.':                                
+                      info.symbol.outline = {
+                          color: '#FF6666',
+                          width: '4px',
+                          cap: 'square'
+                      };
+                      info.symbol.style = 'cross';
+                      valueInfos.push(info);
+                      break; 
+                  case 'Not Classified':
+                      info.symbol.color = '#9999FF';
+                      info.symbol.style = 'circle';
+                      valueInfos.push(info);
+                      break;
+              }
+          });
+          return valueInfos;
+      }
+
+      const customRenderer = {
+        type: "unique-value",
+        field: "pos_srce",
+        field2: "vert_srce",
+        fieldDelimiter: ",",
+        uniqueValueInfos: buildValueInfos(),
+        defaultSymbol: default_symbol,
+        defaultLabel: 'Unknown',
+        legendOptions: {
+          title: 'Source'
+        },
+        valueExpression: `
+          var c = Concatenate([$feature.pos_srce, $feature.vert_srce], ',');
+          When(Find(c, "SCALED,POSTED SCALED,RESET SCALED,ADJUSTED NO CHECK,POSTED NO CHECK,RESET NO CHECK,ADJUSTED HD_HELD1,POSTED HD_HELD1,RESET HD_HELD1,ADJUSTED HD_HELD2,POSTED HD_HELD2,RESET HD_HELD2,ADJUSTED") != -1, 'Vertical',
+          Find(c, "ADJUSTED,GPS OBS ADJUSTED,VERTCON ADJUSTED,SCALED ADJUSTED,LEVELING ADJUSTED,  ADJUSTED,NOT PUB ADJUSTED,VERT ANG") != -1, 'Horizontal',
+          Find(c, "ADJUSTED,POSTED ADJUSTED,RESET ADJUSTED,ADJUSTED") != -1, 'Hor. & Ver.',
+          Find(c, "SCALED,NOT PUB SCALED,VERTCON NO CHECK,  NO CHECK,NOT PUB NO CHECK,SCALED NO CHECK,VERTCON NO CHECK,GPS OBS HD_HELD1,NOT PUB HD_HELD1,VERTCON HD_HELD2,NOT PUB HD_HELD2,VERTCON") != -1, 'Not Classified',
+          'default');
+        `
+      };
+
+  return customRenderer;
+  }
+
+  const ngsLayer = new FeatureLayer({
+    url: "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/ArcGIS/rest/services/ngs_datasheets/FeatureServer/0",
+    outFields: ["pos_srce", "vert_srce"],
+    title: "NGS Control Points",
+    definitionExpression: "STATE = 'FL'",
+    renderer: buildNGSRenderer(),
+    minScale: minimumDrawScale
+  });
+
   const countiesRenderer = {
     type: "simple",
     symbol: {
@@ -238,12 +323,12 @@ require([
       visible: false,
       popupEnabled: false,
       minScale: minimumDrawScale
-    }, {
-      id: 0,
-      title: "NGS Control Points",
-      visible: true,
-      popupEnabled: false,
-      minScale: minimumDrawScale
+    // }, {
+    //   id: 0,
+    //   title: "NGS Control Points",
+    //   visible: true,
+    //   popupEnabled: false,
+    //   minScale: minimumDrawScale
     }]
   });
 
@@ -976,7 +1061,7 @@ require([
     }
 
     // wait for all services to be checked in the layersArr
-    const layersArr = [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
+    const layersArr = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
     await checkServices(layersArr);
 
     // declare layerlist
@@ -1310,16 +1395,17 @@ require([
       placeholder: "T07NR10W600700",
     }, {
       featureLayer: {
-        url: labinsURL + '0',
+        url: ngsLayer.url,
+        definitionExpression: "STATE = 'FL'"
       },
-      searchFields: ["name"],
-      suggestionTemplate: "Designation: {name}, County {county}",
-      displayField: "name",
+      searchFields: ["NAME"],
+      suggestionTemplate: "Designation: {NAME}, {COUNTY}",
+      displayField: "NAME",
       zoomScale: 100000,
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
-      outFields: ["dec_lat", "dec_long", "pid", "county", "data_srce", "datasheet2", "name"],
+      outFields: ["DEC_LAT", "DEC_LON", "PID", "COUNTY", "DATA_SRCE", "DATASHEET2", "NAME"],
       name: "NGS Control Points",
       placeholder: "Search by Designation",
     }, {

@@ -1396,7 +1396,8 @@ require([
     }, {
       featureLayer: {
         url: ngsLayer.url,
-        definitionExpression: "STATE = 'FL'"
+        definitionExpression: "STATE = 'FL'",
+        outFields: ["DEC_LAT", "DEC_LON", "PID", "COUNTY", "DATA_SRCE", "NAME"]
       },
       searchFields: ["NAME"],
       suggestionTemplate: "Designation: {NAME}, {COUNTY}",
@@ -1405,7 +1406,7 @@ require([
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
-      outFields: ["DEC_LAT", "DEC_LON", "PID", "COUNTY", "DATA_SRCE", "DATASHEET2", "NAME"],
+      outFields: ["DEC_LAT", "DEC_LON", "PID", "COUNTY", "DATA_SRCE", "NAME"],
       name: "NGS Control Points",
       placeholder: "Search by Designation",
     }, {

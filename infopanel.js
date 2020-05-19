@@ -49,7 +49,7 @@ function queryInfoPanel(results, i, event = false) {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane North</b></p>' +
                     '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
                 );
-            } else if (results[i - 1].attributes.layerName === 'ALL_DATASHEETS') {
+            } else if ((results[i - 1].attributes.layerName === 'NGS Control Points') || (results[i - 1].attributes.layerName === 'ALL_DATASHEETS')) {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
                     'Control Point Name: ' + results[i - 1].attributes.NAME + '<br>' +
                     'Latitude, Longitude: ' + Number(results[i - 1].attributes.DEC_LAT).toFixed(5) + ', ' + Number(results[i - 1].attributes.DEC_LON).toFixed(5) + '<br>' +

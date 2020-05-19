@@ -432,7 +432,7 @@ require([
       bottom: 0
     },
     center: [-82.28, 27.8],
-    zoom: 7,
+    zoom: 15,
     constraints: {
       rotationEnabled: false
     }
@@ -1167,25 +1167,40 @@ require([
 
       // loop through layers
       for (layer of layers) {
-        let visibleLayers
+        let visibleLayers;
         // exclude geographic names layer from identify operation
         if (layer.title !== 'Geographic Names') {
           visibleLayers = await checkVisibleLayers(layer);
-
           // if there are visible layers returned
           if (visibleLayers.length > 0) {
-            const task = new IdentifyTask(layer.layer.url)
-            const params = await setIdentifyParameters(visibleLayers, "click", event);
-            const identify = await executeIdentifyTask(task, params);
-
-            // push each feature to the infoPanelData
-            for (feature of identify.results) {
-              feature.feature.attributes.layerName = feature.layerName;
-              let result = feature.feature.attributes
-
-              // make sure only certified corners with images are identified
-              if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
-                await infoPanelData.push(feature.feature);
+            if (layer.title === 'NGS Control Points') {
+              const query = ngsLayer.createQuery();
+              query.geometry = mapView.toMap(event);
+              query.distance = 30;
+              query.units = 'meters';
+              query.returnGeometry = true;
+              query.outFields = ['NAME', 'DEC_LAT', 'DEC_LON', 'COUNTY', 'DATA_SRCE', 'PID'];
+              query.where = "STATE = 'FL'";
+              await ngsLayer.queryFeatures(query)
+                .then(function (response){
+                  for (feature in response.features) {
+                    const control_point = response.features[feature];
+                    control_point.attributes.layerName = control_point.layer.title;
+                    infoPanelData.push(control_point);
+                  }
+                });
+            } else {
+              const task = new IdentifyTask(layer.layer.url)
+              const params = await setIdentifyParameters(visibleLayers, "click", event);
+              var identify = await executeIdentifyTask(task, params);
+              // push each feature to the infoPanelData
+              for (feature of identify.results) {
+                feature.feature.attributes.layerName = feature.layerName;
+                let result = feature.feature.attributes
+                // make sure only certified corners with images are identified
+                if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+                  await infoPanelData.push(feature.feature);
+                }
               }
             }
           }
@@ -1223,10 +1238,14 @@ require([
   async function checkVisibleLayers(service) {
     let visibleLayerIds = [];
     if (service.visible == true) {
-      // find the currently visible layers/sublayers
-      for (sublayer of service.children.items) {
-        if (sublayer.visible) {
-          visibleLayerIds.push(sublayer.layer.id);
+      if (service.children.items.length === 0) {
+        visibleLayerIds.push(0);
+      } else {
+        // find the currently visible layers/sublayers
+        for (sublayer of service.children.items) {
+          if (sublayer.visible) {
+            visibleLayerIds.push(sublayer.layer.id);
+          }
         }
       }
     }

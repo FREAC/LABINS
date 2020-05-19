@@ -167,8 +167,9 @@ require([
   return customRenderer;
   }
 
+  const ngsLayerURL = "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/ArcGIS/rest/services/ngs_datasheets/FeatureServer/0";
   const ngsLayer = new FeatureLayer({
-    url: "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/ArcGIS/rest/services/ngs_datasheets/FeatureServer/0",
+    url: ngsLayerURL,
     outFields: ["pos_srce", "vert_srce"],
     title: "NGS Control Points",
     definitionExpression: "STATE = 'FL'",
@@ -323,12 +324,6 @@ require([
       visible: false,
       popupEnabled: false,
       minScale: minimumDrawScale
-    // }, {
-    //   id: 0,
-    //   title: "NGS Control Points",
-    //   visible: true,
-    //   popupEnabled: false,
-    //   minScale: minimumDrawScale
     }]
   });
 
@@ -723,14 +718,16 @@ require([
   /////////////////////////////
 
   // query layer and populate a dropdown
-  function buildSelectPanel(url, attribute, zoomParam, panelParam) {
+  function buildSelectPanel(url, attribute, zoomParam, panelParam, ngs=false) {
+    
+    let whereClause = ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL";
 
     var task = new QueryTask({
       url: url
     });
 
     var params = new Query({
-      where: attribute + " IS NOT NULL",
+      where: whereClause,
       outFields: [attribute],
       returnDistinctValues: true,
     });
@@ -1395,9 +1392,8 @@ require([
       placeholder: "T07NR10W600700",
     }, {
       featureLayer: {
-        url: ngsLayer.url,
-        definitionExpression: "STATE = 'FL'",
-        outFields: ["DEC_LAT", "DEC_LON", "PID", "COUNTY", "DATA_SRCE", "NAME"]
+        url: ngsLayerURL,
+        definitionExpression: "STATE = 'FL'"
       },
       searchFields: ["NAME"],
       suggestionTemplate: "Designation: {NAME}, {COUNTY}",
@@ -1512,10 +1508,13 @@ require([
     }
 
     // data query by text
-    async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement) {
+    async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement, ngs=false) {
       var whereStatement;
       if (queryStatement != '' || idQueryStatement != '') {
         whereStatement = "Upper(" + attribute + ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute + ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%'";
+      }
+      if (whereStatement) {
+        whereStatement += " AND STATE = 'FL'";
       }
 
       var queryTask = new QueryTask({
@@ -1577,20 +1576,20 @@ require([
         });
     }
 
-    function createCountyDropdown(attributeURL, countyAttribute) {
+    function createCountyDropdown(attributeURL, countyAttribute, ngs=false) {
       var countyDropdown = document.createElement('select');
       countyDropdown.setAttribute('id', 'countyQuery');
       countyDropdown.setAttribute('class', 'form-control');
       document.getElementById('parametersQuery').appendChild(countyDropdown);
-      buildSelectPanel(attributeURL, countyAttribute, "Select a County", "countyQuery");
+      buildSelectPanel(attributeURL, countyAttribute, "Select a County", "countyQuery", ngs);
     }
 
-    function createQuadDropdown(attributeURL, quadAttribute) {
+    function createQuadDropdown(attributeURL, quadAttribute, ngs=false) {
       var quadDropdown = document.createElement('select');
       quadDropdown.setAttribute('id', 'quadQuery');
       quadDropdown.setAttribute('class', 'form-control');
       document.getElementById('parametersQuery').appendChild(quadDropdown);
-      buildSelectPanel(attributeURL, quadAttribute, "Select a Quad", "quadQuery")
+      buildSelectPanel(attributeURL, quadAttribute, "Select a Quad", "quadQuery", ngs)
     }
 
     function createTextBox(id, placeholder) {
@@ -1632,8 +1631,8 @@ require([
       clearDiv('parametersQuery');
       // add dropdown, input, and submit elements
       addDescript();
-      createCountyDropdown(labinsURL + '/0', 'county');
-      createQuadDropdown(labinsURL + '/0', 'quad');
+      createCountyDropdown(ngsLayerURL, 'COUNTY', ngs=true);
+      createQuadDropdown(ngsLayerURL, 'QUAD', ngs=true);
       createTextBox('textQuery', 'Enter NGS Name or PID.');
       createSubmit();
 
@@ -1649,7 +1648,7 @@ require([
         getGeometry(countyBoundariesURL + '/2', 'Upper(name)', event.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(labinsURL + '/0', response)
+            dataQueryQuerytask(ngsLayerURL, response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'NGS Control Points';
@@ -1673,7 +1672,7 @@ require([
         getGeometry(labinsURL + '/8', 'tile_name', event.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(labinsURL + '/0', response)
+            dataQueryQuerytask(ngsLayerURL, response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'NGS Control Points';
@@ -1698,7 +1697,7 @@ require([
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('textQuery').value;
-        multiTextQuerytask(labinsURL + '/0', 'pid', textValue, 'name', textValue)
+        multiTextQuerytask(ngsLayerURL, 'PID', textValue, 'NAME', textValue, ngs=true)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'NGS Control Points';

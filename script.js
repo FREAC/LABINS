@@ -1511,9 +1511,9 @@ require([
     async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement, ngs=false) {
       var whereStatement;
       if (queryStatement != '' || idQueryStatement != '') {
-        whereStatement = "Upper(" + attribute + ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute + ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%'";
+        whereStatement = "(Upper(" + attribute + ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute + ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%')";
       }
-      if (whereStatement) {
+      if (ngs) {
         whereStatement += " AND STATE = 'FL'";
       }
 
@@ -1524,7 +1524,7 @@ require([
         where: whereStatement,
         returnGeometry: true,
         // possibly could be limited to return only necessary outfields
-        outFields: '*'
+        outFields: ['*']
       });
 
       return queryTask.execute(params)
@@ -1561,7 +1561,7 @@ require([
         where: whereStatement,
         returnGeometry: true,
         // possibly could be limited to return only necessary outfields
-        outFields: '*'
+        outFields: ['*']
       });
       return queryTask.execute(params)
         .then(function (response) {
@@ -1651,7 +1651,7 @@ require([
             dataQueryQuerytask(ngsLayerURL, response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'NGS Control Points';
+                  response.features[i].attributes.layerName = 'ALL_DATASHEETS';
                   infoPanelData.push(response.features[i]);
                 }
                 goToFeature(infoPanelData[0]);
@@ -1675,7 +1675,7 @@ require([
             dataQueryQuerytask(ngsLayerURL, response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'NGS Control Points';
+                  response.features[i].attributes.layerName = 'ALL_DATASHEETS';
                   infoPanelData.push(response.features[i]);
                 }
                 goToFeature(infoPanelData[0]);
@@ -1700,7 +1700,7 @@ require([
         multiTextQuerytask(ngsLayerURL, 'PID', textValue, 'NAME', textValue, ngs=true)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
-              response.features[i].attributes.layerName = 'NGS Control Points';
+              response.features[i].attributes.layerName = 'ALL_DATASHEETS';
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);

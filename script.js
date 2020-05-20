@@ -95,7 +95,7 @@ require([
 
       const default_symbol = {
           type: "simple-marker",
-          size: 8,
+          size: 9,
           color: 'black',
           style: 'square',
           outline: {

@@ -91,6 +91,92 @@ require([
   var minimumDrawScale = 95000;
   var extents = [];
 
+     function buildNGSRenderer() {
+
+      const default_symbol = {
+          type: "simple-marker",
+          size: 8,
+          color: 'black',
+          style: 'square',
+          outline: {
+              width: 0
+          }
+      };
+
+      function buildValueInfos() {
+
+          const valueInfos = [];
+          const styles = ['Horizontal', 'Vertical', 'Hor. & Ver.', 'Not Classified'];
+          styles.forEach(function (style) {
+              const info = {
+                  value: style,
+                  // Make a shallow copy so that symbols do not influence one another
+                  symbol: {...default_symbol}
+              };
+              switch (style) {
+                  case 'Vertical':
+                      info.symbol.color = '#009933';
+                      info.symbol.style = 'square';
+                      valueInfos.push(info);
+                      break;
+                  case 'Horizontal':
+                      info.symbol.color = '#FF00CA';
+                      info.symbol.style = 'triangle';
+                      valueInfos.push(info);
+                      break;
+                  case 'Hor. & Ver.':                                
+                      info.symbol.outline = {
+                          color: '#FF6666',
+                          width: '4px',
+                          cap: 'square'
+                      };
+                      info.symbol.style = 'cross';
+                      valueInfos.push(info);
+                      break; 
+                  case 'Not Classified':
+                      info.symbol.color = '#9999FF';
+                      info.symbol.style = 'circle';
+                      valueInfos.push(info);
+                      break;
+              }
+          });
+          return valueInfos;
+      }
+
+      const customRenderer = {
+        type: "unique-value",
+        field: "pos_srce",
+        field2: "vert_srce",
+        fieldDelimiter: ",",
+        uniqueValueInfos: buildValueInfos(),
+        defaultSymbol: default_symbol,
+        defaultLabel: 'Unknown',
+        legendOptions: {
+          title: 'Source'
+        },
+        valueExpression: `
+          var c = Concatenate([$feature.pos_srce, $feature.vert_srce], ',');
+          When(Find(c, "SCALED,POSTED SCALED,RESET SCALED,ADJUSTED NO CHECK,POSTED NO CHECK,RESET NO CHECK,ADJUSTED HD_HELD1,POSTED HD_HELD1,RESET HD_HELD1,ADJUSTED HD_HELD2,POSTED HD_HELD2,RESET HD_HELD2,ADJUSTED") != -1, 'Vertical',
+          Find(c, "ADJUSTED,GPS OBS ADJUSTED,VERTCON ADJUSTED,SCALED ADJUSTED,LEVELING ADJUSTED,  ADJUSTED,NOT PUB ADJUSTED,VERT ANG") != -1, 'Horizontal',
+          Find(c, "ADJUSTED,POSTED ADJUSTED,RESET ADJUSTED,ADJUSTED") != -1, 'Hor. & Ver.',
+          Find(c, "SCALED,NOT PUB SCALED,VERTCON NO CHECK,  NO CHECK,NOT PUB NO CHECK,SCALED NO CHECK,VERTCON NO CHECK,GPS OBS HD_HELD1,NOT PUB HD_HELD1,VERTCON HD_HELD2,NOT PUB HD_HELD2,VERTCON") != -1, 'Not Classified',
+          'default');
+        `
+      };
+
+  return customRenderer;
+  }
+
+  const ngsLayerURL = "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/ArcGIS/rest/services/ngs_datasheets/FeatureServer/0";
+  const ngsLayer = new FeatureLayer({
+    url: ngsLayerURL,
+    outFields: ["pos_srce", "vert_srce"],
+    title: "NGS Control Points",
+    definitionExpression: "STATE = 'FL'",
+    renderer: buildNGSRenderer(),
+    minScale: minimumDrawScale
+  });
+
   const countiesRenderer = {
     type: "simple",
     symbol: {
@@ -236,12 +322,6 @@ require([
       id: 1,
       title: "Preliminary NGS Points",
       visible: false,
-      popupEnabled: false,
-      minScale: minimumDrawScale
-    }, {
-      id: 0,
-      title: "NGS Control Points",
-      visible: true,
       popupEnabled: false,
       minScale: minimumDrawScale
     }]
@@ -638,14 +718,16 @@ require([
   /////////////////////////////
 
   // query layer and populate a dropdown
-  function buildSelectPanel(url, attribute, zoomParam, panelParam) {
+  function buildSelectPanel(url, attribute, zoomParam, panelParam, ngs=false) {
+    
+    let whereClause = ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL";
 
     var task = new QueryTask({
       url: url
     });
 
     var params = new Query({
-      where: attribute + " IS NOT NULL",
+      where: whereClause,
       outFields: [attribute],
       returnDistinctValues: true,
     });
@@ -976,7 +1058,7 @@ require([
     }
 
     // wait for all services to be checked in the layersArr
-    const layersArr = [countyBoundariesLayer, labinsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
+    const layersArr = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
     await checkServices(layersArr);
 
     // declare layerlist
@@ -1085,25 +1167,40 @@ require([
 
       // loop through layers
       for (layer of layers) {
-        let visibleLayers
+        let visibleLayers;
         // exclude geographic names layer from identify operation
         if (layer.title !== 'Geographic Names') {
           visibleLayers = await checkVisibleLayers(layer);
-
           // if there are visible layers returned
           if (visibleLayers.length > 0) {
-            const task = new IdentifyTask(layer.layer.url)
-            const params = await setIdentifyParameters(visibleLayers, "click", event);
-            const identify = await executeIdentifyTask(task, params);
-
-            // push each feature to the infoPanelData
-            for (feature of identify.results) {
-              feature.feature.attributes.layerName = feature.layerName;
-              let result = feature.feature.attributes
-
-              // make sure only certified corners with images are identified
-              if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
-                await infoPanelData.push(feature.feature);
+            if (layer.title === 'NGS Control Points') {
+              const query = ngsLayer.createQuery();
+              query.geometry = mapView.toMap(event);
+              query.distance = 30;
+              query.units = 'meters';
+              query.returnGeometry = true;
+              query.outFields = ['NAME', 'DEC_LAT', 'DEC_LON', 'COUNTY', 'DATA_SRCE', 'PID'];
+              query.where = "STATE = 'FL'";
+              await ngsLayer.queryFeatures(query)
+                .then(function (response){
+                  for (feature in response.features) {
+                    const control_point = response.features[feature];
+                    control_point.attributes.layerName = control_point.layer.title;
+                    infoPanelData.push(control_point);
+                  }
+                });
+            } else {
+              const task = new IdentifyTask(layer.layer.url)
+              const params = await setIdentifyParameters(visibleLayers, "click", event);
+              var identify = await executeIdentifyTask(task, params);
+              // push each feature to the infoPanelData
+              for (feature of identify.results) {
+                feature.feature.attributes.layerName = feature.layerName;
+                let result = feature.feature.attributes
+                // make sure only certified corners with images are identified
+                if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+                  await infoPanelData.push(feature.feature);
+                }
               }
             }
           }
@@ -1141,10 +1238,14 @@ require([
   async function checkVisibleLayers(service) {
     let visibleLayerIds = [];
     if (service.visible == true) {
-      // find the currently visible layers/sublayers
-      for (sublayer of service.children.items) {
-        if (sublayer.visible) {
-          visibleLayerIds.push(sublayer.layer.id);
+      if (service.children.items.length === 0) {
+        visibleLayerIds.push(0);
+      } else {
+        // find the currently visible layers/sublayers
+        for (sublayer of service.children.items) {
+          if (sublayer.visible) {
+            visibleLayerIds.push(sublayer.layer.id);
+          }
         }
       }
     }
@@ -1310,16 +1411,17 @@ require([
       placeholder: "T07NR10W600700",
     }, {
       featureLayer: {
-        url: labinsURL + '0',
+        url: ngsLayerURL,
+        definitionExpression: "STATE = 'FL'"
       },
-      searchFields: ["name"],
-      suggestionTemplate: "Designation: {name}, County {county}",
-      displayField: "name",
+      searchFields: ["NAME"],
+      suggestionTemplate: "Designation: {NAME}, {COUNTY}",
+      displayField: "NAME",
       zoomScale: 100000,
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
-      outFields: ["dec_lat", "dec_long", "pid", "county", "data_srce", "datasheet2", "name"],
+      outFields: ["DEC_LAT", "DEC_LON", "PID", "COUNTY", "DATA_SRCE", "NAME"],
       name: "NGS Control Points",
       placeholder: "Search by Designation",
     }, {
@@ -1425,10 +1527,13 @@ require([
     }
 
     // data query by text
-    async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement) {
+    async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement, ngs=false) {
       var whereStatement;
       if (queryStatement != '' || idQueryStatement != '') {
-        whereStatement = "Upper(" + attribute + ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute + ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%'";
+        whereStatement = "(Upper(" + attribute + ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute + ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%')";
+      }
+      if (ngs) {
+        whereStatement += " AND STATE = 'FL'";
       }
 
       var queryTask = new QueryTask({
@@ -1438,7 +1543,7 @@ require([
         where: whereStatement,
         returnGeometry: true,
         // possibly could be limited to return only necessary outfields
-        outFields: '*'
+        outFields: ['*']
       });
 
       return queryTask.execute(params)
@@ -1475,7 +1580,7 @@ require([
         where: whereStatement,
         returnGeometry: true,
         // possibly could be limited to return only necessary outfields
-        outFields: '*'
+        outFields: ['*']
       });
       return queryTask.execute(params)
         .then(function (response) {
@@ -1490,20 +1595,20 @@ require([
         });
     }
 
-    function createCountyDropdown(attributeURL, countyAttribute) {
+    function createCountyDropdown(attributeURL, countyAttribute, ngs=false) {
       var countyDropdown = document.createElement('select');
       countyDropdown.setAttribute('id', 'countyQuery');
       countyDropdown.setAttribute('class', 'form-control');
       document.getElementById('parametersQuery').appendChild(countyDropdown);
-      buildSelectPanel(attributeURL, countyAttribute, "Select a County", "countyQuery");
+      buildSelectPanel(attributeURL, countyAttribute, "Select a County", "countyQuery", ngs);
     }
 
-    function createQuadDropdown(attributeURL, quadAttribute) {
+    function createQuadDropdown(attributeURL, quadAttribute, ngs=false) {
       var quadDropdown = document.createElement('select');
       quadDropdown.setAttribute('id', 'quadQuery');
       quadDropdown.setAttribute('class', 'form-control');
       document.getElementById('parametersQuery').appendChild(quadDropdown);
-      buildSelectPanel(attributeURL, quadAttribute, "Select a Quad", "quadQuery")
+      buildSelectPanel(attributeURL, quadAttribute, "Select a Quad", "quadQuery", ngs)
     }
 
     function createTextBox(id, placeholder) {
@@ -1545,8 +1650,8 @@ require([
       clearDiv('parametersQuery');
       // add dropdown, input, and submit elements
       addDescript();
-      createCountyDropdown(labinsURL + '/0', 'county');
-      createQuadDropdown(labinsURL + '/0', 'quad');
+      createCountyDropdown(ngsLayerURL, 'COUNTY', ngs=true);
+      createQuadDropdown(ngsLayerURL, 'QUAD', ngs=true);
       createTextBox('textQuery', 'Enter NGS Name or PID.');
       createSubmit();
 
@@ -1562,7 +1667,7 @@ require([
         getGeometry(countyBoundariesURL + '/2', 'Upper(name)', event.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(labinsURL + '/0', response)
+            dataQueryQuerytask(ngsLayerURL, response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'NGS Control Points';
@@ -1586,7 +1691,7 @@ require([
         getGeometry(labinsURL + '/8', 'tile_name', event.target.value)
           .then(unionGeometries)
           .then(function (response) {
-            dataQueryQuerytask(labinsURL + '/0', response)
+            dataQueryQuerytask(ngsLayerURL, response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'NGS Control Points';
@@ -1611,7 +1716,7 @@ require([
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('textQuery').value;
-        multiTextQuerytask(labinsURL + '/0', 'pid', textValue, 'name', textValue)
+        multiTextQuerytask(ngsLayerURL, 'PID', textValue, 'NAME', textValue, ngs=true)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'NGS Control Points';

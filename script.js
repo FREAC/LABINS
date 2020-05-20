@@ -95,7 +95,7 @@ require([
 
       const default_symbol = {
           type: "simple-marker",
-          size: 9,
+          size: 8,
           color: 'black',
           style: 'square',
           outline: {
@@ -1670,7 +1670,7 @@ require([
             dataQueryQuerytask(ngsLayerURL, response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'ALL_DATASHEETS';
+                  response.features[i].attributes.layerName = 'NGS Control Points';
                   infoPanelData.push(response.features[i]);
                 }
                 goToFeature(infoPanelData[0]);
@@ -1694,7 +1694,7 @@ require([
             dataQueryQuerytask(ngsLayerURL, response)
               .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'ALL_DATASHEETS';
+                  response.features[i].attributes.layerName = 'NGS Control Points';
                   infoPanelData.push(response.features[i]);
                 }
                 goToFeature(infoPanelData[0]);
@@ -1719,7 +1719,7 @@ require([
         multiTextQuerytask(ngsLayerURL, 'PID', textValue, 'NAME', textValue, ngs=true)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
-              response.features[i].attributes.layerName = 'ALL_DATASHEETS';
+              response.features[i].attributes.layerName = 'NGS Control Points';
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);

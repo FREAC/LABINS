@@ -2311,8 +2311,6 @@ require([
                     // if there are visible layers returned
                     if (visibleLayers.length > 0) {
                       const task = new IdentifyTask(layer.layer.url)
-                      console.log(task);
-
                       const params = await setIdentifyParameters(visibleLayers, "polygon", activeWidget.viewModel.measurement.geometry);
                       const identify = await executeIdentifyTask(task, params);
                       // push each feature to the infoPanelData

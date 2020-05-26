@@ -458,7 +458,7 @@ require([
       bottom: 0
     },
     center: [-82.28, 27.8],
-    zoom: 15,
+    zoom: 7,
     constraints: {
       rotationEnabled: false
     }

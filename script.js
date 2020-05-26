@@ -1375,6 +1375,7 @@ require([
     }, {
       layer: new FeatureLayer({
         url: ngsLayerURL,
+        name: "NGS Control Points",
         definitionExpression: "STATE = 'FL'",
         outFields: ["DEC_LAT", "DEC_LON", "PID", "COUNTY", "DATA_SRCE", "NAME"]
       }),
@@ -1391,6 +1392,7 @@ require([
     }, {
       layer: new FeatureLayer({
         url: labinsURL + '3',
+        name: "Tide Stations"
       }),
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",
@@ -1404,6 +1406,7 @@ require([
     }, {
       layer: new FeatureLayer({
         url: labinsURL + '4',
+        name: "Tide Interpolation Points"
       }),
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
       suggestionTemplate: "ID: {iden}, County: {cname}",
@@ -1418,6 +1421,7 @@ require([
     }, {
       layer: new FeatureLayer({
         url: labinsURL + '7',
+        name: "Erosion Control Line"
       }),
       searchFields: ["ecl_name", "county"],
       suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
@@ -1430,7 +1434,8 @@ require([
       placeholder: "Search by County Name or Town Name",
     }, {
       layer: new FeatureLayer({
-        url: swfwmdURL
+        url: swfwmdURL,
+        name: "Survey Benchmarks"
       }),
       searchFields: ["BENCHMARK_NAME"],
       suggestionTemplate: "Benchmark Name: {BENCHMARK_NAME}, File Name: {FILE_NAME}",

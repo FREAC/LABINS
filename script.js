@@ -1157,7 +1157,7 @@ require([
                 feature.feature.attributes.layerName = feature.layerName;
                 let result = feature.feature.attributes
                 // make sure only certified corners with images are identified
-                if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+                if (result.layerName !== 'Certified Corners' || result.is_image === 'Y') {
                   await infoPanelData.push(feature.feature);
                 }
               }
@@ -1331,17 +1331,18 @@ require([
         selectionLayer.graphics.add(highlightGraphic);
 
         // TODO: Not working properly, else if not being triggered
-        if (mapView.scale > 18055.954822) {
-          mapView.goTo({
-            target: feature.geometry,
-            zoom: 15
-          });
-        } else { // go to point at the current scale
-          mapView.goTo({
-            target: feature.geometry,
-            scale: mapView.scale
-          });
-        }
+        // if (mapView.scale > 18055.954822) {
+        //   mapView.goTo({
+        //     target: feature.geometry,
+        //     zoom: 15
+        //   });
+        // } else { // go to point at the current scale
+        //   console.log(mapView);
+        //   mapView.goTo({
+        //     target: feature.geometry,
+        //     zoom: 1
+        //   });
+        // }
       }
     }
   }
@@ -1358,9 +1359,11 @@ require([
     popupEnabled: false,
     allPlaceholder: "Text search for NGS, DEP, and SWFWMD Data",
     sources: [{
-      featureLayer: {
+      layer: new FeatureLayer({
         url: labinsURL + '2',
-      },
+        name: 'Certified Corners',
+        outFields: ["blmid", "tile_name", "image1", "image2", "quad_num"]
+      }),
       searchFields: ["blmid", "tile_name"],
       displayField: "blmid",
       suggestionTemplate: "BLMID: {blmid}, Quad Name: {tile_name}",
@@ -1368,14 +1371,15 @@ require([
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
-      outFields: ["blmid", "tile_name", "image1", "image2", "objectid"],
+      outFields: ["blmid", "tile_name", "image1", "image2", "quad_num"],
       name: "Certified Corners",
       placeholder: "T07NR10W600700",
     }, {
-      featureLayer: {
+      layer: new FeatureLayer({
         url: ngsLayerURL,
-        definitionExpression: "STATE = 'FL'"
-      },
+        definitionExpression: "STATE = 'FL'",
+        outFields: ["DEC_LAT", "DEC_LON", "PID", "COUNTY", "DATA_SRCE", "NAME"]
+      }),
       searchFields: ["NAME"],
       suggestionTemplate: "Designation: {NAME}, {COUNTY}",
       displayField: "NAME",
@@ -1387,9 +1391,9 @@ require([
       name: "NGS Control Points",
       placeholder: "Search by Designation",
     }, {
-      featureLayer: {
+      layer: new FeatureLayer({
         url: labinsURL + '3',
-      },
+      }),
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",
       zoomScale: 100000,
@@ -1400,9 +1404,9 @@ require([
       name: "Tide Stations",
       placeholder: "Search by ID, County Name, or Quad Name",
     }, {
-      featureLayer: {
+      layer: new FeatureLayer({
         url: labinsURL + '4',
-      },
+      }),
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
       suggestionTemplate: "ID: {iden}, County: {cname}",
       displayField: "iden",
@@ -1414,22 +1418,22 @@ require([
       name: "Tide Interpolation Points",
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
     }, {
-      featureLayer: {
-        url: labinsURL + '8',
-      },
+      layer: new FeatureLayer({
+        url: labinsURL + '7',
+      }),
       searchFields: ["ecl_name", "county"],
       suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
       zoomScale: 150000,
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightLine,
-      outFields: ["*"],
-      name: "Erosion Control Lines",
+      outFields: "*",
+      name: "Erosion Control Line",
       placeholder: "Search by County Name or Town Name",
     }, {
-      featureLayer: {
+      layer: new FeatureLayer({
         url: swfwmdURL
-      },
+      }),
       searchFields: ["BENCHMARK_NAME"],
       suggestionTemplate: "Benchmark Name: {BENCHMARK_NAME}, File Name: {FILE_NAME}",
       zoomScale: 100000,
@@ -2022,11 +2026,11 @@ require([
   searchWidget.on("search-complete", async function (event) {
 
     infoPanelData = [];
-    if (event.results["0"].source.locator) {
-      // let native functionality work
-    } else {
+    // 0 and 7 are ESRI Geocoder services
+    if (!(event.results[0].sourceIndex === 0 || event.results[0].sourceIndex === 7)) {
+    
       // change the layername based on which layer is searched on (because the search query looks at )
-      var layerName = event.results["0"].source.featureLayer.source.layerDefinition.name;
+      var layerName = event.results["0"].results[0].feature.layer.name;
       event.results["0"].results["0"].feature.attributes.layerName = layerName;
 
       //clear content of information panel

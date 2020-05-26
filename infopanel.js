@@ -155,7 +155,7 @@ function queryInfoPanel(results, i, event = false) {
                     '<b>Feature Name: </b>' + results[i - 1].attributes.feature_na + '<br>' +
                     '<b>Feature Class: </b>' + results[i - 1].attributes.feature_cl + '<br>'
                 );
-            } else if (results[i - 1].attributes.layerName === 'Certified Corners' && results[i - 1].attributes.is_image === 'Y') {
+            } else if (results[i - 1].attributes.layerName === 'Certified Corners') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
                     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +

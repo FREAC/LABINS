@@ -17,6 +17,7 @@ require([
   "esri/symbols/SimpleLineSymbol",
   "esri/tasks/Locator",
   "esri/geometry/SpatialReference",
+  "esri/renderers/UniqueValueRenderer",
 
   // Widgets
   "esri/widgets/CoordinateConversion",
@@ -71,6 +72,7 @@ require([
   SimpleLineSymbol,
   Locator,
   SpatialReference,
+  UniqueValueRenderer,
   CoordinateConversion,
   Format,
   Conversion,
@@ -177,6 +179,22 @@ require([
     minScale: minimumDrawScale
   });
 
+  function haloLabelInfo(labelExpr, labelColor) {
+    return [{
+      labelExpression: labelExpr,
+      labelPlacement: "above-center",
+      symbol: {
+        type: "text",
+        color: labelColor,
+        haloColor: [255, 255, 255],
+        haloSize: 2,
+        font: {
+          size: 8
+        }
+      }
+    }];
+  }
+
   const countiesRenderer = {
     type: "simple",
     symbol: {
@@ -219,19 +237,25 @@ require([
       title: "Hi-Res Imagery Grid State Plane East",
       visible: true,
       popupEnabled: false,
-      minScale: minimumDrawScale
+      minScale: minimumDrawScale,
+      labelingInfo: haloLabelInfo("[spe_id]", [230, 76, 0, 255]),
+      labelsVisible: false
     }, {
       id: 14,
       title: "Hi-Res Imagery Grid: State Plane North",
       visible: true,
       popupEnabled: false,
-      minScale: minimumDrawScale
+      minScale: minimumDrawScale,
+      labelingInfo: haloLabelInfo("[spn_id]", [230, 76, 0, 255]),
+      labelsVisible: false
     }, {
       id: 13,
       title: "Hi-Res Imagery Grid: State Plane West",
       visible: true,
       popupEnabled: false,
-      minScale: minimumDrawScale
+      minScale: minimumDrawScale,
+      labelingInfo: haloLabelInfo("[spw_id]", [230, 76, 0, 255]),
+      labelsVisible: false
     }, {
       id: 12,
       title: "Parcels",
@@ -317,7 +341,9 @@ require([
       title: "Certified Corners",
       visible: true,
       popupEnabled: false,
-      minScale: minimumDrawScale
+      minScale: minimumDrawScale,
+      labelingInfo: haloLabelInfo("[blmid]", [0, 0 , 255, 255]),
+      labelsVisible: false
     }, {
       id: 1,
       title: "Preliminary NGS Points",
@@ -351,8 +377,8 @@ require([
     popupEnabled: false
   });
 
-  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/"
-  var CCCLLayer = new MapImageLayer({
+  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/2"
+  var CCCLLayer = new FeatureLayer({
     url: CCCLURL,
     minScale: minimumDrawScale,
     title: "Coastal Construction Control Lines",
@@ -432,7 +458,7 @@ require([
       bottom: 0
     },
     center: [-82.28, 27.8],
-    zoom: 7,
+    zoom: 15,
     constraints: {
       rotationEnabled: false
     }
@@ -1010,25 +1036,11 @@ require([
   // if service is offline, ignore
   mapView.when(async function () {
 
-    // action definition for toggling labels on Certified Corner LABINS's sublayer
+    // Add label toggles in Layerlist widget
     function defineActions(event) {
-
-      // The event object contains an item property.
-      // is is a ListItem referencing the associated layer
-      // and other properties. You can control the visibility of the
-      // item, its title, and actions using this object.
-
-      var item = event.item;
-
       if (["Certified Corners", "Hi-Res Imagery Grid State Plane East",
-          "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"
-        ].includes(item.title)) {
-
-        // An array of objects defining actions to place in the LayerList.
-        // By making this array two-dimensional, you can separate similar
-        // actions into separate groups with a breaking line.
-
-        item.actionsSections = [
+       "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"].includes(event.item.title)) {
+        event.item.actionsSections = [
           [{
             title: "Toggle labels",
             className: "esri-icon-labels",
@@ -1084,42 +1096,10 @@ require([
       }
     });
 
-    function haloLabelInfo(labelExpr, labelColor) {
-      return [{
-        labelExpression: labelExpr,
-        labelPlacement: "above-center",
-        symbol: {
-          type: "text",
-          color: labelColor,
-          haloColor: [255, 255, 255],
-          haloSize: 2,
-          font: {
-            size: 8
-          }
-        }
-      }];
-    }
-
-    // event to listen for action button on layerlist
+    // Toggle labels from LayerList widget
     layerList.on("trigger-action", function (event) {
-      const targetLayer = layerList.operationalItems.items[2].children.items.filter(function (layer) {
-        return layer.title === event.item.title
-      })[0];
-      // if the selected layer is visible and the mapView.scale is less than the minimum draw scale enable toggling
-      if ((targetLayer.visible === true) && (mapView.scale < minimumDrawScale)) {
-        // if labels are not already visible, turn them on
-        if ((targetLayer.layer.labelsVisible === false) || (targetLayer.layer.labelsVisible === undefined)) {
-
-          targetLayer.layer.labelsVisible = true;
-          if (targetLayer.title === "Certified Corners") {
-            targetLayer.layer.labelingInfo = haloLabelInfo("[blmid]", [0, 0, 255, 255]);
-          } else {
-            const d = targetLayer.title.split(" ").slice(-1)[0].charAt(0).toLowerCase();
-            targetLayer.layer.labelingInfo = haloLabelInfo("[sp" + d + "_id]", [230, 76, 0, 255]);
-          }
-        } else { // if labels are visible, toggle them off
-          targetLayer.layer.labelsVisible = false;
-        }
+      if (mapView.scale < minimumDrawScale) {
+        event.item.layer.labelsVisible = !event.item.layer.labelsVisible;
       }
     });
 
@@ -1140,12 +1120,10 @@ require([
       mapView.graphics.removeAll();
       selectionLayer.graphics.removeAll();
       clearDiv('informationdiv');
-      clearDiv('arraylengthdiv');
       infoPanelData = [];
 
       // look inside of layerList layers
       let layers = layerList.operationalItems.items
-
       // loop through layers
       for (layer of layers) {
         let visibleLayers;
@@ -1219,11 +1197,14 @@ require([
   async function checkVisibleLayers(service) {
     let visibleLayerIds = [];
     if (service.visible == true) {
-      if (service.children.items.length === 0) {
-        visibleLayerIds.push(0);
-      } else {
+
+      if (service.layer.type === 'feature') { // check which layer type
+        visibleLayerIds.push(service.layer.layerId);
+
+      } else if (service.layer.type === 'map-image') {
         // find the currently visible layers/sublayers
         for (sublayer of service.children.items) {
+          // if sublayer is visible, add to visibleLayerIds array
           if (sublayer.visible) {
             visibleLayerIds.push(sublayer.layer.id);
           }
@@ -1305,7 +1286,6 @@ require([
         } else {
           $('#infoSpan').html('Information Panel - 0 features found.');
           $('#informationdiv').append('<p>This query did not return any features</p>');
-          clearDiv('arraylengthdiv');
         }
       });
   }
@@ -1353,18 +1333,19 @@ require([
         // TODO: Not working properly, else if not being triggered
         if (mapView.scale > 18055.954822) {
           mapView.goTo({
-            target: infoPanelData[0].geometry,
+            target: feature.geometry,
             zoom: 15
           });
         } else { // go to point at the current scale
           mapView.goTo({
-            target: infoPanelData[0].geometry,
+            target: feature.geometry,
             scale: mapView.scale
           });
         }
       }
     }
   }
+
 
   //////////////////////////////////
   //// Search Widget Text Search ///
@@ -1535,7 +1516,6 @@ require([
             togglePanel();
             $('#infoSpan').html('Information Panel - 0 features found.');
             $('#informationdiv').append('<p>This query did not return any features</p>');
-            clearDiv('arraylengthdiv');
           }
         });
     }
@@ -1571,7 +1551,6 @@ require([
             togglePanel();
             $('#infoSpan').html('Information Panel - 0 features found.');
             $('#informationdiv').append('<p>This query did not return any features</p>');
-            clearDiv('arraylengthdiv');
           }
         });
     }
@@ -2036,7 +2015,6 @@ require([
     bufferLayer.graphics.removeAll();
     clearDiv('informationdiv');
     $('#numinput').val('');
-    $('#arraylengthdiv').html('');
     $('#infoSpan').html('Information Panel');
   });
 
@@ -2054,7 +2032,6 @@ require([
       //clear content of information panel
       clearDiv('informationdiv');
       $('#numinput').val('');
-      $('#arraylengthdiv').html('');
       $('#infoSpan').html('Information Panel');
 
       // push query results of search bar to information panel
@@ -2314,7 +2291,6 @@ require([
                 mapView.graphics.removeAll();
                 selectionLayer.graphics.removeAll();
                 clearDiv('informationdiv');
-                clearDiv('arraylengthdiv');
                 infoPanelData = [];
 
                 // look inside of layerList layers
@@ -2328,6 +2304,8 @@ require([
                     // if there are visible layers returned
                     if (visibleLayers.length > 0) {
                       const task = new IdentifyTask(layer.layer.url)
+                      console.log(task);
+
                       const params = await setIdentifyParameters(visibleLayers, "polygon", activeWidget.viewModel.measurement.geometry);
                       const identify = await executeIdentifyTask(task, params);
                       // push each feature to the infoPanelData

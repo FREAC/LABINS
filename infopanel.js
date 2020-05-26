@@ -1,7 +1,7 @@
 function queryInfoPanel(results, i, event = false) {
 
     if (event.mapPoint) {
-        $('#informationdiv').append('<a target="_blank" href=https://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br>');
+        $('#informationdiv').append('<p><a target="_blank" href=https://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br></p>');
     }
 
     if (results.length > 0) {
@@ -106,10 +106,18 @@ function queryInfoPanel(results, i, event = false) {
                     '<b>Quad: </b>' + results[i - 1].attributes.tile_name + '<br>' +
                     '<b>Method: </b>' + results[i - 1].attributes.method + '<br>' +
                     '<b>Station 1: </b>' + results[i - 1].attributes.station1 + '<br>' +
-                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>' +
-                    "<b>For MHW and MLW data, please request: </b> <a target='_blank' href='https://www.labins.org/survey_data/water/procedures_and_forms/Forms/MHW_MLW_RequestForm.pdf'>here</a><br>"
+                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>'
                 );
-            } else if (results[i - 1].attributes.layerName === 'Coastal Range Monuments') {
+                if (results[i - 1].attributes.status_col === "1") {
+                    // This is not a tidal point
+                } else if (results[i - 1].attributes.status_col === "2") {
+                    // The point has data, fill in the report as you are currently doing
+                    $('#informationdiv').append('<b>Download Approval Form: </b><a target="_blank" href=https://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin=' + results[i - 1].attributes.iden + '&mCountyName=' + results[i - 1].attributes.cname + '&mQuad=' + replaceWhitespace + '&mhw=' + results[i - 1].attributes.mhw2_ft + '&mlw=' + results[i - 1].attributes.mlw2_ft + '>here</a><br>');
+                } else if (results[i - 1].attributes.status_col === "3") {
+                    // This point needs a study
+                    $('#informationdiv').append('This point needs a study. Click <a target="_blank" href=https://www.labins.org/survey_data/water/FlexMap_docs/MHW_Procedures_wo_29_or_88_data_May_2009_with_checklist.pdf>here</a> to open approval form.<br>');
+                }
+            } else if (results[i - 1].attributes.layerName === 'R-Monuments') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Regional Coastal Monitoring Data</b> </p>' +
                     '<b>Feature ID: </b>' + results[i - 1].attributes.unique_id + '<br>' +
                     '<b>Monument Name: </b>' + results[i - 1].attributes.monument_name + '<br>' +
@@ -124,19 +132,19 @@ function queryInfoPanel(results, i, event = false) {
                     '<b>ECL Name: </b>' + results[i - 1].attributes.ecl_name + '<br>' +
                     '<b>MHW: </b>' + results[i - 1].attributes.mhw + '<br>' +
                     '<b>Location: </b>' + results[i - 1].attributes.location + '<br>' +
-                    '<b>Download Information: </b>' + '<a target="_blank" href=http://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i - 1].attributes.mhw + '.pdf&fileType=MAP>' + results[i - 1].attributes.mhw + '.pdf</a><br>'
+                    '<b>Download Information: </b>' + '<a target="_blank" href=https://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i - 1].attributes.mhw + '.pdf&fileType=MAP>' + results[i - 1].attributes.mhw + '.pdf</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Survey Benchmarks') {
                 var replaceWhitespace = results[i - 1].attributes.FILE_NAME.replace(/\s+/g, "%20");
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>SWFWMD Survey Benchmarks</b></p>' +
                     '<b>Benchmark Name: </b>' + results[i - 1].attributes.BENCHMARK_NAME + '<br>' +
-                    'More Information: </b><a target="_blank" href=http://ftp.labins.org/swfwmd/SWFWMD_control_2013/' + replaceWhitespace + '>' + results[i - 1].attributes.FILE_NAME + '</a><br>'
+                    'More Information: </b><a target="_blank" href=https://ftp.labins.org/swfwmd/SWFWMD_control_2013/' + replaceWhitespace + '>' + results[i - 1].attributes.FILE_NAME + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Township-Range-Section') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>GLO</b> </p>' +
                     '<b>Section-Township-Range: </b>' + results[i - 1].attributes.twnrngsec.substring(8, ) + ' ' + results[i - 1].attributes.twnrngsec.substring(1, 4) + ' ' + results[i - 1].attributes.twnrngsec.substring(5, 8) + '<br>' +
-                    '<a target="_blank" href=http://www.labins.org/survey_data/landrecords/landrecords.cfm?town1=' + results[i - 1].attributes.tr_dissolve.substring(0, 2) + '&town2=' + results[i - 1].attributes.tr_dissolve.substring(2, 3) + '&range1=' + results[i - 1].attributes.tr_dissolve.substring(3, 5) + '&range2=' + results[i - 1].attributes.tr_dissolve.substring(5, 6) + '>' + 'Original GLO Survey Plats and Field Notes' + '</a><br>' +
-                    '<a target="_blank" href=http://199.73.242.221/Oculus/servlet/shell?command=hitlist&[catalog=6]&[entityType=any]&[searchBy=profile]&[profile=BSM+Office+Files]&[sortBy=Creator]&{STR+Coordinates=%20LK%20S0' + results[i - 1].attributes.tr_dissolve.substring(0, 2) + '%20' + results[i - 1].attributes.twnrngsec.substring(0, 4) + '%20' + results[i - 1].attributes.twnrngsec.substring(4, 8) + '}>' + 'Oculus Database - DEP Use Only' + '</a><br>'
+                    '<a target="_blank" href=https://www.labins.org/survey_data/landrecords/landrecords.cfm?town1=' + results[i - 1].attributes.tr_dissolve.substring(0, 2) + '&town2=' + results[i - 1].attributes.tr_dissolve.substring(2, 3) + '&range1=' + results[i - 1].attributes.tr_dissolve.substring(3, 5) + '&range2=' + results[i - 1].attributes.tr_dissolve.substring(5, 6) + '>' + 'Original GLO Survey Plats and Field Notes' + '</a><br>' +
+                    '<a target="_blank" href=https://199.73.242.221/Oculus/servlet/shell?command=hitlist&[catalog=6]&[entityType=any]&[searchBy=profile]&[profile=BSM+Office+Files]&[sortBy=Creator]&{STR+Coordinates=%20LK%20S0' + results[i - 1].attributes.tr_dissolve.substring(0, 2) + '%20' + results[i - 1].attributes.twnrngsec.substring(0, 4) + '%20' + results[i - 1].attributes.twnrngsec.substring(4, 8) + '}>' + 'Oculus Database - DEP Use Only' + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Township-Range') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Township</b> </p>' +
@@ -170,6 +178,12 @@ function queryInfoPanel(results, i, event = false) {
                 tifFiles.map(fileName => {
                     $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
                 });
+                // const relatedFeatures = results[i - 1].attributes.relatedFeatures.sort();
+                // for (relatedFeature in relatedFeatures) {
+                //     const folderNum = Math.floor(relatedFeatures[relatedFeature] / 10000).toString().padStart(2, '0');
+                //     const docNum = relatedFeatures[relatedFeature].toString().padStart(7, '0');
+                //     $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/ccp' + folderNum + '/' + docNum + '.pdf>' + docNum + '.pdf</a><br>');
+                // }
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
                     '<b>County: </b>' + results[i - 1].attributes.COUNTY + '<br>' +

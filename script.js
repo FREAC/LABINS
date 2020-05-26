@@ -17,7 +17,6 @@ require([
   "esri/symbols/SimpleLineSymbol",
   "esri/tasks/Locator",
   "esri/geometry/SpatialReference",
-  "esri/renderers/UniqueValueRenderer",
 
   // Widgets
   "esri/widgets/CoordinateConversion",
@@ -72,7 +71,6 @@ require([
   SimpleLineSymbol,
   Locator,
   SpatialReference,
-  UniqueValueRenderer,
   CoordinateConversion,
   Format,
   Conversion,

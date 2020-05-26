@@ -1429,7 +1429,7 @@ require([
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightLine,
-      outFields: "*",
+      outFields: ["*"],
       name: "Erosion Control Line",
       placeholder: "Search by County Name or Town Name",
     }, {

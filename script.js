@@ -177,6 +177,22 @@ require([
     minScale: minimumDrawScale
   });
 
+  function haloLabelInfo(labelExpr, labelColor) {
+    return [{
+      labelExpression: labelExpr,
+      labelPlacement: "above-center",
+      symbol: {
+        type: "text",
+        color: labelColor,
+        haloColor: [255, 255, 255],
+        haloSize: 2,
+        font: {
+          size: 8
+        }
+      }
+    }];
+  }
+
   const countiesRenderer = {
     type: "simple",
     symbol: {
@@ -219,19 +235,25 @@ require([
       title: "Hi-Res Imagery Grid State Plane East",
       visible: true,
       popupEnabled: false,
-      minScale: minimumDrawScale
+      minScale: minimumDrawScale,
+      labelingInfo: haloLabelInfo("[spe_id]", [230, 76, 0, 255]),
+      labelsVisible: false
     }, {
       id: 14,
       title: "Hi-Res Imagery Grid: State Plane North",
       visible: true,
       popupEnabled: false,
-      minScale: minimumDrawScale
+      minScale: minimumDrawScale,
+      labelingInfo: haloLabelInfo("[spn_id]", [230, 76, 0, 255]),
+      labelsVisible: false
     }, {
       id: 13,
       title: "Hi-Res Imagery Grid: State Plane West",
       visible: true,
       popupEnabled: false,
-      minScale: minimumDrawScale
+      minScale: minimumDrawScale,
+      labelingInfo: haloLabelInfo("[spw_id]", [230, 76, 0, 255]),
+      labelsVisible: false
     }, {
       id: 12,
       title: "Parcels",
@@ -317,7 +339,9 @@ require([
       title: "Certified Corners",
       visible: true,
       popupEnabled: false,
-      minScale: minimumDrawScale
+      minScale: minimumDrawScale,
+      labelingInfo: haloLabelInfo("[blmid]", [0, 0 , 255, 255]),
+      labelsVisible: false
     }, {
       id: 1,
       title: "Preliminary NGS Points",
@@ -351,8 +375,8 @@ require([
     popupEnabled: false
   });
 
-  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/"
-  var CCCLLayer = new MapImageLayer({
+  var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/2"
+  var CCCLLayer = new FeatureLayer({
     url: CCCLURL,
     minScale: minimumDrawScale,
     title: "Coastal Construction Control Lines",
@@ -452,10 +476,6 @@ require([
   var extentDiv = dom.byId("extentDiv");
 
   overView.when(function () {
-    // Update the overview extent whenever the MapView or SceneView extent changes
-    mapView.watch("extent", updateOverviewExtent);
-    overView.watch("extent", updateOverviewExtent);
-
     // Update the minimap overview when the main view becomes stationary
     watchUtils.when(mapView, "stationary", updateOverview);
 
@@ -469,21 +489,6 @@ require([
           overView.width,
           mapView.height / overView.height)
       });
-    }
-
-    function updateOverviewExtent() {
-      // Update the overview extent by converting the SceneView extent to the
-      // MapView screen coordinates and updating the extentDiv position.
-      var extent = mapView.extent;
-
-      var bottomLeft = overView.toScreen(extent.xmin, extent.ymin);
-      var topRight = overView.toScreen(extent.xmax, extent.ymax);
-
-      extentDiv.style.top = topRight.y + "px";
-      extentDiv.style.left = bottomLeft.x + "px";
-
-      extentDiv.style.height = (bottomLeft.y - topRight.y) + "px";
-      extentDiv.style.width = (topRight.x - bottomLeft.x) + "px";
     }
   });
 
@@ -1029,25 +1034,11 @@ require([
   // if service is offline, ignore
   mapView.when(async function () {
 
-    // action definition for toggling labels on Certified Corner LABINS's sublayer
+    // Add label toggles in Layerlist widget
     function defineActions(event) {
-
-      // The event object contains an item property.
-      // is is a ListItem referencing the associated layer
-      // and other properties. You can control the visibility of the
-      // item, its title, and actions using this object.
-
-      var item = event.item;
-
       if (["Certified Corners", "Hi-Res Imagery Grid State Plane East",
-          "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"
-        ].includes(item.title)) {
-
-        // An array of objects defining actions to place in the LayerList.
-        // By making this array two-dimensional, you can separate similar
-        // actions into separate groups with a breaking line.
-
-        item.actionsSections = [
+       "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"].includes(event.item.title)) {
+        event.item.actionsSections = [
           [{
             title: "Toggle labels",
             className: "esri-icon-labels",
@@ -1103,42 +1094,10 @@ require([
       }
     });
 
-    function haloLabelInfo(labelExpr, labelColor) {
-      return [{
-        labelExpression: labelExpr,
-        labelPlacement: "above-center",
-        symbol: {
-          type: "text",
-          color: labelColor,
-          haloColor: [255, 255, 255],
-          haloSize: 2,
-          font: {
-            size: 8
-          }
-        }
-      }];
-    }
-
-    // event to listen for action button on layerlist
+    // Toggle labels from LayerList widget
     layerList.on("trigger-action", function (event) {
-      const targetLayer = layerList.operationalItems.items[2].children.items.filter(function (layer) {
-        return layer.title === event.item.title
-      })[0];
-      // if the selected layer is visible and the mapView.scale is less than the minimum draw scale enable toggling
-      if ((targetLayer.visible === true) && (mapView.scale < minimumDrawScale)) {
-        // if labels are not already visible, turn them on
-        if ((targetLayer.layer.labelsVisible === false) || (targetLayer.layer.labelsVisible === undefined)) {
-
-          targetLayer.layer.labelsVisible = true;
-          if (targetLayer.title === "Certified Corners") {
-            targetLayer.layer.labelingInfo = haloLabelInfo("[blmid]", [0, 0, 255, 255]);
-          } else {
-            const d = targetLayer.title.split(" ").slice(-1)[0].charAt(0).toLowerCase();
-            targetLayer.layer.labelingInfo = haloLabelInfo("[sp" + d + "_id]", [230, 76, 0, 255]);
-          }
-        } else { // if labels are visible, toggle them off
-          targetLayer.layer.labelsVisible = false;
-        }
+      if (mapView.scale < minimumDrawScale) {
+        event.item.layer.labelsVisible = !event.item.layer.labelsVisible;
       }
     });
 
@@ -1159,12 +1118,10 @@ require([
       mapView.graphics.removeAll();
       selectionLayer.graphics.removeAll();
       clearDiv('informationdiv');
-      clearDiv('arraylengthdiv');
       infoPanelData = [];
 
       // look inside of layerList layers
       let layers = layerList.operationalItems.items
-
       // loop through layers
       for (layer of layers) {
         let visibleLayers;
@@ -1198,7 +1155,7 @@ require([
                 feature.feature.attributes.layerName = feature.layerName;
                 let result = feature.feature.attributes
                 // make sure only certified corners with images are identified
-                if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+                if (result.layerName !== 'Certified Corners' || result.is_image === 'Y') {
                   await infoPanelData.push(feature.feature);
                 }
               }
@@ -1238,11 +1195,14 @@ require([
   async function checkVisibleLayers(service) {
     let visibleLayerIds = [];
     if (service.visible == true) {
-      if (service.children.items.length === 0) {
-        visibleLayerIds.push(0);
-      } else {
+
+      if (service.layer.type === 'feature') { // check which layer type
+        visibleLayerIds.push(service.layer.layerId);
+
+      } else if (service.layer.type === 'map-image') {
         // find the currently visible layers/sublayers
         for (sublayer of service.children.items) {
+          // if sublayer is visible, add to visibleLayerIds array
           if (sublayer.visible) {
             visibleLayerIds.push(sublayer.layer.id);
           }
@@ -1324,7 +1284,6 @@ require([
         } else {
           $('#infoSpan').html('Information Panel - 0 features found.');
           $('#informationdiv').append('<p>This query did not return any features</p>');
-          clearDiv('arraylengthdiv');
         }
       });
   }
@@ -1370,20 +1329,22 @@ require([
         selectionLayer.graphics.add(highlightGraphic);
 
         // TODO: Not working properly, else if not being triggered
-        if (mapView.scale > 18055.954822) {
-          mapView.goTo({
-            target: infoPanelData[0].geometry,
-            zoom: 15
-          });
-        } else { // go to point at the current scale
-          mapView.goTo({
-            target: infoPanelData[0].geometry,
-            scale: mapView.scale
-          });
-        }
+        // if (mapView.scale > 18055.954822) {
+        //   mapView.goTo({
+        //     target: feature.geometry,
+        //     zoom: 15
+        //   });
+        // } else { // go to point at the current scale
+        //   console.log(mapView);
+        //   mapView.goTo({
+        //     target: feature.geometry,
+        //     zoom: 1
+        //   });
+        // }
       }
     }
   }
+
 
   //////////////////////////////////
   //// Search Widget Text Search ///
@@ -1396,9 +1357,11 @@ require([
     popupEnabled: false,
     allPlaceholder: "Text search for NGS, DEP, and SWFWMD Data",
     sources: [{
-      featureLayer: {
+      layer: new FeatureLayer({
         url: labinsURL + '2',
-      },
+        name: 'Certified Corners',
+        outFields: ["blmid", "tile_name", "image1", "image2", "quad_num"]
+      }),
       searchFields: ["blmid", "tile_name"],
       displayField: "blmid",
       suggestionTemplate: "BLMID: {blmid}, Quad Name: {tile_name}",
@@ -1406,14 +1369,16 @@ require([
       exactMatch: false,
       popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
-      outFields: ["blmid", "tile_name", "image1", "image2", "objectid"],
+      outFields: ["blmid", "tile_name", "image1", "image2", "quad_num"],
       name: "Certified Corners",
       placeholder: "T07NR10W600700",
     }, {
-      featureLayer: {
+      layer: new FeatureLayer({
         url: ngsLayerURL,
-        definitionExpression: "STATE = 'FL'"
-      },
+        name: "NGS Control Points",
+        definitionExpression: "STATE = 'FL'",
+        outFields: ["DEC_LAT", "DEC_LON", "PID", "COUNTY", "DATA_SRCE", "NAME"]
+      }),
       searchFields: ["NAME"],
       suggestionTemplate: "Designation: {NAME}, {COUNTY}",
       displayField: "NAME",
@@ -1425,9 +1390,10 @@ require([
       name: "NGS Control Points",
       placeholder: "Search by Designation",
     }, {
-      featureLayer: {
+      layer: new FeatureLayer({
         url: labinsURL + '3',
-      },
+        name: "Tide Stations"
+      }),
       searchFields: ["id", "countyname", "quadname"],
       displayField: "id",
       zoomScale: 100000,
@@ -1438,9 +1404,10 @@ require([
       name: "Tide Stations",
       placeholder: "Search by ID, County Name, or Quad Name",
     }, {
-      featureLayer: {
+      layer: new FeatureLayer({
         url: labinsURL + '4',
-      },
+        name: "Tide Interpolation Points"
+      }),
       searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
       suggestionTemplate: "ID: {iden}, County: {cname}",
       displayField: "iden",
@@ -1452,9 +1419,10 @@ require([
       name: "Tide Interpolation Points",
       placeholder: "Search by ID, County Name, Quad Name, or Station Name",
     }, {
-      featureLayer: {
-        url: labinsURL + '8',
-      },
+      layer: new FeatureLayer({
+        url: labinsURL + '7',
+        name: "Erosion Control Line"
+      }),
       searchFields: ["ecl_name", "county"],
       suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
       zoomScale: 150000,
@@ -1462,12 +1430,13 @@ require([
       popupOpenOnSelect: false,
       resultSymbol: highlightLine,
       outFields: ["*"],
-      name: "Erosion Control Lines",
+      name: "Erosion Control Line",
       placeholder: "Search by County Name or Town Name",
     }, {
-      featureLayer: {
-        url: swfwmdURL
-      },
+      layer: new FeatureLayer({
+        url: swfwmdURL,
+        name: "Survey Benchmarks"
+      }),
       searchFields: ["BENCHMARK_NAME"],
       suggestionTemplate: "Benchmark Name: {BENCHMARK_NAME}, File Name: {FILE_NAME}",
       zoomScale: 100000,
@@ -1554,7 +1523,6 @@ require([
             togglePanel();
             $('#infoSpan').html('Information Panel - 0 features found.');
             $('#informationdiv').append('<p>This query did not return any features</p>');
-            clearDiv('arraylengthdiv');
           }
         });
     }
@@ -1590,7 +1558,6 @@ require([
             togglePanel();
             $('#infoSpan').html('Information Panel - 0 features found.');
             $('#informationdiv').append('<p>This query did not return any features</p>');
-            clearDiv('arraylengthdiv');
           }
         });
     }
@@ -2055,7 +2022,6 @@ require([
     bufferLayer.graphics.removeAll();
     clearDiv('informationdiv');
     $('#numinput').val('');
-    $('#arraylengthdiv').html('');
     $('#infoSpan').html('Information Panel');
   });
 
@@ -2063,17 +2029,16 @@ require([
   searchWidget.on("search-complete", async function (event) {
 
     infoPanelData = [];
-    if (event.results["0"].source.locator) {
-      // let native functionality work
-    } else {
+    // 0 and 7 are ESRI Geocoder services
+    if (!(event.results[0].sourceIndex === 0 || event.results[0].sourceIndex === 7)) {
+    
       // change the layername based on which layer is searched on (because the search query looks at )
-      var layerName = event.results["0"].source.featureLayer.source.layerDefinition.name;
+      var layerName = event.results["0"].results[0].feature.layer.name;
       event.results["0"].results["0"].feature.attributes.layerName = layerName;
 
       //clear content of information panel
       clearDiv('informationdiv');
       $('#numinput').val('');
-      $('#arraylengthdiv').html('');
       $('#infoSpan').html('Information Panel');
 
       // push query results of search bar to information panel
@@ -2333,7 +2298,6 @@ require([
                 mapView.graphics.removeAll();
                 selectionLayer.graphics.removeAll();
                 clearDiv('informationdiv');
-                clearDiv('arraylengthdiv');
                 infoPanelData = [];
 
                 // look inside of layerList layers

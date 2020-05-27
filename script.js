@@ -1329,18 +1329,17 @@ require([
         selectionLayer.graphics.add(highlightGraphic);
 
         // TODO: Not working properly, else if not being triggered
-        // if (mapView.scale > 18055.954822) {
-        //   mapView.goTo({
-        //     target: feature.geometry,
-        //     zoom: 15
-        //   });
-        // } else { // go to point at the current scale
-        //   console.log(mapView);
-        //   mapView.goTo({
-        //     target: feature.geometry,
-        //     zoom: 1
-        //   });
-        // }
+        if (mapView.scale > 18055.954822) {
+          mapView.goTo({
+            target: feature.geometry,
+            zoom: 15
+          });
+        } else { // go to point at the current scale
+          mapView.goTo({
+            target: feature.geometry,
+            zoom: mapView.zoom
+          });
+        }
       }
     }
   }
@@ -1350,118 +1349,105 @@ require([
   //// Search Widget Text Search ///
   //////////////////////////////////
 
+
   var searchWidget = new Search({
     container: "searchWidgetDiv",
     view: mapView,
-    enableInfoWindow: false,
     popupEnabled: false,
-    allPlaceholder: "Text search for NGS, DEP, and SWFWMD Data",
+    includeDefaultSources: false,
+    allPlaceholder: "Search for data or an address",
     sources: [{
-      layer: new FeatureLayer({
-        url: labinsURL + '2',
-        name: 'Certified Corners',
-        outFields: ["blmid", "tile_name", "image1", "image2", "quad_num"]
-      }),
-      searchFields: ["blmid", "tile_name"],
-      displayField: "blmid",
-      suggestionTemplate: "BLMID: {blmid}, Quad Name: {tile_name}",
-      zoomScale: 100000,
-      exactMatch: false,
-      popupOpenOnSelect: false,
-      resultSymbol: highlightPoint,
-      outFields: ["blmid", "tile_name", "image1", "image2", "quad_num"],
       name: "Certified Corners",
-      placeholder: "T07NR10W600700",
+      layer: new FeatureLayer({
+        url: labinsLayer.findSublayerById(2).url,
+        name: 'Certified Corners'
+      }),
+      outFields: ["blmid", "tile_name", "image1", "image2", "quad_num"],
+      searchFields: ["blmid", "tile_name", "quad_num"],
+      suggestionTemplate: "BLMID: {blmid}<br>Quad: {tile_name}",
+      exactMatch: false,
+      resultSymbol: highlightPoint,
+      placeholder: "Search by Certified Corner",
     }, {
+      name: "NGS Control Points",
       layer: new FeatureLayer({
         url: ngsLayerURL,
         name: "NGS Control Points",
-        definitionExpression: "STATE = 'FL'",
-        outFields: ["DEC_LAT", "DEC_LON", "PID", "COUNTY", "DATA_SRCE", "NAME"]
+        definitionExpression: "STATE = 'FL'"
       }),
-      searchFields: ["NAME"],
-      suggestionTemplate: "Designation: {NAME}, {COUNTY}",
-      displayField: "NAME",
-      zoomScale: 100000,
-      exactMatch: false,
-      popupOpenOnSelect: false,
-      resultSymbol: highlightPoint,
       outFields: ["DEC_LAT", "DEC_LON", "PID", "COUNTY", "DATA_SRCE", "NAME"],
-      name: "NGS Control Points",
-      placeholder: "Search by Designation",
+      searchFields: ["NAME"],
+      suggestionTemplate: "PID: {PID}<br>Name: {NAME}<br>County: {COUNTY}",
+      exactMatch: false,
+      resultSymbol: highlightPoint,
+      placeholder: "Search by NGS Control Point",
     }, {
+      name: "Tide Stations",
       layer: new FeatureLayer({
-        url: labinsURL + '3',
+        url: labinsLayer.findSublayerById(3).url,
         name: "Tide Stations"
       }),
-      searchFields: ["id", "countyname", "quadname"],
-      displayField: "id",
-      zoomScale: 100000,
+      outFields: ["id", "name", "countyname", "quadname", "status"],
+      searchFields: ["id", "name"],
+      suggestionTemplate: "ID: {id}<br>Name: {name}<br>County: {countyname}",
       exactMatch: false,
-      popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
-      outFields: ["*"],
-      name: "Tide Stations",
-      placeholder: "Search by ID, County Name, or Quad Name",
+      placeholder: "Search by Tide Station",
     }, {
+      name: "Tide Interpolation Points",
       layer: new FeatureLayer({
-        url: labinsURL + '4',
+        url: labinsLayer.findSublayerById(4).url,
         name: "Tide Interpolation Points"
       }),
-      searchFields: ["iden", "cname", "tile_name", "station1", "station2"],
-      suggestionTemplate: "ID: {iden}, County: {cname}",
-      displayField: "iden",
-      zoomScale: 100000,
+      outFields: ["iden", "cname", "tile_name", "method", "station1", "station2"],
+      searchFields: ["iden", "station1", "station2"],
+      suggestionTemplate: "ID: {iden}<br>Station: {station1}<br>County: {cname}",
       exactMatch: false,
-      popupOpenOnSelect: false,
       resultSymbol: highlightPoint,
-      outFields: ["*"],
-      name: "Tide Interpolation Points",
-      placeholder: "Search by ID, County Name, Quad Name, or Station Name",
+      placeholder: "Search by Tide Interpolation Point",
     }, {
+      name: "Erosion Control Line",
       layer: new FeatureLayer({
-        url: labinsURL + '7',
+        url: labinsLayer.findSublayerById(7).url,
         name: "Erosion Control Line"
       }),
-      searchFields: ["ecl_name", "county"],
-      suggestionTemplate: "ECL Name: {ecl_name}, County: {county}",
-      zoomScale: 150000,
+      outFields: ["ecl_name", "county", "mhw", "location"],
+      searchFields: ["ecl_name"],
+      suggestionTemplate: "ECL Name: {ecl_name}<br>County: {county}",
       exactMatch: false,
-      popupOpenOnSelect: false,
       resultSymbol: highlightLine,
-      outFields: ["*"],
-      name: "Erosion Control Line",
-      placeholder: "Search by County Name or Town Name",
+      placeholder: "Search by ECL",
     }, {
+      name: "Survey Benchmarks",
       layer: new FeatureLayer({
         url: swfwmdURL,
         name: "Survey Benchmarks"
       }),
-      searchFields: ["BENCHMARK_NAME"],
-      suggestionTemplate: "Benchmark Name: {BENCHMARK_NAME}, File Name: {FILE_NAME}",
-      zoomScale: 100000,
-      displayField: "BENCHMARK_NAME",
-      exactMatch: false,
-      popupOpenOnSelect: false,
-      resultSymbol: highlightPoint,
       outFields: ["BENCHMARK_NAME", "FILE_NAME"],
-      name: "Survey Benchmarks",
-      placeholder: "Benchmark Name Example: CYP016",
+      searchFields: ["BENCHMARK_NAME"],
+      suggestionTemplate: "Name: {BENCHMARK_NAME}",
+      exactMatch: false,
+      resultSymbol: highlightPoint,
+      placeholder: "Search by Survey Benchmark",
     }, {
       locator: new Locator({
         url: "//geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
       }),
       singleLineFieldName: "SingleLine",
-      name: "Addresses and Points of Interest",
-      localSearchOptions: {
-        minScale: 300000,
-        distance: 50000
-      },
-      placeholder: "Search Geocoder",
-      maxResults: 3,
-      maxSuggestions: 6,
-      suggestionsEnabled: true,
-      minSuggestCharacters: 0
+      name: "Addresses & Points of Interest",
+      placeholder: "Search by Address",
+      maxResults: 1,
+      countryCode: "US",
+      filter: {
+        // Extent of Florida
+        geometry: new Extent({
+          xmin : -87.8,
+          ymin : 24.4,
+          xmax : -79.8,
+          ymax : 31.2,
+          "spatialReference" : {"wkid" : 4326}
+        })
+      }
     }],
   });
 
@@ -2027,10 +2013,10 @@ require([
 
   // after a query typed into search bar
   searchWidget.on("search-complete", async function (event) {
-
+    
     infoPanelData = [];
-    // 0 and 7 are ESRI Geocoder services
-    if (!(event.results[0].sourceIndex === 0 || event.results[0].sourceIndex === 7)) {
+    // 6 is the ESRI Geocoder service
+    if (!(event.results[0].sourceIndex === 6)) {
     
       // change the layername based on which layer is searched on (because the search query looks at )
       var layerName = event.results["0"].results[0].feature.layer.name;
@@ -2046,6 +2032,10 @@ require([
       await queryInfoPanel(infoPanelData, 1, event);
       goToFeature(infoPanelData[0]);
       togglePanel();
+    } else {
+      clearDiv('informationdiv');
+      $('#numinput').val('');
+      $('#infoSpan').html('Information Panel');
     }
   });
 

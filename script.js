@@ -706,7 +706,13 @@ require([
     // find all dropdowns
     $("select").each(function () {
       if (trs) {
-        if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown')) && (this != document.getElementById('selectTownship')) && (this != document.getElementById('selectRange')) && (this != document.getElementById('selectSection'))) {
+        if (
+          (this != currentElement) && 
+          (this != document.getElementById('selectLayerDropdown')) && 
+          (this != document.getElementById('selectTownship')) && 
+          (this != document.getElementById('selectRange')) && 
+          (this != document.getElementById('selectSection'))
+        ) {
             this.selectedIndex = 0
           }
         } else {

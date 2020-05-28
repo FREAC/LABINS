@@ -700,13 +700,19 @@ require([
   }
 
   // reset dropdowns and all inputs that are not equal to the current element. 
-  function resetElements(currentElement) {
+  function resetElements(currentElement, trs = false) {
     // if elements are not equal to the current element
     // then reset to the initial values
     // find all dropdowns
     $("select").each(function () {
-        if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
-          this.selectedIndex = 0
+      if (trs) {
+        if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown')) && (this != document.getElementById('selectTownship')) && (this != document.getElementById('selectRange')) && (this != document.getElementById('selectSection'))) {
+            this.selectedIndex = 0
+          }
+        } else {
+          if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
+            this.selectedIndex = 0
+          }
         }
       },
       // find all inputs
@@ -771,6 +777,7 @@ require([
     });
     const response = await task.execute(params)
     mapView.goTo(response.features);
+    bufferLayer.graphics.removeAll();
     selectionLayer.graphics.removeAll();
     graphicArray = [];
     for (feature of response.features) {
@@ -979,6 +986,7 @@ require([
 
   // when township changes, reset the other dropdowns.
   on(townshipSelect, "change", function (evt) {
+    resetElements(townshipSelect, true);
     var type = evt.target.value;
     var i;
     for (i = rangeSelect.options.length - 1; i >= 0; i--) {
@@ -996,6 +1004,7 @@ require([
 
   // when range changes, reset the section dropdown.
   on(rangeSelect, "change", function (evt) {
+    resetElements(rangeSelect, true);
     var type = evt.target.value;
     var j;
     for (j = sectionSelect.options.length - 1; j >= 0; j--) {
@@ -1016,6 +1025,7 @@ require([
 
   var querySection = dom.byId("selectSection");
   on(querySection, "change", function (e) {
+    resetElements(sectionSelect, true);
     var type = e.target.value;
     zoomToSectionFeature(townshipRangeSectionURL, type, "sec_ch");
   });

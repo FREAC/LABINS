@@ -980,6 +980,9 @@ require([
     for (i = rangeSelect.options.length - 1; i >= 0; i--) {
       rangeSelect.remove(i);
     }
+    for (j = sectionSelect.options.length - 1; j >= 0; j--) {
+      sectionSelect.remove(j);
+    }
 
     var rangeQuery = new Query({
       where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "'",

@@ -700,35 +700,49 @@ require([
   }
 
   // reset dropdowns and all inputs that are not equal to the current element. 
+  // function resetElements(currentElement, trs = false) {
+  //   // if elements are not equal to the current element
+  //   // then reset to the initial values
+  //   // find all dropdowns
+    
+  //   $("select").each(function () {
+  //     if (trs) {
+  //       if (
+  //         (this != currentElement) && 
+  //         (this != document.getElementById('selectLayerDropdown')) && 
+  //         (this != document.getElementById('selectTownship')) && 
+  //         (this != document.getElementById('selectRange')) && 
+  //         (this != document.getElementById('selectSection'))
+  //       ) {
+  //           this.selectedIndex = 0
+  //         }
+  //       } else {
+  //         if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
+  //           this.selectedIndex = 0
+  //         }
+  //       }
+  //     },
+  //     // find all inputs
+  //     $("input").each(function () {
+  //       if (this != currentElement) {
+  //         $(this).val('');
+  //       }
+  //     })
+  //   );
+  // }
+
   function resetElements(currentElement, trs = false) {
-    // if elements are not equal to the current element
-    // then reset to the initial values
-    // find all dropdowns
-    $("select").each(function () {
-      if (trs) {
-        if (
-          (this != currentElement) && 
-          (this != document.getElementById('selectLayerDropdown')) && 
-          (this != document.getElementById('selectTownship')) && 
-          (this != document.getElementById('selectRange')) && 
-          (this != document.getElementById('selectSection'))
-        ) {
-            this.selectedIndex = 0
-          }
-        } else {
-          if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
-            this.selectedIndex = 0
-          }
-        }
-      },
-      // find all inputs
-      $("input").each(function () {
-        if (this != currentElement) {
-          $(this).val('');
-        }
-      })
-    );
-  }
+    console.log(trs);
+    let doNotSelect = "#" + currentElement.id + ", #selectLayerDropdown";
+    doNotSelect = trs ? doNotSelect + ", .trs" : doNotSelect;
+    console.log(doNotSelect);
+    
+    $("select").not(doNotSelect).each(function () {
+      console.log(this);
+      this.selectedIndex = 0;
+    });
+  }   
+
 
   /////////////////////////////
   /// Dropdown Select Panel ///

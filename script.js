@@ -699,10 +699,10 @@ require([
     }
   }
 
-  function resetElements(currentElement, trs = false) {
+  function resetElements(currentElement, trs = true) {
     console.log(trs);
     let doNotSelect = "#" + currentElement.id + ", #selectLayerDropdown";
-    doNotSelect = trs ? doNotSelect + ", .trs" : doNotSelect;
+    doNotSelect = trs ? doNotSelect : doNotSelect + ", .trs" ;
     console.log(doNotSelect);
     
     $("select").not(doNotSelect).each(function () {
@@ -974,7 +974,7 @@ require([
 
   // when township changes, reset the other dropdowns.
   on(townshipSelect, "change", function (evt) {
-    resetElements(townshipSelect, true);
+    resetElements(townshipSelect, false);
     var type = evt.target.value;
     var i;
     for (i = rangeSelect.options.length - 1; i >= 0; i--) {
@@ -992,7 +992,7 @@ require([
 
   // when range changes, reset the section dropdown.
   on(rangeSelect, "change", function (evt) {
-    resetElements(rangeSelect, true);
+    resetElements(rangeSelect, false);
     var type = evt.target.value;
     var j;
     for (j = sectionSelect.options.length - 1; j >= 0; j--) {
@@ -1013,7 +1013,7 @@ require([
 
   var querySection = dom.byId("selectSection");
   on(querySection, "change", function (e) {
-    resetElements(sectionSelect, true);
+    resetElements(sectionSelect, false);
     var type = e.target.value;
     zoomToSectionFeature(townshipRangeSectionURL, type, "sec_ch");
   });

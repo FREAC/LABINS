@@ -174,7 +174,25 @@ require([
     title: "NGS Control Points",
     definitionExpression: "STATE = 'FL'",
     renderer: buildNGSRenderer(),
-    minScale: minimumDrawScale
+    minScale: minimumDrawScale,
+    labelsVisible: true,
+    labelingInfo: [{
+      labelExpressionInfo: {
+        expression: '$feature.NAME'
+      },
+      labelPlacement: 'above-right',
+      symbol: {
+        type: "text",
+        color: "black",
+        haloColor: "white",
+        haloSize: "2px",
+        xoffset: -4,
+        yoffset: -4,
+        font: {
+          size: 10
+        }
+      }
+    }]
   });
 
   function haloLabelInfo(labelExpr, labelColor) {
@@ -1376,7 +1394,7 @@ require([
         definitionExpression: "STATE = 'FL'"
       }),
       outFields: ["DEC_LAT", "DEC_LON", "PID", "COUNTY", "DATA_SRCE", "NAME"],
-      searchFields: ["NAME"],
+      searchFields: ["NAME", "PID"],
       suggestionTemplate: "PID: {PID}<br>Name: {NAME}<br>County: {COUNTY}",
       exactMatch: false,
       resultSymbol: highlightPoint,

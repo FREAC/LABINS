@@ -186,10 +186,10 @@ require([
         color: "black",
         haloColor: "white",
         haloSize: "2px",
-        xoffset: -4,
-        yoffset: -4,
+        xoffset: -5,
+        yoffset: -5,
         font: {
-          size: 10
+          size: 8
         }
       }
     }]

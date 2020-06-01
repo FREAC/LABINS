@@ -907,21 +907,30 @@ require([
   //// Zoom to Township/Section/Range Feature ////
   ////////////////////////////////////////////////
 
-  var townshipSelect = dom.byId("selectTownship");
-  var rangeSelect = dom.byId("selectRange");
-  var sectionSelect = dom.byId("selectSection");
+  const townshipSelect = dom.byId("selectTownship");
+  const rangeSelect = dom.byId("selectRange");
+  const sectionSelect = dom.byId("selectSection");
 
   // when mapView is ready, build the first dropdown for township selection
   mapView.when(async function () {
-    var townshipQuery = new Query({
+    const townshipQuery = new Query({
       where: "tdir <> ' ' AND NOT (CAST(twn_ch AS int) > '8' AND tdir = 'N')",
       outFields: ["twn_ch", "tdir"],
       returnDistinctValues: true,
-      orderByFields: ["twn_ch", "tdir"],
+      orderByFields: ["twn_ch", "tdir"]
     });
+
+    const rangeQuery = new Query({
+      where: "rdir <> ' '",
+      outFields: ["rng_ch", "rdir"],
+      returnDistinctValues: true,
+      orderByFields: ["rng_ch", "rdir"]
+    })
     try {
-      const results = await townshipRangeSectionLayer.queryFeatures(townshipQuery);
-      await buildTownshipDropdown(results);
+      const townshipResults = await townshipRangeSectionLayer.queryFeatures(townshipQuery);
+      const rangeResults = await townshipRangeSectionLayer.queryFeatures(rangeQuery);
+      await buildTownshipDropdown(townshipResults);
+      await buildRangeDropdown(rangeResults);
     } catch (err) {
       console.log('Township load failed: ', err);
     }

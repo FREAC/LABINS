@@ -826,16 +826,17 @@ require([
     multiPolygonGeometries = [];
 
     mapView.goTo(results.features);
-    selectionLayer.graphics.removeAll();
-    bufferLayer.graphics.removeAll();
-    graphicArray = [];
-    for (i = 0; i < response.features.length; i++) {
-      highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
-      graphicArray.push(highlightGraphic);
-      multiPolygonGeometries.push(response.features[i].geometry);
-    }
-    selectionLayer.graphics.addMany(graphicArray);
-    return response;
+    return;
+    // selectionLayer.graphics.removeAll();
+    // bufferLayer.graphics.removeAll();
+    // graphicArray = [];
+    // for (i = 0; i < results.features.length; i++) {
+    //   highlightGraphic = new Graphic(results.features[i].geometry, highlightSymbol);
+    //   graphicArray.push(highlightGraphic);
+    //   multiPolygonGeometries.push(results.features[i].geometry);
+    // }
+    // selectionLayer.graphics.addMany(graphicArray);
+    // return results;
 
     // var task = new QueryTask({
     //   url: panelurl
@@ -1023,11 +1024,6 @@ require([
     });
   }
 
-  function buildTownshipRangeDropdown (townshipSelect, rangeSelect) {
-
-
-  }
-
   // when township changes, reset the other dropdowns.
   on(townshipSelect, "change", function (evt) {
     resetElements(townshipSelect, false);
@@ -1070,12 +1066,12 @@ require([
         returnDistinctValues: true,
       });
       townshipRangeSectionLayer.queryFeatures(TRQuery)
-      .then(results => handleResults(results))
+      // .then(results => handleResults(results))
       .then(results => {
-        console.log(results);
+        console.log({results});
         zoomToTRFeature1(results)
       })
-      .then(results => unionGeometries(results))
+      // .then(results => unionGeometries(results))
       .catch((error) => {
         console.error(error);
       });

@@ -700,13 +700,10 @@ require([
   }
 
   function resetElements(currentElement, trs = true) {
-    console.log(trs);
     let doNotSelect = "#" + currentElement.id + ", #selectLayerDropdown";
     doNotSelect = trs ? doNotSelect : doNotSelect + ", .trs" ;
-    console.log(doNotSelect);
     
     $("select").not(doNotSelect).each(function () {
-      console.log(this);
       this.selectedIndex = 0;
     });
   }   
@@ -823,8 +820,50 @@ require([
       .then(createBuffer)
   }
 
+  function zoomToTRFeature1(results) {
+    console.log(results);
+    
+    multiPolygonGeometries = [];
+
+    mapView.goTo(results.features);
+    selectionLayer.graphics.removeAll();
+    bufferLayer.graphics.removeAll();
+    graphicArray = [];
+    for (i = 0; i < response.features.length; i++) {
+      highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
+      graphicArray.push(highlightGraphic);
+      multiPolygonGeometries.push(response.features[i].geometry);
+    }
+    selectionLayer.graphics.addMany(graphicArray);
+    return response;
+
+    // var task = new QueryTask({
+    //   url: panelurl
+    // });
+    // var params = new Query({
+    //   where: "twn_ch = '" + strUser.substr(0, 2) + "' AND tdir = '" + strUser.substr(2) + "' AND rng_ch = '" + rangeUser.substr(0, 2) + "' AND rdir = '" + rangeUser.substr(2) + "'",
+    //   returnGeometry: true
+    // });
+    // task.execute(params)
+    //   .then(function (response) {
+    //     mapView.goTo(response.features);
+    //     selectionLayer.graphics.removeAll();
+    //     bufferLayer.graphics.removeAll();
+    //     graphicArray = [];
+    //     for (i = 0; i < response.features.length; i++) {
+    //       highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
+    //       graphicArray.push(highlightGraphic);
+    //       multiPolygonGeometries.push(response.features[i].geometry);
+    //     }
+    //     selectionLayer.graphics.addMany(graphicArray);
+    //     return response;
+    //   })
+    //   .then(unionGeometries);
+  }
+
   // Modified zoomToFeature function to zoom once the Township and Range has been chosen
   function zoomToTRFeature(panelurl, location, attribute) {
+    
 
     multiPolygonGeometries = [];
 
@@ -913,6 +952,7 @@ require([
 
   // when mapView is ready, build the first dropdown for township selection
   mapView.when(async function () {
+    
     const townshipQuery = new Query({
       where: "tdir <> ' ' AND NOT (CAST(twn_ch AS int) > '8' AND tdir = 'N')",
       outFields: ["twn_ch", "tdir"],
@@ -931,6 +971,8 @@ require([
       const rangeResults = await townshipRangeSectionLayer.queryFeatures(rangeQuery);
       await buildTownshipDropdown(townshipResults);
       await buildRangeDropdown(rangeResults);
+      console.log(townshipSelect.value);
+      console.log(rangeSelect.value);
     } catch (err) {
       console.log('Township load failed: ', err);
     }
@@ -981,25 +1023,66 @@ require([
     });
   }
 
+  function buildTownshipRangeDropdown (townshipSelect, rangeSelect) {
+
+
+  }
+
   // when township changes, reset the other dropdowns.
   on(townshipSelect, "change", function (evt) {
     resetElements(townshipSelect, false);
     var type = evt.target.value;
     var i;
-    for (i = rangeSelect.options.length - 1; i >= 0; i--) {
-      rangeSelect.remove(i);
-    }
-    for (j = sectionSelect.options.length - 1; j >= 0; j--) {
-      sectionSelect.remove(j);
-    }
+    // for (i = rangeSelect.options.length - 1; i >= 0; i--) {
+    //   rangeSelect.remove(i);
+    // }
+    // for (j = sectionSelect.options.length - 1; j >= 0; j--) {
+    //   sectionSelect.remove(j);
+    // }
 
-    var rangeQuery = new Query({
-      where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "'",
-      outFields: ["rng_ch", "rdir"],
-      returnDistinctValues: true,
-      orderByFields: ["rng_ch", "rdir"]
-    });
-    return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(buildRangeDropdown);
+    // var rangeQuery = new Query({
+    //   where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "'",
+    //   outFields: ["rng_ch", "rdir"],
+    //   returnDistinctValues: true,
+    //   orderByFields: ["rng_ch", "rdir"]
+    // });
+      function handleResults(results) {
+        new Promise(
+          function (resolve, reject) {
+              if (results) {
+                console.log(results);
+                
+                // resolve(results); // fulfilled
+                return resolve(results);
+              } else {
+                  var reason = new Error('This is an invalid Township-Range combination');
+                  reject(reason); // reject
+                  throw reason;
+              }
+      
+          });
+      }
+    
+    if (rangeSelect.value !== "Zoom to a Range") { // check to see if combo is valid
+      const rangeValue = rangeSelect.value;
+      const TRQuery = new Query({
+        where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "' AND rng_ch = '" + rangeValue.substr(0, 2) + "' AND rdir = '" + rangeValue.substr(2) + "'",
+        returnDistinctValues: true,
+      });
+      townshipRangeSectionLayer.queryFeatures(TRQuery)
+      .then(results => handleResults(results))
+      .then(results => {
+        console.log(results);
+        zoomToTRFeature1(results)
+      })
+      .then(results => unionGeometries(results))
+      .catch((error) => {
+        console.error(error);
+      });
+      // .then(zoomToTRFeature(townshipRangeSectionURL, type, "rng_ch")
+      // .then(handleResults(results)))
+    }
+    // return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(buildRangeDropdown);
   })
 
   // when range changes, reset the section dropdown.
@@ -1007,20 +1090,22 @@ require([
     resetElements(rangeSelect, false);
     var type = evt.target.value;
     var j;
-    for (j = sectionSelect.options.length - 1; j >= 0; j--) {
-      sectionSelect.remove(j);
-    }
+    // for (j = sectionSelect.options.length - 1; j >= 0; j--) {
+    //   sectionSelect.remove(j);
+    // }
 
-    var e = document.getElementById("selectTownship");
-    var strUser = e.options[e.selectedIndex].text;
+    // var e = document.getElementById("selectTownship");
+    // var strUser = e.options[e.selectedIndex].text;
 
-    // TODO: Refactor this query to rmeove selectQuery.xxxxxxx    
-    var selectQuery = new Query();
-    selectQuery.where = "twn_ch = '" + strUser.substr(0, 2) + "' AND tdir = '" + strUser.substr(2) + "' AND rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND rng_ch <> ' '";
-    selectQuery.outFields = ["sec_ch"];
-    selectQuery.returnDistinctValues = true;
-    selectQuery.orderByFields = ["sec_ch"];
-    return townshipRangeSectionLayer.queryFeatures(selectQuery).then(buildSectionDropdown);
+    // // TODO: Refactor this query to rmeove selectQuery.xxxxxxx    
+    // var selectQuery = new Query();
+    // selectQuery.where = "twn_ch = '" + strUser.substr(0, 2) + "' AND tdir = '" + strUser.substr(2) + "' AND rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND rng_ch <> ' '";
+    // selectQuery.outFields = ["sec_ch"];
+    // selectQuery.returnDistinctValues = true;
+    // selectQuery.orderByFields = ["sec_ch"];
+    // return townshipRangeSectionLayer.queryFeatures(selectQuery).then(buildSectionDropdown);
+
+
   });
 
   var querySection = dom.byId("selectSection");
@@ -1030,11 +1115,11 @@ require([
     zoomToSectionFeature(townshipRangeSectionURL, type, "sec_ch");
   });
 
-  var queryRange = dom.byId("selectRange");
-  on(queryRange, "change", function (e) {
-    var type = e.target.value;
-    zoomToTRFeature(townshipRangeSectionURL, type, "rng_ch");
-  });
+  // var queryRange = dom.byId("selectRange");
+  // on(queryRange, "change", function (e) {
+  //   var type = e.target.value;
+  //   zoomToTRFeature(townshipRangeSectionURL, type, "rng_ch");
+  // });
 
   let infoPanelData = [];
   let layerList;

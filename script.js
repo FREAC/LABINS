@@ -821,45 +821,16 @@ require([
   }
 
   function zoomToTRFeature1(results) {
-    console.log(results);
-    
-    multiPolygonGeometries = [];
-
+    console.log(results.features);
     mapView.goTo(results.features);
-    return;
-    // selectionLayer.graphics.removeAll();
-    // bufferLayer.graphics.removeAll();
-    // graphicArray = [];
-    // for (i = 0; i < results.features.length; i++) {
-    //   highlightGraphic = new Graphic(results.features[i].geometry, highlightSymbol);
-    //   graphicArray.push(highlightGraphic);
-    //   multiPolygonGeometries.push(results.features[i].geometry);
-    // }
-    // selectionLayer.graphics.addMany(graphicArray);
-    // return results;
-
-    // var task = new QueryTask({
-    //   url: panelurl
-    // });
-    // var params = new Query({
-    //   where: "twn_ch = '" + strUser.substr(0, 2) + "' AND tdir = '" + strUser.substr(2) + "' AND rng_ch = '" + rangeUser.substr(0, 2) + "' AND rdir = '" + rangeUser.substr(2) + "'",
-    //   returnGeometry: true
-    // });
-    // task.execute(params)
-    //   .then(function (response) {
-    //     mapView.goTo(response.features);
-    //     selectionLayer.graphics.removeAll();
-    //     bufferLayer.graphics.removeAll();
-    //     graphicArray = [];
-    //     for (i = 0; i < response.features.length; i++) {
-    //       highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
-    //       graphicArray.push(highlightGraphic);
-    //       multiPolygonGeometries.push(response.features[i].geometry);
-    //     }
-    //     selectionLayer.graphics.addMany(graphicArray);
-    //     return response;
-    //   })
-    //   .then(unionGeometries);
+    bufferLayer.graphics.removeAll();
+    selectionLayer.graphics.removeAll();
+    graphicArray = [];
+    for (feature of results.features) {
+      highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+      graphicArray.push(highlightGraphic);
+    }
+    selectionLayer.graphics.addMany(graphicArray);
   }
 
   // Modified zoomToFeature function to zoom once the Township and Range has been chosen
@@ -883,19 +854,22 @@ require([
     });
     task.execute(params)
       .then(function (response) {
-        mapView.goTo(response.features);
-        selectionLayer.graphics.removeAll();
-        bufferLayer.graphics.removeAll();
-        graphicArray = [];
-        for (i = 0; i < response.features.length; i++) {
-          highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
-          graphicArray.push(highlightGraphic);
-          multiPolygonGeometries.push(response.features[i].geometry);
-        }
-        selectionLayer.graphics.addMany(graphicArray);
-        return response;
-      })
-      .then(unionGeometries);
+        console.log(response);
+        // zoomToTRFeature1(response)
+        // mapView.goTo(response.features);
+      });
+      //   selectionLayer.graphics.removeAll();
+      //   bufferLayer.graphics.removeAll();
+      //   graphicArray = [];
+      //   for (i = 0; i < response.features.length; i++) {
+      //     highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
+      //     graphicArray.push(highlightGraphic);
+      //     multiPolygonGeometries.push(response.features[i].geometry);
+      //   }
+      //   selectionLayer.graphics.addMany(graphicArray);
+      //   return response;
+      // })
+      // .then(unionGeometries);
   }
 
   //Input geometry, output buffer
@@ -1055,7 +1029,7 @@ require([
                   reject(reason); // reject
                   throw reason;
               }
-      
+      f
           });
       }
     
@@ -1063,7 +1037,8 @@ require([
       const rangeValue = rangeSelect.value;
       const TRQuery = new Query({
         where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "' AND rng_ch = '" + rangeValue.substr(0, 2) + "' AND rdir = '" + rangeValue.substr(2) + "'",
-        returnDistinctValues: true,
+        // returnDistinctValues: true,
+        returnGeometry: true
       });
       townshipRangeSectionLayer.queryFeatures(TRQuery)
       // .then(results => handleResults(results))

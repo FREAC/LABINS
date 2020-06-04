@@ -820,7 +820,7 @@ require([
       .then(createBuffer)
   }
 
-  function zoomToTRFeature1(results) {
+  function zoomToTRFeature(results) {
     console.log(results.features);
     mapView.goTo(results.features);
     bufferLayer.graphics.removeAll();
@@ -831,45 +831,6 @@ require([
       graphicArray.push(highlightGraphic);
     }
     selectionLayer.graphics.addMany(graphicArray);
-  }
-
-  // Modified zoomToFeature function to zoom once the Township and Range has been chosen
-  function zoomToTRFeature(panelurl, location, attribute) {
-    
-
-    multiPolygonGeometries = [];
-
-    var township = document.getElementById("selectTownship");
-    var strUser = township.options[township.selectedIndex].text;
-
-    var range = document.getElementById("selectRange");
-    var rangeUser = range.options[range.selectedIndex].text;
-
-    var task = new QueryTask({
-      url: panelurl
-    });
-    var params = new Query({
-      where: "twn_ch = '" + strUser.substr(0, 2) + "' AND tdir = '" + strUser.substr(2) + "' AND rng_ch = '" + rangeUser.substr(0, 2) + "' AND rdir = '" + rangeUser.substr(2) + "'",
-      returnGeometry: true
-    });
-    task.execute(params)
-      .then(function (response) {
-        console.log(response);
-        // zoomToTRFeature1(response)
-        // mapView.goTo(response.features);
-      });
-      //   selectionLayer.graphics.removeAll();
-      //   bufferLayer.graphics.removeAll();
-      //   graphicArray = [];
-      //   for (i = 0; i < response.features.length; i++) {
-      //     highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
-      //     graphicArray.push(highlightGraphic);
-      //     multiPolygonGeometries.push(response.features[i].geometry);
-      //   }
-      //   selectionLayer.graphics.addMany(graphicArray);
-      //   return response;
-      // })
-      // .then(unionGeometries);
   }
 
   //Input geometry, output buffer
@@ -998,40 +959,40 @@ require([
     });
   }
 
+  // function handleResults(results) {
+  //   new Promise(
+  //     function (resolve, reject) {
+  //         if (results) {
+  //           console.log(results);
+            
+  //           return Promise.resolve(results); // fulfilled
+  //           return results;
+  //         } else {
+  //             var reason = new Error('This is an invalid Township-Range combination');
+  //             reject(reason); // reject
+  //             throw reason;
+  //         }
+  //     });
+  // }
+
+  const handleResults = results => {
+    if (results.features.length > 0) {
+      console.log(results);
+      
+      return results;
+    } else {
+        console.log('reject!');
+        
+        var reason = new Error('This is an invalid Township-Range combination');
+        throw reason;
+    }
+  }
+
   // when township changes, reset the other dropdowns.
   on(townshipSelect, "change", function (evt) {
     resetElements(townshipSelect, false);
     var type = evt.target.value;
     var i;
-    // for (i = rangeSelect.options.length - 1; i >= 0; i--) {
-    //   rangeSelect.remove(i);
-    // }
-    // for (j = sectionSelect.options.length - 1; j >= 0; j--) {
-    //   sectionSelect.remove(j);
-    // }
-
-    // var rangeQuery = new Query({
-    //   where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "'",
-    //   outFields: ["rng_ch", "rdir"],
-    //   returnDistinctValues: true,
-    //   orderByFields: ["rng_ch", "rdir"]
-    // });
-      function handleResults(results) {
-        new Promise(
-          function (resolve, reject) {
-              if (results) {
-                console.log(results);
-                
-                // resolve(results); // fulfilled
-                return resolve(results);
-              } else {
-                  var reason = new Error('This is an invalid Township-Range combination');
-                  reject(reason); // reject
-                  throw reason;
-              }
-      f
-          });
-      }
     
     if (rangeSelect.value !== "Zoom to a Range") { // check to see if combo is valid
       const rangeValue = rangeSelect.value;
@@ -1041,16 +1002,16 @@ require([
         returnGeometry: true
       });
       townshipRangeSectionLayer.queryFeatures(TRQuery)
-      // .then(results => handleResults(results))
+      .then(results => handleResults(results))
       .then(results => {
         console.log({results});
-        zoomToTRFeature1(results)
+        zoomToTRFeature(results)
       })
       // .then(results => unionGeometries(results))
       .catch((error) => {
         console.error(error);
       });
-      // .then(zoomToTRFeature(townshipRangeSectionURL, type, "rng_ch")
+      // .then(zoomToTRFeature(results)
       // .then(handleResults(results)))
     }
     // return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(buildRangeDropdown);

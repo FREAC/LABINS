@@ -998,7 +998,6 @@ require([
       const rangeValue = rangeSelect.value;
       const TRQuery = new Query({
         where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "' AND rng_ch = '" + rangeValue.substr(0, 2) + "' AND rdir = '" + rangeValue.substr(2) + "'",
-        // returnDistinctValues: true,
         returnGeometry: true
       });
       townshipRangeSectionLayer.queryFeatures(TRQuery)
@@ -1007,37 +1006,34 @@ require([
         console.log({results});
         zoomToTRFeature(results)
       })
-      // .then(results => unionGeometries(results))
       .catch((error) => {
         console.error(error);
       });
-      // .then(zoomToTRFeature(results)
-      // .then(handleResults(results)))
     }
-    // return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(buildRangeDropdown);
   })
 
   // when range changes, reset the section dropdown.
   on(rangeSelect, "change", function (evt) {
     resetElements(rangeSelect, false);
     var type = evt.target.value;
-    var j;
-    // for (j = sectionSelect.options.length - 1; j >= 0; j--) {
-    //   sectionSelect.remove(j);
-    // }
-
-    // var e = document.getElementById("selectTownship");
-    // var strUser = e.options[e.selectedIndex].text;
-
-    // // TODO: Refactor this query to rmeove selectQuery.xxxxxxx    
-    // var selectQuery = new Query();
-    // selectQuery.where = "twn_ch = '" + strUser.substr(0, 2) + "' AND tdir = '" + strUser.substr(2) + "' AND rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND rng_ch <> ' '";
-    // selectQuery.outFields = ["sec_ch"];
-    // selectQuery.returnDistinctValues = true;
-    // selectQuery.orderByFields = ["sec_ch"];
-    // return townshipRangeSectionLayer.queryFeatures(selectQuery).then(buildSectionDropdown);
-
-
+    var i;
+    
+    if (townshipSelect.value !== "Zoom to a Township") { // check to see if combo is valid
+      const townshipValue = townshipSelect.value;
+      const TRQuery = new Query({
+        where: "rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND twn_ch = '" + townshipValue.substr(0, 2) + "' AND tdir = '" + townshipValue.substr(2) + "'",
+        returnGeometry: true
+      });
+      townshipRangeSectionLayer.queryFeatures(TRQuery)
+      .then(results => handleResults(results))
+      .then(results => {
+        console.log({results});
+        zoomToTRFeature(results)
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
   });
 
   var querySection = dom.byId("selectSection");

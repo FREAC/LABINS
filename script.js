@@ -949,6 +949,11 @@ require([
   // Add the unique values to the
   // section selection element.
   function buildSectionDropdown(values) {
+    // remove sections
+    for (j = sectionSelect.options.length - 1; j >= 0; j--) {
+      sectionSelect.remove(j);
+    }
+
     const option = domConstruct.create("option");
     option.text = "Zoom to a Section";
     sectionSelect.add(option);

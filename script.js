@@ -949,37 +949,26 @@ require([
   // Add the unique values to the
   // section selection element.
   function buildSectionDropdown(values) {
-    console.log({values});
-    
-    var option = domConstruct.create("option");
+    const option = domConstruct.create("option");
     option.text = "Zoom to a Section";
     sectionSelect.add(option);
+    const sectionArr = values.features
+    const sectionIntArr = sectionArr.map(element => parseInt(element.attributes.sec_ch));
+    const disctinctSectionsArr = [...new Set(sectionIntArr)];
+    const sortedSections = disctinctSectionsArr.sort((a, b) => a-b).map(element => element.toString().padStart(2, '0'));
 
-    sections = values.features
-
-    sections = sections.map(element => parseInt(element.attributes.sec_ch));
-    
-    console.log(sections);
-    sections = sections.sort((a, b) => a-b);
-    console.log(sections);
-
-    sections.forEach(function (value) {
-      var option = domConstruct.create("option");
+    sortedSections.forEach(function (value) {
+      const option = domConstruct.create("option");
       option.text = value
       sectionSelect.add(option);
     });
   }
 
   const handleResults = results => {
-    if (results.features.length > 0) {
-      console.log(results);
-      
+    if (results.features.length > 0) {      
       return results;
-    } else {
-        console.log('reject!');
-        
-        var reason = new Error('This is an invalid Township-Range combination');
-        throw reason;
+    } else { 
+        throw new Error('This is an invalid Township-Range combination');;
     }
   }
 
@@ -987,7 +976,6 @@ require([
   on(townshipSelect, "change", function (evt) {
     resetElements(townshipSelect, false);
     var type = evt.target.value;
-    var i;
     
     if (rangeSelect.value !== "Zoom to a Range") { // check to see if combo is valid
       const rangeValue = rangeSelect.value;

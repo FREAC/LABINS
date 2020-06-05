@@ -831,6 +831,7 @@ require([
       graphicArray.push(highlightGraphic);
     }
     selectionLayer.graphics.addMany(graphicArray);
+    return results;
   }
 
   //Input geometry, output buffer
@@ -948,32 +949,26 @@ require([
   // Add the unique values to the
   // section selection element.
   function buildSectionDropdown(values) {
+    console.log({values});
+    
     var option = domConstruct.create("option");
     option.text = "Zoom to a Section";
     sectionSelect.add(option);
 
-    values.features.forEach(function (value) {
+    sections = values.features
+
+    sections = sections.map(element => parseInt(element.attributes.sec_ch));
+    
+    console.log(sections);
+    sections = sections.sort((a, b) => a-b);
+    console.log(sections);
+
+    sections.forEach(function (value) {
       var option = domConstruct.create("option");
-      option.text = value.attributes.sec_ch;
+      option.text = value
       sectionSelect.add(option);
     });
   }
-
-  // function handleResults(results) {
-  //   new Promise(
-  //     function (resolve, reject) {
-  //         if (results) {
-  //           console.log(results);
-            
-  //           return Promise.resolve(results); // fulfilled
-  //           return results;
-  //         } else {
-  //             var reason = new Error('This is an invalid Township-Range combination');
-  //             reject(reason); // reject
-  //             throw reason;
-  //         }
-  //     });
-  // }
 
   const handleResults = results => {
     if (results.features.length > 0) {
@@ -998,14 +993,13 @@ require([
       const rangeValue = rangeSelect.value;
       const TRQuery = new Query({
         where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "' AND rng_ch = '" + rangeValue.substr(0, 2) + "' AND rdir = '" + rangeValue.substr(2) + "'",
+        outFields: ["*"], 
         returnGeometry: true
       });
       townshipRangeSectionLayer.queryFeatures(TRQuery)
       .then(results => handleResults(results))
-      .then(results => {
-        console.log({results});
-        zoomToTRFeature(results)
-      })
+      .then(results => zoomToTRFeature(results))
+      .then(results => buildSectionDropdown(results))
       .catch((error) => {
         console.error(error);
       });
@@ -1026,10 +1020,8 @@ require([
       });
       townshipRangeSectionLayer.queryFeatures(TRQuery)
       .then(results => handleResults(results))
-      .then(results => {
-        console.log({results});
-        zoomToTRFeature(results)
-      })
+      .then(results => zoomToTRFeature(results))
+      .then(results => buildSectionDropdown(results))
       .catch((error) => {
         console.error(error);
       });

@@ -949,6 +949,8 @@ require([
   // Add the unique values to the
   // section selection element.
   function buildSectionDropdown(values) {
+    console.log({values});
+    
     // remove sections
     for (j = sectionSelect.options.length - 1; j >= 0; j--) {
       sectionSelect.remove(j);
@@ -962,6 +964,12 @@ require([
     const disctinctSectionsArr = [...new Set(sectionIntArr)];
     const sortedSections = disctinctSectionsArr.sort((a, b) => a-b).map(element => element.toString().padStart(2, '0'));
 
+    console.log({
+      sectionArr,
+      sectionIntArr,
+      disctinctSectionsArr,
+      sortedSections
+    })
     sortedSections.forEach(function (value) {
       const option = domConstruct.create("option");
       option.text = value
@@ -1009,7 +1017,8 @@ require([
       const townshipValue = townshipSelect.value;
       const TRQuery = new Query({
         where: "rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND twn_ch = '" + townshipValue.substr(0, 2) + "' AND tdir = '" + townshipValue.substr(2) + "'",
-        returnGeometry: true
+        returnGeometry: true,
+        outFields: ["*"]
       });
       townshipRangeSectionLayer.queryFeatures(TRQuery)
       .then(results => handleResults(results))

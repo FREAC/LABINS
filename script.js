@@ -1021,28 +1021,23 @@ require([
       }
     }
 
-  // when township changes, reset the other dropdowns.
+  // when township changes, reset the section dropdown and execute queryTR.
   on(townshipSelect, "change", function (evt) {
     resetElements(townshipSelect, false);
-    var type = evt.target.value;
-
+    const type = evt.target.value;
     queryTR(type, 'township');
-  
   });
 
-  // when range changes, reset the section dropdown.
+  // when range changes, reset the section dropdown and execute queryTR .
   on(rangeSelect, "change", function (evt) {
     resetElements(rangeSelect, false);
-    var type = evt.target.value;
-    var i;
-    
+    const type = evt.target.value;
     queryTR(type, 'range');
   });
 
-  var querySection = dom.byId("selectSection");
-  on(querySection, "change", function (e) {
+  on(sectionSelect, "change", function (e) {
     resetElements(sectionSelect, false);
-    var type = e.target.value;
+    const type = e.target.value;
     zoomToSectionFeature(townshipRangeSectionURL, type, "sec_ch");
   });
 

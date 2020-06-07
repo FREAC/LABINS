@@ -882,9 +882,9 @@ require([
   //// Zoom to Township/Section/Range Feature ////
   ////////////////////////////////////////////////
 
-  const townshipSelect = dom.byId("selectTownship");
-  const rangeSelect = dom.byId("selectRange");
-  const sectionSelect = dom.byId("selectSection");
+  const townshipSelect = document.getElementById("selectTownship");
+  const rangeSelect = document.getElementById("selectRange");
+  const sectionSelect = document.getElementById("selectSection");
 
   // when mapView is ready, build the first dropdown for township selection
   mapView.when(async function () {

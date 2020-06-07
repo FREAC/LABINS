@@ -991,7 +991,7 @@ require([
 
   function queryTR (type, whichDropdown) {
     if(whichDropdown === 'range') { 
-      if (townshipSelect.value !== "Zoom to a Township") { // check to see if combo is valid
+      if (townshipSelect.value !== "Zoom to a Township") { // check to see if combo is valid if populated
         const townshipValue = townshipSelect.value;
         const TRQuery = new Query({
           where: "rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND twn_ch = '" + townshipValue.substr(0, 2) + "' AND tdir = '" + townshipValue.substr(2) + "'",
@@ -1007,7 +1007,7 @@ require([
         });
       }
     } else if (whichDropdown === 'township') {
-        if (rangeSelect.value !== "Zoom to a Range") { // check to see if combo is valid
+        if (rangeSelect.value !== "Zoom to a Range") { // check to see if combo is valid if populated
           const rangeValue = rangeSelect.value;
           const TRQuery = new Query({
             where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "' AND rng_ch = '" + rangeValue.substr(0, 2) + "' AND rdir = '" + rangeValue.substr(2) + "'",

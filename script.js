@@ -908,8 +908,6 @@ require([
       const rangeResults = await townshipRangeSectionLayer.queryFeatures(rangeQuery);
       await buildTownshipDropdown(townshipResults);
       await buildRangeDropdown(rangeResults);
-      console.log(townshipSelect.value);
-      console.log(rangeSelect.value);
     } catch (err) {
       console.log('Township load failed: ', err);
     }
@@ -964,12 +962,6 @@ require([
     const disctinctSectionsArr = [...new Set(sectionIntArr)];
     const sortedSections = disctinctSectionsArr.sort((a, b) => a-b).map(element => element.toString().padStart(2, '0'));
 
-    console.log({
-      sectionArr,
-      sectionIntArr,
-      disctinctSectionsArr,
-      sortedSections
-    })
     sortedSections.forEach(function (value) {
       const option = domConstruct.create("option");
       option.text = value
@@ -985,27 +977,51 @@ require([
     }
   }
 
+  function queryTR (type, whichDropdown) {
+    console.log({type, whichDropdown});
+    if(whichDropdown === 'range') { 
+      if (townshipSelect.value !== "Zoom to a Township") { // check to see if combo is valid
+        const townshipValue = townshipSelect.value;
+        const TRQuery = new Query({
+          where: "rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND twn_ch = '" + townshipValue.substr(0, 2) + "' AND tdir = '" + townshipValue.substr(2) + "'",
+          returnGeometry: true,
+          outFields: ["*"]
+        });
+        townshipRangeSectionLayer.queryFeatures(TRQuery)
+        .then(results => handleResults(results))
+        .then(results => zoomToTRFeature(results))
+        .then(results => buildSectionDropdown(results))
+        .catch((error) => {
+          console.error(error);
+        });
+      }
+    } else if (whichDropdown === 'township') {
+        if (rangeSelect.value !== "Zoom to a Range") { // check to see if combo is valid
+          const rangeValue = rangeSelect.value;
+          const TRQuery = new Query({
+            where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "' AND rng_ch = '" + rangeValue.substr(0, 2) + "' AND rdir = '" + rangeValue.substr(2) + "'",
+            outFields: ["*"], 
+            returnGeometry: true
+          });
+          townshipRangeSectionLayer.queryFeatures(TRQuery)
+          .then(results => handleResults(results))
+          .then(results => zoomToTRFeature(results))
+          .then(results => buildSectionDropdown(results))
+          .catch((error) => {
+            console.error(error);
+          });
+        }
+      }
+    }
+
   // when township changes, reset the other dropdowns.
   on(townshipSelect, "change", function (evt) {
     resetElements(townshipSelect, false);
     var type = evt.target.value;
-    
-    if (rangeSelect.value !== "Zoom to a Range") { // check to see if combo is valid
-      const rangeValue = rangeSelect.value;
-      const TRQuery = new Query({
-        where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "' AND rng_ch = '" + rangeValue.substr(0, 2) + "' AND rdir = '" + rangeValue.substr(2) + "'",
-        outFields: ["*"], 
-        returnGeometry: true
-      });
-      townshipRangeSectionLayer.queryFeatures(TRQuery)
-      .then(results => handleResults(results))
-      .then(results => zoomToTRFeature(results))
-      .then(results => buildSectionDropdown(results))
-      .catch((error) => {
-        console.error(error);
-      });
-    }
-  })
+
+    queryTR(type, 'township');
+  
+  });
 
   // when range changes, reset the section dropdown.
   on(rangeSelect, "change", function (evt) {
@@ -1013,21 +1029,7 @@ require([
     var type = evt.target.value;
     var i;
     
-    if (townshipSelect.value !== "Zoom to a Township") { // check to see if combo is valid
-      const townshipValue = townshipSelect.value;
-      const TRQuery = new Query({
-        where: "rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND twn_ch = '" + townshipValue.substr(0, 2) + "' AND tdir = '" + townshipValue.substr(2) + "'",
-        returnGeometry: true,
-        outFields: ["*"]
-      });
-      townshipRangeSectionLayer.queryFeatures(TRQuery)
-      .then(results => handleResults(results))
-      .then(results => zoomToTRFeature(results))
-      .then(results => buildSectionDropdown(results))
-      .catch((error) => {
-        console.error(error);
-      });
-    }
+    queryTR(type, 'range');
   });
 
   var querySection = dom.byId("selectSection");
@@ -1036,12 +1038,6 @@ require([
     var type = e.target.value;
     zoomToSectionFeature(townshipRangeSectionURL, type, "sec_ch");
   });
-
-  // var queryRange = dom.byId("selectRange");
-  // on(queryRange, "change", function (e) {
-  //   var type = e.target.value;
-  //   zoomToTRFeature(townshipRangeSectionURL, type, "rng_ch");
-  // });
 
   let infoPanelData = [];
   let layerList;

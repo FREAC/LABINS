@@ -821,7 +821,6 @@ require([
   }
 
   function zoomToTRFeature(results) {
-    console.log(results.features);
     mapView.goTo(results.features);
     bufferLayer.graphics.removeAll();
     selectionLayer.graphics.removeAll();
@@ -947,8 +946,6 @@ require([
   // Add the unique values to the
   // section selection element.
   function buildSectionDropdown(values) {
-    console.log({values});
-    
     // remove sections
     for (j = sectionSelect.options.length - 1; j >= 0; j--) {
       sectionSelect.remove(j);
@@ -973,12 +970,22 @@ require([
     if (results.features.length > 0) {      
       return results;
     } else { 
+        $("#trs").prepend(
+          `<div id="TRSAlert" class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            Invalid Township-Range combination. Please enter a correct Township-Range combination.
+          </div>`
+        )
+        window.setTimeout(function() {
+          $("#TRSAlert").fadeTo(500, 0).slideUp(500, function(){
+              $(this).remove(); 
+          });
+      }, 4000);
         throw new Error('This is an invalid Township-Range combination');;
     }
   }
 
   function queryTR (type, whichDropdown) {
-    console.log({type, whichDropdown});
     if(whichDropdown === 'range') { 
       if (townshipSelect.value !== "Zoom to a Township") { // check to see if combo is valid
         const townshipValue = townshipSelect.value;

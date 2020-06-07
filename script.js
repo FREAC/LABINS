@@ -980,7 +980,11 @@ require([
           $("#TRSAlert").fadeTo(500, 0).slideUp(500, function(){
               $(this).remove(); 
           });
-      }, 4000);
+        }, 4000);
+        // remove sections
+        for (j = sectionSelect.options.length - 1; j >= 0; j--) {
+          sectionSelect.remove(j);
+        }
         throw new Error('This is an invalid Township-Range combination');;
     }
   }

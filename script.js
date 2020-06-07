@@ -909,7 +909,7 @@ require([
       await buildTownshipDropdown(townshipResults);
       await buildRangeDropdown(rangeResults);
     } catch (err) {
-      console.log('Township load failed: ', err);
+      console.log('Township/Range load failed: ', err);
     }
   })
 

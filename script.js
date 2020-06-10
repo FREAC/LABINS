@@ -952,9 +952,8 @@ require([
     option.text = "Zoom to a Section";
     sectionSelect.add(option);
     const sectionArr = values.features
-    const sectionIntArr = sectionArr.map(element => parseInt(element.attributes.sec_ch));
-    const disctinctSectionsArr = [...new Set(sectionIntArr)];
-    const sortedSections = disctinctSectionsArr.sort((a, b) => a-b).map(element => element.toString().padStart(2, '0'));
+    const sectionIntArr = sectionArr.map(element => element.attributes.sec_ch);
+    const sortedSections = [...new Set(sectionIntArr)].sort();
 
     sortedSections.forEach(function (value) {
       const option = domConstruct.create("option");

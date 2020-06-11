@@ -962,7 +962,7 @@ require([
     });
   }
 
-  const handleNoResults = results => {
+  const validateResults = results => {
         $("#trs").prepend(
           `<div id="TRSAlert" class="alert alert-danger" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -985,7 +985,7 @@ require([
       zoomToTRFeature(results)
       buildSectionDropdown(results)
     } else {
-      handleNoResults(results);
+      validateResults(results);
     }
   }
 
@@ -1009,7 +1009,7 @@ require([
           queryTRFlow(TRQuery);
       }
     } 
-    
+
   // when township changes, reset the section dropdown and execute queryTR.
   on(townshipSelect, "change", function (evt) {
     resetElements(townshipSelect, false);

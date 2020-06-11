@@ -1000,8 +1000,7 @@ require([
         queryTRFlow(TRQuery);
         //place the tr function here
       }
-    } else if (whichDropdown === 'township') {
-        if (rangeSelect.value !== "Zoom to a Range") { // check to see if combo is valid if populated
+    } else if (whichDropdown === 'selectTownship' && rangeSelect.selectedIndex !== 0) {
           const rangeValue = rangeSelect.value;
           const TRQuery = new Query({
             where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "' AND rng_ch = '" + rangeValue.substr(0, 2) + "' AND rdir = '" + rangeValue.substr(2) + "'",

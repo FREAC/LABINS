@@ -962,10 +962,7 @@ require([
     });
   }
 
-  const handleResults = results => {
-    if (results.features.length > 0) {      
-      return results;
-    } else { 
+  const handleNoResults = results => {
         $("#trs").prepend(
           `<div id="TRSAlert" class="alert alert-danger" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -977,15 +974,22 @@ require([
               $(this).remove(); 
           });
         }, 4000);
-        // remove sections
-        for (j = sectionSelect.options.length - 1; j >= 0; j--) {
-          sectionSelect.remove(j);
-        }
+        // remove sections & throw error
+        sectionSelect.options.length = 0;
         throw new Error('This is an invalid Township-Range combination');;
+  }
+
+  async function queryTRFlow (TRQuery) {
+    const results = await townshipRangeSectionLayer.queryFeatures(TRQuery)
+    if (results.features.length) {
+      zoomToTRFeature(results)
+      buildSectionDropdown(results)
+    } else {
+      handleNoResults(results);
     }
   }
 
-  function queryTR (type, whichDropdown) {
+  async function queryTR (type, whichDropdown) {
     if(whichDropdown === 'range') { 
       if (townshipSelect.value !== "Zoom to a Township") { // check to see if combo is valid if populated
         const townshipValue = townshipSelect.value;
@@ -994,13 +998,8 @@ require([
           returnGeometry: true,
           outFields: ["*"]
         });
-        townshipRangeSectionLayer.queryFeatures(TRQuery)
-        .then(results => handleResults(results))
-        .then(results => zoomToTRFeature(results))
-        .then(results => buildSectionDropdown(results))
-        .catch((error) => {
-          console.error(error);
-        });
+        queryTRFlow(TRQuery);
+        //place the tr function here
       }
     } else if (whichDropdown === 'township') {
         if (rangeSelect.value !== "Zoom to a Range") { // check to see if combo is valid if populated
@@ -1010,13 +1009,7 @@ require([
             outFields: ["*"], 
             returnGeometry: true
           });
-          townshipRangeSectionLayer.queryFeatures(TRQuery)
-          .then(results => handleResults(results))
-          .then(results => zoomToTRFeature(results))
-          .then(results => buildSectionDropdown(results))
-          .catch((error) => {
-            console.error(error);
-          });
+          queryTRFlow(TRQuery);
         }
       }
     }

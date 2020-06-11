@@ -990,7 +990,7 @@ require([
   }
 
   async function queryTR (type, whichDropdown) {
-    if(whichDropdown === 'selectRange' && townshipSelect.selectedIndex !== 0) {
+    if (whichDropdown === 'selectRange' && townshipSelect.selectedIndex !== 0) {
         const townshipValue = townshipSelect.value;
         const TRQuery = new Query({
           where: "rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND twn_ch = '" + townshipValue.substr(0, 2) + "' AND tdir = '" + townshipValue.substr(2) + "'",
@@ -999,7 +999,6 @@ require([
         });
         queryTRFlow(TRQuery);
         //place the tr function here
-      }
     } else if (whichDropdown === 'selectTownship' && rangeSelect.selectedIndex !== 0) {
           const rangeValue = rangeSelect.value;
           const TRQuery = new Query({
@@ -1008,22 +1007,21 @@ require([
             returnGeometry: true
           });
           queryTRFlow(TRQuery);
-        }
       }
-    }
-
+    } 
+    
   // when township changes, reset the section dropdown and execute queryTR.
   on(townshipSelect, "change", function (evt) {
     resetElements(townshipSelect, false);
     const type = evt.target.value;
-    queryTR(type, 'township');
+    queryTR(type, 'selectTownship');
   });
 
   // when range changes, reset the section dropdown and execute queryTR .
   on(rangeSelect, "change", function (evt) {
     resetElements(rangeSelect, false);
     const type = evt.target.value;
-    queryTR(type, 'range');
+    queryTR(type, 'selectRange');
   });
 
   on(sectionSelect, "change", function (e) {

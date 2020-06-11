@@ -990,8 +990,7 @@ require([
   }
 
   async function queryTR (type, whichDropdown) {
-    if(whichDropdown === 'range') { 
-      if (townshipSelect.value !== "Zoom to a Township") { // check to see if combo is valid if populated
+    if(whichDropdown === 'selectRange' && townshipSelect.selectedIndex !== 0) {
         const townshipValue = townshipSelect.value;
         const TRQuery = new Query({
           where: "rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND twn_ch = '" + townshipValue.substr(0, 2) + "' AND tdir = '" + townshipValue.substr(2) + "'",

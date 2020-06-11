@@ -916,10 +916,6 @@ require([
   // select element. This will allow the user
   // to filter states by subregion.
   function buildTownshipDropdown(values) {
-    var option = domConstruct.create("option");
-    option.text = "Zoom to a Township";
-    townshipSelect.add(option);
-
     values.features.forEach(function (value) {
       var option = domConstruct.create("option");
       var name = value.attributes.twn_ch + value.attributes.tdir;
@@ -931,10 +927,6 @@ require([
   // Add the unique values to the
   // range selection element.
   function buildRangeDropdown(values) {
-    var option = domConstruct.create("option");
-    option.text = "Zoom to a Range";
-    rangeSelect.add(option);
-
     values.features.forEach(function (value) {
       var option = domConstruct.create("option");
       var name = value.attributes.rng_ch + value.attributes.rdir;
@@ -947,10 +939,6 @@ require([
   // section selection element.
   function buildSectionDropdown(values) {
     sectionSelect.options.length = 0;
-
-    const option = domConstruct.create("option");
-    option.text = "Zoom to a Section";
-    sectionSelect.add(option);
     const sectionArr = values.features
     const sectionIntArr = sectionArr.map(element => element.attributes.sec_ch);
     const sortedSections = [...new Set(sectionIntArr)].sort();

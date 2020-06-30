@@ -4,6 +4,7 @@ require([
   "esri/views/MapView",
   "esri/layers/MapImageLayer",
   "esri/layers/FeatureLayer",
+
   "esri/tasks/QueryTask",
   "esri/tasks/support/Query",
   "esri/geometry/geometryEngine",
@@ -17,6 +18,7 @@ require([
   "esri/symbols/SimpleLineSymbol",
   "esri/tasks/Locator",
   "esri/geometry/SpatialReference",
+
 
   // Widgets
   "esri/widgets/CoordinateConversion",
@@ -34,6 +36,7 @@ require([
   "esri/widgets/DistanceMeasurement2D",
   "esri/widgets/AreaMeasurement2D",
   "esri/core/watchUtils",
+  "esri/core/urlUtils",
   "dojo/on",
   "dojo/dom",
   "dojo/dom-class",
@@ -52,7 +55,8 @@ require([
   "bootstrap/Collapse",
   "bootstrap/Dropdown",
 
-  "dojo/domReady!"
+  "dojo/domReady!",
+
 ], function (
   Map,
   MapView,
@@ -85,8 +89,46 @@ require([
   Expand,
   DistanceMeasurement2D,
   AreaMeasurement2D,
-  watchUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, query, Color,
+  watchUtils, urlUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, query, Color,
   CalciteMapsArcGISSupport) {
+  // Lets see if we got parameters
+
+  var theUrl = urlUtils.urlToObject(document.location.href);
+  if (theUrl.query != null) {
+      try {
+        var parm_twn  = theUrl.query.twn;
+        var parm_rng  = theUrl.query.rng;
+        var parm_sec  = theUrl.query.sec;
+        var tigername = theUrl.query.tigername
+        var name      = theUrl.query.name
+        var tile_name = theUrl.query.tile_name
+        if(tigername){
+          console.log('lets get a county ',tigername)
+          panelurl =  'https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/0'
+          zoomToFeature(panelurl, tigername, 'tigername') 
+        } else if(name){
+          panelurl = 'https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/11'
+          zoomToFeature(panelurl, name.toUpperCase(), 'name') 
+        } else if(tile_name){
+          panelurl = 'https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/8'
+          zoomToFeature(panelurl, tile_name.toUpperCase(), 'tile_name') 
+        } else if (parm_twn != null && parm_rng != null && parm_sec != null) {
+          purl = 'https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/10'
+          attrib = 'rng_ch'  
+          zoomToSectionFeature(purl, location, attrib)
+        } else if(parm_twn && parm_rng) {
+          purl = 'https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/10'
+          attrib = 'rng_ch'  
+          // console.log('zooming to a section')
+          zoomToTRFeature(purl, location, attrib) 
+        }
+      } catch(err) {
+        // there were no parameters
+        var parm_twn = parm_rng = parm_sec = tigername = name = tile_name = undefined
+      }
+  } else {
+    console.log('no paramaters supplied')
+  }
 
   var minimumDrawScale = 95000;
   var extents = [];
@@ -787,6 +829,7 @@ require([
       where: attribute + " = '" + location + "'",
       returnGeometry: true
     });
+    console.log('startng zoomToFeature ', panelurl,location,attribute)
     const response = await task.execute(params)
     mapView.goTo(response.features);
     selectionLayer.graphics.removeAll();
@@ -811,15 +854,32 @@ require([
 
   // when a section feature is choses, a matching TRS combination is queried, highlighted and zoomed to
   function zoomToSectionFeature(panelurl, location, attribute) {
-
+    console.log('startiing the section zoom')
     var township = document.getElementById("selectTownship");
-    var strUser = township.options[township.selectedIndex].text;
+    if (parm_twn) {
+      var strUser = parm_twn;
+      console.log('using the parm_twn ', parm_twn)
+      parm_twn = null
+    } else {
+      var strUser = township.options[township.selectedIndex].text;
+    }
 
     var range = document.getElementById("selectRange");
-    var rangeUser = range.options[range.selectedIndex].text;
+    if (parm_rng){
+      console.log('using the parm_rng ', parm_rng)
+      var rangeUser = parm_rng;
+      parm_rng = null
+    } else {
+      var rangeUser = range.options[range.selectedIndex].text;
+    }
 
     var section = document.getElementById("selectSection");
-    var sectionUser = section.options[section.selectedIndex].text;
+    if (parm_sec){
+      var sectionUser = parm_sec;
+      parm_sec = null
+    } else {
+      var sectionUser = section.options[section.selectedIndex].text;
+    }
 
     var task = new QueryTask({
       url: panelurl
@@ -828,6 +888,7 @@ require([
       where: "twn_ch = '" + strUser.substr(0, 2) + "' AND tdir = '" + strUser.substr(2) + "' AND rng_ch = '" + rangeUser.substr(0, 2) + "' AND rdir = '" + rangeUser.substr(2) + "' AND sec_ch = '" + sectionUser + "'",
       returnGeometry: true
     });
+    console.log('what are the params that will be used ', params.where)
     task.execute(params)
       .then(function (response) {
         var multiPolygonGeometries = [];
@@ -850,12 +911,20 @@ require([
   function zoomToTRFeature(panelurl, location, attribute) {
 
     multiPolygonGeometries = [];
-
-    var township = document.getElementById("selectTownship");
-    var strUser = township.options[township.selectedIndex].text;
-
+    var township = document.getElementById("selectTownship")
+    if (parm_twn) {
+      var strUser = parm_twn;
+      parm_twn = null
+    } else {
+      var strUser = township.options[township.selectedIndex].text;
+    }
     var range = document.getElementById("selectRange");
-    var rangeUser = range.options[range.selectedIndex].text;
+    if (parm_rng){
+      var rangeUser = parm_rng;
+      parm_rng = null
+    } else {
+      var rangeUser = range.options[range.selectedIndex].text;
+    }
 
     var task = new QueryTask({
       url: panelurl

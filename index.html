@@ -143,13 +143,19 @@
           <select id="selectCityPanel" class="form-control"></select>
           <select id="selectQuadPanel" class="form-control"></select>
         </div>
-        <div class="panel-body">
+        <div class="panel-body" id="trs">
           <li class="dropdown-header" style="color: #DCDCDC">
             <font size="3">Zoom to Township/Range/Section</font>
           </li>
-          <select id="selectTownship" class="form-control"></select>
-          <select id="selectRange" class="form-control"></select>
-          <select id="selectSection" class="form-control"></select>
+          <select id="selectTownship" class="form-control trs">
+            <option value="" disabled selected>Township</option>
+          </select>
+          <select id="selectRange" class="form-control trs">
+            <option value="" disabled selected>Range</option>
+          </select>
+          <select id="selectSection" class="form-control trs">
+            <option value="" disabled selected>Section</option>
+          </select>
         </div>
       </div>
     </div>

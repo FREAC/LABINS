@@ -717,24 +717,15 @@ require([
     }
   }
 
-  // reset dropdowns and all inputs that are not equal to the current element. 
-  function resetElements(currentElement) {
-    // if elements are not equal to the current element
-    // then reset to the initial values
-    // find all dropdowns
-    $("select").each(function () {
-        if ((this != currentElement) && (this != document.getElementById('selectLayerDropdown'))) {
-          this.selectedIndex = 0
-        }
-      },
-      // find all inputs
-      $("input").each(function () {
-        if (this != currentElement) {
-          $(this).val('');
-        }
-      })
-    );
-  }
+  function resetElements(currentElement, trs = true) {
+    let doNotSelect = "#" + currentElement.id + ", #selectLayerDropdown";
+    doNotSelect = trs ? doNotSelect : doNotSelect + ", .trs" ;
+    
+    $("select").not(doNotSelect).each(function () {
+      this.selectedIndex = 0;
+    });
+  }   
+
 
   /////////////////////////////
   /// Dropdown Select Panel ///
@@ -789,6 +780,7 @@ require([
     });
     const response = await task.execute(params)
     mapView.goTo(response.features);
+    bufferLayer.graphics.removeAll();
     selectionLayer.graphics.removeAll();
     graphicArray = [];
     for (feature of response.features) {
@@ -846,39 +838,17 @@ require([
       .then(createBuffer)
   }
 
-  // Modified zoomToFeature function to zoom once the Township and Range has been chosen
-  function zoomToTRFeature(panelurl, location, attribute) {
-
-    multiPolygonGeometries = [];
-
-    var township = document.getElementById("selectTownship");
-    var strUser = township.options[township.selectedIndex].text;
-
-    var range = document.getElementById("selectRange");
-    var rangeUser = range.options[range.selectedIndex].text;
-
-    var task = new QueryTask({
-      url: panelurl
-    });
-    var params = new Query({
-      where: "twn_ch = '" + strUser.substr(0, 2) + "' AND tdir = '" + strUser.substr(2) + "' AND rng_ch = '" + rangeUser.substr(0, 2) + "' AND rdir = '" + rangeUser.substr(2) + "'",
-      returnGeometry: true
-    });
-    task.execute(params)
-      .then(function (response) {
-        mapView.goTo(response.features);
-        selectionLayer.graphics.removeAll();
-        bufferLayer.graphics.removeAll();
-        graphicArray = [];
-        for (i = 0; i < response.features.length; i++) {
-          highlightGraphic = new Graphic(response.features[i].geometry, highlightSymbol);
-          graphicArray.push(highlightGraphic);
-          multiPolygonGeometries.push(response.features[i].geometry);
-        }
-        selectionLayer.graphics.addMany(graphicArray);
-        return response;
-      })
-      .then(unionGeometries);
+  function zoomToTRFeature(results) {
+    mapView.goTo(results.features);
+    bufferLayer.graphics.removeAll();
+    selectionLayer.graphics.removeAll();
+    graphicArray = [];
+    for (feature of results.features) {
+      highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
+      graphicArray.push(highlightGraphic);
+    }
+    selectionLayer.graphics.addMany(graphicArray);
+    return results;
   }
 
   //Input geometry, output buffer
@@ -930,23 +900,33 @@ require([
   //// Zoom to Township/Section/Range Feature ////
   ////////////////////////////////////////////////
 
-  var townshipSelect = dom.byId("selectTownship");
-  var rangeSelect = dom.byId("selectRange");
-  var sectionSelect = dom.byId("selectSection");
+  const townshipSelect = document.getElementById("selectTownship");
+  const rangeSelect = document.getElementById("selectRange");
+  const sectionSelect = document.getElementById("selectSection");
 
   // when mapView is ready, build the first dropdown for township selection
   mapView.when(async function () {
-    var townshipQuery = new Query({
+    
+    const townshipQuery = new Query({
       where: "tdir <> ' ' AND NOT (CAST(twn_ch AS int) > '8' AND tdir = 'N')",
       outFields: ["twn_ch", "tdir"],
       returnDistinctValues: true,
-      orderByFields: ["twn_ch", "tdir"],
+      orderByFields: ["twn_ch", "tdir"]
     });
+
+    const rangeQuery = new Query({
+      where: "rdir <> ' '",
+      outFields: ["rng_ch", "rdir"],
+      returnDistinctValues: true,
+      orderByFields: ["rng_ch", "rdir"]
+    })
     try {
-      const results = await townshipRangeSectionLayer.queryFeatures(townshipQuery);
-      await buildTownshipDropdown(results);
+      const townshipResults = await townshipRangeSectionLayer.queryFeatures(townshipQuery);
+      const rangeResults = await townshipRangeSectionLayer.queryFeatures(rangeQuery);
+      await buildTownshipDropdown(townshipResults);
+      await buildRangeDropdown(rangeResults);
     } catch (err) {
-      console.log('Township load failed: ', err);
+      console.log('Township/Range load failed: ', err);
     }
   })
 
@@ -954,10 +934,6 @@ require([
   // select element. This will allow the user
   // to filter states by subregion.
   function buildTownshipDropdown(values) {
-    var option = domConstruct.create("option");
-    option.text = "Zoom to a Township";
-    townshipSelect.add(option);
-
     values.features.forEach(function (value) {
       var option = domConstruct.create("option");
       var name = value.attributes.twn_ch + value.attributes.tdir;
@@ -969,10 +945,6 @@ require([
   // Add the unique values to the
   // range selection element.
   function buildRangeDropdown(values) {
-    var option = domConstruct.create("option");
-    option.text = "Zoom to a Range";
-    rangeSelect.add(option);
-
     values.features.forEach(function (value) {
       var option = domConstruct.create("option");
       var name = value.attributes.rng_ch + value.attributes.rdir;
@@ -984,64 +956,84 @@ require([
   // Add the unique values to the
   // section selection element.
   function buildSectionDropdown(values) {
-    var option = domConstruct.create("option");
-    option.text = "Zoom to a Section";
-    sectionSelect.add(option);
+    sectionSelect.options.length = 0;
+    const sectionArr = values.features
+    const sectionIntArr = sectionArr.map(element => element.attributes.sec_ch);
+    const sortedSections = [...new Set(sectionIntArr)].sort();
 
-    values.features.forEach(function (value) {
-      var option = domConstruct.create("option");
-      option.text = value.attributes.sec_ch;
+    sortedSections.forEach(function (value) {
+      const option = domConstruct.create("option");
+      option.text = value
       sectionSelect.add(option);
     });
   }
 
-  // when township changes, reset the other dropdowns.
+  const validateResults = results => {
+        $("#trs").prepend(
+          `<div id="TRSAlert" class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            Invalid Township-Range combination. Please enter a correct Township-Range combination.
+          </div>`
+        )
+        window.setTimeout(function() {
+          $("#TRSAlert").fadeTo(500, 0).slideUp(500, function(){
+              $(this).remove(); 
+          });
+        }, 4000);
+        // remove sections & throw error
+        sectionSelect.options.length = 0;
+        throw new Error('This is an invalid Township-Range combination');;
+  }
+
+  async function queryTRFlow (TRQuery) {
+    const results = await townshipRangeSectionLayer.queryFeatures(TRQuery)
+    if (results.features.length) {
+      zoomToTRFeature(results)
+      buildSectionDropdown(results)
+    } else {
+      validateResults(results);
+    }
+  }
+
+  async function queryTR (type, whichDropdown) {
+    if (whichDropdown === 'selectRange' && townshipSelect.selectedIndex !== 0) {
+        const townshipValue = townshipSelect.value;
+        const TRQuery = new Query({
+          where: "rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND twn_ch = '" + townshipValue.substr(0, 2) + "' AND tdir = '" + townshipValue.substr(2) + "'",
+          returnGeometry: true,
+          outFields: ["*"]
+        });
+        queryTRFlow(TRQuery);
+        //place the tr function here
+    } else if (whichDropdown === 'selectTownship' && rangeSelect.selectedIndex !== 0) {
+          const rangeValue = rangeSelect.value;
+          const TRQuery = new Query({
+            where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "' AND rng_ch = '" + rangeValue.substr(0, 2) + "' AND rdir = '" + rangeValue.substr(2) + "'",
+            outFields: ["*"], 
+            returnGeometry: true
+          });
+          queryTRFlow(TRQuery);
+      }
+    } 
+
+  // when township changes, reset the section dropdown and execute queryTR.
   on(townshipSelect, "change", function (evt) {
-    var type = evt.target.value;
-    var i;
-    for (i = rangeSelect.options.length - 1; i >= 0; i--) {
-      rangeSelect.remove(i);
-    }
+    resetElements(townshipSelect, false);
+    const type = evt.target.value;
+    queryTR(type, 'selectTownship');
+  });
 
-    var rangeQuery = new Query({
-      where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "'",
-      outFields: ["rng_ch", "rdir"],
-      returnDistinctValues: true,
-      orderByFields: ["rng_ch", "rdir"]
-    });
-    return townshipRangeSectionLayer.queryFeatures(rangeQuery).then(buildRangeDropdown);
-  })
-
-  // when range changes, reset the section dropdown.
+  // when range changes, reset the section dropdown and execute queryTR .
   on(rangeSelect, "change", function (evt) {
-    var type = evt.target.value;
-    var j;
-    for (j = sectionSelect.options.length - 1; j >= 0; j--) {
-      sectionSelect.remove(j);
-    }
-
-    var e = document.getElementById("selectTownship");
-    var strUser = e.options[e.selectedIndex].text;
-
-    // TODO: Refactor this query to rmeove selectQuery.xxxxxxx    
-    var selectQuery = new Query();
-    selectQuery.where = "twn_ch = '" + strUser.substr(0, 2) + "' AND tdir = '" + strUser.substr(2) + "' AND rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND rng_ch <> ' '";
-    selectQuery.outFields = ["sec_ch"];
-    selectQuery.returnDistinctValues = true;
-    selectQuery.orderByFields = ["sec_ch"];
-    return townshipRangeSectionLayer.queryFeatures(selectQuery).then(buildSectionDropdown);
+    resetElements(rangeSelect, false);
+    const type = evt.target.value;
+    queryTR(type, 'selectRange');
   });
 
-  var querySection = dom.byId("selectSection");
-  on(querySection, "change", function (e) {
-    var type = e.target.value;
+  on(sectionSelect, "change", function (e) {
+    resetElements(sectionSelect, false);
+    const type = e.target.value;
     zoomToSectionFeature(townshipRangeSectionURL, type, "sec_ch");
-  });
-
-  var queryRange = dom.byId("selectRange");
-  on(queryRange, "change", function (e) {
-    var type = e.target.value;
-    zoomToTRFeature(townshipRangeSectionURL, type, "rng_ch");
   });
 
   let infoPanelData = [];

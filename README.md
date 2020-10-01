@@ -1,7 +1,7 @@
 [Live Demo](https://freac.github.io/LABINS/)
 
 
-# LABINS (Land Area Boundary Information System) WebMap
+# LABINS (Land and Boundary Information System) WebMap
 
 The Land Boundary Information System or LABINS was developed by the Florida Department of Environmental Protection to provide information regarding to surveying and mapping for horizontal and vertical control information across the State of Florida. 
 

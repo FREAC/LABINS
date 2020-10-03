@@ -1894,7 +1894,7 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        getGeometry(countyBoundariesURL + '2', 'name', event.target.value.replace(/[\s.-]/g, ''))
+        getGeometry(countyBoundariesURL + '2', 'ucname', event.target.value.replace(/[\s.-]/g, ''))
           .then(unionGeometries)
           .then(function (response) {
             dataQueryQuerytask(labinsURL + '7', response)

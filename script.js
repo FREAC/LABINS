@@ -1925,7 +1925,7 @@ require([
           });
       });
 
-    } else if (layerSelection === 'Survey Benchmarks') {
+    } else if (layerSelection === 'SWFWMD and Tampa Bay Points') {
       clearDiv('parametersQuery');
       addDescript();
       createTextBox('textQuery', 'Benchmark Name Example: CYP016')

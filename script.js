@@ -2091,7 +2091,7 @@ require([
         const header = `
         <div id="legendHeader" style="background-color:#315866; padding-bottom: 5px; position: sticky; top: 0;">
           <span class="glyphicon glyphicon-list-alt" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 10px;"></span>
-          <span id="infoSpan" class="panel-label"  style="color: white; margin-top: 5px;">Legend</span>
+          <span class="panel-label"  style="color: white; margin-top: 5px;">Legend</span>
           <button id="closeLgdBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
             <span class="esri-icon esri-icon-close" style="color:white; display:inline-block; float:left;" aria-hidden="true"></span>
           </button>

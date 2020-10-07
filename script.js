@@ -1476,7 +1476,7 @@ require([
   query("#selectLayerDropdown").on("change", function (event) {
 
     // get geometry based on query results
-    async function getGeometry(url, attribute, value, outFields='') {
+    async function getGeometry(url, attribute, value, outFields=false) {
       // modifies value to remove portions of the string in parentheses 
       value = value.replace(/ *\([^)]*\) */g, "")
 
@@ -1486,7 +1486,7 @@ require([
       var query = new Query();
       query.returnGeometry = true;
       query.where = "Upper(" + attribute + ") LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
-      if (outFields !== '') { // define outfields or accept default of no outfields returned
+      if (outFields) { // define outfields or accept default of no outfields returned
         query.outFields = outFields
       }
       const results = task.execute(query);

@@ -1468,7 +1468,7 @@ require([
   ////////////////////////////
 
   // Layer choices to query
-  var layerChoices = ['Select Layer', 'NGS Control Points', 'Certified Corners', 'Tide Interpolation Points', 'Tide Stations', 'Erosion Control Line', 'Survey Benchmarks'];
+  var layerChoices = ['Select Layer', 'NGS Control Points', 'Certified Corners', 'Tide Interpolation Points', 'Tide Stations', 'Erosion Control Line', 'SWFWMD and Tampa Bay Points'];
 
   for (var i = 0; i < layerChoices.length; i++) {
     $('<option/>').val(layerChoices[i]).text(layerChoices[i]).appendTo('#selectLayerDropdown');
@@ -1925,7 +1925,7 @@ require([
           });
       });
 
-    } else if (layerSelection === 'Survey Benchmarks') {
+    } else if (layerSelection === 'SWFWMD and Tampa Bay Points') {
       clearDiv('parametersQuery');
       addDescript();
       createTextBox('textQuery', 'Benchmark Name Example: CYP016')

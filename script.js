@@ -1894,19 +1894,45 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        getGeometry(labinsURL + '7', 'county', event.target.value)
-          .then(unionGeometries)
-          .then(function (response) {
-            dataQueryQuerytask(labinsURL + '7', response)
-              .then(function (response) {
-                for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'Erosion Control Line';
-                  infoPanelData.push(response.features[i]);
-                }
-                goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
-                togglePanel();
-              });
+        (() => {
+          var queryTask = new QueryTask({
+            url: labinsURL + '7'
+          });
+          var params = new Query({
+            where: "Upper(county) LIKE '" + event.target.value.toUpperCase() + "%'", //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+            returnGeometry: true,
+            outFields: '*'
+          });
+          const results = queryTask.execute(params);
+          return results;
+        })()
+        .then(function (response) {
+          console.log(response);
+          
+          for (i = 0; i < response.features.length; i++) {
+            response.features[i].attributes.layerName = 'Erosion Control Line';
+            infoPanelData.push(response.features[i]);
+          }
+          goToFeature(infoPanelData[0]);
+          queryInfoPanel(infoPanelData, 1);
+          togglePanel();
+          // getGeometry(labinsURL + '7', 'county', event.target.value)
+          // .then((results) => {
+          //   console.log(results);
+          //   return results.features;
+          // })
+          // .then(unionGeometries)
+          // .then(function (response) {
+          //   dataQueryQuerytask(labinsURL + '7', response)
+          //     .then(function (response) {
+          //       for (i = 0; i < response.features.length; i++) {
+          //         response.features[i].attributes.layerName = 'Erosion Control Line';
+          //         infoPanelData.push(response.features[i]);
+          //       }
+          //       goToFeature(infoPanelData[0]);
+          //       queryInfoPanel(infoPanelData, 1);
+          //       togglePanel();
+          //     });
           });
       });
 

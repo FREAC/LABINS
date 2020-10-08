@@ -106,17 +106,10 @@ function queryInfoPanel(results, i, event = false) {
                     '<b>Quad: </b>' + results[i - 1].attributes.tile_name + '<br>' +
                     '<b>Method: </b>' + results[i - 1].attributes.method + '<br>' +
                     '<b>Station 1: </b>' + results[i - 1].attributes.station1 + '<br>' +
-                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>'
+                    '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>' +
+                    "<b>For MHW and MLW data, please request: </b> <a target='_blank' href='https://www.labins.org/survey_data/water/procedures_and_forms/Forms/MHW_MLW_RequestForm.pdf'>here</a><br>"
                 );
-                if (results[i - 1].attributes.status_col === "1") {
-                    // This is not a tidal point
-                } else if (results[i - 1].attributes.status_col === "2") {
-                    // The point has data, fill in the report as you are currently doing
-                    $('#informationdiv').append('<b>Download Approval Form: </b><a target="_blank" href=https://www.labins.org/survey_data/water/FlexMap_docs/interp_approval_form.cfm?pin=' + results[i - 1].attributes.iden + '&mCountyName=' + results[i - 1].attributes.cname + '&mQuad=' + replaceWhitespace + '&mhw=' + results[i - 1].attributes.mhw2_ft + '&mlw=' + results[i - 1].attributes.mlw2_ft + '>here</a><br>');
-                } else if (results[i - 1].attributes.status_col === "3") {
-                    // This point needs a study
-                    $('#informationdiv').append('This point needs a study. Click <a target="_blank" href=https://www.labins.org/survey_data/water/FlexMap_docs/MHW_Procedures_wo_29_or_88_data_May_2009_with_checklist.pdf>here</a> to open approval form.<br>');
-                }
+
             } else if (results[i - 1].attributes.layerName === 'R-Monuments') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Regional Coastal Monitoring Data</b> </p>' +
                     '<b>Feature ID: </b>' + results[i - 1].attributes.unique_id + '<br>' +

@@ -1476,7 +1476,7 @@ require([
   query("#selectLayerDropdown").on("change", function (event) {
 
     // get geometry based on query results
-    async function getGeometry(url, attribute, value) {
+    async function getGeometry(url, attribute, value, outFields=false) {
       // modifies value to remove portions of the string in parentheses 
       value = value.replace(/ *\([^)]*\) */g, "")
 
@@ -1486,7 +1486,9 @@ require([
       var query = new Query();
       query.returnGeometry = true;
       query.where = "Upper(" + attribute + ") LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
-
+      if (outFields) { // define outfields or accept default of no outfields returned
+        query.outFields = outFields
+      }
       const results = task.execute(query);
       return results;
     }
@@ -1894,11 +1896,8 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        getGeometry(countyBoundariesURL + '2', 'name', event.target.value.replace(/[\s.-]/g, ''))
-          .then(unionGeometries)
+          getGeometry(labinsURL + '7', 'county', event.target.value, '*')
           .then(function (response) {
-            dataQueryQuerytask(labinsURL + '7', response)
-              .then(function (response) {
                 for (i = 0; i < response.features.length; i++) {
                   response.features[i].attributes.layerName = 'Erosion Control Line';
                   infoPanelData.push(response.features[i]);
@@ -1906,7 +1905,6 @@ require([
                 goToFeature(infoPanelData[0]);
                 queryInfoPanel(infoPanelData, 1);
                 togglePanel();
-              });
           });
       });
 

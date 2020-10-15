@@ -2,6 +2,9 @@ function queryInfoPanel(results, i, event = false) {
     let count = results.length;
     let removeThisResult = false;
 
+    console.log(results);
+    
+
     if (event.mapPoint) {
         $('#informationdiv').append('<p><a target="_blank" href=https://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br></p>');
     }
@@ -199,7 +202,7 @@ function queryInfoPanel(results, i, event = false) {
                 $('#informationdiv').append('<br>');
                 $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
                 $('#informationdiv').append('<hr>');
-            } else if (results[i - 1].attributes.layerName == 'Township-Range' && results[i - 1].attributes.layerName == 'County_Boundaries_Shoreline' && removeThisResult == false) {
+            } else if (results[i - 1].attributes.layerName == 'Township-Range' && results[i - 1].attributes.layerName !== 'County_Boundaries_Shoreline' && removeThisResult == false) {
                 $('#informationdiv').append('<br>');
                 $('#informationdiv').append('<hr>');
             }

@@ -255,7 +255,7 @@ require([
       popupEnabled: false,
       minScale: minimumDrawScale,
       labelingInfo: haloLabelInfo("[spe_id]", [230, 76, 0, 255]),
-      labelsVisible: false
+      labelsVisible: true
     }, {
       id: 14,
       title: "Hi-Res Imagery Grid: State Plane North",
@@ -263,7 +263,7 @@ require([
       popupEnabled: false,
       minScale: minimumDrawScale,
       labelingInfo: haloLabelInfo("[spn_id]", [230, 76, 0, 255]),
-      labelsVisible: false
+      labelsVisible: true
     }, {
       id: 13,
       title: "Hi-Res Imagery Grid: State Plane West",
@@ -271,7 +271,7 @@ require([
       popupEnabled: false,
       minScale: minimumDrawScale,
       labelingInfo: haloLabelInfo("[spw_id]", [230, 76, 0, 255]),
-      labelsVisible: false
+      labelsVisible: true
     }, {
       id: 12,
       title: "Parcels",

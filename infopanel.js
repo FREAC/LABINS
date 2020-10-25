@@ -1,10 +1,15 @@
 function queryInfoPanel(results, i, event = false) {
+    let count = results.length;
+    let removeThisResult = false;
+
+    console.log(results);
+    
 
     if (event.mapPoint) {
         $('#informationdiv').append('<p><a target="_blank" href=https://maps.google.com/maps?q=&layer=c&cbll=' + event.mapPoint.latitude + ',' + event.mapPoint.longitude + '>Google Street View&nbsp</a> <span class="esri-icon-description" data-toggle="tooltip" data-placement="top" title="Please note: if not clicked where there are streets, no imagery will be returned."></span><br><br></p>');
     }
 
-    if (results.length > 0) {
+    if (count > 0) {
         for (var i = 1; i <= results.length; i++) {
             if (results[i - 1].attributes.layerName === 'USGS Quads') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>USGS Quads</b></p>' +
@@ -120,13 +125,18 @@ function queryInfoPanel(results, i, event = false) {
                     '<b>Longitude: </b>' + results[i - 1].attributes.longitude + '<br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Erosion Control Line') {
-                $('#informationdiv').append('<p style= "font-size: 15px"><b>Erosion Control Line</b></p>' +
-                    '<b>County: </b>' + results[i - 1].attributes.county + '<br>' +
-                    '<b>ECL Name: </b>' + results[i - 1].attributes.ecl_name + '<br>' +
-                    '<b>MHW: </b>' + results[i - 1].attributes.mhw + '<br>' +
-                    '<b>Location: </b>' + results[i - 1].attributes.location + '<br>' +
-                    '<b>Download Information: </b>' + '<a target="_blank" href=https://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i - 1].attributes.mhw + '.pdf&fileType=MAP>' + results[i - 1].attributes.mhw + '.pdf</a><br>'
-                );
+                if (results[i - 1].attributes.ecl_name !== ' ') {
+                    $('#informationdiv').append('<p style= "font-size: 15px"><b>Erosion Control Line</b></p>' +
+                        '<b>County: </b>' + results[i - 1].attributes.county + '<br>' +
+                        '<b>ECL Name: </b>' + results[i - 1].attributes.ecl_name + '<br>' +
+                        '<b>MHW: </b>' + results[i - 1].attributes.mhw + '<br>' +
+                        '<b>Location: </b>' + results[i - 1].attributes.location + '<br>' +
+                        '<b>Download Information: </b>' + '<a target="_blank" href=https://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i - 1].attributes.mhw + '.pdf&fileType=MAP>' + results[i - 1].attributes.mhw + '.pdf</a><br>'
+                    );
+                } else {
+                    count -= 1;
+                    removeThisResult = true;
+                }
             } else if (results[i - 1].attributes.layerName === 'Survey Benchmarks') {
                 var replaceWhitespace = results[i - 1].attributes.FILE_NAME.replace(/\s+/g, "%20");
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>SWFWMD Survey Benchmarks</b></p>' +
@@ -185,11 +195,14 @@ function queryInfoPanel(results, i, event = false) {
                 );
             }
 
-            if (results[i - 1].attributes.layerName !== 'Township-Range' && results[i - 1].attributes.layerName !== 'County_Boundaries_Shoreline') {
+            if (removeThisResult == true) {
+                removeThisResult = false; // reset the value back to default and move on
+            }
+            else if (results[i - 1].attributes.layerName !== 'Township-Range' && results[i - 1].attributes.layerName !== 'County_Boundaries_Shoreline' && removeThisResult == false) {
                 $('#informationdiv').append('<br>');
                 $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
                 $('#informationdiv').append('<hr>');
-            } else {
+            } else if (results[i - 1].attributes.layerName == 'Township-Range' && results[i - 1].attributes.layerName !== 'County_Boundaries_Shoreline' && removeThisResult == false) {
                 $('#informationdiv').append('<br>');
                 $('#informationdiv').append('<hr>');
             }
@@ -199,9 +212,9 @@ function queryInfoPanel(results, i, event = false) {
         $('#informationdiv').append('<p>This query did not return any features</p>');
         $('#infoSpan').html('Information Panel - 0 features found. ');
     }
-    if (i == 1) {
-        $('#infoSpan').html('Information Panel - ' + (parseInt(i - 1)) + ' feature found.');
+    if (count == 1) {
+        $('#infoSpan').html('Information Panel - ' + (parseInt(count)) + ' feature found.');
     } else {
-        $('#infoSpan').html('Information Panel - ' + (parseInt(i - 1)) + ' features found. ');
+        $('#infoSpan').html('Information Panel - ' + (parseInt(count)) + ' features found. ');
     }
 }

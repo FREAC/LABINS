@@ -1968,6 +1968,33 @@ require([
             togglePanel();
           });
       });
+    } else if (layerSelection === 'USGS Quads') {
+      clearDiv('parametersQuery');
+      addDescript();
+      createTextBox('textQuery', 'Quad name: BIG GUM SWAMP')
+      createSubmit('Submit by Name', 'submitNameQuery');
+
+      var submitButton = document.getElementById('submitNameQuery');
+      var inputAfter = document.getElementById('textQuery');
+      // clear other elements when keypress happens
+      query(inputAfter).on('keypress', function () {
+        clearDiv('informationdiv');
+        resetElements(inputAfter);
+      });
+
+      query(submitButton).on('click', function (event) {
+        infoPanelData = [];
+        textQueryQuerytask(labinsURL + '/8', 'tile_name', inputAfter.value)
+          .then(function (response) {
+            for (i = 0; i < response.features.length; i++) {
+              response.features[i].attributes.layerName = 'USGS Quads';
+              infoPanelData.push(response.features[i]);
+            }
+            goToFeature(infoPanelData[0]);
+            queryInfoPanel(infoPanelData, 1, event);
+            togglePanel();
+          });
+      });
     }
   });
 

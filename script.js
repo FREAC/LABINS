@@ -1129,7 +1129,7 @@ require([
               feature.feature.attributes.layerName = feature.layerName;
               let result = feature.feature.attributes
 
-              if (result.layerName === 'base_and_survey.sde.pls_ptp_Mar2019_3857') {
+              if (result.layerName === 'base_and_survey.sde.pls_ptp_master_3857') {
                 // this is where we will query the related features
                 // queryRelatedFeatures(result.objectid, newCCRLayer);
 
@@ -1158,8 +1158,7 @@ require([
               }
 
               // make sure only certified corners with images are identified
-              if ((result.layerName !== 'Certified Corners') || (result.is_image == 'Y') || (result.layerName !== 'base_and_survey.sde.pls_ptp_Mar2019_3857')) {
-                // console.log(result.layerName);
+              if ((result.layerName !== 'Certified Corners') || (result.is_image == 'Y') || (result.layerName !== 'base_and_survey.sde.pls_ptp_master_3857')) {
 
                 await infoPanelData.push(feature.feature);
               }

@@ -222,7 +222,7 @@ async function queryInfoPanel(event = false, results, i) {
                     $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
                 });
 
-            } else if (results[i - 1].attributes.layerName === 'base_and_survey.sde.pls_ptp_Mar2019_3857') {
+            } else if (results[i - 1].attributes.layerName === 'base_and_survey.sde.pls_ptp_master_3857') {
                 console.log(results[i - 1].attributes);
 
 
@@ -238,18 +238,18 @@ async function queryInfoPanel(event = false, results, i) {
                 console.log(relatedFeatures);
 
                 for (relatedFeature in relatedFeatures) {
-                    console.log({
-                        relatedFeature: relatedFeatures[relatedFeature]
-                    });
+                    // console.log({
+                    //     relatedFeature: relatedFeatures[relatedFeature]
+                    // });
 
                     const folderNum = Math.floor(relatedFeatures[relatedFeature] / 10000).toString().padStart(2, '0');
-                    console.log({
-                        folderNum
-                    });
+                    // console.log({
+                    //     folderNum
+                    // });
                     const docNum = relatedFeatures[relatedFeature].toString().padStart(7, '0');
-                    console.log({
-                        docNum
-                    });
+                    // console.log({
+                    //     docNum
+                    // });
                     $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/ccp' + folderNum + '/' + docNum + '.pdf>' + docNum + '.pdf</a><br>');
 
 

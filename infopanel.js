@@ -234,7 +234,7 @@ async function queryInfoPanel(event = false, results, i) {
 
                 // const relatedFeatures = await results[i - 1].attributes.relatedFeatures;
                 console.log(results[i - 1].attributes);
-                const relatedFeatures = results[i - 1].attributes.relatedFeatures.sort(function(a, b) {return a-b});
+                const relatedFeatures = results[i - 1].attributes.relatedFeatures.sort(function(a, b) {return b-a});
                 console.log('after the sort',relatedFeatures);
 
                 for (relatedFeature in relatedFeatures) {

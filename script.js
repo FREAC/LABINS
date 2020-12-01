@@ -274,7 +274,7 @@ require([
     popupEnabled: false
   });
 
-  const newCCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/ccp_pilot/MapServer/0";
+  const newCCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/pls_master_to_ccr/MapServer/0";
   const newCCRLayer = new FeatureLayer({
     url: newCCRURL,
     title: "New Certified Corner Records",

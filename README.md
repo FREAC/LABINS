@@ -1,8 +1,6 @@
-NOTE: 
-
 [Production Map:](https://freac.github.io/LABINS/): This url represents the user facing version of LABINS.
 
-The [Live Demo](https://freac.github.io/LABINS/) represents current code on the **master** branch, but may not represent what is currently on the production website.
+[Live Demo](https://freac.github.io/LABINS/) represents current code on the **[master](https://github.com/FREAC/LABINS/tree/master)** branch. **NOTE**: may not represent what is currently on the production website.
 
 
 # LABINS (Land and Boundary Information System) WebMap

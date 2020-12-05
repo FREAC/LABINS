@@ -1,4 +1,4 @@
-[Live Demo](https://freac.github.io/LABINS/)
+NOTE: The [Live Demo](https://freac.github.io/LABINS/) represents current code on the **master** branch, but may not represent 
 
 
 # LABINS (Land and Boundary Information System) WebMap

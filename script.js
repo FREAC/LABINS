@@ -33,6 +33,7 @@ require([
   "esri/widgets/Expand",
   "esri/widgets/DistanceMeasurement2D",
   "esri/widgets/AreaMeasurement2D",
+  "esri/widgets/Measurement",
   "esri/core/watchUtils",
   "dojo/on",
   "dojo/dom",
@@ -85,6 +86,7 @@ require([
   Expand,
   DistanceMeasurement2D,
   AreaMeasurement2D,
+  Measurement,
   watchUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, query, Color,
   CalciteMapsArcGISSupport) {
 
@@ -2387,4 +2389,83 @@ require([
   // Clear Button
   var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
+
+  const measurementToolbar = document.createElement("div")
+  measurementToolbar.id = "toolbar";
+  measurementToolbar.className =  "esri-component esri-widget";
+
+  var measureExpand = new Expand({
+    view: mapView,
+    content: measurementToolbar
+  });
+
+  mapView.ui.add(measureExpand, "top-left");
+
+
+  // Measurement Widget
+  const measurement = new Measurement({
+    view: mapView,
+    activeTool: "distance"
+  });
+  const distanceButton = document.createElement("button")
+  distanceButton.id = "distance";
+  distanceButton.className = "esri-widget--button esri-interactive esri-icon-measure-line";
+  distanceButton.title = "Distance Measurement Tool";
+  measurementToolbar.appendChild(distanceButton)
+  
+  const areaButton = document.createElement("button")
+  areaButton.id = "area";
+  areaButton.className = "esri-widget--button esri-interactive esri-icon-measure-area";
+  areaButton.title = "Area Measurement Tool";
+  measurementToolbar.appendChild(areaButton)
+
+  const clearButton = document.createElement("button")
+  clearButton.id = "clear";
+  clearButton.className = "esri-widget--button esri-interactive esri-icon-trash";
+  clearButton.title = "Clear Measurements";
+  measurementToolbar.appendChild(clearButton)
+
+
+  distanceButton.addEventListener("click", function () {
+    distanceMeasurement();
+    loadMeasurementWidget();
+  });
+  areaButton.addEventListener("click", function () {
+    areaMeasurement();
+    loadMeasurementWidget();
+  });
+  clearButton.addEventListener("click", function () {
+    clearMeasurements();
+    loadMeasurementWidget();
+  });
+
+  function loadMeasurementWidget() {
+    // Add the appropriate measurement UI to the bottom-right when activated
+    mapView.ui.add(measurement, "bottom-right");
+  }
+
+  // Call the appropriate DistanceMeasurement2D or DirectLineMeasurement3D
+  function distanceMeasurement() {
+    const type = mapView.type;
+    measurement.activeTool =
+      type.toUpperCase() === "2D" ? "distance" : "direct-line";
+    distanceButton.classList.add("active");
+    areaButton.classList.remove("active");
+    console.log(mapView);
+  }
+
+  // Call the appropriate AreaMeasurement2D or AreaMeasurement3D
+  function areaMeasurement() {
+    measurement.activeTool = "area";
+    distanceButton.classList.remove("active");
+    areaButton.classList.add("active");
+  }
+
+  // Clears all measurements
+  function clearMeasurements() {
+    distanceButton.classList.remove("active");
+    areaButton.classList.remove("active");
+    measurement.clear();
+  }
+
 });

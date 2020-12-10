@@ -127,6 +127,16 @@ body,
   padding: 8px;
 }
 
+#toolbarDiv {
+  /* position: absolute; */
+  /* top: 100px; */
+  /* right: 100px; */
+  cursor: default;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
 @media only screen and (max-width: 1026px) {
   #overviewDiv {
     display: none;

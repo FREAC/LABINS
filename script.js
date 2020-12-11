@@ -2407,23 +2407,58 @@ require([
     view: mapView,
     activeTool: "distance"
   });
-  const distanceButton = document.createElement("button")
+  const distanceButton = document.createElement("button");
   distanceButton.id = "distance";
   distanceButton.className = "esri-widget--button esri-interactive esri-icon-measure-line";
   distanceButton.title = "Distance Measurement Tool";
   measurementToolbar.appendChild(distanceButton)
   
-  const areaButton = document.createElement("button")
+  const areaButton = document.createElement("button");
   areaButton.id = "area";
   areaButton.className = "esri-widget--button esri-interactive esri-icon-measure-area";
   areaButton.title = "Area Measurement Tool";
   measurementToolbar.appendChild(areaButton)
 
-  const clearButton = document.createElement("button")
+  const clearButton = document.createElement("button");
   clearButton.id = "clear";
   clearButton.className = "esri-widget--button esri-interactive esri-icon-trash";
   clearButton.title = "Clear Measurements";
-  measurementToolbar.appendChild(clearButton)
+  measurementToolbar.appendChild(clearButton);
+
+  const measurementIdentifyToggleButton = document.createElement("button");
+  measurementIdentifyToggleButton.id = "identifyMeasurement";
+  measurementIdentifyToggleButton.className = "esri-widget--button esri-interactive esri-icon-checkbox-checked";
+  measurementIdentifyToggleButton.title = "Identify Measurement";
+  measurementToolbar.appendChild(measurementIdentifyToggleButton)
+
+// <div class="btn-group-toggle" data-toggle="buttons">
+//   <label class="btn btn-secondary active">
+//   <input type="checkbox" checked autocomplete="off"> Checked
+// </label>
+// </div>
+
+
+  // const measurementIdentifyToggleButton = document.createElement("button");
+  // clearButton.id = "measurementIdentifyToggleButton";
+  // clearButton.className = "esri-widget--button esri-interactive esri-icon-trash";
+  // clearButton.title = "Clear Measurements";
+  // measurementToolbar.appendChild(clearButton)
+
+  const identifyToggleButtonLabel = document.createElement("label");
+  identifyToggleButtonLabel.className = "toggle-switch modifier-class";
+  measurementToolbar.appendChild(identifyToggleButtonLabel)
+
+
+  const identifyToggleButtonsSpan1 = document.createElement("span");
+  identifyToggleButtonsSpan1.type = "checkbox";
+  identifyToggleButtonsSpan1.className = "toggle-switch-input";
+  identifyToggleButtonLabel.appendChild(identifyToggleButtonsSpan1);
+
+  const identifyToggleButtonsSpan2 = document.createElement("span");
+  identifyToggleButtonsSpan2.className = "toggle-switch-label font-size--1";
+  identifyToggleButtonsSpan2.textContent = "Identify";
+  identifyToggleButtonLabel.appendChild(identifyToggleButtonsSpan2);
+  
 
 
   distanceButton.addEventListener("click", function () {
@@ -2437,6 +2472,9 @@ require([
   clearButton.addEventListener("click", function () {
     clearMeasurements();
     loadMeasurementWidget();
+  });
+  measurementIdentifyToggleButton.addEventListener("click", function () {
+    measurementIdentifyToggle();
   });
 
   function loadMeasurementWidget() {
@@ -2466,6 +2504,17 @@ require([
     distanceButton.classList.remove("active");
     areaButton.classList.remove("active");
     measurement.clear();
+  }
+
+  // Toggle identify Checkbox 
+  function measurementIdentifyToggle() {
+    if (measurementIdentifyToggleButton.classList.contains('esri-icon-checkbox-checked')) {
+      measurementIdentifyToggleButton.classList.remove('esri-icon-checkbox-checked');
+      measurementIdentifyToggleButton.classList.add("esri-icon-checkbox-unchecked");
+    } else {
+      measurementIdentifyToggleButton.classList.remove('esri-icon-checkbox-unchecked');
+      measurementIdentifyToggleButton.classList.add('esri-icon-checkbox-checked');  
+    }
   }
 
 });

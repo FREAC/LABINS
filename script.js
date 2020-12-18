@@ -2506,7 +2506,7 @@ require([
 
   function loadMeasurementWidget() {
     // Add the appropriate measurement UI to the bottom-right when activated
-    mapView.ui.add(measurement, "bottom-right");
+    mapView.ui.add(measurement, "bottom-left");
   }
 
   // Call the appropriate DistanceMeasurement2D or DirectLineMeasurement3D

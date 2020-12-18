@@ -179,7 +179,9 @@ function queryInfoPanel(results, i, event = false) {
                 });
                 // add .tif files to popup
                 tifFiles.map(fileName => {
-                    $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
+                    if (parseInt(fileName.slice(-12,-5)) < 110400){
+                        $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
+                    }
                 });
                 // const relatedFeatures = results[i - 1].attributes.relatedFeatures.sort();
                 // for (relatedFeature in relatedFeatures) {

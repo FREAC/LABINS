@@ -1116,7 +1116,7 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
-      if ((measurement.viewModel.state == "disabled")) {
+      if ((measurement.viewModel.state == "disabled") || (measurement.viewModel.state == "measured")) {
         if (screen.availWidth < 992) {
           identifyTaskFlow(event, false, true);
         } else {

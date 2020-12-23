@@ -1137,7 +1137,6 @@ require([
 
 
   async function identifyTaskFlow(event, coordExpanParam, mobileView, geometry=false, eventType="click") {
-    console.log(event);
     if ((mapView.scale < minimumDrawScale) && (coordExpanParam || mobileView)) {
       document.getElementById("mapViewDiv").style.cursor = "wait";
       mapView.graphics.removeAll();
@@ -1149,7 +1148,6 @@ require([
       let layers = layerList.operationalItems.items
       // loop through layers
       for (layer of layers) {
-        console.log("for layer of layers");
         let visibleLayers;
         // exclude geographic names layer from identify operation
         if (layer.title !== 'Geographic Names') {
@@ -1158,15 +1156,11 @@ require([
           if (visibleLayers.length > 0) {
             if (layer.title === 'NGS Control Points') {
               const query = ngsLayer.createQuery();
-              if (geometry==false) {
-                console.log('geometry is false');
-                
+              if (geometry==false) {                
                 query.geometry = mapView.toMap(event);
                 query.distance = 30;
                 query.units = 'meters';
-              } else {
-                console.log('geometry is true');
-                
+              } else {                
                 query.geometry = event; 
               }
               query.returnGeometry = true;
@@ -1247,7 +1241,6 @@ require([
   }
 
   async function setIdentifyParameters(visibleLayers, eventType, event) {
-    console.log("setIdentifyParameters might be breaking");
     // receive array of active visible layer with urls
     // Set the parameters for the Identify
     params = new IdentifyParameters();
@@ -2456,57 +2449,29 @@ require([
   measurementIdentifyToggleButton.title = "Identify Measurement";
   measurementToolbar.appendChild(measurementIdentifyToggleButton)
 
-  // const identifyToggleButtonLabel = document.createElement("label");
-  // identifyToggleButtonLabel.className = "toggle-switch modifier-class";
-  // measurementToolbar.appendChild(identifyToggleButtonLabel)
-
-
-  // const identifyToggleButtonsSpan1 = document.createElement("span");
-  // identifyToggleButtonsSpan1.type = "checkbox";
-  // identifyToggleButtonsSpan1.className = "toggle-switch-input";
-  // identifyToggleButtonLabel.appendChild(identifyToggleButtonsSpan1);
-
-  // const identifyToggleButtonsSpan2 = document.createElement("span");
-  // identifyToggleButtonsSpan2.className = "toggle-switch-label font-size--1";
-  // identifyToggleButtonsSpan2.textContent = "Identify";
-  // identifyToggleButtonLabel.appendChild(identifyToggleButtonsSpan2);
-
   distanceButton.addEventListener("click", () => {
     distanceMeasurement();
     loadMeasurementWidget();
-    console.log({measurementDistance: measurement.viewModel.state})
   });
+
   areaButton.addEventListener("click", () => {
     areaMeasurement();
     loadMeasurementWidget();
-    console.log({measurementArea: measurement.viewModel.state})
-
   });
+
   clearButton.addEventListener("click", () => {
     clearMeasurements();
     loadMeasurementWidget();
     clearIdentifySelection();
-    console.log({measurementClear: measurement.viewModel.state});
   });
   measurementIdentifyToggleButton.addEventListener("click", () => {
-    // measurementIdentifyToggle();
-    // clearIdentifySelection();
-    MeasurementIdentify();
-  });
-
-  measurement.watch("viewModel", function(active) {
-    console.log(measurement);
-    console.log(active);
-
-    // if ((!active) && (measurementIdentifyToggleButton.classList.contains('esri-icon-checkbox-checked'))) {
-    //   MeasurementIdentify(); // need proper geometry
-    //   console.log(measurement);
-    // }
+    measurementIdentify();
   });
 
   function loadMeasurementWidget() {
     // Add the appropriate measurement UI to the bottom-right when activated
-    mapView.ui.add(measurement, "bottom-left");
+    mapView.ui.empty("bottom-left"); // remove the scalebar and any other bottom-left
+    mapView.ui.add([measurement, scaleBar], "bottom-left"); // add scalebar after measurement widget
   }
 
   // Call the appropriate DistanceMeasurement2D or DirectLineMeasurement3D
@@ -2516,7 +2481,6 @@ require([
       type.toUpperCase() === "2D" ? "distance" : "direct-line";
     distanceButton.classList.add("active");
     areaButton.classList.remove("active");
-    console.log(mapView);
   }
 
   // Call the appropriate AreaMeasurement2D or AreaMeasurement3D
@@ -2533,26 +2497,12 @@ require([
     measurement.clear();
   }
 
-  // Toggle identify Checkbox 
-  // function measurementIdentifyToggle() {
-  //   if (measurementIdentifyToggleButton.classList.contains('esri-icon-checkbox-checked')) {
-  //     measurementIdentifyToggleButton.classList.remove('esri-icon-checkbox-checked');
-  //     measurementIdentifyToggleButton.classList.add("esri-icon-checkbox-unchecked");
-  //   } else {
-  //     measurementIdentifyToggleButton.classList.remove('esri-icon-checkbox-unchecked');
-  //     measurementIdentifyToggleButton.classList.add('esri-icon-checkbox-checked');  
-  //   }
-  // }
-
-  function MeasurementIdentify() {
-    console.log(measurement);
-    // check if the identify toggle button is checked
-    // if checked, initiate the identify process
-    // if (measurementIdentifyToggleButton.classList.contains('esri-icon-checkbox-checked')) {
+  function measurementIdentify() {
+    // if measurement has finished, and the measurement tool is area measurement
+    // initiate identify
     if (measurement.viewModel.state == "measured" && measurement.activeTool == "area") {
       identifyTaskFlow(measurement.viewModel.activeViewModel.measurement.geometry, coordExpand.expanded !== true, false, true, "measurementIdentify");  // need to determine how to get geometry
     }
-    // }
   }
 
 });

@@ -2414,7 +2414,10 @@ require([
 
   var measureExpand = new Expand({
     view: mapView,
-    content: measurementToolbar
+    content: measurementToolbar,
+    expandIconClass: "esri-icon-measure-area",
+    expandTooltip: "Measurement Tools",
+    collapseTooltip: "Measurement Tools",
   });
 
   mapView.ui.add(measureExpand, "top-left");

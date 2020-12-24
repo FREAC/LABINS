@@ -76,14 +76,6 @@ body,
   z-index: 2;
 }
 
-.ovwHide {
-  background: url(https://js.arcgis.com/3.30/esri/dijit/images/overview.png) 0px -78px;
-}
-
-.ovwShow {
-  background: url(https://js.arcgis.com/3.30/esri/dijit/images/overview.png) 0px 0px;
-}
-
 #ovwButton {
   position: absolute;
   bottom: 18px;

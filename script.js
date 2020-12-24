@@ -498,23 +498,23 @@ require([
   overView.ui.components = [];
 
   var extentDiv = document.getElementById("extentDiv");
-  var ovButton = document.getElementById("ovwButton");
+  const overviewMapNavToggleButton = document.getElementById("desktopOverviewMap");
 
-  on(ovButton, 'click', function () {
-    if (html.hasClass(ovButton, "ovwHide")) {
-      html.setAttr(ovButton, 'title', 'Show Map Overview')
-      html.replaceClass(ovButton, "ovwShow", "ovwHide");
-      console.log(query('.esri-view-root', 'overviewDiv'));
+  //
+  overviewMapNavToggleButton.addEventListener("click", function () {
+    if (html.hasClass(overviewMapNavToggleButton, "ovwHide")) {
+      html.setAttr(overviewMapNavToggleButton, 'title', 'Show Map Overview')
+      html.replaceClass(overviewMapNavToggleButton, "ovwShow", "ovwHide");
       html.setStyle(query('.esri-view-root', 'overviewDiv')[0], 'display', 'none');
       html.setStyle(extentDiv, 'display', 'none');
     } else {
-      html.replaceClass(ovButton, "ovwHide", "ovwShow");
-      html.setAttr(ovButton, 'title', 'Hide Map Overview');
+      html.replaceClass(overviewMapNavToggleButton, "ovwHide", "ovwShow");
+      html.setAttr(overviewMapNavToggleButton, 'title', 'Hide Map Overview');
       html.setStyle(query('.esri-view-root', 'overviewDiv')[0], 'display', 'block');
       html.setStyle(extentDiv, 'display', 'block');
     }
     html.toggleClass("overviewDiv", "hide");
-  });
+    });
 
   overView.when(function () {
     // Update the overview extent whenever the overView or SceneView extent changes

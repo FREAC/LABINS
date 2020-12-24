@@ -97,6 +97,8 @@
 
     <!-- Search/Legend/LayerList -->
     <ul class="nav navbar-nav calcite-nav">
+      <li><a id="desktopOverviewMap" class="hidden-xs hidden-sm overviewMapToggle ovwHide" href="#" aria-controls="Overview" aria-expanded="true"
+        role="tab" data-toggle="tab" data-tooltip="tip" title="Layerlist" data-placement="bottom">Overview Map</a></li>
       <li><a id="desktopLayerlist" class="hidden-xs hidden-sm" href="#" aria-controls="Layerlist" aria-expanded="true"
           role="tab" data-toggle="tab" data-tooltip="tip" title="Layerlist" data-placement="bottom">Layerlist</a></li>
       <li><a id="desktopLegend" class="hidden-xs hidden-sm" href="#" aria-controls="Legend" role="tab" data-toggle="tab"
@@ -120,7 +122,7 @@
     <div id="overviewDiv">
       <div id="extentDiv"></div>
     </div>
-    <div id="ovwButton" class="ovwHide" title="Hide Map Overview"></div>
+    <div id="ovwButton" class="ovwHide overviewMapToggle" title="Hide Map Overview"></div>
 
   </div>
   </div>

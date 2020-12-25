@@ -62,6 +62,12 @@ body,
   z-index: 1;
 }
 
+#overviewDiv.hide {
+  width: 20px;
+  height: 20px;
+  border: 0 solid black;
+}
+
 #extentDiv {
   background-color: rgba(0, 0, 0, 0.5);
   position: absolute;

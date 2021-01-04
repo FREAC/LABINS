@@ -33,6 +33,7 @@ require([
   "esri/widgets/Expand",
   "esri/widgets/DistanceMeasurement2D",
   "esri/widgets/AreaMeasurement2D",
+  "esri/widgets/Measurement",
   "esri/core/watchUtils",
   "dojo/on",
   "dojo/dom",
@@ -85,6 +86,7 @@ require([
   Expand,
   DistanceMeasurement2D,
   AreaMeasurement2D,
+  Measurement,
   watchUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, query, Color,
   CalciteMapsArcGISSupport) {
 
@@ -1114,16 +1116,43 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
-      if (screen.availWidth < 992) {
-        identifyTaskFlow(event, false, true);
-      } else {
-        identifyTaskFlow(event, coordExpand.expanded !== true, false);
+      if ((measurement.viewModel.state == "disabled") || (measurement.viewModel.state == "measured")) {
+        if (screen.availWidth < 992) {
+          identifyTaskFlow(event, false, true, false, "click");
+        } else {
+          identifyTaskFlow(event, coordExpand.expanded == false, false, false, "click");
+        }
       }
     });
   });
 
-  async function identifyTaskFlow(event, coordExpanParam, mobileView) {
-    if ((mapView.scale < minimumDrawScale) && (coordExpanParam || mobileView)) {
+  function clearIdentifySelection() {
+    mapView.graphics.removeAll();
+    selectionLayer.graphics.removeAll();
+    bufferLayer.graphics.removeAll();
+    clearDiv('informationdiv');
+    $('#numinput').val('');
+    $('#infoSpan').html('Information Panel');
+  }
+
+  function checkScale(eventType, coordExpanParam, mobileView) {
+    // check the scale, unless the identifyTask originated from a measurementIdenty
+    // if from measurementIdenty, return true
+
+    if (eventType == "click") {
+      if ((mapView.scale < minimumDrawScale) && (coordExpanParam || mobileView)) {
+        return true;
+      }
+    } else if ((eventType == "measurementIdentify") && (coordExpanParam || mobileView)) { // allow measurement identify to trigger at any scale
+      return true;
+    }
+    // either not the right scale or 
+    return false;
+  }
+
+
+  async function identifyTaskFlow(event, coordExpanParam, mobileView, geometry=false, eventType="click") {
+    if (checkScale(eventType, coordExpanParam, mobileView) == true) { // check if scale is where map features are visible or measurementIdentify
       document.getElementById("mapViewDiv").style.cursor = "wait";
       mapView.graphics.removeAll();
       selectionLayer.graphics.removeAll();
@@ -1142,24 +1171,28 @@ require([
           if (visibleLayers.length > 0) {
             if (layer.title === 'NGS Control Points') {
               const query = ngsLayer.createQuery();
-              query.geometry = mapView.toMap(event);
-              query.distance = 30;
-              query.units = 'meters';
+              if (geometry==false) {                
+                query.geometry = mapView.toMap(event);
+                query.distance = 30;
+                query.units = 'meters';
+              } else {                
+                query.geometry = event; 
+              }
               query.returnGeometry = true;
               query.outFields = ['NAME', 'DEC_LAT', 'DEC_LON', 'COUNTY', 'DATA_SRCE', 'PID'];
               query.where = "STATE = 'FL'";
               await ngsLayer.queryFeatures(query)
                 .then(function (response){
                   for (feature in response.features) {
-                    const control_point = response.features[feature];
-                    control_point.attributes.layerName = control_point.layer.title;
-                    infoPanelData.push(control_point);
+                    const controlPoint = response.features[feature];
+                    controlPoint.attributes.layerName = controlPoint.layer.title;
+                    infoPanelData.push(controlPoint);
                   }
                 });
             } else {
               const task = new IdentifyTask(layer.layer.url)
-              const params = await setIdentifyParameters(visibleLayers, "click", event);
-              var identify = await executeIdentifyTask(task, params);
+              const params = await setIdentifyParameters(visibleLayers, eventType, event);
+              const identify = await executeIdentifyTask(task, params);
               // push each feature to the infoPanelData
               for (feature of identify.results) {
                 feature.feature.attributes.layerName = feature.layerName;
@@ -1181,7 +1214,7 @@ require([
         $('#infoSpan').html('Information Panel - 0 features found.');
         $('#informationdiv').append('<p>This query did not return any features</p>');
       }
-    }
+    } 
     document.getElementById("mapViewDiv").style.cursor = "auto";
   }
 
@@ -1222,7 +1255,7 @@ require([
     return visibleLayerIds;
   }
 
-  async function setIdentifyParameters(visibleLayers, eventType, event) {
+  async function setIdentifyParameters(visibleLayers, eventType, event) {    
     // receive array of active visible layer with urls
     // Set the parameters for the Identify
     params = new IdentifyParameters();
@@ -1236,6 +1269,8 @@ require([
     if (eventType == "click") {
       params.geometry = event.mapPoint
       params.mapExtent = mapView.extent;
+    } else if (eventType == "measured") {
+      params.geometry = event;
     } else {
       params.geometry = event
       params.mapExtent = mapView.extent;
@@ -2239,125 +2274,125 @@ require([
     mapView.ui.add(coordExpand, "top-left");
   }
 
-  // keeps track of the active widget between distance measurement and area measurement
-  let activeWidget = null;
+  // // keeps track of the active widget between distance measurement and area measurement
+  // let activeWidget = null;
 
-  // listen to when the distance button is clicked in order to activate the distanceMeasurement widget
-  document.getElementById("distanceButton").addEventListener("click",
-    function () {
-      setActiveWidget(null);
-      if (!this.classList.contains('active')) {
-        setActiveWidget('distance');
-      } else {
-        setActiveButton(null);
-      }
-    });
+  // // listen to when the distance button is clicked in order to activate the distanceMeasurement widget
+  // document.getElementById("distanceButton").addEventListener("click",
+  //   function () {
+  //     setActiveWidget(null);
+  //     if (!this.classList.contains('active')) {
+  //       setActiveWidget('distance');
+  //     } else {
+  //       setActiveButton(null);
+  //     }
+  //   });
 
-  // listen to when the area button is clicked in order to activate the areaMeasurement widget
-  document.getElementById("areaButton").addEventListener("click",
-    function () {
-      setActiveWidget(null);
-      if (!this.classList.contains('active')) {
-        setActiveWidget('area');
-      } else {
-        setActiveButton(null);
-      }
-    });
+  // // listen to when the area button is clicked in order to activate the areaMeasurement widget
+  // document.getElementById("areaButton").addEventListener("click",
+  //   function () {
+  //     setActiveWidget(null);
+  //     if (!this.classList.contains('active')) {
+  //       setActiveWidget('area');
+  //     } else {
+  //       setActiveButton(null);
+  //     }
+  //   });
 
   // function to switch active widget between areaMeasurement and distanceMeasurement widgets
-  function setActiveWidget(type) {
-    switch (type) {
-      // if the distance measurement button was clicked
-      case "distance":
-        activeWidget = new DistanceMeasurement2D({
-          view: mapView
-        });
-        // skip the initial 'new measurement' button
-        activeWidget.viewModel.newMeasurement();
-        mapView.ui.add(activeWidget, "bottom-left");
-        setActiveButton(document.getElementById('distanceButton'));
-        break;
-        // if the area measurement button was clicked
-      case "area":
-        activeWidget = new AreaMeasurement2D({
-          view: mapView,
-        });
-        // skip the initial 'new measurement' button
-        activeWidget.viewModel.newMeasurement();
-        // add the widget UI to the screen
-        mapView.ui.add(activeWidget, "bottom-left");
-        setActiveButton(document.getElementById('areaButton'));
-        activeWidget.watch("viewModel.tool.active", async function (active) {
-          if (active === false) {
-            // if identify is checked, run a drill down identifyTask
-            if (document.getElementById('measureIdentify').checked) {
-              if (mapView.scale < minimumDrawScale) {
-                document.getElementById("mapViewDiv").style.cursor = "wait";
-                mapView.graphics.removeAll();
-                selectionLayer.graphics.removeAll();
-                clearDiv('informationdiv');
-                infoPanelData = [];
+  // function setActiveWidget(type) {
+  //   switch (type) {
+  //     // if the distance measurement button was clicked
+  //     case "distance":
+  //       activeWidget = new DistanceMeasurement2D({
+  //         view: mapView
+  //       });
+  //       // skip the initial 'new measurement' button
+  //       activeWidget.viewModel.newMeasurement();
+  //       mapView.ui.add(activeWidget, "bottom-left");
+  //       setActiveButton(document.getElementById('distanceButton'));
+  //       break;
+  //       // if the area measurement button was clicked
+  //     case "area":
+  //       activeWidget = new AreaMeasurement2D({
+  //         view: mapView,
+  //       });
+  //       // skip the initial 'new measurement' button
+  //       activeWidget.viewModel.newMeasurement();
+  //       // add the widget UI to the screen
+  //       mapView.ui.add(activeWidget, "bottom-left");
+  //       setActiveButton(document.getElementById('areaButton'));
+  //       activeWidget.watch("viewModel.tool.active", async function (active) {
+  //         if (active === false) {
+  //           // if identify is checked, run a drill down identifyTask
+  //           if (document.getElementById('measureIdentify').checked) {
+  //             if (mapView.scale < minimumDrawScale) {
+  //               document.getElementById("mapViewDiv").style.cursor = "wait";
+  //               mapView.graphics.removeAll();
+  //               selectionLayer.graphics.removeAll();
+  //               clearDiv('informationdiv');
+  //               infoPanelData = [];
 
-                // look inside of layerList layers
-                let layers = layerList.operationalItems.items
-                // loop through layers
-                for (layer of layers) {
-                  let visibleLayers
-                  // exclude geographic names layer from identify operation
-                  if (layer.title !== 'Geographic Names') {
-                    visibleLayers = await checkVisibleLayers(layer);
-                    // if there are visible layers returned
-                    if (visibleLayers.length > 0) {
-                      const task = new IdentifyTask(layer.layer.url)
-                      const params = await setIdentifyParameters(visibleLayers, "polygon", activeWidget.viewModel.measurement.geometry);
-                      const identify = await executeIdentifyTask(task, params);
-                      // push each feature to the infoPanelData
-                      for (feature of identify.results) {
-                        feature.feature.attributes.layerName = feature.layerName;
-                        let result = feature.feature.attributes
-                        // make sure only certified corners with images are identified
-                        if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
-                          await infoPanelData.push(feature.feature);
-                        }
-                      }
-                    }
-                  }
-                }
-                if (infoPanelData.length > 0) {
-                  await queryInfoPanel(infoPanelData, 1);
-                  togglePanel();
-                  await goToFeature(infoPanelData[0]);
-                } else { // if no features were found under the click
-                  $('#infoSpan').html('Information Panel - 0 features found.');
-                  $('#informationdiv').append('<p>This query did not return any features</p>');
-                }
-              }
-              document.getElementById("mapViewDiv").style.cursor = "auto";
-            }
-          }
-        });
-        break;
-      case null:
-        if (activeWidget) {
-          mapView.ui.remove(activeWidget);
-          activeWidget.destroy();
-          activeWidget = null;
-        }
-        break;
-    }
-  }
+  //               // look inside of layerList layers
+  //               let layers = layerList.operationalItems.items
+  //               // loop through layers
+  //               for (layer of layers) {
+  //                 let visibleLayers
+  //                 // exclude geographic names layer from identify operation
+  //                 if (layer.title !== 'Geographic Names') {
+  //                   visibleLayers = await checkVisibleLayers(layer);
+  //                   // if there are visible layers returned
+  //                   if (visibleLayers.length > 0) {
+  //                     const task = new IdentifyTask(layer.layer.url)
+  //                     const params = await setIdentifyParameters(visibleLayers, "polygon", activeWidget.viewModel.measurement.geometry);
+  //                     const identify = await executeIdentifyTask(task, params);
+  //                     // push each feature to the infoPanelData
+  //                     for (feature of identify.results) {
+  //                       feature.feature.attributes.layerName = feature.layerName;
+  //                       let result = feature.feature.attributes
+  //                       // make sure only certified corners with images are identified
+  //                       if (result.layerName !== 'Certified Corners' || result.is_image == 'Y') {
+  //                         await infoPanelData.push(feature.feature);
+  //                       }
+  //                     }
+  //                   }
+  //                 }
+  //               }
+  //               if (infoPanelData.length > 0) {
+  //                 await queryInfoPanel(infoPanelData, 1);
+  //                 togglePanel();
+  //                 await goToFeature(infoPanelData[0]);
+  //               } else { // if no features were found under the click
+  //                 $('#infoSpan').html('Information Panel - 0 features found.');
+  //                 $('#informationdiv').append('<p>This query did not return any features</p>');
+  //               }
+  //             }
+  //             document.getElementById("mapViewDiv").style.cursor = "auto";
+  //           }
+  //         }
+  //       });
+  //       break;
+  //     case null:
+  //       if (activeWidget) {
+  //         mapView.ui.remove(activeWidget);
+  //         activeWidget.destroy();
+  //         activeWidget = null;
+  //       }
+  //       break;
+  //   }
+  // }
 
-  function setActiveButton(selectedButton) {
-    // focus the view to activate keyboard shortcuts for sketching
-    mapView.focus();
-    var elements = document.getElementsByClassName("active");
-    for (var i = 0; i < elements.length; i++) {
-      elements[i].classList.remove("active");
-    }
-    if (selectedButton) {
-      selectedButton.classList.add("active");
-    }
-  }
+  // function setActiveButton(selectedButton) {
+  //   // focus the view to activate keyboard shortcuts for sketching
+  //   mapView.focus();
+  //   var elements = document.getElementsByClassName("active");
+  //   for (var i = 0; i < elements.length; i++) {
+  //     elements[i].classList.remove("active");
+  //   }
+  //   if (selectedButton) {
+  //     selectedButton.classList.add("active");
+  //   }
+  // }
 
   // Print
   new Print({
@@ -2387,4 +2422,105 @@ require([
   // Clear Button
   var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
+
+  const measurementToolbar = document.createElement("div")
+  measurementToolbar.id = "toolbar";
+  measurementToolbar.className =  "esri-component esri-widget";
+
+  var measureExpand = new Expand({
+    view: mapView,
+    content: measurementToolbar,
+    expandIconClass: "esri-icon-measure-area",
+    expandTooltip: "Measurement Tools",
+    collapseTooltip: "Measurement Tools",
+  });
+
+  mapView.ui.add(measureExpand, "top-left");
+
+
+  // Measurement Widget
+  const measurement = new Measurement({
+    view: mapView,
+  });
+
+  const distanceButton = document.createElement("button");
+  distanceButton.id = "distance";
+  distanceButton.className = "esri-widget--button esri-interactive esri-icon-measure-line";
+  distanceButton.title = "Distance Measurement Tool";
+  measurementToolbar.appendChild(distanceButton)
+  
+  const areaButton = document.createElement("button");
+  areaButton.id = "area";
+  areaButton.className = "esri-widget--button esri-interactive esri-icon-measure-area";
+  areaButton.title = "Area Measurement Tool";
+  measurementToolbar.appendChild(areaButton)
+
+  const clearButton = document.createElement("button");
+  clearButton.id = "clear";
+  clearButton.className = "esri-widget--button esri-interactive esri-icon-trash";
+  clearButton.title = "Clear Measurements";
+  measurementToolbar.appendChild(clearButton);
+
+  const measurementIdentifyToggleButton = document.createElement("button");
+  measurementIdentifyToggleButton.id = "identifyMeasurement";
+  measurementIdentifyToggleButton.className = "esri-widget--button esri-interactive esri-icon-description";
+  measurementIdentifyToggleButton.title = "Identify Measurement";
+  measurementToolbar.appendChild(measurementIdentifyToggleButton)
+
+  distanceButton.addEventListener("click", () => {
+    distanceMeasurement();
+    loadMeasurementWidget();
+  });
+
+  areaButton.addEventListener("click", () => {
+    areaMeasurement();
+    loadMeasurementWidget();
+  });
+
+  clearButton.addEventListener("click", () => {
+    clearMeasurements();
+    loadMeasurementWidget();
+    clearIdentifySelection();
+  });
+  measurementIdentifyToggleButton.addEventListener("click", () => {
+    measurementIdentify();
+  });
+
+  function loadMeasurementWidget() {
+    // Add the appropriate measurement UI to the bottom-right when activated
+    mapView.ui.empty("bottom-left"); // remove the scalebar and any other bottom-left
+    mapView.ui.add([measurement, scaleBar], "bottom-left"); // add scalebar after measurement widget
+  }
+
+  // Call the appropriate DistanceMeasurement2D or DirectLineMeasurement3D
+  function distanceMeasurement() {
+    const type = mapView.type;
+    measurement.activeTool =
+      type.toUpperCase() === "2D" ? "distance" : "direct-line";
+    distanceButton.classList.add("active");
+    areaButton.classList.remove("active");
+  }
+
+  // Call the appropriate AreaMeasurement2D or AreaMeasurement3D
+  function areaMeasurement() {
+    measurement.activeTool = "area";
+    distanceButton.classList.remove("active");
+    areaButton.classList.add("active");
+  }
+
+  // Clears all measurements
+  function clearMeasurements() {
+    distanceButton.classList.remove("active");
+    areaButton.classList.remove("active");
+    measurement.clear();
+  }
+
+  function measurementIdentify() {
+    // if measurement has finished, and the measurement tool is area measurement
+    // initiate identify
+    if (measurement.viewModel.state == "measured" && measurement.activeTool == "area") {
+      identifyTaskFlow(measurement.viewModel.activeViewModel.measurement.geometry, coordExpand.expanded !== true, false, true, "measurementIdentify");  // need to determine how to get geometry
+    }
+  }
+
 });

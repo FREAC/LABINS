@@ -1118,9 +1118,9 @@ require([
     on(mapView, "click", async function (event) {
       if ((measurement.viewModel.state == "disabled") || (measurement.viewModel.state == "measured")) {
         if (screen.availWidth < 992) {
-          identifyTaskFlow(event, false, true);
+          identifyTaskFlow(event, false, true, false, "click");
         } else {
-          identifyTaskFlow(event, coordExpand.expanded !== true, false);
+          identifyTaskFlow(event, coordExpand.expanded == false, false, false, "click");
         }
       }
     });
@@ -1135,9 +1135,24 @@ require([
     $('#infoSpan').html('Information Panel');
   }
 
+  function checkScale(eventType, coordExpanParam, mobileView) {
+    // check the scale, unless the identifyTask originated from a measurementIdenty
+    // if from measurementIdenty, return true
+
+    if (eventType == "click") {
+      if ((mapView.scale < minimumDrawScale) && (coordExpanParam || mobileView)) {
+        return true;
+      }
+    } else if ((eventType == "measurementIdentify") && (coordExpanParam || mobileView)) { // allow measurement identify to trigger at any scale
+      return true;
+    }
+    // either not the right scale or 
+    return false;
+  }
+
 
   async function identifyTaskFlow(event, coordExpanParam, mobileView, geometry=false, eventType="click") {
-    if ((mapView.scale < minimumDrawScale) && (coordExpanParam || mobileView)) {
+    if (checkScale(eventType, coordExpanParam, mobileView) == true) { // check if scale is where map features are visible or measurementIdentify
       document.getElementById("mapViewDiv").style.cursor = "wait";
       mapView.graphics.removeAll();
       selectionLayer.graphics.removeAll();
@@ -1199,7 +1214,7 @@ require([
         $('#infoSpan').html('Information Panel - 0 features found.');
         $('#informationdiv').append('<p>This query did not return any features</p>');
       }
-    }
+    } 
     document.getElementById("mapViewDiv").style.cursor = "auto";
   }
 
@@ -1240,7 +1255,7 @@ require([
     return visibleLayerIds;
   }
 
-  async function setIdentifyParameters(visibleLayers, eventType, event) {
+  async function setIdentifyParameters(visibleLayers, eventType, event) {    
     // receive array of active visible layer with urls
     // Set the parameters for the Identify
     params = new IdentifyParameters();

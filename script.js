@@ -2467,6 +2467,12 @@ require([
   measurementIdentifyToggleButton.title = "Identify Measurement";
   measurementToolbar.appendChild(measurementIdentifyToggleButton)
 
+  measureExpand.watch("expanded", function() {
+    if (measureExpand.expanded == false) {
+      clearMeasurements();
+    }
+  });
+
   distanceButton.addEventListener("click", () => {
     distanceMeasurement();
     loadMeasurementWidget();

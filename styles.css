@@ -469,3 +469,7 @@ h3.esri-widget__heading {
   background: #0079c1;
   color: #e4e4e4;
 }
+.esri-distance-measurement-2d__hint-text::after {
+  display: block;
+  content: "End by double clicking";
+}

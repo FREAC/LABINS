@@ -2423,7 +2423,7 @@ require([
   var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
 
-  if (screen.availWidth > 992) {
+  // if (screen.availWidth > 992) {
     const measurementToolbar = document.createElement("div")
     measurementToolbar.id = "toolbar";
     measurementToolbar.className =  "esri-component esri-widget";
@@ -2529,6 +2529,6 @@ require([
         identifyTaskFlow(measurement.viewModel.activeViewModel.measurement.geometry, coordExpand.expanded !== true, false, true, "measurementIdentify");  // need to determine how to get geometry
       }
     }
-  }
+  // }
 
 });

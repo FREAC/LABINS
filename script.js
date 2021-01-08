@@ -2423,7 +2423,9 @@ require([
   var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
 
-  // if (screen.availWidth > 992) {
+  // measurement needs to be defined here or else it won't be in global scope
+  let measurement;
+  if (screen.availWidth > 992) {
     const measurementToolbar = document.createElement("div")
     measurementToolbar.id = "toolbar";
     measurementToolbar.className =  "esri-component esri-widget";
@@ -2440,7 +2442,7 @@ require([
   
   
     // Measurement Widget
-    const measurement = new Measurement({
+    measurement = new Measurement({
       view: mapView,
     });
   
@@ -2529,6 +2531,6 @@ require([
         identifyTaskFlow(measurement.viewModel.activeViewModel.measurement.geometry, coordExpand.expanded !== true, false, true, "measurementIdentify");  // need to determine how to get geometry
       }
     }
-  // }
+  }
 
 });

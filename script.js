@@ -501,6 +501,7 @@ require([
   overviewMapNavToggleButton.addEventListener("click", function () {
     if (overviewMapNavToggleButton.classList.contains("ovwHide")) {
       overviewMapNavToggleButton.setAttribute('title', 'Show Map Overview');
+      overviewMapNavToggleButton.innerHTML = 'Show Map Overview';
       overviewMapNavToggleButton.classList.remove("ovwHide");
       overviewMapNavToggleButton.classList.add("ovwShow");
       overviewDiv.getElementsByClassName('esri-view-root')[0].style.display = 'none';
@@ -508,6 +509,7 @@ require([
     } else {
       overviewMapNavToggleButton.classList.remove("ovwShow");
       overviewMapNavToggleButton.classList.add("ovwHide");
+      overviewMapNavToggleButton.innerHTML = 'Hide Map Overview';
       overviewMapNavToggleButton.setAttribute('title', 'Show Map Overview');
       overviewDiv.getElementsByClassName('esri-view-root')[0].style.display = 'block';
       extentDiv.style.display = 'block';

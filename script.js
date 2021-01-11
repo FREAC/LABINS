@@ -93,70 +93,72 @@ require([
   var minimumDrawScale = 95000;
   var extents = [];
 
-     function buildNGSRenderer() {
+  function buildNGSRenderer() {
 
-      const default_symbol = {
-          type: "simple-marker",
-          size: 8,
-          color: 'black',
-          style: 'square',
-          outline: {
-              width: 0
-          }
-      };
-
-      function buildValueInfos() {
-
-          const valueInfos = [];
-          const styles = ['Horizontal', 'Vertical', 'Hor. & Ver.', 'Not Classified'];
-          styles.forEach(function (style) {
-              const info = {
-                  value: style,
-                  // Make a shallow copy so that symbols do not influence one another
-                  symbol: {...default_symbol}
-              };
-              switch (style) {
-                  case 'Vertical':
-                      info.symbol.color = '#009933';
-                      info.symbol.style = 'square';
-                      valueInfos.push(info);
-                      break;
-                  case 'Horizontal':
-                      info.symbol.color = '#FF00CA';
-                      info.symbol.style = 'triangle';
-                      valueInfos.push(info);
-                      break;
-                  case 'Hor. & Ver.':                                
-                      info.symbol.outline = {
-                          color: '#FF6666',
-                          width: '4px',
-                          cap: 'square'
-                      };
-                      info.symbol.style = 'cross';
-                      valueInfos.push(info);
-                      break; 
-                  case 'Not Classified':
-                      info.symbol.color = '#9999FF';
-                      info.symbol.style = 'circle';
-                      valueInfos.push(info);
-                      break;
-              }
-          });
-          return valueInfos;
+    const default_symbol = {
+      type: "simple-marker",
+      size: 8,
+      color: 'black',
+      style: 'square',
+      outline: {
+        width: 0
       }
+    };
 
-      const customRenderer = {
-        type: "unique-value",
-        field: "pos_srce",
-        field2: "vert_srce",
-        fieldDelimiter: ",",
-        uniqueValueInfos: buildValueInfos(),
-        defaultSymbol: default_symbol,
-        defaultLabel: 'Unknown',
-        legendOptions: {
-          title: 'Source'
-        },
-        valueExpression: `
+    function buildValueInfos() {
+
+      const valueInfos = [];
+      const styles = ['Horizontal', 'Vertical', 'Hor. & Ver.', 'Not Classified'];
+      styles.forEach(function (style) {
+        const info = {
+          value: style,
+          // Make a shallow copy so that symbols do not influence one another
+          symbol: {
+            ...default_symbol
+          }
+        };
+        switch (style) {
+          case 'Vertical':
+            info.symbol.color = '#009933';
+            info.symbol.style = 'square';
+            valueInfos.push(info);
+            break;
+          case 'Horizontal':
+            info.symbol.color = '#FF00CA';
+            info.symbol.style = 'triangle';
+            valueInfos.push(info);
+            break;
+          case 'Hor. & Ver.':
+            info.symbol.outline = {
+              color: '#FF6666',
+              width: '4px',
+              cap: 'square'
+            };
+            info.symbol.style = 'cross';
+            valueInfos.push(info);
+            break;
+          case 'Not Classified':
+            info.symbol.color = '#9999FF';
+            info.symbol.style = 'circle';
+            valueInfos.push(info);
+            break;
+        }
+      });
+      return valueInfos;
+    }
+
+    const customRenderer = {
+      type: "unique-value",
+      field: "pos_srce",
+      field2: "vert_srce",
+      fieldDelimiter: ",",
+      uniqueValueInfos: buildValueInfos(),
+      defaultSymbol: default_symbol,
+      defaultLabel: 'Unknown',
+      legendOptions: {
+        title: 'Source'
+      },
+      valueExpression: `
           var c = Concatenate([$feature.pos_srce, $feature.vert_srce], ',');
           When(Find(c, "SCALED,POSTED|SCALED,RESET|SCALED,ADJUSTED|NO CHECK,POSTED|NO CHECK,RESET|NO CHECK,ADJUSTED|HD_HELD1,POSTED|HD_HELD1,RESET|HD_HELD1,ADJUSTED|HD_HELD2,POSTED|HD_HELD2,RESET|HD_HELD2,ADJUSTED") != -1, 'Vertical',
           Find(c, "ADJUSTED,GPS OBS|ADJUSTED,VERTCON|ADJUSTED,SCALED|ADJUSTED,LEVELING|ADJUSTED, |ADJUSTED,NOT PUB|ADJUSTED,VERT ANG|NO CHECK,GPS OBS") != -1, 'Horizontal',
@@ -164,9 +166,9 @@ require([
           Find(c, "SCALED,NOT PUB|SCALED,VERTCON|NO CHECK, |NO CHECK,NOT PUB|NO CHECK,SCALED|NO CHECK,VERTCON|HD_HELD1,NOT PUB|HD_HELD1,VERTCON|HD_HELD2,NOT PUB|HD_HELD2,VERTCON") != -1, 'Not Classified',
           'default');
         `
-      };
+    };
 
-  return customRenderer;
+    return customRenderer;
   }
 
   const ngsLayerURL = "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/ArcGIS/rest/services/ngs_datasheets/FeatureServer/0";
@@ -360,7 +362,7 @@ require([
       visible: true,
       popupEnabled: false,
       minScale: minimumDrawScale,
-      labelingInfo: haloLabelInfo("[blmid]", [0, 0 , 255, 255]),
+      labelingInfo: haloLabelInfo("[blmid]", [0, 0, 255, 255]),
       labelsVisible: false
     }, {
       id: 1,
@@ -721,12 +723,12 @@ require([
 
   function resetElements(currentElement, trs = true) {
     let doNotSelect = "#" + currentElement.id + ", #selectLayerDropdown";
-    doNotSelect = trs ? doNotSelect : doNotSelect + ", .trs" ;
-    
+    doNotSelect = trs ? doNotSelect : doNotSelect + ", .trs";
+
     $("select").not(doNotSelect).each(function () {
       this.selectedIndex = 0;
     });
-  }   
+  }
 
 
   /////////////////////////////
@@ -734,8 +736,8 @@ require([
   /////////////////////////////
 
   // query layer and populate a dropdown
-  function buildSelectPanel(url, attribute, zoomParam, panelParam, ngs=false) {
-    
+  function buildSelectPanel(url, attribute, zoomParam, panelParam, ngs = false) {
+
     let whereClause = ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL";
 
     var task = new QueryTask({
@@ -908,7 +910,7 @@ require([
 
   // when mapView is ready, build the first dropdown for township selection
   mapView.when(async function () {
-    
+
     const townshipQuery = new Query({
       where: "tdir <> ' ' AND NOT (CAST(twn_ch AS int) > '8' AND tdir = 'N')",
       outFields: ["twn_ch", "tdir"],
@@ -971,23 +973,23 @@ require([
   }
 
   const validateResults = results => {
-        $("#trs").prepend(
-          `<div id="TRSAlert" class="alert alert-danger" role="alert">
+    $("#trs").prepend(
+      `<div id="TRSAlert" class="alert alert-danger" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             Invalid Township-Range combination. Please enter a correct Township-Range combination.
           </div>`
-        )
-        window.setTimeout(function() {
-          $("#TRSAlert").fadeTo(500, 0).slideUp(500, function(){
-              $(this).remove(); 
-          });
-        }, 4000);
-        // remove sections & throw error
-        sectionSelect.options.length = 0;
-        throw new Error('This is an invalid Township-Range combination');;
+    )
+    window.setTimeout(function () {
+      $("#TRSAlert").fadeTo(500, 0).slideUp(500, function () {
+        $(this).remove();
+      });
+    }, 4000);
+    // remove sections & throw error
+    sectionSelect.options.length = 0;
+    throw new Error('This is an invalid Township-Range combination');;
   }
 
-  async function queryTRFlow (TRQuery) {
+  async function queryTRFlow(TRQuery) {
     const results = await townshipRangeSectionLayer.queryFeatures(TRQuery)
     if (results.features.length) {
       zoomToTRFeature(results)
@@ -997,26 +999,26 @@ require([
     }
   }
 
-  async function queryTR (type, whichDropdown) {
+  async function queryTR(type, whichDropdown) {
     if (whichDropdown === 'selectRange' && townshipSelect.selectedIndex !== 0) {
-        const townshipValue = townshipSelect.value;
-        const TRQuery = new Query({
-          where: "rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND twn_ch = '" + townshipValue.substr(0, 2) + "' AND tdir = '" + townshipValue.substr(2) + "'",
-          returnGeometry: true,
-          outFields: ["*"]
-        });
-        queryTRFlow(TRQuery);
-        //place the tr function here
+      const townshipValue = townshipSelect.value;
+      const TRQuery = new Query({
+        where: "rng_ch = '" + type.substr(0, 2) + "' AND rdir = '" + type.substr(2) + "' AND twn_ch = '" + townshipValue.substr(0, 2) + "' AND tdir = '" + townshipValue.substr(2) + "'",
+        returnGeometry: true,
+        outFields: ["*"]
+      });
+      queryTRFlow(TRQuery);
+      //place the tr function here
     } else if (whichDropdown === 'selectTownship' && rangeSelect.selectedIndex !== 0) {
-          const rangeValue = rangeSelect.value;
-          const TRQuery = new Query({
-            where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "' AND rng_ch = '" + rangeValue.substr(0, 2) + "' AND rdir = '" + rangeValue.substr(2) + "'",
-            outFields: ["*"], 
-            returnGeometry: true
-          });
-          queryTRFlow(TRQuery);
-      }
-    } 
+      const rangeValue = rangeSelect.value;
+      const TRQuery = new Query({
+        where: "twn_ch = '" + type.substr(0, 2) + "' AND tdir = '" + type.substr(2) + "' AND rng_ch = '" + rangeValue.substr(0, 2) + "' AND rdir = '" + rangeValue.substr(2) + "'",
+        outFields: ["*"],
+        returnGeometry: true
+      });
+      queryTRFlow(TRQuery);
+    }
+  }
 
   // when township changes, reset the section dropdown and execute queryTR.
   on(townshipSelect, "change", function (evt) {
@@ -1049,7 +1051,8 @@ require([
     // Add label toggles in Layerlist widget
     function defineActions(event) {
       if (["Certified Corners", "Hi-Res Imagery Grid State Plane East",
-       "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"].includes(event.item.title)) {
+          "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"
+        ].includes(event.item.title)) {
         event.item.actionsSections = [
           [{
             title: "Toggle labels",
@@ -1116,12 +1119,13 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
-      if ((measurement.viewModel.state == "disabled") || (measurement.viewModel.state == "measured")) {
-        if (screen.availWidth < 992) {
-          identifyTaskFlow(event, false, true, false, "click");
-        } else {
+      if (screen.availWidth > 992) { // if not on mobile device
+        if ((measurement.viewModel.state == "disabled") || (measurement.viewModel.state == "measured")) {
           identifyTaskFlow(event, coordExpand.expanded == false, false, false, "click");
+
         }
+      } else {
+        identifyTaskFlow(event, false, true, false, "click");
       }
     });
   });
@@ -1151,7 +1155,7 @@ require([
   }
 
 
-  async function identifyTaskFlow(event, coordExpanParam, mobileView, geometry=false, eventType="click") {
+  async function identifyTaskFlow(event, coordExpanParam, mobileView, geometry = false, eventType = "click") {
     if (checkScale(eventType, coordExpanParam, mobileView) == true) { // check if scale is where map features are visible or measurementIdentify
       document.getElementById("mapViewDiv").style.cursor = "wait";
       mapView.graphics.removeAll();
@@ -1171,18 +1175,18 @@ require([
           if (visibleLayers.length > 0) {
             if (layer.title === 'NGS Control Points') {
               const query = ngsLayer.createQuery();
-              if (geometry==false) {                
+              if (geometry == false) {
                 query.geometry = mapView.toMap(event);
                 query.distance = 30;
                 query.units = 'meters';
-              } else {                
-                query.geometry = event; 
+              } else {
+                query.geometry = event;
               }
               query.returnGeometry = true;
               query.outFields = ['NAME', 'DEC_LAT', 'DEC_LON', 'COUNTY', 'DATA_SRCE', 'PID'];
               query.where = "STATE = 'FL'";
               await ngsLayer.queryFeatures(query)
-                .then(function (response){
+                .then(function (response) {
                   for (feature in response.features) {
                     const controlPoint = response.features[feature];
                     controlPoint.attributes.layerName = controlPoint.layer.title;
@@ -1209,12 +1213,12 @@ require([
       if (infoPanelData.length > 0) {
         await queryInfoPanel(infoPanelData, 1, event);
         togglePanel();
-        await goToFeature(infoPanelData[0], button=false);
+        await goToFeature(infoPanelData[0], button = false);
       } else {
         $('#infoSpan').html('Information Panel - 0 features found.');
         $('#informationdiv').append('<p>This query did not return any features</p>');
       }
-    } 
+    }
     document.getElementById("mapViewDiv").style.cursor = "auto";
   }
 
@@ -1255,7 +1259,7 @@ require([
     return visibleLayerIds;
   }
 
-  async function setIdentifyParameters(visibleLayers, eventType, event) {    
+  async function setIdentifyParameters(visibleLayers, eventType, event) {
     // receive array of active visible layer with urls
     // Set the parameters for the Identify
     params = new IdentifyParameters();
@@ -1334,7 +1338,7 @@ require([
   }
 
   // go to first feature of the infopaneldata array
-  function goToFeature(feature, button=true) {
+  function goToFeature(feature, button = true) {
 
     if (feature) {
       // Go to the selected parcel
@@ -1486,11 +1490,13 @@ require([
       filter: {
         // Extent of Florida
         geometry: new Extent({
-          xmin : -87.8,
-          ymin : 24.4,
-          xmax : -79.8,
-          ymax : 31.2,
-          "spatialReference" : {"wkid" : 4326}
+          xmin: -87.8,
+          ymin: 24.4,
+          xmax: -79.8,
+          ymax: 31.2,
+          "spatialReference": {
+            "wkid": 4326
+          }
         })
       }
     }],
@@ -1511,7 +1517,7 @@ require([
   query("#selectLayerDropdown").on("change", function (event) {
 
     // get geometry based on query results
-    async function getGeometry(url, attribute, value, outFields=false) {
+    async function getGeometry(url, attribute, value, outFields = false) {
       // modifies value to remove portions of the string in parentheses 
       value = value.replace(/ *\([^)]*\) */g, "")
 
@@ -1529,7 +1535,7 @@ require([
     }
 
     // data query by text
-    async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement, ngs=false) {
+    async function multiTextQuerytask(url, attribute, queryStatement, idAttribute, idQueryStatement, ngs = false) {
       var whereStatement;
       if (queryStatement != '' || idQueryStatement != '') {
         whereStatement = "(Upper(" + attribute + ') LIKE ' + "'%" + queryStatement.toUpperCase() + "%'" + ' or ' + "Upper(" + idAttribute + ') LIKE ' + "'%" + idQueryStatement.toUpperCase() + "%')";
@@ -1595,7 +1601,7 @@ require([
         });
     }
 
-    function createCountyDropdown(attributeURL, countyAttribute, ngs=false) {
+    function createCountyDropdown(attributeURL, countyAttribute, ngs = false) {
       var countyDropdown = document.createElement('select');
       countyDropdown.setAttribute('id', 'countyQuery');
       countyDropdown.setAttribute('class', 'form-control');
@@ -1603,7 +1609,7 @@ require([
       buildSelectPanel(attributeURL, countyAttribute, "Select a County", "countyQuery", ngs);
     }
 
-    function createQuadDropdown(attributeURL, quadAttribute, ngs=false) {
+    function createQuadDropdown(attributeURL, quadAttribute, ngs = false) {
       var quadDropdown = document.createElement('select');
       quadDropdown.setAttribute('id', 'quadQuery');
       quadDropdown.setAttribute('class', 'form-control');
@@ -1650,8 +1656,8 @@ require([
       clearDiv('parametersQuery');
       // add dropdown, input, and submit elements
       addDescript();
-      createCountyDropdown(ngsLayerURL, 'COUNTY', ngs=true);
-      createQuadDropdown(ngsLayerURL, 'QUAD', ngs=true);
+      createCountyDropdown(ngsLayerURL, 'COUNTY', ngs = true);
+      createQuadDropdown(ngsLayerURL, 'QUAD', ngs = true);
       createTextBox('textQuery', 'Enter NGS Name or PID.');
       createSubmit();
 
@@ -1716,7 +1722,7 @@ require([
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('textQuery').value;
-        multiTextQuerytask(ngsLayerURL, 'PID', textValue, 'NAME', textValue, ngs=true)
+        multiTextQuerytask(ngsLayerURL, 'PID', textValue, 'NAME', textValue, ngs = true)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'NGS Control Points';
@@ -1931,15 +1937,15 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-          getGeometry(labinsURL + '7', 'county', event.target.value, '*')
+        getGeometry(labinsURL + '7', 'county', event.target.value, '*')
           .then(function (response) {
-                for (i = 0; i < response.features.length; i++) {
-                  response.features[i].attributes.layerName = 'Erosion Control Line';
-                  infoPanelData.push(response.features[i]);
-                }
-                goToFeature(infoPanelData[0]);
-                queryInfoPanel(infoPanelData, 1);
-                togglePanel();
+            for (i = 0; i < response.features.length; i++) {
+              response.features[i].attributes.layerName = 'Erosion Control Line';
+              infoPanelData.push(response.features[i]);
+            }
+            goToFeature(infoPanelData[0]);
+            queryInfoPanel(infoPanelData, 1);
+            togglePanel();
           });
       });
 
@@ -2056,11 +2062,11 @@ require([
 
   // after a query typed into search bar
   searchWidget.on("search-complete", async function (event) {
-    
+
     infoPanelData = [];
     // 6 is the ESRI Geocoder service
     if (!(event.results[0].sourceIndex === 6)) {
-    
+
       // change the layername based on which layer is searched on (because the search query looks at )
       var layerName = event.results["0"].results[0].feature.layer.name;
       event.results["0"].results["0"].feature.attributes.layerName = layerName;
@@ -2423,11 +2429,13 @@ require([
   var clearBtn = document.getElementById("clearButton");
   mapView.ui.add(clearBtn, "top-left");
 
-  // if (screen.availWidth > 992) {
+  // measurement needs to be defined here or else it won't be in global scope
+  let measurement;
+  if (screen.availWidth > 992) {
     const measurementToolbar = document.createElement("div")
     measurementToolbar.id = "toolbar";
-    measurementToolbar.className =  "esri-component esri-widget";
-  
+    measurementToolbar.className = "esri-component esri-widget";
+
     var measureExpand = new Expand({
       view: mapView,
       content: measurementToolbar,
@@ -2435,55 +2443,55 @@ require([
       expandTooltip: "Measurement Tools",
       collapseTooltip: "Measurement Tools",
     });
-  
+
     mapView.ui.add(measureExpand, "top-left");
-  
-  
+
+
     // Measurement Widget
-    const measurement = new Measurement({
+    measurement = new Measurement({
       view: mapView,
     });
-  
+
     const distanceButton = document.createElement("button");
     distanceButton.id = "distance";
     distanceButton.className = "esri-widget--button esri-interactive esri-icon-measure-line";
     distanceButton.title = "Distance Measurement Tool";
     measurementToolbar.appendChild(distanceButton)
-    
+
     const areaButton = document.createElement("button");
     areaButton.id = "area";
     areaButton.className = "esri-widget--button esri-interactive esri-icon-measure-area";
     areaButton.title = "Area Measurement Tool";
     measurementToolbar.appendChild(areaButton)
-  
+
     const clearButton = document.createElement("button");
     clearButton.id = "clear";
     clearButton.className = "esri-widget--button esri-interactive esri-icon-trash";
     clearButton.title = "Clear Measurements";
     measurementToolbar.appendChild(clearButton);
-  
+
     const measurementIdentifyToggleButton = document.createElement("button");
     measurementIdentifyToggleButton.id = "identifyMeasurement";
     measurementIdentifyToggleButton.className = "esri-widget--button esri-interactive esri-icon-description";
     measurementIdentifyToggleButton.title = "Identify Measurement";
     measurementToolbar.appendChild(measurementIdentifyToggleButton)
-  
-    measureExpand.watch("expanded", function() {
+
+    measureExpand.watch("expanded", function () {
       if (measureExpand.expanded == false) {
         clearMeasurements();
       }
     });
-  
+
     distanceButton.addEventListener("click", () => {
       distanceMeasurement();
       loadMeasurementWidget();
     });
-  
+
     areaButton.addEventListener("click", () => {
       areaMeasurement();
       loadMeasurementWidget();
     });
-  
+
     clearButton.addEventListener("click", () => {
       clearMeasurements();
       loadMeasurementWidget();
@@ -2492,13 +2500,13 @@ require([
     measurementIdentifyToggleButton.addEventListener("click", () => {
       measurementIdentify();
     });
-  
+
     function loadMeasurementWidget() {
       // Add the appropriate measurement UI to the bottom-right when activated
       mapView.ui.empty("bottom-left"); // remove the scalebar and any other bottom-left
       mapView.ui.add([measurement, scaleBar], "bottom-left"); // add scalebar after measurement widget
     }
-  
+
     // Call the appropriate DistanceMeasurement2D or DirectLineMeasurement3D
     function distanceMeasurement() {
       const type = mapView.type;
@@ -2507,28 +2515,28 @@ require([
       distanceButton.classList.add("active");
       areaButton.classList.remove("active");
     }
-  
+
     // Call the appropriate AreaMeasurement2D or AreaMeasurement3D
     function areaMeasurement() {
       measurement.activeTool = "area";
       distanceButton.classList.remove("active");
       areaButton.classList.add("active");
     }
-  
+
     // Clears all measurements
     function clearMeasurements() {
       distanceButton.classList.remove("active");
       areaButton.classList.remove("active");
       measurement.clear();
     }
-  
+
     function measurementIdentify() {
       // if measurement has finished, and the measurement tool is area measurement
       // initiate identify
       if (measurement.viewModel.state == "measured" && measurement.activeTool == "area") {
-        identifyTaskFlow(measurement.viewModel.activeViewModel.measurement.geometry, coordExpand.expanded !== true, false, true, "measurementIdentify");  // need to determine how to get geometry
+        identifyTaskFlow(measurement.viewModel.activeViewModel.measurement.geometry, coordExpand.expanded !== true, false, true, "measurementIdentify"); // need to determine how to get geometry
       }
     }
-  // }
+  }
 
 });

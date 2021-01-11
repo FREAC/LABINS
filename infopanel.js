@@ -155,37 +155,67 @@ function queryInfoPanel(results, i, event = false) {
                     '<b>Feature Name: </b>' + results[i - 1].attributes.feature_na + '<br>' +
                     '<b>Feature Class: </b>' + results[i - 1].attributes.feature_cl + '<br>'
                 );
-            } else if (results[i - 1].attributes.layerName === 'Certified Corners') {
-                $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
+            //
+            // This is the old way we used to do things.  The block after this comment is the new relatedFeatures strategy
+            //
+            // } else if (results[i - 1].attributes.layerName === 'Certified Corners') {
+            //     $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corners</b></p>' +
+            //         '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
+            //         '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
+            //         '<b>Quad Number: </b>' + results[i - 1].attributes.quad_num + '<br>'
+            //     );
+            //     const pdfFiles = new Set([]);
+            //     const imageIds = Object.keys(results[i - 1].attributes);
+            //     const tifFiles = [];
+            //     imageIds.map(prop => {
+            //         if (prop.startsWith('image') && results[i - 1].attributes[prop].length > 1) {
+            //             pdfFiles.add(results[i - 1].attributes[prop].slice(-18, -5));
+            //             tifFiles.push(results[i - 1].attributes[prop]);
+            //         }
+            //     });
+            //     // convert back to array using spread operator and add to popup
+            //     [...pdfFiles].map(fileName => {
+            //         $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/' + fileName + '.pdf>' + fileName.slice(6) + '.pdf</a><br>');
+            //     });
+            //     // add .tif files to popup
+            //     tifFiles.map(fileName => {
+            //         if (parseInt(fileName.slice(-12,-5)) < 110400){
+            //             $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
+            //         }
+            //     });
+            //     // const relatedFeatures = results[i - 1].attributes.relatedFeatures.sort();
+            //     // for (relatedFeature in relatedFeatures) {
+            //     //     const folderNum = Math.floor(relatedFeatures[relatedFeature] / 10000).toString().padStart(2, '0');
+            //     //     const docNum = relatedFeatures[relatedFeature].toString().padStart(7, '0');
+            //     //     $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/ccp' + folderNum + '/' + docNum + '.pdf>' + docNum + '.pdf</a><br>');
+            //     // }
+            } else if (results[i - 1].attributes.layerName === 'base_and_survey.sde.pls_ptp_master_3857') {
+                // console.log(results[i - 1].attributes);
+                $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corner</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
                     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
                     '<b>Quad Number: </b>' + results[i - 1].attributes.quad_num + '<br>'
                 );
-                const pdfFiles = new Set([]);
-                const imageIds = Object.keys(results[i - 1].attributes);
-                const tifFiles = [];
-                imageIds.map(prop => {
-                    if (prop.startsWith('image') && results[i - 1].attributes[prop].length > 1) {
-                        pdfFiles.add(results[i - 1].attributes[prop].slice(-18, -5));
-                        tifFiles.push(results[i - 1].attributes[prop]);
-                    }
-                });
-                // convert back to array using spread operator and add to popup
-                [...pdfFiles].map(fileName => {
-                    $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/' + fileName + '.pdf>' + fileName.slice(6) + '.pdf</a><br>');
-                });
-                // add .tif files to popup
-                tifFiles.map(fileName => {
-                    if (parseInt(fileName.slice(-12,-5)) < 110400){
-                        $('#informationdiv').append('<b>Image: </b><a target="_blank" href=' + fileName + '>' + fileName.slice(-12, -4) + '.tif</a><br>');
-                    }
-                });
-                // const relatedFeatures = results[i - 1].attributes.relatedFeatures.sort();
-                // for (relatedFeature in relatedFeatures) {
-                //     const folderNum = Math.floor(relatedFeatures[relatedFeature] / 10000).toString().padStart(2, '0');
-                //     const docNum = relatedFeatures[relatedFeature].toString().padStart(7, '0');
-                //     $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/ccp' + folderNum + '/' + docNum + '.pdf>' + docNum + '.pdf</a><br>');
-                // }
+                // const relatedFeatures = await results[i - 1].attributes.relatedFeatures;
+                // console.log(results[i - 1].attributes);
+                const relatedFeatures = results[i - 1].attributes.relatedFeatures.sort(function(a, b) {return b-a});
+                // console.log('after the sort',relatedFeatures);
+
+                for (relatedFeature in relatedFeatures) {
+                    // console.log({
+                    //     relatedFeature: relatedFeatures[relatedFeature]
+                    // });
+
+                    const folderNum = Math.floor(relatedFeatures[relatedFeature] / 10000).toString().padStart(2, '0');
+                    // console.log({
+                    //     folderNum
+                    // });
+                    const docNum = relatedFeatures[relatedFeature].toString().padStart(7, '0');
+                    // console.log({
+                    //     docNum
+                    // });
+                    $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/ccp' + folderNum + '/' + docNum + '.pdf>' + docNum + '.pdf</a><br>');
+                }
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
                     '<b>County: </b>' + results[i - 1].attributes.COUNTY + '<br>' +
@@ -197,7 +227,10 @@ function queryInfoPanel(results, i, event = false) {
             if (removeThisResult == true) {
                 removeThisResult = false; // reset the value back to default and move on
             }
-            else if (results[i - 1].attributes.layerName !== 'Township-Range' && results[i - 1].attributes.layerName !== 'County_Boundaries_Shoreline' && removeThisResult == false) {
+            else if (results[i - 1].attributes.layerName !== 'Township-Range' && 
+                     results[i - 1].attributes.layerName !== 'County_Boundaries_Shoreline' && 
+                     results[i - 1].attributes.layerName !== 'Certified Corners' && removeThisResult == false) {
+                // skipping Certified Corners because they are handled above with the newer relatedFeatures strategy
                 $('#informationdiv').append('<br>');
                 $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
                 $('#informationdiv').append('<hr>');

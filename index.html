@@ -90,6 +90,8 @@
 
     <!-- Search/Legend/LayerList -->
     <ul class="nav navbar-nav calcite-nav">
+      <li><a id="desktopOverviewMap" class="hidden-xs hidden-sm overviewMapToggle ovwHide" href="#" aria-controls="Overview" aria-expanded="true"
+        role="tab" data-toggle="tab" data-tooltip="tip" title="Layerlist" data-placement="bottom">Overview Map</a></li>
       <li><a id="desktopLayerlist" class="hidden-xs hidden-sm" href="#" aria-controls="Layerlist" aria-expanded="true"
           role="tab" data-toggle="tab" data-tooltip="tip" title="Layerlist" data-placement="bottom">Layerlist</a></li>
       <li><a id="desktopLegend" class="hidden-xs hidden-sm" href="#" aria-controls="Legend" role="tab" data-toggle="tab"
@@ -105,14 +107,13 @@
 
   <!-- Map  -->
   <div class="calcite-map calcite-map-absolute">
-    <div id="mapViewDiv"></div>
-    <button title="Clear graphics" type="button" class="btn btn-default" id="clearButton">
-      <span class="esri-icon-erase"></span>
-    </button>
-    </div>
-    <div id="overviewDiv">
-      <div id="extentDiv"></div>
-    </div>
+      <div id="mapViewDiv"></div>
+      <button title="Clear graphics" type="button" class="btn btn-default" id="clearButton">
+        <span class="esri-icon-erase"></span>
+      </button>
+  </div>
+  <div id="overviewDiv">
+    <div id="extentDiv"></div>
   </div>
   <!-- /.calcite-map -->
 

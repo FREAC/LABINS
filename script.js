@@ -495,7 +495,29 @@ require([
   });
 
   overView.ui.components = [];
-  var extentDiv = dom.byId("extentDiv");
+
+  var extentDiv = document.getElementById("extentDiv");
+  const overviewDiv = document.getElementById('overviewDiv');
+  const overviewMapNavToggleButton = document.getElementById("desktopOverviewMap");
+  
+  // if overviewMapNavToggleButton is clicked
+  // toggle the overview map visible/not-visible
+  overviewMapNavToggleButton.addEventListener("click", function () {
+    if (overviewMapNavToggleButton.classList.contains("ovwHide")) {
+      overviewMapNavToggleButton.setAttribute('title', 'Show Map Overview');
+      overviewMapNavToggleButton.classList.remove("ovwHide");
+      overviewMapNavToggleButton.classList.add("ovwShow");
+      overviewDiv.getElementsByClassName('esri-view-root')[0].style.display = 'none';
+      extentDiv.style.display = 'none';
+    } else {
+      overviewMapNavToggleButton.classList.remove("ovwShow");
+      overviewMapNavToggleButton.classList.add("ovwHide");
+      overviewMapNavToggleButton.setAttribute('title', 'Show Map Overview');
+      overviewDiv.getElementsByClassName('esri-view-root')[0].style.display = 'block';
+      extentDiv.style.display = 'block';
+    }
+      overviewDiv.classList.toggle('hide');
+    });
 
   overView.when(function () {
     // Update the minimap overview when the main view becomes stationary

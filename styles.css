@@ -481,11 +481,11 @@ h3.esri-widget__heading {
 }
 
 #distance.active {
- background-color:#f0f0f0;
- color: #2e2e2e;
+ background-color:#e3e3e3;
+ color: #242424;
 }
 
 #area.active {
-  background-color:#f0f0f0;
-  color: #2e2e2e;
+  background-color:#e3e3e3;
+  color: #242424;
  }

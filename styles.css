@@ -479,3 +479,13 @@ h3.esri-widget__heading {
   display: block;
   content: "End by double clicking";
 }
+
+#distance.active {
+ background-color:#f0f0f0;
+ color: #2e2e2e;
+}
+
+#area.active {
+  background-color:#f0f0f0;
+  color: #2e2e2e;
+ }

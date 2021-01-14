@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -19,17 +20,23 @@
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 </head>
+
 <body class="calcite-maps calcite-nav-top">
 
   <!-- This is code for the IE11 alert window -->
   <script>
-    if (!!window.MSInputMethodContext && !!document.documentMode){
-      swal('Please use a different browser', 'Because the LABINS map uses modern web technologies, it is incompatible with Internet Explorer 11.', 'error', {button: false,});
+    if (!!window.MSInputMethodContext && !!document.documentMode) {
+      swal('Please use a different browser',
+        'Because the LABINS map uses modern web technologies, it is incompatible with Internet Explorer 11.',
+        'error', {
+          button: false,
+        });
     }
   </script>
 
   <!-- Navbar -->
-  <nav class="navbar calcite-navbar navbar-fixed-top calcite-text-light calcite-bg-custom" style="background-color: #0d3b4b">
+  <nav class="navbar calcite-navbar navbar-fixed-top calcite-text-light calcite-bg-custom"
+    style="background-color: #0d3b4b">
 
     <!-- Menu -->
     <div class="dropdown calcite-dropdown calcite-text-light calcite-bg-custom" role="presentation"
@@ -90,8 +97,9 @@
 
     <!-- Search/Legend/LayerList -->
     <ul class="nav navbar-nav calcite-nav">
-      <li><a id="desktopOverviewMap" class="hidden-xs hidden-sm overviewMapToggle ovwHide" href="#" aria-controls="Overview" aria-expanded="true"
-        role="tab" data-toggle="tab" data-tooltip="tip" title="Overview" data-placement="bottom">Hide Overview Map</a></li>
+      <li><a id="desktopOverviewMap" class="hidden-xs hidden-sm overviewMapToggle ovwHide" href="#"
+          aria-controls="Overview" aria-expanded="true" role="tab" data-toggle="tab" data-tooltip="tip" title="Overview"
+          data-placement="bottom">Hide Overview Map</a></li>
       <li><a id="desktopLayerlist" class="hidden-xs hidden-sm" href="#" aria-controls="Layerlist" aria-expanded="true"
           role="tab" data-toggle="tab" data-tooltip="tip" title="Layerlist" data-placement="bottom">Layerlist</a></li>
       <li><a id="desktopLegend" class="hidden-xs hidden-sm" href="#" aria-controls="Legend" role="tab" data-toggle="tab"
@@ -107,10 +115,10 @@
 
   <!-- Map  -->
   <div class="calcite-map calcite-map-absolute">
-      <div id="mapViewDiv"></div>
-      <button title="Clear graphics" type="button" class="btn btn-default" id="clearButton">
-        <span class="esri-icon-erase"></span>
-      </button>
+    <div id="mapViewDiv"></div>
+    <button title="Clear graphics" type="button" class="btn btn-default" id="clearButton">
+      <span class="esri-icon-erase"></span>
+    </button>
   </div>
   <div id="overviewDiv">
     <div id="extentDiv"></div>
@@ -118,7 +126,8 @@
   <!-- /.calcite-map -->
 
   <!-- Panels -->
-  <div id="allpanelsDiv" class="calcite-panels calcite-panels-right calcite-text-light calcite-bg-custom panel-group" style="background-color: #0d3b4b">
+  <div id="allpanelsDiv" class="calcite-panels calcite-panels-right calcite-text-light calcite-bg-custom panel-group"
+    style="background-color: #0d3b4b">
 
     <!-- Zoom to Feature Panel -->
     <div id="panelLayer" class="panel collapse">
@@ -201,9 +210,6 @@
       </div>
       <div id="collapseInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingInfo">
         <div id="info" class="panel-body" style="text-align: justify">
-          <p><span style="font-size: medium">This is the updated LABINS Data Explorer created to replace the current
-              LABINS Viewer in Flex which can be found <a id="tablelink" href="https://labins.org/map_public/index.html"
-                target="_blank">here</a>.</span></p>
           <p><span style="font-size: medium">For data questions, contact <b>Lamar Evers</b>. 850.245.2606</span></p>
           <br>
           <p><span style="font-size: medium">For website questions, contact <b>Technical Support</b>.
@@ -389,14 +395,16 @@
   <!-- Google Analytics -->
   <script type="text/javascript">
     var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    document.write(unescape("%3Cscript src='" + gaJsHost +
+      "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
   </script>
   <script type="text/javascript">
     try {
       var pageTracker = _gat._getTracker("UA-12990511-1");
       pageTracker._setDomainName(".labins.org");
       pageTracker._trackPageview();
-    } catch(err) {}
+    } catch (err) {}
   </script>
 </body>
+
 </html>

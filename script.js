@@ -499,7 +499,7 @@ require([
   var extentDiv = document.getElementById("extentDiv");
   const overviewDiv = document.getElementById('overviewDiv');
   const overviewMapNavToggleButton = document.getElementById("desktopOverviewMap");
-  
+
   // if overviewMapNavToggleButton is clicked
   // toggle the overview map visible/not-visible
   overviewMapNavToggleButton.addEventListener("click", function () {
@@ -518,8 +518,8 @@ require([
       overviewDiv.getElementsByClassName('esri-view-root')[0].style.display = 'block';
       extentDiv.style.display = 'block';
     }
-      overviewDiv.classList.toggle('hide');
-    });
+    overviewDiv.classList.toggle('hide');
+  });
 
   overView.when(function () {
     // Update the minimap overview when the main view becomes stationary
@@ -2182,6 +2182,9 @@ require([
       view: mapView,
       container: document.createElement("div"),
     });
+
+    // auto expand ccWidget
+    ccWidget._expanded = true;
 
     // Regular expression to find a number
     var numberSearchPattern = /-?\d+[\.]?\d*/;

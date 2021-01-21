@@ -149,9 +149,6 @@ require([
 
     const customRenderer = {
       type: "unique-value",
-      // field: "pos_srce",
-      // field2: "vert_srce",
-      // fieldDelimiter: ",",
       uniqueValueInfos: buildValueInfos(),
       defaultSymbol: default_symbol,
       defaultLabel: 'Unknown',

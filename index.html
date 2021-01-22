@@ -77,6 +77,9 @@
         <li><a role="menuitem" tabindex="0" href="#" id="calciteToggleNavbar" aria-haspopup="true"><span
               class="glyphicon glyphicon-fullscreen"></span>
             Toggle Navigation Bar</a></li>
+        <li><a role="menuitem" tebindex="0" data-target="#panelSwipe" aria-haspopup="true"><span
+              class="glyphicon glyphicon-info-sign"></span>
+            Swipe</a></li>
       </ul>
     </div>
 
@@ -357,6 +360,30 @@
       </div>
       <div id="collapseBookmarks" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingBookmarks">
         <div id="bookmarksDiv" class="panel-body" style="text-align: justify">
+        </div>
+      </div>
+    </div>
+
+    <!-- Swipe Panel -->
+    <div id="panelSwipe" class="panel collapse">
+      <div id="headingSwipe" class="panel-heading" role="tab">
+        <div class="panel-title">
+          <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseSwipe" aria-expanded="true"
+            aria-controls="collapseSwipe">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+            <span class="panel-label">Swipe Layers</span>
+          </a>
+          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelSwipe">
+            <span class="esri-icon esri-icon-close" aria-hidden="true"></span>
+          </a>
+        </div>
+      </div>
+      <div id="collapseSwipe" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSwipe">
+        <div id="swipe" class="panel-body" style="text-align: justify">
+          <p><span style="font-size: medium">For data questions, contact <b>Lamar Evers</b>. 850.245.2606</span></p>
+          <br>
+          <p><span style="font-size: medium">For website questions, contact <b>Technical Support</b>.
+              850.644.2305</span></p>
         </div>
       </div>
     </div>

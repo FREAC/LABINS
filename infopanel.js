@@ -40,16 +40,16 @@ function queryInfoPanel(results, i, event = false) {
                     '<b>Description:</b> ' + results[i - 1].attributes.descript + '<br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane West') {
-                $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane West<b></b></p>' +
+                $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane West</b></p>' +
                     '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=W&gridid=' + results[i - 1].attributes.spw_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spw_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane East') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane East</b></p>' +
-                    '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=E&gridid=' + results[i - 1].attributes.spe_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spe_id + '</a><br>'
+                    '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?&spzone=E&gridid=' + results[i - 1].attributes.spe_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spe_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane North') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane North</b></p>' +
-                    '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
+                    '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map_swh.cfm?&spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
                 );
             } else if ((results[i - 1].attributes.layerName === 'NGS Control Points') || (results[i - 1].attributes.layerName === 'ALL_DATASHEETS')) {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +
@@ -190,30 +190,15 @@ function queryInfoPanel(results, i, event = false) {
             //     //     $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/ccp' + folderNum + '/' + docNum + '.pdf>' + docNum + '.pdf</a><br>');
             //     // }
             } else if (results[i - 1].attributes.layerName === 'base_and_survey.sde.pls_ptp_master_3857') {
-                // console.log(results[i - 1].attributes);
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corner</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
                     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +
                     '<b>Quad Number: </b>' + results[i - 1].attributes.quad_num + '<br>'
                 );
-                // const relatedFeatures = await results[i - 1].attributes.relatedFeatures;
-                // console.log(results[i - 1].attributes);
                 const relatedFeatures = results[i - 1].attributes.relatedFeatures.sort(function(a, b) {return b-a});
-                // console.log('after the sort',relatedFeatures);
-
                 for (relatedFeature in relatedFeatures) {
-                    // console.log({
-                    //     relatedFeature: relatedFeatures[relatedFeature]
-                    // });
-
                     const folderNum = Math.floor(relatedFeatures[relatedFeature] / 10000).toString().padStart(2, '0');
-                    // console.log({
-                    //     folderNum
-                    // });
                     const docNum = relatedFeatures[relatedFeature].toString().padStart(7, '0');
-                    // console.log({
-                    //     docNum
-                    // });
                     $('#informationdiv').append('<b>PDF: </b><a target="_blank" href=https://ftp.labins.org/ccr/bydocno_pdf/ccp' + folderNum + '/' + docNum + '.pdf>' + docNum + '.pdf</a><br>');
                 }
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
@@ -227,10 +212,7 @@ function queryInfoPanel(results, i, event = false) {
             if (removeThisResult == true) {
                 removeThisResult = false; // reset the value back to default and move on
             }
-            else if (results[i - 1].attributes.layerName !== 'Township-Range' && 
-                     results[i - 1].attributes.layerName !== 'County_Boundaries_Shoreline' && 
-                     results[i - 1].attributes.layerName !== 'Certified Corners' && removeThisResult == false) {
-                // skipping Certified Corners because they are handled above with the newer relatedFeatures strategy
+            else if (results[i - 1].attributes.layerName !== 'Township-Range' && results[i - 1].attributes.layerName !== 'County_Boundaries_Shoreline' && removeThisResult == false) {
                 $('#informationdiv').append('<br>');
                 $('#informationdiv').append('<button id= "' + i + '" name="zoom" class="btn btn-primary">Zoom to Feature</button>');
                 $('#informationdiv').append('<hr>');

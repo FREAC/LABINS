@@ -34,6 +34,7 @@ require([
   "esri/widgets/DistanceMeasurement2D",
   "esri/widgets/AreaMeasurement2D",
   "esri/widgets/Measurement",
+  "esri/widgets/Swipe",
   "esri/core/watchUtils",
   "dojo/on",
   "dojo/dom",
@@ -87,6 +88,7 @@ require([
   DistanceMeasurement2D,
   AreaMeasurement2D,
   Measurement,
+  Swipe,
   watchUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, query, Color,
   CalciteMapsArcGISSupport) {
 
@@ -2303,6 +2305,44 @@ require([
     });
     mapView.ui.add(coordExpand, "top-left");
   }
+
+    let leadingLayers = [];
+    let trailingLayers = [];
+    const leadingLayersSelect = document.getElementById('leadingLayers');
+    const trailingLayersSelect = document.getElementById('trailingLayers');
+
+    const swipeLayerOptions = ['labinsLayer', 'ngsLayer', 'swfwmdLayer', 'CCCLLayer'];
+
+    function addSwipeOptions(layersSelect) {
+      swipeLayerOptions.map(layer => {
+        const option = document.createElement("option");
+        option.text = layer;
+        option.setAttribute("value", option);
+        layersSelect.add(option);
+      });
+    }
+
+    addSwipeOptions(leadingLayersSelect);
+    addSwipeOptions(trailingLayersSelect);
+
+    leadingLayersSelect.addEventListener("change", function (event) {
+      leadingLayers.length = 0;
+      leadingLayers.push(event.target.value);
+    });
+
+    trailingLayersSelect.addEventListener("change", function (event) {
+      trailingLayers.length = 0;
+      trailingLayers.push(event.target.value);
+    });
+
+    var swipe = new Swipe({
+      view: mapView,
+      leadingLayers: leadingLayers,
+      trailingLayers: trailingLayers,
+      direction: "horizontal", // swipe widget will move from right to left of view
+      position: 50 // position set to middle of the view (50%)
+    });
+    mapView.ui.add(swipe);
 
   // // keeps track of the active widget between distance measurement and area measurement
   // let activeWidget = null;

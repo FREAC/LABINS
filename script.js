@@ -244,6 +244,7 @@ require([
 
   var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/";
   var labinsLayer = new MapImageLayer({
+    title: "LABINS Data",
     url: labinsURL,
     sublayers: [{
       id: 16,
@@ -371,6 +372,8 @@ require([
       minScale: minimumDrawScale
     }]
   });
+
+  console.log(labinsLayer.title);
 
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
   var swfwmdLayer = new MapImageLayer({
@@ -1821,6 +1824,8 @@ require([
         resetElements(quadDropdownAfter);
         infoPanelData = [];
 
+        console.log(event.target.value);
+
         getGeometry(labinsURL + '8', 'tile_name', event.target.value)
           .then(unionGeometries)
           .then(function (response) {
@@ -2308,41 +2313,88 @@ require([
 
     let leadingLayers = [];
     let trailingLayers = [];
+
+    const swipeSelects = document.getElementsByClassName('swipeSelect');
     const leadingLayersSelect = document.getElementById('leadingLayers');
     const trailingLayersSelect = document.getElementById('trailingLayers');
+    const swipeCheckbox = document.getElementById("swipeCheckbox");
+    const resetSwipeBtn = document.getElementById("resetSwipe");
 
-    const swipeLayerOptions = ['labinsLayer', 'ngsLayer', 'swfwmdLayer', 'CCCLLayer'];
+    const swipeLayerOptions = ['LABINS Data', 'NGS Control Points', 'SWFWMD Survey Benchmarks', 'Coastal Construction Control Lines'];
 
     function addSwipeOptions(layersSelect) {
       swipeLayerOptions.map(layer => {
         const option = document.createElement("option");
         option.text = layer;
-        option.setAttribute("value", option);
+        // option.setAttribute("value", option);
         layersSelect.add(option);
+      });
+    }
+
+    function matchSwipeSelection (value, swipeSelectArr) {
+      if (value == 'LABINS Data') {
+        swipeSelectArr.add(labinsLayer);
+      } else if (value == 'NGS Control Points') {
+        swipeSelectArr.add(ngsLayer);
+      } else if (value == 'SWFWMD Survey Benchmarks') {
+        swipeSelectArr.add(swfwmdLayer);
+      } else if (value == 'Coastal Construction Control Lines') {
+        swipeSelectArr.add(CCCLLayer);
+      }
+    }
+
+    function resetSwipe () {
+      Array.from(swipeSelects).forEach(function(element) {
+        element.selectedIndex = 0;
+        swipe.leadingLayers.length = 0;
+        swipe.trailingLayers.length = 0;
       });
     }
 
     addSwipeOptions(leadingLayersSelect);
     addSwipeOptions(trailingLayersSelect);
 
+    // Array.from(swipeSelects).forEach(function(element) {
+    //   element.addEventListener('change', function (event) {
+    //     const id = event.target.id;
+    //     const value = event.target.value;
+    //     console.log(event);
+    //     console.log(event.target.value);
+    //   });
+    // });
+
     leadingLayersSelect.addEventListener("change", function (event) {
-      leadingLayers.length = 0;
-      leadingLayers.push(event.target.value);
+      swipe.leadingLayers.length = 0;
+      const layerTitle = event.target.value;
+      matchSwipeSelection(layerTitle, swipe.leadingLayers);
     });
 
     trailingLayersSelect.addEventListener("change", function (event) {
-      trailingLayers.length = 0;
-      trailingLayers.push(event.target.value);
+      swipe.trailingLayers.length = 0;
+      const layerTitle = event.target.value;
+      matchSwipeSelection(layerTitle, swipe.trailingLayers);
     });
+
+    swipeCheckbox.addEventListener("change", function (event) {
+      if(event.target.checked == true) {
+        mapView.ui.add(swipe);
+      } else {
+        mapView.ui.remove(swipe);
+        resetSwipe();
+      }
+    });
+
+    resetSwipeBtn.addEventListener("click", function () {
+      resetSwipe();
+    })
 
     var swipe = new Swipe({
       view: mapView,
-      leadingLayers: leadingLayers,
-      trailingLayers: trailingLayers,
+      leadingLayers: [],
+      trailingLayers: [],
       direction: "horizontal", // swipe widget will move from right to left of view
       position: 50 // position set to middle of the view (50%)
     });
-    mapView.ui.add(swipe);
 
   // // keeps track of the active widget between distance measurement and area measurement
   // let activeWidget = null;

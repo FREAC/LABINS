@@ -383,12 +383,19 @@
           <li class="dropdown-header" style="color: #DCDCDC">
             <font size="3">Swipe Layers</font>
           </li>
-          <select id="leadingLayers" class="form-control">
+          <select id="leadingLayers" class="form-control swipeSelect">
             <option value="" disabled selected>Leading Layer</option>
           </select>
-          <select id="trailingLayers" class="form-control">
+          <select id="trailingLayers" class="form-control swipeSelect">
             <option value="" disabled selected>Trailing Layer</option>
           </select>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="swipeCheckbox">
+            <label class="form-check-label" for="exampleCheck1">Swipe</label>
+            <button id="resetSwipe" class="btn btn-primary">Reset Swipe</button>
+
+          </div>
+          
         </div>
       </div>
     </div>

@@ -45,11 +45,11 @@ function queryInfoPanel(results, i, event = false) {
                 );
             } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane East') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane East</b></p>' +
-                    '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?&spzone=E&gridid=' + results[i - 1].attributes.spe_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spe_id + '</a><br>'
+                    '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=E&gridid=' + results[i - 1].attributes.spe_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spe_id + '</a><br>'
                 );
             } else if (results[i - 1].attributes.layerName === 'Hi-Res Imagery Grid State Plane North') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Hi-Res Imagery - State Plane North</b></p>' +
-                    '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map_swh.cfm?&spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
+                    '<a target="_blank" href=' + 'https://labins.org/mapping_data/aerials/hi-res_search_from_map.cfm?spzone=N&gridid=' + results[i - 1].attributes.spn_id + '>' + 'Hi resolution images for ' + results[i - 1].attributes.spn_id + '</a><br>'
                 );
             } else if ((results[i - 1].attributes.layerName === 'NGS Control Points') || (results[i - 1].attributes.layerName === 'ALL_DATASHEETS')) {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>NGS Control Points</b></p>' +

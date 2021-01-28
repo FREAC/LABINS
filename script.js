@@ -240,7 +240,7 @@ require([
     }]
   });
 
-  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/";
+  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/";
   var labinsLayer = new MapImageLayer({
     url: labinsURL,
     sublayers: [{
@@ -384,13 +384,22 @@ require([
   });
 
   // Layers needed for dependent dropdowns
-  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/10"
+  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/10"
   var townshipRangeSectionLayer = new FeatureLayer({
     url: townshipRangeSectionURL,
     outFields: ["twn_ch", "rng_ch", "sec_ch"],
     title: "Section Lines",
     visible: false,
     listMode: "hide",
+    popupEnabled: false
+  });
+
+  const newCCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/pls_master_to_ccr/MapServer/0";
+  const newCCRLayer = new FeatureLayer({
+    url: newCCRURL,
+    title: "New Certified Corner Records",
+    minScale: minimumDrawScale,
+    visible: true,
     popupEnabled: false
   });
 
@@ -1085,7 +1094,7 @@ require([
     }
 
     // wait for all services to be checked in the layersArr
-    const layersArr = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
+    const layersArr = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, newCCRLayer];
     await checkServices(layersArr);
 
     // declare layerlist
@@ -1222,6 +1231,34 @@ require([
               for (feature of identify.results) {
                 feature.feature.attributes.layerName = feature.layerName;
                 let result = feature.feature.attributes
+                if (result.layerName === 'base_and_survey.sde.pls_ptp_master_3857') {
+                  // console.log('HHHHHHHHey')
+                  // this is where we will query the related features
+                  // queryRelatedFeatures(result.objectid, newCCRLayer);
+  
+                  // const relatedFeaturesResults = await queryRelatedFeatures(120280, newCCRLayer);
+                  // console.log(relatedFeaturesResults);
+  
+                  const ccp_rquery = {
+                    outFields: ["DOCNUM"],
+                    relationshipId: 0,
+                    objectIds: result.objectid
+                  };
+  
+                  result.relatedFeatures = [];
+  
+                  await newCCRLayer.queryRelatedFeatures(ccp_rquery).then(async function (res) {
+                    // console.log(res);
+  
+                    if (res[result.objectid]) {
+                      res[result.objectid].features.forEach(async function (feature) {
+                        console.log('CCP Related features:', feature.attributes.docnum);
+                        await result.relatedFeatures.push(feature.attributes.docnum);
+                      });
+                    }
+                  });
+  
+                }
                 // make sure only certified corners with images are identified
                 if (result.layerName !== 'Certified Corners' || result.is_image === 'Y') {
                   await infoPanelData.push(feature.feature);

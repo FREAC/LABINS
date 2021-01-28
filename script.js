@@ -241,7 +241,7 @@ require([
     }]
   });
 
-  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/";
+  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/";
   var labinsLayer = new MapImageLayer({
     url: labinsURL,
     sublayers: [{
@@ -385,7 +385,7 @@ require([
   });
 
   // Layers needed for dependent dropdowns
-  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data/MapServer/10"
+  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/10"
   var townshipRangeSectionLayer = new FeatureLayer({
     url: townshipRangeSectionURL,
     outFields: ["twn_ch", "rng_ch", "sec_ch"],

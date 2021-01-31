@@ -1090,8 +1090,7 @@ require([
     }
 
     // wait for all services to be checked in the layersArr
-    const layersArr = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
-    await checkServices(layersArr);
+    await checkServices();
 
     // declare layerlist
     layerList = await new LayerList({
@@ -1250,8 +1249,8 @@ require([
 
   // fetch all map services before loading to map
   // if service returns good, add service to map
-  async function checkServices(layersArr) {
-    let layers = layersArr
+  async function checkServices() {
+    const layers = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
     for (layer of layers) {
       try {
         // make request to server for layer in question
@@ -2311,8 +2310,8 @@ require([
     mapView.ui.add(coordExpand, "top-left");
   }
 
-    let leadingLayers = [];
-    let trailingLayers = [];
+    let leadingLayersQueue = [];
+    let trailingLayersQueue = [];
 
     const swipeSelects = document.getElementsByClassName('swipeSelect');
     const leadingLayersSelect = document.getElementById('leadingLayers');
@@ -2332,69 +2331,107 @@ require([
     }
 
     function matchSwipeSelection (value, swipeSelectArr) {
+      console.log(swipeSelectArr);
+
       if (value == 'LABINS Data') {
-        swipeSelectArr.add(labinsLayer);
+        swipeSelectArr.push(labinsLayer);
       } else if (value == 'NGS Control Points') {
-        swipeSelectArr.add(ngsLayer);
+        swipeSelectArr.push(ngsLayer);
       } else if (value == 'SWFWMD Survey Benchmarks') {
-        swipeSelectArr.add(swfwmdLayer);
+        swipeSelectArr.push(swfwmdLayer);
       } else if (value == 'Coastal Construction Control Lines') {
-        swipeSelectArr.add(CCCLLayer);
+        swipeSelectArr.push(CCCLLayer);
       }
+
+      console.log(swipeSelectArr);
     }
 
     function resetSwipe () {
-      Array.from(swipeSelects).forEach(function(element) {
-        element.selectedIndex = 0;
-        swipe.leadingLayers.length = 0;
-        swipe.trailingLayers.length = 0;
-      });
+      if (swipe !== null) {
+        console.log(swipe);
+        Array.from(swipeSelects).forEach(function(element) {
+          element.selectedIndex = 0;
+          swipe.leadingLayers.length = 0;
+          swipe.trailingLayers.length = 0;
+        });
+  
+        leadingLayersQueue.length = 0;
+        trailingLayersQueue.length = 0;
+        
+        swipe.destroy();
+        swipe = null;
+  
+        console.log(swipeParams.leadingLayers);
+        console.log({swipe});
+      }
+    }
+
+    function enterSwipeMode(leadingLayersQueue, trailingLayersQueue) {
+
+      for (let i=0; i<map.layers.items.length; i++ ) {
+        console.log(map.layers.items[i].title);
+      }
+      
+    }
+
+    function updateSwipe(inputLayers) {
+    }
+
+    function exitSwipeMode() {
+      // turn visibility back on for all layers
+      console.log(map.operationalItems);
     }
 
     addSwipeOptions(leadingLayersSelect);
     addSwipeOptions(trailingLayersSelect);
 
-    // Array.from(swipeSelects).forEach(function(element) {
-    //   element.addEventListener('change', function (event) {
-    //     const id = event.target.id;
-    //     const value = event.target.value;
-    //     console.log(event);
-    //     console.log(event.target.value);
-    //   });
-    // });
-
     leadingLayersSelect.addEventListener("change", function (event) {
-      swipe.leadingLayers.length = 0;
+      swipeParams.leadingLayers.length = 0;
+      leadingLayersQueue.length = 0;
       const layerTitle = event.target.value;
-      matchSwipeSelection(layerTitle, swipe.leadingLayers);
+      matchSwipeSelection(layerTitle, leadingLayersQueue);
     });
 
     trailingLayersSelect.addEventListener("change", function (event) {
-      swipe.trailingLayers.length = 0;
+      swipeParams.trailingLayers.length = 0;
+      trailingLayersQueue.length = 0;
       const layerTitle = event.target.value;
-      matchSwipeSelection(layerTitle, swipe.trailingLayers);
+      matchSwipeSelection(layerTitle, trailingLayersQueue);
     });
 
     swipeCheckbox.addEventListener("change", function (event) {
       if(event.target.checked == true) {
+        console.log("checked");
+        swipe = new Swipe(swipeParams);
+
         mapView.ui.add(swipe);
+        swipe.leadingLayers = leadingLayersQueue;
+        swipe.trailingLayers = trailingLayersQueue;
+        enterSwipeMode();
       } else {
         mapView.ui.remove(swipe);
         resetSwipe();
+        // exitSwipeMode();
       }
     });
 
     resetSwipeBtn.addEventListener("click", function () {
-      resetSwipe();
-    })
+      if (swipe !== null) {
+        resetSwipe();
+      } else {
+        resetSwipe();
+      }
+    });
 
-    var swipe = new Swipe({
+
+    let swipe = null;
+    let swipeParams = {
       view: mapView,
       leadingLayers: [],
       trailingLayers: [],
       direction: "horizontal", // swipe widget will move from right to left of view
       position: 50 // position set to middle of the view (50%)
-    });
+    }
 
   // // keeps track of the active widget between distance measurement and area measurement
   // let activeWidget = null;

@@ -2310,6 +2310,51 @@ require([
     mapView.ui.add(coordExpand, "top-left");
   }
 
+  var swipeDiv = document.createElement("div");
+  swipeDiv.id = "swipeDiv";
+  swipeDiv.className = "esri-component esri-widget--button esri-widget"
+  swipeDiv.role = "button";
+  swipeDiv.tabindex = "0";
+  swipeDiv.setAttribute("aria-label", "Swipe Tool");
+  swipeDiv.title = "Swipe Tool";
+
+  
+  var swipeSpanIcon = document.createElement("span");
+  swipeSpanIcon.setAttribute("aria-hidden", "true");
+  swipeSpanIcon.className = "esri-icon esri-icon-sliders-horizontal";
+  swipeSpanIcon.title = "Swipe Tool";
+
+  var swipeSpanFallback = document.createElement("span");
+  swipeSpanFallback.className = "esri-icon-font-fallback-text";
+  swipeSpanFallback.innerHTML = "Swipe Tool"
+
+
+  swipeDiv.appendChild(swipeSpanIcon);
+  swipeDiv.appendChild(swipeSpanFallback);
+  mapView.ui.add(swipeDiv,"top-left")
+
+  mapView.ui.add(measureExpand, "top-left");
+
+  let swipe = null;
+
+    swipeDiv.addEventListener("click", () => {
+      if (swipe == null) {
+
+        let swipeParams = {
+          view: mapView,
+          leadingLayers: [labinsLayer, ngsLayer],
+          trailingLayers: [CCCLLayer, swfwmdLayer, layer],
+          direction: "horizontal", // swipe widget will move from right to left of view
+          position: 50 // position set to middle of the view (50%)
+        }
+        swipe = new Swipe(swipeParams);
+        mapView.ui.add(swipe);
+      } else if (swipe !== null) {
+        swipe.destroy()
+        swipe = null;
+      }
+    });
+
     let leadingLayersQueue = [];
     let trailingLayersQueue = [];
 
@@ -2422,16 +2467,6 @@ require([
         resetSwipe();
       }
     });
-
-
-    let swipe = null;
-    let swipeParams = {
-      view: mapView,
-      leadingLayers: [],
-      trailingLayers: [],
-      direction: "horizontal", // swipe widget will move from right to left of view
-      position: 50 // position set to middle of the view (50%)
-    }
 
   // // keeps track of the active widget between distance measurement and area measurement
   // let activeWidget = null;
@@ -2628,6 +2663,7 @@ require([
     measurementIdentifyToggleButton.className = "esri-widget--button esri-interactive esri-icon-description";
     measurementIdentifyToggleButton.title = "Identify Measurement";
     measurementToolbar.appendChild(measurementIdentifyToggleButton)
+    
 
     measureExpand.watch("expanded", function () {
       if (measureExpand.expanded == false) {

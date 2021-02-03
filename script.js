@@ -2342,8 +2342,8 @@ require([
 
         let swipeParams = {
           view: mapView,
-          leadingLayers: [labinsLayer, ngsLayer],
-          trailingLayers: [CCCLLayer, swfwmdLayer, layer],
+          leadingLayers: [labinsLayer, ngsLayer, CCCLLayer, swfwmdLayer, layer],
+          trailingLayers: [],
           direction: "horizontal", // swipe widget will move from right to left of view
           position: 50 // position set to middle of the view (50%)
         }

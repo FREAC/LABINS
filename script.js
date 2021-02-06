@@ -34,6 +34,7 @@ require([
   "esri/widgets/DistanceMeasurement2D",
   "esri/widgets/AreaMeasurement2D",
   "esri/widgets/Measurement",
+  "esri/widgets/Swipe",
   "esri/core/watchUtils",
   "dojo/on",
   "dojo/dom",
@@ -87,6 +88,7 @@ require([
   DistanceMeasurement2D,
   AreaMeasurement2D,
   Measurement,
+  Swipe,
   watchUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, query, Color,
   CalciteMapsArcGISSupport) {
 
@@ -242,6 +244,7 @@ require([
 
   var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/";
   var labinsLayer = new MapImageLayer({
+    title: "LABINS Data",
     url: labinsURL,
     sublayers: [{
       id: 16,
@@ -369,6 +372,8 @@ require([
       minScale: minimumDrawScale
     }]
   });
+
+  console.log(labinsLayer.title);
 
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
   var swfwmdLayer = new MapImageLayer({
@@ -1094,8 +1099,9 @@ require([
     }
 
     // wait for all services to be checked in the layersArr
-    const layersArr = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, newCCRLayer];
-    await checkServices(layersArr);
+
+    await checkServices();
+
 
     // declare layerlist
     layerList = await new LayerList({
@@ -1282,8 +1288,8 @@ require([
 
   // fetch all map services before loading to map
   // if service returns good, add service to map
-  async function checkServices(layersArr) {
-    let layers = layersArr
+  async function checkServices() {
+    const layers = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
     for (layer of layers) {
       try {
         // make request to server for layer in question
@@ -1855,6 +1861,8 @@ require([
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
+
+        console.log(event.target.value);
 
         getGeometry(labinsURL + '8', 'tile_name', event.target.value)
           .then(unionGeometries)
@@ -2536,6 +2544,7 @@ require([
     measurementIdentifyToggleButton.className = "esri-widget--button esri-interactive esri-icon-description";
     measurementIdentifyToggleButton.title = "Identify Measurement";
     measurementToolbar.appendChild(measurementIdentifyToggleButton)
+    
 
     measureExpand.watch("expanded", function () {
       if (measureExpand.expanded == false) {
@@ -2599,5 +2608,52 @@ require([
       }
     }
   }
+
+
+  var swipeDiv = document.createElement("div");
+  swipeDiv.id = "swipeDiv";
+  swipeDiv.className = "esri-component esri-widget--button esri-widget"
+  swipeDiv.role = "button";
+  swipeDiv.tabindex = "0";
+  swipeDiv.setAttribute("aria-label", "Swipe Tool");
+  swipeDiv.title = "Swipe Tool";
+
+  
+  var swipeSpanIcon = document.createElement("span");
+  swipeSpanIcon.setAttribute("aria-hidden", "true");
+  swipeSpanIcon.className = "esri-icon esri-icon-sliders-horizontal";
+  swipeSpanIcon.title = "Swipe Tool";
+
+  var swipeSpanFallback = document.createElement("span");
+  swipeSpanFallback.className = "esri-icon-font-fallback-text";
+  swipeSpanFallback.innerHTML = "Swipe Tool"
+
+
+  swipeDiv.appendChild(swipeSpanIcon);
+  swipeDiv.appendChild(swipeSpanFallback);
+  mapView.ui.add(swipeDiv,"top-left")
+
+  mapView.ui.add(measureExpand, "top-left");
+
+  let swipe = null;
+
+    swipeDiv.addEventListener("click", () => {
+      if (swipe == null) {
+
+        let swipeParams = {
+          view: mapView,
+          leadingLayers: [labinsLayer, ngsLayer, CCCLLayer, swfwmdLayer, layer],
+          trailingLayers: [],
+          direction: "horizontal", // swipe widget will move from right to left of view
+          position: 50 // position set to middle of the view (50%)
+        }
+        swipe = new Swipe(swipeParams);
+        mapView.ui.add(swipe);
+      } else if (swipe !== null) {
+        swipe.destroy()
+        swipe = null;
+      }
+    });
+
 
 });

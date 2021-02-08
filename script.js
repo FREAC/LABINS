@@ -372,9 +372,7 @@ require([
       minScale: minimumDrawScale
     }]
   });
-
-  console.log(labinsLayer.title);
-
+  
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
   var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,

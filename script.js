@@ -999,12 +999,16 @@ require([
     const sectionArr = values.features
     const sectionIntArr = sectionArr.map(element => element.attributes.sec_ch);
     const sortedSections = [...new Set(sectionIntArr)].sort();
-
+    const placeholder = document.createElement("option");
+    placeholder.text = "Section";
+    placeholder.disabled = true;
+    sectionSelect.add(placeholder);
     sortedSections.forEach(function (value) {
       const option = domConstruct.create("option");
       option.text = value
       sectionSelect.add(option);
     });
+    sectionSelect.selectedIndex = 0;
   }
 
   const validateResults = results => {

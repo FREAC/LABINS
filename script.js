@@ -2339,7 +2339,7 @@ require([
             x: parseFloat(parts[0]),
             y: parseFloat(parts[1]),
             spatialReference: {
-              wkid: 2881
+              wkid: 6437
             }
           });
         }
@@ -2429,15 +2429,6 @@ require([
       }),
       new Conversion({
         format: statePlaneNorthFLft
-      // }),
-      // new Conversion({
-      //   format: statePlaneEastFLmt
-      // }),
-      // new Conversion({
-      //   format: statePlaneWestFLmt
-      // }),
-      // new Conversion({
-      //   format: statePlaneNorthFLmt
       })
 
     );

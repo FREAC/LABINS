@@ -2233,9 +2233,9 @@ require([
     // Regular expression to find a number
     var numberSearchPattern = /-?\d+[\.]?\d*/;
 
-    // Custom Projection: FL State Plane East 
-    var statePlaneEastFL = new Format({
-      name: 'FSP E',
+    // Custom Projection: FL State Plane East - Feet
+    var statePlaneEastFLft = new Format({
+      name: 'FSP E - ft',
       conversionInfo: {
         spatialReference: new SpatialReference({
           wkid: 2881
@@ -2262,11 +2262,11 @@ require([
       }],
       defaultPattern: "X, Y"
     });
-    ccWidget.formats.add(statePlaneEastFL);
+    ccWidget.formats.add(statePlaneEastFLft);
 
-    // Custom Projection: FL State Plane West
-    var statePlaneWestFL = new Format({
-      name: 'FSP W',
+    // Custom Projection: FL State Plane West - Feet
+    var statePlaneWestFLft = new Format({
+      name: 'FSP W - ft',
       conversionInfo: {
         spatialReference: new SpatialReference({
           wkid: 2882
@@ -2293,11 +2293,11 @@ require([
       }],
       defaultPattern: "X, Y"
     });
-    ccWidget.formats.add(statePlaneWestFL);
+    ccWidget.formats.add(statePlaneWestFLft);
 
-    // Custom Projection: FL State Plane North
-    var statePlaneNorthFL = new Format({
-      name: 'FSP N',
+    // Custom Projection: FL State Plane North - Feet
+    var statePlaneNorthFLft = new Format({
+      name: 'FSP N - ft',
       conversionInfo: {
         spatialReference: new SpatialReference({
           wkid: 2883
@@ -2324,19 +2324,113 @@ require([
       }],
       defaultPattern: "X, Y"
     });
-    ccWidget.formats.add(statePlaneNorthFL);
+    ccWidget.formats.add(statePlaneNorthFLft);
+
+    // Custom Projection: FL State Plane East - Meters
+    var statePlaneEastFLmt = new Format({
+      name: 'FSP E - mt',
+      conversionInfo: {
+        spatialReference: new SpatialReference({
+          wkid: 6437
+        }),
+        reverseConvert: function (string, format) {
+          var parts = string.split(",")
+          return new Point({
+            x: parseFloat(parts[0]),
+            y: parseFloat(parts[1]),
+            spatialReference: {
+              wkid: 6437
+            }
+          });
+        }
+      },
+      coordinateSegments: [{
+        alias: "X",
+        description: "easting",
+        searchPattern: numberSearchPattern
+      }, {
+        alias: "Y",
+        description: "northing",
+        searchPattern: numberSearchPattern
+      }],
+      defaultPattern: "X, Y"
+    });
+    ccWidget.formats.add(statePlaneEastFLmt);
+
+    // Custom Projection: FL State Plane West - Meters
+    var statePlaneWestFLmt = new Format({
+      name: 'FSP W - mt',
+      conversionInfo: {
+        spatialReference: new SpatialReference({
+          wkid: 6442
+        }),
+        reverseConvert: function (string, format) {
+          var parts = string.split(",")
+          return new Point({
+            x: parseFloat(parts[0]),
+            y: parseFloat(parts[1]),
+            spatialReference: {
+              wkid: 6442
+            }
+          });
+        }
+      },
+      coordinateSegments: [{
+        alias: "X",
+        description: "easting",
+        searchPattern: numberSearchPattern
+      }, {
+        alias: "Y",
+        description: "northing",
+        searchPattern: numberSearchPattern
+      }],
+      defaultPattern: "X, Y"
+    });
+    ccWidget.formats.add(statePlaneWestFLmt);
+
+    // Custom Projection: FL State Plane North - Meters
+    var statePlaneNorthFLmt = new Format({
+      name: 'FSP N - mt',
+      conversionInfo: {
+        spatialReference: new SpatialReference({
+          wkid: 6440
+        }),
+        reverseConvert: function (string, format) {
+          var parts = string.split(",")
+          return new Point({
+            x: parseFloat(parts[0]),
+            y: parseFloat(parts[1]),
+            spatialReference: {
+              wkid: 6440
+            }
+          });
+        }
+      },
+      coordinateSegments: [{
+        alias: "X",
+        description: "easting",
+        searchPattern: numberSearchPattern
+      }, {
+        alias: "Y",
+        description: "northing",
+        searchPattern: numberSearchPattern
+      }],
+      defaultPattern: "X, Y"
+    });
+    ccWidget.formats.add(statePlaneNorthFLmt);
 
     // Add the two custom formats to the top of the widget's display
     ccWidget.conversions.splice(0, 0,
       new Conversion({
-        format: statePlaneEastFL
+        format: statePlaneEastFLft
       }),
       new Conversion({
-        format: statePlaneWestFL
+        format: statePlaneWestFLft
       }),
       new Conversion({
-        format: statePlaneNorthFL
+        format: statePlaneNorthFLft
       })
+
     );
 
     // adds an expand widget to the map that will house the ccWidget

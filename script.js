@@ -1291,7 +1291,7 @@ require([
   // fetch all map services before loading to map
   // if service returns good, add service to map
   async function checkServices() {
-    const layers = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
+    const layers = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, newCCRLayer];
     for (layer of layers) {
       try {
         // make request to server for layer in question

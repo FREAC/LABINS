@@ -1810,10 +1810,12 @@ require([
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('IDQuery').value;
-        textQueryQuerytask(labinsURL + '2', 'blmid', textValue)
-          .then(function (response) {
+        textQueryQuerytask(newCCRURL, 'blmid', textValue)
+          .then(async function (response) {
+            console.log({dataQueryResponse: response});
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Certified Corners';
+              response.features[i].attributes.relatedFeatures = await queryCCRRelatedFeatures(response.features[i].attributes);
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);

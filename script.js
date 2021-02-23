@@ -362,8 +362,8 @@ require([
       visible: true,
       popupEnabled: false,
       minScale: minimumDrawScale,
-      labelingInfo: haloLabelInfo("[blmid]", [0, 0, 255, 255]),
-      labelsVisible: false
+      // labelingInfo: haloLabelInfo("[base_and_survey.sde.pls_ptp_master_3857.blmid]", [0, 0, 255, 255]),
+      // labelsVisible: false
     }, {
       id: 1,
       title: "Preliminary NGS Points",
@@ -403,7 +403,9 @@ require([
     title: "New Certified Corner Records",
     minScale: minimumDrawScale,
     visible: true,
-    popupEnabled: false
+    popupEnabled: false,
+    labelingInfo: haloLabelInfo("[blmid]", [0, 0, 255, 255]),
+    labelsVisible: true
   });
 
   var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/2"
@@ -1291,7 +1293,7 @@ require([
   // fetch all map services before loading to map
   // if service returns good, add service to map
   async function checkServices() {
-    const layers = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
+    const layers = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, newCCRLayer];
     for (layer of layers) {
       try {
         // make request to server for layer in question

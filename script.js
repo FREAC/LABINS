@@ -362,8 +362,8 @@ require([
       visible: true,
       popupEnabled: false,
       minScale: minimumDrawScale,
-      // labelingInfo: haloLabelInfo("[base_and_survey.sde.pls_ptp_master_3857.blmid]", [0, 0, 255, 255]),
-      // labelsVisible: false
+      labelingInfo: haloLabelInfo("[blmid]", [0, 0, 255, 255]),
+      labelsVisible: false
     }, {
       id: 1,
       title: "Preliminary NGS Points",
@@ -397,15 +397,13 @@ require([
     popupEnabled: false
   });
 
-  const newCCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/pls_master_to_ccr/MapServer/0";
+  const newCCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/2";
   const newCCRLayer = new FeatureLayer({
     url: newCCRURL,
     title: "New Certified Corner Records",
     minScale: minimumDrawScale,
     visible: true,
-    popupEnabled: false,
-    labelingInfo: haloLabelInfo("[blmid]", [0, 0, 255, 255]),
-    labelsVisible: true
+    popupEnabled: false
   });
 
   var CCCLURL = "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/COASTAL_ENV_PERM/MapServer/2"
@@ -1241,7 +1239,7 @@ require([
               for (feature of identify.results) {
                 feature.feature.attributes.layerName = feature.layerName;
                 let result = feature.feature.attributes
-                if (result.layerName === 'base_and_survey.sde.pls_ptp_master_3857') {
+                if (result.layerName === 'Certified Corners') {
                   // console.log('HHHHHHHHey')
                   // this is where we will query the related features
                   // queryRelatedFeatures(result.objectid, newCCRLayer);
@@ -1293,7 +1291,7 @@ require([
   // fetch all map services before loading to map
   // if service returns good, add service to map
   async function checkServices() {
-    const layers = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer, newCCRLayer];
+    const layers = [countyBoundariesLayer, labinsLayer, ngsLayer, swfwmdLayer, CCCLLayer, townshipRangeSectionLayer];
     for (layer of layers) {
       try {
         // make request to server for layer in question

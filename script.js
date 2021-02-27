@@ -963,7 +963,7 @@ require([
       await buildTownshipDropdown(townshipResults);
       await buildRangeDropdown(rangeResults);
     } catch (err) {
-      console.log('Township/Range load failed: ', err);
+      console.error('Township/Range load failed: ', err);
     }
   })
 
@@ -1193,7 +1193,6 @@ require([
   }
 
   async function queryCCRRelatedFeatures (result) {
-    console.log(result);
     let relatedFeatures = [];
     const ccp_rquery = {
       outFields: ["DOCNUM"],
@@ -1207,7 +1206,6 @@ require([
 
       if (res[result.objectid]) {
         res[result.objectid].features.forEach(async function (feature) {
-          console.log('CCP Related features:', feature.attributes.docnum);
           await relatedFeatures.push(feature.attributes.docnum);
         });
       }
@@ -1812,7 +1810,6 @@ require([
         var textValue = document.getElementById('IDQuery').value;
         textQueryQuerytask(newCCRURL, 'blmid', textValue)
           .then(async function (response) {
-            console.log({dataQueryResponse: response});
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Certified Corners';
               response.features[i].attributes.relatedFeatures = await queryCCRRelatedFeatures(response.features[i].attributes);
@@ -1862,8 +1859,6 @@ require([
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
-
-        console.log(event.target.value);
 
         getGeometry(labinsURL + '8', 'tile_name', event.target.value)
           .then(unionGeometries)
@@ -2129,31 +2124,24 @@ require([
 
   // after a query typed into search bar
   searchWidget.on("search-complete", async function (event) {
-    console.log({event})
-
     infoPanelData = [];
     const results = event.results
     // 6 is the ESRI Geocoder service
     if (!(results[0].sourceIndex === 6)) {
-
-      // chansge the layername based on which layer is searched on (because the search query looks at )
+      // grab layername from search result
       var layerName = results["0"].results[0].feature.layer.name;
       
       if (layerName == "Certified Corners") {
-
-        // results["0"].results["0"].feature.attributes.layerName = "base_and_survey.sde.pls_ptp_master_3857";
         results["0"].results["0"].feature.attributes.layerName = "Certified Corners";
-        console.log(results);
         results[0].results[0].feature.attributes.relatedFeatures = await queryCCRRelatedFeatures (results[0].results[0].feature.attributes);
-
       }
+      
       //clear content of information panel
       clearDiv('informationdiv');
       $('#numinput').val('');
       $('#infoSpan').html('Information Panel');
 
       // push query results of search bar to information panel
-      console.log({infoPanelData});
       infoPanelData.push(event.results["0"].results["0"].feature);
       await queryInfoPanel(infoPanelData, 1, event);
       goToFeature(infoPanelData[0]);

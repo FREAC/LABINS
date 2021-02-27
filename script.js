@@ -1192,6 +1192,28 @@ require([
     return false;
   }
 
+  async function queryCCRRelatedFeatures (result) {
+    console.log(result);
+    let relatedFeatures = [];
+    const ccp_rquery = {
+      outFields: ["DOCNUM"],
+      relationshipId: 0,
+      objectIds: result.objectid
+    };
+    result.layerName = "Certified Corners"
+
+
+    await newCCRLayer.queryRelatedFeatures(ccp_rquery).then(async function (res) {
+
+      if (res[result.objectid]) {
+        res[result.objectid].features.forEach(async function (feature) {
+          console.log('CCP Related features:', feature.attributes.docnum);
+          await relatedFeatures.push(feature.attributes.docnum);
+        });
+      }
+    });
+    return relatedFeatures;
+  }
 
   async function identifyTaskFlow(event, coordExpanParam, mobileView, geometry = false, eventType = "click") {
     if (checkScale(eventType, coordExpanParam, mobileView) == true) { // check if scale is where map features are visible or measurementIdentify
@@ -1240,32 +1262,7 @@ require([
                 feature.feature.attributes.layerName = feature.layerName;
                 let result = feature.feature.attributes
                 if (result.layerName === 'Certified Corners') {
-                  // console.log('HHHHHHHHey')
-                  // this is where we will query the related features
-                  // queryRelatedFeatures(result.objectid, newCCRLayer);
-  
-                  // const relatedFeaturesResults = await queryRelatedFeatures(120280, newCCRLayer);
-                  // console.log(relatedFeaturesResults);
-  
-                  const ccp_rquery = {
-                    outFields: ["DOCNUM"],
-                    relationshipId: 0,
-                    objectIds: result.objectid
-                  };
-  
-                  result.relatedFeatures = [];
-  
-                  await newCCRLayer.queryRelatedFeatures(ccp_rquery).then(async function (res) {
-                    // console.log(res);
-  
-                    if (res[result.objectid]) {
-                      res[result.objectid].features.forEach(async function (feature) {
-                        console.log('CCP Related features:', feature.attributes.docnum);
-                        await result.relatedFeatures.push(feature.attributes.docnum);
-                      });
-                    }
-                  });
-  
+                  result.relatedFeatures = await queryCCRRelatedFeatures (result);
                 }
                 // make sure only certified corners with images are identified
                 if (result.layerName !== 'Certified Corners' || result.is_image === 'Y') {
@@ -1474,10 +1471,10 @@ require([
     sources: [{
       name: "Certified Corners",
       layer: new FeatureLayer({
-        url: labinsLayer.findSublayerById(2).url,
+        url: newCCRURL,
         name: 'Certified Corners'
       }),
-      outFields: ["blmid", "tile_name", "image1", "image2", "quad_num"],
+      outFields: ["blmid", "tile_name", "image1", "image2", "quad_num", "objectid"],
       searchFields: ["blmid", "tile_name", "quad_num"],
       suggestionTemplate: "BLMID: {blmid}<br>Quad: {tile_name}",
       exactMatch: false,
@@ -1813,10 +1810,12 @@ require([
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('IDQuery').value;
-        textQueryQuerytask(labinsURL + '2', 'blmid', textValue)
-          .then(function (response) {
+        textQueryQuerytask(newCCRURL, 'blmid', textValue)
+          .then(async function (response) {
+            console.log({dataQueryResponse: response});
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Certified Corners';
+              response.features[i].attributes.relatedFeatures = await queryCCRRelatedFeatures(response.features[i].attributes);
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
@@ -2130,21 +2129,31 @@ require([
 
   // after a query typed into search bar
   searchWidget.on("search-complete", async function (event) {
+    console.log({event})
 
     infoPanelData = [];
+    const results = event.results
     // 6 is the ESRI Geocoder service
-    if (!(event.results[0].sourceIndex === 6)) {
+    if (!(results[0].sourceIndex === 6)) {
 
-      // change the layername based on which layer is searched on (because the search query looks at )
-      var layerName = event.results["0"].results[0].feature.layer.name;
-      event.results["0"].results["0"].feature.attributes.layerName = layerName;
+      // chansge the layername based on which layer is searched on (because the search query looks at )
+      var layerName = results["0"].results[0].feature.layer.name;
+      
+      if (layerName == "Certified Corners") {
 
+        // results["0"].results["0"].feature.attributes.layerName = "base_and_survey.sde.pls_ptp_master_3857";
+        results["0"].results["0"].feature.attributes.layerName = "Certified Corners";
+        console.log(results);
+        results[0].results[0].feature.attributes.relatedFeatures = await queryCCRRelatedFeatures (results[0].results[0].feature.attributes);
+
+      }
       //clear content of information panel
       clearDiv('informationdiv');
       $('#numinput').val('');
       $('#infoSpan').html('Information Panel');
 
       // push query results of search bar to information panel
+      console.log({infoPanelData});
       infoPanelData.push(event.results["0"].results["0"].feature);
       await queryInfoPanel(infoPanelData, 1, event);
       goToFeature(infoPanelData[0]);

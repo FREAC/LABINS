@@ -193,7 +193,7 @@ function queryInfoPanel(results, i, event = false) {
             //     // }
             // } else if (results[i - 1].attributes.layerName === 'base_and_survey.sde.pls_ptp_master_3857') {
             } else if (results[i - 1].attributes.layerName === 'Certified Corners') {
-                console.log(results[i - 1]);
+
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Certified Corner</b></p>' +
                     '<b>BLMID: </b>' + results[i - 1].attributes.blmid + '<br>' +
                     '<b>Quad Name: </b>' + results[i - 1].attributes.tile_name + '<br>' +

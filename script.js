@@ -569,41 +569,30 @@ require([
   const BOOKMARK_KEY = "arcgis-local-bookmarks";
   const bookmarks = new Bookmarks({
     view: mapView,
-    // allows bookmarks to be added, edited, or deleted
-    editingEnabled: true
+    editingEnabled: true,
+    bookmarks: []
   });
-
+  
   let existingData = [];
   const existingBookmarks = localStorage.getItem(BOOKMARK_KEY) || null;
   if (existingBookmarks) {
-    console.log({'has existing bookark': existingBookmarks});
     existingData = JSON.parse(existingBookmarks);
-    console.log({existingData})
     bookmarks.bookmarks = existingData;
-    console.log(bookmarks.bookmarks);
   }
 
   mapView.ui.add(bookmarks, "bottom-left");
 
   bookmarks.bookmarks.on("after-add", function (event) {
-    console.log(event);
     const rawBookmarks = bookmarks.bookmarks.map(bm => bm.toJSON());
     console.log(rawBookmarks);
     localStorage.setItem(BOOKMARK_KEY, JSON.stringify(rawBookmarks));
     existingData.push(rawBookmarks);
   });  
 
+  bookmarks.bookmarks.on("change", function (event) {
+    console.log('change!');
+  });
 
-  // button.addEventListener("click", () => {
-  //   const bookmark = {
-  //     extent: view.extent,
-  //     name: `Bookmark: ${bookmarks.bookmarks.length + 1}`
-  //   };
-  //   bookmarks.bookmarks.add(bookmark);
-    
-  //   const rawBookmarks = bookmarks.bookmarks.map(bm => bm.toJSON());
-  //   localStorage.setItem(BOOKMARK_KEY, JSON.stringify(rawBookmarks));
-  // });
 
   function resetElements(currentElement, trs = true) {
     let doNotSelect = "#" + currentElement.id + ", #selectLayerDropdown";

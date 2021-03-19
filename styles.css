@@ -102,6 +102,43 @@ body,
 .esri-layer-list__child-toggle {
   color: white !important;
 }
+#bookmarksDiv {
+  margin-left: 40px;
+  overflow: auto;
+  display: grid;
+  height: auto;
+  max-height: 37vh;
+  padding-top: inherit;
+  /* background-color: #0d3b4b; */
+  padding: 0px;
+}
+
+.esri-bookmarks .esri-widget__content--empty {
+  background-color: #0d3b4b;
+  color: #f3f3f3;
+}
+
+.esri-bookmarks__add-bookmark {
+  background-color: #0d3b4b;
+
+}
+
+.esri-bookmarks__add-bookmark-button:hover {
+  background-color: #315866;
+  text-decoration: none;
+  color: #f3f3f3;
+}
+
+.esri-bookmarks__add-bookmark .esri-button--tertiary {
+  color: #f3f3f3;
+}
+
+/* .esri-layer-list__item--invisible-at-scale,
+.esri-layer-list__item-title,
+.esri-layer-list__item-toggle-icon,
+.esri-layer-list__child-toggle {
+  color: white !important;
+} */
 
 .esri-menu .esri-header {
   background-color: #315866

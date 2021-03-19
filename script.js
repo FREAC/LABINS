@@ -570,17 +570,52 @@ require([
   const bookmarks = new Bookmarks({
     view: mapView,
     editingEnabled: true,
-    bookmarks: []
+    bookmarks: [],
+    container: "bookmarksDiv"
   });
-  
+
+  let bookmarkStatus;
+  const bookmarksMenuBtn = document.getElementById("bookmarksMenuBtn")
+  bookmarksMenuBtn.addEventListener("click", () => {
+    // addCustomWidgetHeaders("desktopBookmarks", bookmarks, bookmarkStatus);
+      // if bookmark status != 1, add it to the map
+      if (bookmarkStatus != 1) {
+        mapView.ui.remove(scaleBar);
+
+        // custom header to display a header and close button
+        const header = `
+        <div id="bookmarksHeader" style="background-color:#315866; position: sticky; top: 0; z-index: 999; padding-top: 1px; padding-left: 10px">
+          <span class="glyphicon esri-icon-layers" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 2px;"></span>
+          <span id="bookmarksSpan" class="panel-label"  style="color: white; margin-top: 5px;">Bookmarks</span>
+          <button id="closeBookmarksBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
+            <span class="esri-icon esri-icon-close" style="color:white; display:inline-block; float:left;" aria-hidden="true"></span>
+          </button>
+        </div>
+        `
+        mapView.ui.add([bookmarks, scaleBar], "bottom-left");
+        // add bookmarks header to beginning of div
+        $("#bookmarksDiv").prepend(header);
+
+        const closebtn = document.getElementById('closeBookmarksBtn');
+        on(closebtn, "click", function (event) {
+          $("#bookmarksHeader").remove();
+          mapView.ui.remove(bookmarks);
+          bookmarkStatus = 0;
+        });
+        bookmarkStatus = 1;
+      } else {
+        $("#bookmarksHeader").remove();
+        mapView.ui.remove(bookmarks);
+        bookmarkStatus = 0;
+      }
+  });
+
   let existingData = [];
   const existingBookmarks = localStorage.getItem(BOOKMARK_KEY) || null;
   if (existingBookmarks) {
     existingData = JSON.parse(existingBookmarks);
     bookmarks.bookmarks = existingData;
   }
-
-  mapView.ui.add(bookmarks, "bottom-left");
 
   bookmarks.bookmarks.on("after-add", function (event) {
     const rawBookmarks = bookmarks.bookmarks.map(bm => bm.toJSON());

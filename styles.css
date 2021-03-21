@@ -109,7 +109,6 @@ body,
   height: auto;
   max-height: 37vh;
   padding-top: inherit;
-  /* background-color: #0d3b4b; */
   padding: 0px;
 }
 
@@ -133,12 +132,9 @@ body,
   color: #f3f3f3;
 }
 
-/* .esri-layer-list__item--invisible-at-scale,
-.esri-layer-list__item-title,
-.esri-layer-list__item-toggle-icon,
-.esri-layer-list__child-toggle {
-  color: white !important;
-} */
+#bookmarksDiv .esri-widget__heading {
+  color: #f3f3f3;
+}
 
 .esri-menu .esri-header {
   background-color: #315866

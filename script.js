@@ -571,7 +571,10 @@ require([
     view: mapView,
     editingEnabled: true,
     bookmarks: [],
-    container: "bookmarksDiv"
+    container: "bookmarksDiv",
+    bookmarkCreateOptions: {
+      captureExtent: false
+    }
   });
 
   let bookmarkStatus;
@@ -617,18 +620,23 @@ require([
     bookmarks.bookmarks = existingData;
   }
 
-  bookmarks.bookmarks.on("after-add", function (event) {
+  // add all bookmarks to BOOKMARK_KEY in localStorage
+  function addBookmarksToLocalStorage(bookmarks) {
     const rawBookmarks = bookmarks.bookmarks.map(bm => bm.toJSON());
-    console.log(rawBookmarks);
     localStorage.setItem(BOOKMARK_KEY, JSON.stringify(rawBookmarks));
     existingData.push(rawBookmarks);
-  });  
+  }
 
-  bookmarks.bookmarks.on("change", function (event) {
-    console.log('change!');
+  // watch for name, viewpoint, and thumbnail updates 
+  bookmarks.bookmarks.forEach(function (bookmark) {
+    bookmark.watch(["name", "viewpoint", "thumbnail"], function (newName, oldName, propName, target) {
+      addBookmarksToLocalStorage(bookmarks);
+    });
   });
 
-
+  // watching for additions or deletes
+  bookmarks.bookmarks.watch("length", () => addBookmarksToLocalStorage(bookmarks));
+  
   function resetElements(currentElement, trs = true) {
     let doNotSelect = "#" + currentElement.id + ", #selectLayerDropdown";
     doNotSelect = trs ? doNotSelect : doNotSelect + ", .trs";
@@ -637,7 +645,6 @@ require([
       this.selectedIndex = 0;
     });
   }
-
 
   /////////////////////////////
   /// Dropdown Select Panel ///

@@ -571,10 +571,7 @@ require([
     view: mapView,
     editingEnabled: true,
     bookmarks: [],
-    container: "bookmarksDiv",
-    bookmarkCreateOptions: {
-      captureExtent: false
-    }
+    container: "bookmarksDiv"
   });
 
   let bookmarkStatus;
@@ -582,6 +579,13 @@ require([
   bookmarksMenuBtn.addEventListener("click", () => {
     // addCustomWidgetHeaders("desktopBookmarks", bookmarks, bookmarkStatus);
       // if bookmark status != 1, add it to the map
+      
+      // close the menu options
+      const navbarToggleArr = document.getElementsByClassName("navbar-menu-toggle");
+      for (i = 0; i < navbarToggleArr.length; i++) {
+        navbarToggleArr[i].classList.remove("open");
+      }
+      
       if (bookmarkStatus != 1) {
         mapView.ui.remove(scaleBar);
 

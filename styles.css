@@ -29,15 +29,6 @@ body,
   font-size: 14px;
 }
 
-.esri-icon-erase {
-  position: absolute;
-
-  transform: translate(-50%, -50%);
-  width: 8px;
-  height: 16px;
-  display: block;
-}
-
 /* color of label toggle button */
 .esri-layer-list__item-actions-menu-item:first-of-type {
   color: lightgray;

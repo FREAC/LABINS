@@ -2001,16 +2001,6 @@ require([
     mapView.map.basemap = e.target.value;
   });
 
-  // Clear all graphics from map  
-  on(dom.byId("clearButton"), "click", function (evt) {
-    mapView.graphics.removeAll();
-    selectionLayer.graphics.removeAll();
-    bufferLayer.graphics.removeAll();
-    clearDiv('informationdiv');
-    $('#numinput').val('');
-    $('#infoSpan').html('Information Panel');
-  });
-
   // after a query typed into search bar
   searchWidget.on("search-complete", async function (event) {
     infoPanelData = [];
@@ -2477,7 +2467,20 @@ require([
   mapView.ui.add(locateBtn, "top-left");
 
   // Clear Button
-  var clearBtn = document.getElementById("clearButton");
+  const clearBtn = document.createElement("div");
+  clearBtn.id = "clearButton";
+  clearBtn.className = "esri-widget--button esri-interactive esri-icon-erase";
+
+  // Clear all graphics from map  
+  clearBtn.addEventListener("click", () => {
+    mapView.graphics.removeAll();
+    selectionLayer.graphics.removeAll();
+    bufferLayer.graphics.removeAll();
+    clearDiv('informationdiv');
+    $('#numinput').val('');
+    $('#infoSpan').html('Information Panel');
+  });
+
   mapView.ui.add(clearBtn, "top-left");
 
   // measurement needs to be defined here or else it won't be in global scope

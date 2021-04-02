@@ -467,11 +467,6 @@ require([
   // Create the map ///
   /////////////////////
 
-  // Create another Map, to be used in the overview "view"
-  var overviewMap = new Map({
-    basemap: "topo"
-  });
-
   var map = new Map({
     basemap: "topo",
     layers: [selectionLayer, bufferLayer]
@@ -495,59 +490,67 @@ require([
     }
   });
 
-  //Overview Mapview
-  // Create the MapView for overview map
-  var overView = new MapView({
-    container: "overviewDiv",
-    map: overviewMap,
-    constraints: {
-      rotationEnabled: false
-    }
-  });
+  // only load overviewMap on non-mobile devices
+  if (screen.availWidth > 992) {
+    // Create another Map, to be used in the overview "view"
+    var overviewMap = new Map({
+      basemap: "topo"
+    });
 
-  overView.ui.components = [];
+    //Overview Mapview
+    // Create the MapView for overview map
+    var overView = new MapView({
+      container: "overviewDiv",
+      map: overviewMap,
+      constraints: {
+        rotationEnabled: false
+      }
+    });
 
-  var extentDiv = document.getElementById("extentDiv");
-  const overviewDiv = document.getElementById('overviewDiv');
-  const overviewMapNavToggleButton = document.getElementById("desktopOverviewMap");
+    overView.ui.components = [];
 
-  // if overviewMapNavToggleButton is clicked
-  // toggle the overview map visible/not-visible
-  overviewMapNavToggleButton.addEventListener("click", function () {
-    if (overviewMapNavToggleButton.classList.contains("ovwHide")) {
-      overviewMapNavToggleButton.setAttribute('title', 'Show Map Overview');
-      overviewMapNavToggleButton.innerHTML = 'Show Map Overview';
-      overviewMapNavToggleButton.classList.remove("ovwHide");
-      overviewMapNavToggleButton.classList.add("ovwShow");
-      overviewDiv.getElementsByClassName('esri-view-root')[0].style.display = 'none';
-      extentDiv.style.display = 'none';
-    } else {
-      overviewMapNavToggleButton.classList.remove("ovwShow");
-      overviewMapNavToggleButton.classList.add("ovwHide");
-      overviewMapNavToggleButton.innerHTML = 'Hide Map Overview';
-      overviewMapNavToggleButton.setAttribute('title', 'Show Map Overview');
-      overviewDiv.getElementsByClassName('esri-view-root')[0].style.display = 'block';
-      extentDiv.style.display = 'block';
-    }
-    overviewDiv.classList.toggle('hide');
-  });
+    var extentDiv = document.getElementById("extentDiv");
+    const overviewDiv = document.getElementById('overviewDiv');
+    const overviewMapNavToggleButton = document.getElementById("desktopOverviewMap");
 
-  overView.when(function () {
-    // Update the minimap overview when the main view becomes stationary
-    watchUtils.when(mapView, "stationary", updateOverview);
+    // if overviewMapNavToggleButton is clicked
+    // toggle the overview map visible/not-visible
+    overviewMapNavToggleButton.addEventListener("click", function () {
+      if (overviewMapNavToggleButton.classList.contains("ovwHide")) {
+        overviewMapNavToggleButton.setAttribute('title', 'Show Map Overview');
+        overviewMapNavToggleButton.innerHTML = 'Show Map Overview';
+        overviewMapNavToggleButton.classList.remove("ovwHide");
+        overviewMapNavToggleButton.classList.add("ovwShow");
+        overviewDiv.getElementsByClassName('esri-view-root')[0].style.display = 'none';
+        extentDiv.style.display = 'none';
+      } else {
+        overviewMapNavToggleButton.classList.remove("ovwShow");
+        overviewMapNavToggleButton.classList.add("ovwHide");
+        overviewMapNavToggleButton.innerHTML = 'Hide Map Overview';
+        overviewMapNavToggleButton.setAttribute('title', 'Show Map Overview');
+        overviewDiv.getElementsByClassName('esri-view-root')[0].style.display = 'block';
+        extentDiv.style.display = 'block';
+      }
+      overviewDiv.classList.toggle('hide');
+    });
 
-    function updateOverview() {
-      // Animate the MapView to a zoomed-out scale so we get a nice overview.
-      // We use the "progress" callback of the goTo promise to update
-      // the overview extent while animating
-      overView.goTo({
-        center: mapView.center,
-        scale: mapView.scale * 2 * Math.max(mapView.width /
-          overView.width,
-          mapView.height / overView.height)
-      });
-    }
-  });
+    overView.when(function () {
+      // Update the minimap overview when the main view becomes stationary
+      watchUtils.when(mapView, "stationary", updateOverview);
+
+      function updateOverview() {
+        // Animate the MapView to a zoomed-out scale so we get a nice overview.
+        // We use the "progress" callback of the goTo promise to update
+        // the overview extent while animating
+        overView.goTo({
+          center: mapView.center,
+          scale: mapView.scale * 2 * Math.max(mapView.width /
+            overView.width,
+            mapView.height / overView.height)
+        });
+      }
+    });
+  }
 
   // Bookmark data objects
   var bookmarkJSON = {

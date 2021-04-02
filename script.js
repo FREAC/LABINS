@@ -35,6 +35,7 @@ require([
   "esri/widgets/AreaMeasurement2D",
   "esri/widgets/Measurement",
   "esri/widgets/Swipe",
+  "esri/widgets/Bookmarks",
   "esri/core/watchUtils",
   "dojo/on",
   "dojo/dom",
@@ -89,6 +90,7 @@ require([
   AreaMeasurement2D,
   Measurement,
   Swipe,
+  Bookmarks,
   watchUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, query, Color,
   CalciteMapsArcGISSupport) {
 
@@ -564,196 +566,81 @@ require([
     },
   };
 
-  function initBookmarksWidget() {
-    var bmDiv = dom.byId("bookmarksDiv");
-    domClass.add(bmDiv, "bookmark-container");
-    var bookmarksdiv = domConstruct.create("div", {
-      class: "esriBookmarks"
-    }, bmDiv);
-    var bmlistdiv = domConstruct.create("div", {
-      class: "esriBookmarkList",
-      style: {
-        width: '250px'
+  const BOOKMARK_KEY = "arcgis-local-bookmarks";
+  const bookmarks = new Bookmarks({
+    view: mapView,
+    editingEnabled: true,
+    bookmarks: [],
+    container: "bookmarksDiv"
+  });
+
+  let bookmarkStatus;
+  const bookmarksMenuBtn = document.getElementById("bookmarksMenuBtn")
+  bookmarksMenuBtn.addEventListener("click", () => {
+    // addCustomWidgetHeaders("desktopBookmarks", bookmarks, bookmarkStatus);
+      // if bookmark status != 1, add it to the map
+      
+      // close the menu options
+      const navbarToggleArr = document.getElementsByClassName("navbar-menu-toggle");
+      for (i = 0; i < navbarToggleArr.length; i++) {
+        navbarToggleArr[i].classList.remove("open");
       }
-    }, bookmarksdiv);
-    var bmTable = domConstruct.create("div", {
-      class: "esriBookmarkTable"
-    }, bmlistdiv);
-    var bmadditemdiv = domConstruct.create("div", {
-      class: "esriBookmarkItem esriAddBookmark"
-    }, bookmarksdiv);
-    var addbmlabeldiv = domConstruct.create("div", {
-      class: "esriBookmarkLabel",
-      innerHTML: "Add Bookmark"
-    }, bmadditemdiv);
-    on(bmadditemdiv, "click", bookmarkEvent);
-    on(bmadditemdiv, "mouseover", addMouseOverClass);
-    on(bmadditemdiv, "mouseout", removeMouseOverClass);
+      
+      if (bookmarkStatus != 1) {
+        mapView.ui.remove(scaleBar);
 
-    // Process the bookmarkJSON
-    Object.keys(bookmarkJSON).forEach(function (bookmark) {
-      var bmName = bookmarkJSON[bookmark].name || "Bookmark " + (index + 1).toString();
-      var theExtent = Extent.fromJSON(bookmarkJSON[bookmark].extent);
-      var bmTable = query(".esriBookmarkTable")[0];
-      var item = domConstruct.toDom('<div class="esriBookmarkItem" data-fromuser="false" data-extent="' + theExtent.xmin + ',' + theExtent.ymin + ',' + theExtent.xmax + ',' + theExtent.ymax + ',' + theExtent.spatialReference.wkid +
-        '"><div class="esriBookmarkLabel">' + bmName + '</div><div title="Remove" class="esriBookmarkRemoveImage"></div><div title="Edit" class="esriBookmarkEditImage"></div></div>');
-      domConstruct.place(item, bmTable, "last");
-      on(query(".esriBookmarkRemoveImage", item)[0], "click", removeBookmark);
-      on(query(".esriBookmarkEditImage", item)[0], "click", editBookmark);
-      on(item, "click", bookmarkEvent);
-      on(item, "mouseover", addMouseOverClass);
-      on(item, "mouseout", removeMouseOverClass);
-      bookmarkJSON[bookmark];
-    });
+        // custom header to display a header and close button
+        const header = `
+        <div id="bookmarksHeader" style="background-color:#315866; position: sticky; top: 0; z-index: 999; padding-top: 1px; padding-left: 10px">
+          <span class="glyphicon esri-icon-layers" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 2px;"></span>
+          <span id="bookmarksSpan" class="panel-label"  style="color: white; margin-top: 5px;">Bookmarks</span>
+          <button id="closeBookmarksBtn" type="button" class="btn text-right" style="display: inline-block; background-color: transparent; float: right;">
+            <span class="esri-icon esri-icon-close" style="color:white; display:inline-block; float:left;" aria-hidden="true"></span>
+          </button>
+        </div>
+        `
+        mapView.ui.add([bookmarks, scaleBar], "bottom-left");
+        // add bookmarks header to beginning of div
+        $("#bookmarksDiv").prepend(header);
 
-    // Process the local storage bookmarks
-    readBookmarks();
-  }
-
-  initBookmarksWidget();
-
-  function addMouseOverClass(evt) {
-    evt.stopPropagation();
-    domClass.add(evt.currentTarget, "esriBookmarkHighlight");
-  }
-
-  function removeMouseOverClass(evt) {
-    evt.stopPropagation();
-    domClass.remove(evt.currentTarget, "esriBookmarkHighlight");
-  }
-
-  function removeBookmark(evt) {
-    evt.stopPropagation();
-    var bmItem = evt.target.parentNode;
-    var bmEditItem = query(".esriBookmarkEditBox")[0];
-    if (bmEditItem) {
-      domConstruct.destroy(bmEditItem);
-    }
-    domConstruct.destroy(bmItem);
-    setTimeout(writeCurrentBookmarks, 200);
-  }
-
-  function writeCurrentBookmarks() {
-    extents = [];
-    var bmTable = query(".esriBookmarkTable")[0];
-    var bookMarkItems = query(".esriBookmarkItem", bmTable);
-    bookMarkItems.forEach(function (item) {
-      if (item.dataset.fromuser) {
-        var extArr = item.dataset.extent.split(",");
-        var theExt = new Extent({
-          xmin: extArr[0],
-          ymin: extArr[1],
-          xmax: extArr[2],
-          ymax: extArr[3],
-          spatialReference: {
-            wkid: parseInt(extArr[4])
-          }
+        const closebtn = document.getElementById('closeBookmarksBtn');
+        on(closebtn, "click", function (event) {
+          $("#bookmarksHeader").remove();
+          mapView.ui.remove(bookmarks);
+          bookmarkStatus = 0;
         });
-        var sExt = {
-          extent: theExt,
-          name: query(".esriBookmarkLabel", item)[0].innerHTML
-        }
-        extents.push(sExt);
+        bookmarkStatus = 1;
+      } else {
+        $("#bookmarksHeader").remove();
+        mapView.ui.remove(bookmarks);
+        bookmarkStatus = 0;
       }
+  });
+
+  let existingData = [];
+  const existingBookmarks = localStorage.getItem(BOOKMARK_KEY) || null;
+  if (existingBookmarks) {
+    existingData = JSON.parse(existingBookmarks);
+    bookmarks.bookmarks = existingData;
+  }
+
+  // add all bookmarks to BOOKMARK_KEY in localStorage
+  function addBookmarksToLocalStorage(bookmarks) {
+    const rawBookmarks = bookmarks.bookmarks.map(bm => bm.toJSON());
+    localStorage.setItem(BOOKMARK_KEY, JSON.stringify(rawBookmarks));
+    existingData.push(rawBookmarks);
+  }
+
+  // watch for name, viewpoint, and thumbnail updates 
+  bookmarks.bookmarks.forEach(function (bookmark) {
+    bookmark.watch(["name", "viewpoint", "thumbnail"], function (newName, oldName, propName, target) {
+      addBookmarksToLocalStorage(bookmarks);
     });
-    var stringifedExtents = JSON.stringify(extents);
-    localStorage.setItem("myBookmarks", stringifedExtents);
-  }
+  });
 
-  function editBookmark(evt) {
-    evt.stopPropagation();
-    var bmItem = evt.target.parentNode;
-    var bmItemName = query(".esriBookmarkLabel", bmItem)[0].innerHTML;
-    var output = domGeom.position(bmItem, true);
-    var editItem = domConstruct.toDom('<input class="esriBookmarkEditBox" style="top: ' + (output.y + 1) + 'px; left: ' + output.x + 'px;">');
-    editItem.value = bmItemName;
-    var bmTable = query(".esriBookmarkTable")[0];
-    domConstruct.place(editItem, bmTable);
-    on(editItem, "keypress", function (evt) {
-      var charOrCode = evt.charCode || evt.keyCode
-      if (charOrCode === keys.ENTER) {
-        query(".esriBookmarkLabel", bmItem)[0].innerHTML = editItem.value;
-        domConstruct.destroy(editItem);
-        writeCurrentBookmarks();
-      }
-    });
-    editItem.focus();
-  }
-
-  function bookmarkEvent(evt) {
-    if (domClass.contains(evt.target, "esriAddBookmark")) {
-      var bmTable = query(".esriBookmarkTable")[0];
-      var item = domConstruct.toDom('<div class="esriBookmarkItem" data-fromuser="true" data-extent="' + mapView.extent.xmin + ',' + mapView.extent.ymin + ',' + mapView.extent.xmax + ',' + mapView.extent.ymax + ',' + mapView.extent.spatialReference.wkid +
-        '"><div class="esriBookmarkLabel"></div><div title="Remove" class="esriBookmarkRemoveImage"></div><div title="Edit" class="esriBookmarkEditImage"></div></div>');
-      domConstruct.place(item, bmTable, "last");
-      var output = domGeom.position(item, true);
-      var editItem = domConstruct.toDom('<input class="esriBookmarkEditBox" style="top: ' + (output.y + 1) + 'px; left: ' + output.x + 'px;">');
-      domConstruct.place(editItem, bmTable);
-      on(editItem, "keypress", function (evt) {
-        var charOrCode = evt.charCode || evt.keyCode
-        if (charOrCode === keys.ENTER) {
-          query(".esriBookmarkLabel", item)[0].innerHTML = editItem.value;
-          domConstruct.destroy(editItem);
-          sExt = {
-            name: editItem.value,
-            extent: mapView.extent
-          }
-          extents.push(sExt);
-          var stringifedExtents = JSON.stringify(extents);
-          localStorage.setItem("myBookmarks", stringifedExtents);
-        }
-      });
-      on(query(".esriBookmarkRemoveImage", item)[0], "click", removeBookmark);
-      on(query(".esriBookmarkEditImage", item)[0], "click", editBookmark);
-      on(item, "click", bookmarkEvent);
-      on(item, "mouseover", addMouseOverClass);
-      on(item, "mouseout", removeMouseOverClass);
-      editItem.focus();
-      return;
-    }
-
-    var extArr = evt.target.dataset.extent.split(",");
-    mapView.goTo(new Extent({
-      xmin: extArr[0],
-      ymin: extArr[1],
-      xmax: extArr[2],
-      ymax: extArr[3],
-      spatialReference: {
-        wkid: parseInt(extArr[4])
-      }
-    }), {
-      duration: 2000
-    });
-  }
-
-  function readBookmarks() {
-    try {
-      if (!localStorage.getItem("myBookmarks")) {
-        return;
-      }
-      var extentArray = JSON.parse(localStorage.getItem("myBookmarks"));
-      if (!extentArray) {
-        return;
-      }
-      extentArray.map(function (extentJSON, index) {
-        var bmName = extentJSON.name || "Bookmark " + (index + 1).toString();
-        var theExtent = Extent.fromJSON(extentJSON.extent);
-        extents.push(extentJSON);
-        var bmTable = query(".esriBookmarkTable")[0];
-        var item = domConstruct.toDom('<div class="esriBookmarkItem" data-fromuser="true" data-extent="' + theExtent.xmin + ',' + theExtent.ymin + ',' + theExtent.xmax + ',' + theExtent.ymax + ',' + theExtent.spatialReference.wkid +
-          '"><div class="esriBookmarkLabel">' + bmName + '</div><div title="Remove" class="esriBookmarkRemoveImage"></div><div title="Edit" class="esriBookmarkEditImage"></div></div>');
-        domConstruct.place(item, bmTable, "last");
-        on(query(".esriBookmarkRemoveImage", item)[0], "click", removeBookmark);
-        on(query(".esriBookmarkEditImage", item)[0], "click", editBookmark);
-        on(item, "click", bookmarkEvent);
-        on(item, "mouseover", addMouseOverClass);
-        on(item, "mouseout", removeMouseOverClass);
-      })
-    } catch (e) {
-      console.warn("Could not parse bookmark JSON", e.message);
-    }
-  }
-
+  // watching for additions or deletes
+  bookmarks.bookmarks.watch("length", () => addBookmarksToLocalStorage(bookmarks));
+  
   function resetElements(currentElement, trs = true) {
     let doNotSelect = "#" + currentElement.id + ", #selectLayerDropdown";
     doNotSelect = trs ? doNotSelect : doNotSelect + ", .trs";
@@ -762,7 +649,6 @@ require([
       this.selectedIndex = 0;
     });
   }
-
 
   /////////////////////////////
   /// Dropdown Select Panel ///

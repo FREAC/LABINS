@@ -230,7 +230,7 @@ require([
     }
   };
 
-  var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/";
+  var countyBoundariesURL = "https://maps2.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/";
   var countyBoundariesLayer = new MapImageLayer({
     url: countyBoundariesURL,
     title: "County Boundaries",
@@ -244,7 +244,7 @@ require([
     }]
   });
 
-  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/";
+  var labinsURL = "https://maps2.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/";
   var labinsLayer = new MapImageLayer({
     title: "LABINS Data",
     url: labinsURL,
@@ -389,7 +389,7 @@ require([
   });
 
   // Layers needed for dependent dropdowns
-  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/10"
+  var townshipRangeSectionURL = "https://maps2.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/10"
   var townshipRangeSectionLayer = new FeatureLayer({
     url: townshipRangeSectionURL,
     outFields: ["twn_ch", "rng_ch", "sec_ch"],
@@ -399,7 +399,7 @@ require([
     popupEnabled: false
   });
 
-  const newCCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/2";
+  const newCCRURL = "https://maps2.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/2";
   const newCCRLayer = new FeatureLayer({
     url: newCCRURL,
     title: "New Certified Corner Records",
@@ -762,6 +762,7 @@ require([
         return union;
       })
       .then(createBuffer)
+      .then(fadeBuffer)
   }
 
   function zoomToTRFeature(results) {
@@ -790,7 +791,29 @@ require([
     bufferLayer.add(bufferGraphic);
     return buffer;
   }
-
+  const fadeBuffer = async () =>  {
+    var clrG = document.getElementById("clearGraphics")
+    selectionLayer.opacity = 1;
+    bufferLayer.opacity    = 1;
+    console.log('is it checked ',clrG.checked)
+    if (clrG.checked) {
+      const delay = ms => new Promise(res => setTimeout(res, ms));
+      await delay(3500); // 3.5 seconds
+      selectionLayer.opacity = .75;
+      await delay(500);
+      bufferLayer.opacity    = .45
+      selectionLayer.opacity = .45;
+      await delay(500);
+      bufferLayer.opacity    = .25
+      selectionLayer.opacity = .25;
+      await delay(500);
+      bufferLayer.opacity    = .05
+      selectionLayer.opacity = .05;
+      bufferLayer.graphics.removeAll();
+      selectionLayer.graphics.removeAll();
+    }
+    return;
+  }
   ///////////////////////
   /// Zoom to Feature ///
   ///////////////////////
@@ -933,7 +956,7 @@ require([
         returnGeometry: true,
         outFields: ["*"]
       });
-      queryTRFlow(TRQuery);
+      queryTRFlow(TRQuery).then(fadeBuffer);
       //place the tr function here
     } else if (whichDropdown === 'selectTownship' && rangeSelect.selectedIndex !== 0) {
       const rangeValue = rangeSelect.value;
@@ -942,7 +965,7 @@ require([
         outFields: ["*"],
         returnGeometry: true
       });
-      queryTRFlow(TRQuery);
+      queryTRFlow(TRQuery).then(fadeBuffer);
     }
   }
 

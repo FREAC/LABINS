@@ -824,7 +824,7 @@ require([
   //Zoom to feature
   query("#selectCountyPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCountyPanel'));
-    return zoomToFeature(countyBoundariesURL + '0', e.target.value, 'tigername')
+    return zoomToFeature(countyBoundariesURL + '0', e.target.value, 'tigername').then(fadeBuffer);
   });
 
   //Build Quad Dropdown panel
@@ -833,7 +833,7 @@ require([
   //Zoom to feature
   query("#selectQuadPanel").on("change", function (e) {
     resetElements(document.getElementById('selectQuadPanel'));
-    return zoomToFeature(labinsURL + '8', e.target.value, "tile_name");
+    return zoomToFeature(labinsURL + '8', e.target.value, "tile_name").then(fadeBuffer);
   });
 
   //Build City Dropdown panel
@@ -842,7 +842,7 @@ require([
   //Zoom to feature
   query("#selectCityPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCityPanel'));
-    return zoomToFeature(labinsURL + '11', e.target.value, "name");
+    return zoomToFeature(labinsURL + '11', e.target.value, "name").then(fadeBuffer);
   });
 
   ////////////////////////////////////////////////
@@ -1069,6 +1069,7 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
+      selectionLayer.opacity = 1; // reset this because it may be 0 from a fadeBuffer call
       if (screen.availWidth > 992) { // if not on mobile device
         if ((measurement.viewModel.state == "disabled") || (measurement.viewModel.state == "measured")) {
           identifyTaskFlow(event, coordExpand.expanded == false, false, false, "click");

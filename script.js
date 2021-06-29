@@ -447,6 +447,15 @@ require([
     },
     color: [173, 173, 173, 0.52]
   };
+  var highlightPointAddr = {
+    type: "simple-marker",
+    style: "x",
+    outline: {
+      width: 5,
+      color: [255, 105, 180, 1]
+    },
+    color: [255, 105, 180, 0.52]
+  };
 
   var highlightLine = {
     type: "simple-line",
@@ -1461,6 +1470,7 @@ require([
       placeholder: "Search by Address",
       maxResults: 1,
       countryCode: "US",
+      resultSymbol: highlightPointAddr,
       filter: {
         // Extent of Florida
         geometry: new Extent({

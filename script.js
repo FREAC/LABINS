@@ -7,6 +7,7 @@ require([
   "esri/tasks/QueryTask",
   "esri/tasks/support/Query",
   "esri/geometry/geometryEngine",
+  "esri/geometry/projection",
   "esri/geometry/Extent",
   "esri/geometry/Point",
   "esri/layers/GraphicsLayer",
@@ -64,6 +65,7 @@ require([
   QueryTask,
   Query,
   geometryEngine,
+  projection,
   Extent,
   Point,
   GraphicsLayer,
@@ -1319,7 +1321,10 @@ require([
         }
       });
   }
-
+  
+  async function loadProjection() {
+    projection.load()
+  }
   // go to first feature of the infopaneldata array
   function goToFeature(feature, button = true) {
 
@@ -1353,6 +1358,20 @@ require([
         highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
         selectionLayer.graphics.add(highlightGraphic);
       } else if (feature.geometry.type === "point") {
+        // first we have to decide if this is an NGS point because we will get LAT/LON
+        // instead of the world mercator coordinates everthing else is in.
+        newPt = feature.geometry
+        if (feature.geometry.x > -90){
+          // ready to convert lat/lon to world mercator
+          let outSpatialReference = new SpatialReference({
+              wkid: 3857
+          });
+          loadProjection();
+          var newPt = projection.project(feature.geometry,outSpatialReference)
+        } else {
+          // if it is a point other than NGS we just want to load the point and move on
+          newPt = feature.geometry
+        }
         // Remove current selection
         selectionLayer.graphics.removeAll();
 
@@ -1363,7 +1382,7 @@ require([
         // TODO: Not working properly, else if not being triggered
         if (mapView.scale > 18055.954822) {
           mapView.goTo({
-            target: feature.geometry,
+            target: newPt,
             zoom: 15
           });
         } else { // go to point at the current scale

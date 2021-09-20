@@ -1,4 +1,4 @@
-function queryInfoPanel(results, i, event = false) {
+async function queryInfoPanel(results, i, event = false) {
     let count = results.length;
     let removeThisResult = false;    
 
@@ -60,16 +60,16 @@ function queryInfoPanel(results, i, event = false) {
                     'County: ' + results[i - 1].attributes.COUNTY + '<br>' +
                     'PID: ' + '<a target="_blank" href=' + results[i - 1].attributes.DATA_SRCE + '>' + results[i - 1].attributes.PID + '</a><br>'
                 );
-                // THIS BREAKS THE INFOPANEL
-                // var url = 'https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.pid;
-                // const opusData = async (url, results) => {
-                // 	const response = await fetch(url);
-                // 	text = await response.text();
-                // 	if (text.length > 428) { // response always 200, response length will be > 428 if there is an opus point
-                // 		$('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results.attributes.pid + '>' + results.attributes.pid + '</a> <br>');
-                // 	}
-                // }
-                // await opusData(url, results[i - 1]);
+                var url = 'https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.PID;
+                const opusData = async (url, result) => {
+                	const response = await fetch(url);
+                	text = await response.text();
+                	if (text.length > 428) { // response always 200, response length will be > 428 if there is an opus point
+                		$('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + result.attributes.PID + '>' + result.attributes.PID + '</a> <br>');
+                    }
+                }
+                // had to change the queryInfoPanel function to be async in order for the next line to work
+                await opusData(url, results[i - 1]);
             } else if (results[i - 1].attributes.layerName === 'City Limits') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>City Limits</b></p>' +
                     '<b>City limits:</b> ' + results[i - 1].attributes.name + '<br>' +

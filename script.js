@@ -232,7 +232,7 @@ require([
     }
   };
 
-  var countyBoundariesURL = "https://maps2.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/";
+  var countyBoundariesURL = "https://maps.freac.fsu.edu/arcgis/rest/services/FREAC/County_Boundaries/MapServer/";
   var countyBoundariesLayer = new MapImageLayer({
     url: countyBoundariesURL,
     title: "County Boundaries",
@@ -246,7 +246,7 @@ require([
     }]
   });
 
-  var labinsURL = "https://maps2.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/";
+  var labinsURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/";
   var labinsLayer = new MapImageLayer({
     title: "LABINS Data",
     url: labinsURL,
@@ -391,7 +391,7 @@ require([
   });
 
   // Layers needed for dependent dropdowns
-  var townshipRangeSectionURL = "https://maps2.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/10"
+  var townshipRangeSectionURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/10"
   var townshipRangeSectionLayer = new FeatureLayer({
     url: townshipRangeSectionURL,
     outFields: ["twn_ch", "rng_ch", "sec_ch"],
@@ -401,7 +401,7 @@ require([
     popupEnabled: false
   });
 
-  const newCCRURL = "https://maps2.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/2";
+  const newCCRURL = "https://maps.freac.fsu.edu/arcgis/rest/services/LABINS/LABINS_Data_ccr_relate/MapServer/2";
   const newCCRLayer = new FeatureLayer({
     url: newCCRURL,
     title: "New Certified Corner Records",

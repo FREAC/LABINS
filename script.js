@@ -7,6 +7,7 @@ require([
   "esri/tasks/QueryTask",
   "esri/tasks/support/Query",
   "esri/geometry/geometryEngine",
+  "esri/geometry/projection",
   "esri/geometry/Extent",
   "esri/geometry/Point",
   "esri/layers/GraphicsLayer",
@@ -64,6 +65,7 @@ require([
   QueryTask,
   Query,
   geometryEngine,
+  projection,
   Extent,
   Point,
   GraphicsLayer,
@@ -447,6 +449,15 @@ require([
     },
     color: [173, 173, 173, 0.52]
   };
+  var highlightPointAddr = {
+    type: "simple-marker",
+    style: "x",
+    outline: {
+      width: 5,
+      color: [255, 105, 180, 1]
+    },
+    color: [255, 105, 180, 0.52]
+  };
 
   var highlightLine = {
     type: "simple-line",
@@ -762,6 +773,7 @@ require([
         return union;
       })
       .then(createBuffer)
+      .then(fadeBuffer)
   }
 
   function zoomToTRFeature(results) {
@@ -790,7 +802,29 @@ require([
     bufferLayer.add(bufferGraphic);
     return buffer;
   }
-
+  const fadeBuffer = async () =>  {
+    var clrG = document.getElementById("clearGraphics")
+    selectionLayer.opacity = 1;
+    bufferLayer.opacity    = 1;
+    console.log('is it checked ',clrG.checked)
+    if (clrG.checked) {
+      const delay = ms => new Promise(res => setTimeout(res, ms));
+      await delay(3500); // 3.5 seconds
+      selectionLayer.opacity = .75;
+      await delay(500);
+      bufferLayer.opacity    = .45
+      selectionLayer.opacity = .45;
+      await delay(500);
+      bufferLayer.opacity    = .25
+      selectionLayer.opacity = .25;
+      await delay(500);
+      bufferLayer.opacity    = .05
+      selectionLayer.opacity = .05;
+      bufferLayer.graphics.removeAll();
+      selectionLayer.graphics.removeAll();
+    }
+    return;
+  }
   ///////////////////////
   /// Zoom to Feature ///
   ///////////////////////
@@ -801,7 +835,7 @@ require([
   //Zoom to feature
   query("#selectCountyPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCountyPanel'));
-    return zoomToFeature(countyBoundariesURL + '0', e.target.value, 'tigername')
+    return zoomToFeature(countyBoundariesURL + '0', e.target.value, 'tigername').then(fadeBuffer);
   });
 
   //Build Quad Dropdown panel
@@ -810,7 +844,7 @@ require([
   //Zoom to feature
   query("#selectQuadPanel").on("change", function (e) {
     resetElements(document.getElementById('selectQuadPanel'));
-    return zoomToFeature(labinsURL + '8', e.target.value, "tile_name");
+    return zoomToFeature(labinsURL + '8', e.target.value, "tile_name").then(fadeBuffer);
   });
 
   //Build City Dropdown panel
@@ -819,7 +853,7 @@ require([
   //Zoom to feature
   query("#selectCityPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCityPanel'));
-    return zoomToFeature(labinsURL + '11', e.target.value, "name");
+    return zoomToFeature(labinsURL + '11', e.target.value, "name").then(fadeBuffer);
   });
 
   ////////////////////////////////////////////////
@@ -933,7 +967,7 @@ require([
         returnGeometry: true,
         outFields: ["*"]
       });
-      queryTRFlow(TRQuery);
+      queryTRFlow(TRQuery).then(fadeBuffer);
       //place the tr function here
     } else if (whichDropdown === 'selectTownship' && rangeSelect.selectedIndex !== 0) {
       const rangeValue = rangeSelect.value;
@@ -942,7 +976,7 @@ require([
         outFields: ["*"],
         returnGeometry: true
       });
-      queryTRFlow(TRQuery);
+      queryTRFlow(TRQuery).then(fadeBuffer);
     }
   }
 
@@ -1046,6 +1080,7 @@ require([
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
     on(mapView, "click", async function (event) {
+      selectionLayer.opacity = 1; // reset this because it may be 0 from a fadeBuffer call
       if (screen.availWidth > 992) { // if not on mobile device
         if ((measurement.viewModel.state == "disabled") || (measurement.viewModel.state == "measured")) {
           identifyTaskFlow(event, coordExpand.expanded == false, false, false, "click");
@@ -1286,7 +1321,10 @@ require([
         }
       });
   }
-
+  
+  async function loadProjection() {
+    projection.load()
+  }
   // go to first feature of the infopaneldata array
   function goToFeature(feature, button = true) {
 
@@ -1320,6 +1358,20 @@ require([
         highlightGraphic = new Graphic(feature.geometry, highlightSymbol);
         selectionLayer.graphics.add(highlightGraphic);
       } else if (feature.geometry.type === "point") {
+        // first we have to decide if this is an NGS point because we will get LAT/LON
+        // instead of the world mercator coordinates everthing else is in.
+        newPt = feature.geometry
+        if (feature.geometry.x > -90){
+          // ready to convert lat/lon to world mercator
+          let outSpatialReference = new SpatialReference({
+              wkid: 3857
+          });
+          loadProjection();
+          var newPt = projection.project(feature.geometry,outSpatialReference)
+        } else {
+          // if it is a point other than NGS we just want to load the point and move on
+          newPt = feature.geometry
+        }
         // Remove current selection
         selectionLayer.graphics.removeAll();
 
@@ -1330,7 +1382,7 @@ require([
         // TODO: Not working properly, else if not being triggered
         if (mapView.scale > 18055.954822) {
           mapView.goTo({
-            target: feature.geometry,
+            target: newPt,
             zoom: 15
           });
         } else { // go to point at the current scale
@@ -1437,6 +1489,7 @@ require([
       placeholder: "Search by Address",
       maxResults: 1,
       countryCode: "US",
+      resultSymbol: highlightPointAddr,
       filter: {
         // Extent of Florida
         geometry: new Extent({

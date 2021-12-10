@@ -174,7 +174,8 @@ require([
     return customRenderer;
   }
 
-  const ngsLayerURL = "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/ArcGIS/rest/services/ngs_datasheets/FeatureServer/0";
+  // const ngsLayerURL = "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/ArcGIS/rest/services/ngs_datasheets/FeatureServer/0";
+  const ngsLayerURL = "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/arcgis/rest/services/NGS_Datasheets_Feature_Service/FeatureServer/0";
   const ngsLayer = new FeatureLayer({
     url: ngsLayerURL,
     outFields: ["pos_srce", "vert_srce"],

@@ -1387,7 +1387,7 @@ require([
           });
         } else { // go to point at the current scale
           mapView.goTo({
-            target: feature.geometry,
+            target: newPt,
             zoom: mapView.zoom
           });
         }

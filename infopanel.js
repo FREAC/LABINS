@@ -9,7 +9,6 @@ async function queryInfoPanel(results, i, event = false) {
     if (count > 0) {
         for (var i = 1; i <= results.length; i++) {
 
-            console.log(results[i-1].attributes);
             if (results[i - 1].attributes.layerName === 'USGS Quads') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>USGS Quads</b></p>' +
                     '<b>Quad Name:</b> ' + results[i - 1].attributes.tile_name + '<br>' +
@@ -209,7 +208,8 @@ async function queryInfoPanel(results, i, event = false) {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
                     '<b>County: </b>' + results[i - 1].attributes.COUNTY + '<br>' +
                     '<b>ECL Name: </b>' + results[i - 1].attributes.YEAR + '<br>' +
-                    '<b>MHW: </b>' + results[i - 1].attributes.OBJECTID + '<br>'
+                    '<b>MHW: </b>' + results[i - 1].attributes.OBJECTID + '<br>' + 
+                    '<b>PDF: </b><a href="https://ftp.labins.org/CCCL/combined_PDFs/' + results[i - 1].attributes.COUNTY + '.pdf" target="_blank">' + results[i - 1].attributes.COUNTY + '</a><br>'
                 );
             }
 

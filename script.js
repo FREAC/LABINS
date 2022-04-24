@@ -1613,6 +1613,14 @@ require([
       buildSelectPanel(attributeURL, countyAttribute, "Select a County", "countyQuery", ngs);
     }
 
+    function createRMonumentDropdown(attributeURL, rMonumentAttribute, ngs = false) {
+      var rMonumentDropdown = document.createElement('select');
+      rMonumentDropdown.setAttribute('id', 'rMonumentQuery');
+      rMonumentDropdown.setAttribute('class', 'form-control');
+      document.getElementById('parametersQuery').appendChild(rMonumentDropdown);
+      buildSelectPanel(attributeURL, rMonumentAttribute, "Select an R-Monument", "rMonumentQuery", ngs);
+    }
+
     function createQuadDropdown(attributeURL, quadAttribute, ngs = false) {
       var quadDropdown = document.createElement('select');
       quadDropdown.setAttribute('id', 'quadQuery');
@@ -1925,11 +1933,13 @@ require([
       clearDiv('parametersQuery');
       addDescript();
       createCountyDropdown(labinsURL + '7', 'county');
+      createRMonumentDropdown(labinsURL + '6', 'unique_id');
       createTextBox('textQuery', 'Enter an ECL Name')
       createSubmit();
 
       var submitButton = document.getElementById('submitQuery');
       var countyDropdownAfter = document.getElementById('countyQuery');
+      var rMonumentDropdownAfter = document.getElementById('rMonumentQuery');
       var inputAfter = document.getElementById('textQuery');
 
       // clear other elements when keypress happens
@@ -1946,6 +1956,23 @@ require([
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Erosion Control Line';
+              infoPanelData.push(response.features[i]);
+            }
+            goToFeature(infoPanelData[0]);
+            queryInfoPanel(infoPanelData, 1);
+            togglePanel();
+          });
+      });
+
+      query(rMonumentDropdownAfter).on('change', function (event) {
+        clearDiv('informationdiv');
+        resetElements(rMonumentDropdownAfter);
+        infoPanelData = [];
+        getGeometry(labinsURL + '6', 'unique_id', event.target.value, '*')
+          .then(function (response) {
+            console.log(response);
+            for (i = 0; i < response.features.length; i++) {
+              response.features[i].attributes.layerName = 'R-Monuments';
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);

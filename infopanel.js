@@ -128,7 +128,8 @@ async function queryInfoPanel(results, i, event = false) {
                         '<b>County: </b>' + results[i - 1].attributes.county + '<br>' +
                         '<b>ECL Name: </b>' + results[i - 1].attributes.ecl_name + '<br>' +
                         '<b>MHW: </b>' + results[i - 1].attributes.mhw + '<br>' +
-                        '<b>Location: </b>' + results[i - 1].attributes.location + '<br>' +
+                        '<b>Beginning Range: </b>' + results[i - 1].attributes.begining_r + '<br>' +
+                        '<b>Ending Range: </b>' + results[i - 1].attributes.ending_ran + '<br>' +
                         '<b>Download Information: </b>' + '<a target="_blank" href=https://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i - 1].attributes.mhw + '.pdf&fileType=MAP>' + results[i - 1].attributes.mhw + '.pdf</a><br>'
                     );
                 } else {

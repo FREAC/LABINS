@@ -813,7 +813,6 @@ require([
     var clrG = document.getElementById("clearGraphics")
     selectionLayer.opacity = 1;
     bufferLayer.opacity    = 1;
-    console.log('is it checked ',clrG.checked)
     if (clrG.checked) {
       const delay = ms => new Promise(res => setTimeout(res, ms));
       await delay(3500); // 3.5 seconds
@@ -1976,7 +1975,6 @@ require([
         infoPanelData = [];
         getGeometry(labinsURL + '6', 'unique_id', event.target.value, '*')
           .then(function (response) {
-            console.log(response);
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'R-Monuments';
               infoPanelData.push(response.features[i]);

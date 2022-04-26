@@ -130,7 +130,9 @@ async function queryInfoPanel(results, i, event = false) {
                         '<b>MHW: </b>' + results[i - 1].attributes.mhw + '<br>' +
                         '<b>Beginning Range: </b>' + results[i - 1].attributes.begining_r + '<br>' +
                         '<b>Ending Range: </b>' + results[i - 1].attributes.ending_ran + '<br>' +
-                        '<b>Download Information: </b>' + '<a target="_blank" href=https://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i - 1].attributes.mhw + '.pdf&fileType=MAP>' + results[i - 1].attributes.mhw + '.pdf</a><br>'
+                        '<b>Download Information: </b>' + '<a target="_blank" href=https://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i - 1].attributes.mhw + '.pdf&fileType=MAP>' + results[i - 1].attributes.mhw + '.pdf</a><br>' +
+                        '<b>FDEP Oculus: </b><a target="_blank" href=' + results[i - 1].attributes.survey_lin + '>' + results[i - 1].attributes.ecl_name + '</a><br>' + 
+                        '<p><b>NOTE:</b> To download maps, click the ECL link above. You will be re-directed to DEP\'s website. Click the "Public Oculus Login" Button to Continue to the ECL Download.</p>'
                     );
                 } else {
                     count -= 1;

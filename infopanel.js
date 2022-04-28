@@ -208,7 +208,7 @@ async function queryInfoPanel(results, i, event = false) {
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
                     '<b>County: </b>' + results[i - 1].attributes.COUNTY + '<br>' +
-                    '<b>ECL Name: </b>' + results[i - 1].attributes.YEAR + '<br>' +
+                    '<b>CCCL Name: </b>' + results[i - 1].attributes.YEAR + '<br>' +
                     '<b>MHW: </b>' + results[i - 1].attributes.OBJECTID + '<br>' + 
                     '<b>PDF: </b><a href="https://ftp.labins.org/CCCL/combined_PDFs/' + results[i - 1].attributes.COUNTY + '.pdf" target="_blank">' + results[i - 1].attributes.COUNTY + '</a><br>'
                 );

@@ -1937,7 +1937,7 @@ require([
     } else if (layerSelection === 'Erosion Control Line') {
       clearDiv('parametersQuery');
       addDescript();
-      createCountyDropdown(labinsURL + '17', 'county');
+      createCountyDropdown(labinsURL + '7', 'county');
       createRMonumentDropdown(labinsURL + '6', 'unique_id');
       createTextBox('textQuery', 'Enter an ECL Name')
       createSubmit();
@@ -1957,7 +1957,7 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        getGeometry(labinsURL + '17', 'county', event.target.value, '*')
+        getGeometry(labinsURL + '7', 'county', event.target.value, '*')
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Erosion Control Line';

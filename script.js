@@ -2579,7 +2579,7 @@ require([
       view: mapView,
       content: measurementToolbar,
       expandIconClass: "esri-icon-measure-area",
-      expandTooltip: "Measurement Tools",
+      expandTooltip: "Measurement Tools (Select by Area)",
       collapseTooltip: "Measurement Tools",
     });
 
@@ -2600,7 +2600,7 @@ require([
     const areaButton = document.createElement("button");
     areaButton.id = "area";
     areaButton.className = "esri-widget--button esri-interactive esri-icon-measure-area";
-    areaButton.title = "Area Measurement Tool";
+    areaButton.title = "Area Measurement (Select Search Area)";
     measurementToolbar.appendChild(areaButton)
 
     const clearButton = document.createElement("button");

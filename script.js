@@ -813,7 +813,6 @@ require([
     var clrG = document.getElementById("clearGraphics")
     selectionLayer.opacity = 1;
     bufferLayer.opacity    = 1;
-    console.log('is it checked ',clrG.checked)
     if (clrG.checked) {
       const delay = ms => new Promise(res => setTimeout(res, ms));
       await delay(3500); // 3.5 seconds
@@ -1938,7 +1937,7 @@ require([
     } else if (layerSelection === 'Erosion Control Line') {
       clearDiv('parametersQuery');
       addDescript();
-      createCountyDropdown(labinsURL + '17', 'county');
+      createCountyDropdown(labinsURL + '7', 'county');
       createRMonumentDropdown(labinsURL + '6', 'unique_id');
       createTextBox('textQuery', 'Enter an ECL Name')
       createSubmit();
@@ -1958,7 +1957,7 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        getGeometry(labinsURL + '17', 'county', event.target.value, '*')
+        getGeometry(labinsURL + '7', 'county', event.target.value, '*')
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Erosion Control Line';
@@ -1976,7 +1975,6 @@ require([
         infoPanelData = [];
         getGeometry(labinsURL + '6', 'unique_id', event.target.value, '*')
           .then(function (response) {
-            console.log(response);
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'R-Monuments';
               infoPanelData.push(response.features[i]);

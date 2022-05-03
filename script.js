@@ -676,9 +676,11 @@ require([
   /////////////////////////////
 
   // query layer and populate a dropdown
-  function buildSelectPanel(url, attribute, zoomParam, panelParam, ngs = false) {
+  function buildSelectPanel(url, attribute, zoomParam, panelParam, ngs = false, county = null) {
 
-    let whereClause = ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL";
+    let whereClause = county === null 
+    ? ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL"
+    : ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL and COUNTY = '" + county.toUpperCase() + "'"
 
     var task = new QueryTask({
       url: url
@@ -1618,12 +1620,19 @@ require([
       buildSelectPanel(attributeURL, countyAttribute, "Select a County", "countyQuery", ngs);
     }
 
-    function createRMonumentDropdown(attributeURL, rMonumentAttribute, ngs = false) {
-      var rMonumentDropdown = document.createElement('select');
+    function createRMonumentDropdown(attributeURL, rMonumentAttribute, ngs = false, county) {
+      removeRMonumentDropdown();
+      const rMonumentDropdown = document.createElement('select');
       rMonumentDropdown.setAttribute('id', 'rMonumentQuery');
       rMonumentDropdown.setAttribute('class', 'form-control');
       document.getElementById('parametersQuery').appendChild(rMonumentDropdown);
-      buildSelectPanel(attributeURL, rMonumentAttribute, "Select an R-Monument", "rMonumentQuery", ngs);
+      document.getElementById('countyQuery').parentNode.insertBefore(rMonumentDropdown, document.getElementById('countyQuery').nextSibling);
+      buildSelectPanel(attributeURL, rMonumentAttribute, "Select an R-Monument", "rMonumentQuery", ngs, county);
+    }
+
+    function removeRMonumentDropdown() {
+      rMonumentElement = document.getElementById('rMonumentQuery');
+      rMonumentElement ? rMonumentElement.remove() : null
     }
 
     function createQuadDropdown(attributeURL, quadAttribute, ngs = false) {
@@ -1938,7 +1947,6 @@ require([
       clearDiv('parametersQuery');
       addDescript();
       createCountyDropdown(labinsURL + '7', 'county');
-      createRMonumentDropdown(labinsURL + '6', 'unique_id');
       createTextBox('textQuery', 'Enter an ECL Name')
       createSubmit();
 
@@ -1954,10 +1962,12 @@ require([
       });
 
       query(countyDropdownAfter).on('change', function (event) {
+        const county = event.target.value
+        county !== 'Select a County' ? createRMonumentDropdown(labinsURL + '6', 'unique_id', false, county) : removeRMonumentDropdown();
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        getGeometry(labinsURL + '7', 'county', event.target.value, '*')
+        getGeometry(labinsURL + '7', 'county', county, '*')
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Erosion Control Line';

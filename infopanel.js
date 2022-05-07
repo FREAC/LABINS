@@ -148,8 +148,13 @@ async function queryInfoPanel(results, i, event = false) {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>GLO</b> </p>' +
                     '<b>Section-Township-Range: </b>' + results[i - 1].attributes.twnrngsec.substring(8, ) + ' ' + results[i - 1].attributes.twnrngsec.substring(1, 4) + ' ' + results[i - 1].attributes.twnrngsec.substring(5, 8) + '<br>' +
                     '<a target="_blank" href=https://www.labins.org/survey_data/landrecords/landrecords.cfm?town1=' + results[i - 1].attributes.tr_dissolve.substring(0, 2) + '&town2=' + results[i - 1].attributes.tr_dissolve.substring(2, 3) + '&range1=' + results[i - 1].attributes.tr_dissolve.substring(3, 5) + '&range2=' + results[i - 1].attributes.tr_dissolve.substring(5, 6) + '>' + 'Original GLO Survey Plats and Field Notes' + '</a><br>' +
-                    '<a target="_blank" href=https://199.73.242.221/Oculus/servlet/shell?command=hitlist&[catalog=6]&[entityType=any]&[searchBy=profile]&[profile=BSM+Office+Files]&[sortBy=Creator]&{STR+Coordinates=%20LK%20S0' + results[i - 1].attributes.tr_dissolve.substring(0, 2) + '%20' + results[i - 1].attributes.twnrngsec.substring(0, 4) + '%20' + results[i - 1].attributes.twnrngsec.substring(4, 8) + '}>' + 'Oculus Database - DEP Use Only' + '</a><br>'
-                );
+                    '<a target="_blank" href=https://199.73.242.221/Oculus/servlet/shell?command=hitlist&[catalog=6]&[entityType=any]&[searchBy=profile]&[profile=BSM+Office+Files]&[sortBy=Creator]&{STR+Coordinates=%20LK%20S0' + results[i - 1].attributes.tr_dissolve.substring(0, 2) + '%20' + results[i - 1].attributes.twnrngsec.substring(0, 4) + '%20' + results[i - 1].attributes.twnrngsec.substring(4, 8) + '}>' + 'Oculus Database - DEP Use Only' + '</a><br>' +
+                    '<hr>'
+                    );
+                $('#informationdiv').append('<p style= "font-size: 15px"><b>MHW Surveys</b> </p>' +
+                '<b>Section-Township-Range: </b>' + results[i - 1].attributes.twnrngsec.substring(8, ) + ' ' + results[i - 1].attributes.twnrngsec.substring(1, 4) + ' ' + results[i - 1].attributes.twnrngsec.substring(5, 8) + '<br>' +
+                '<a target="_blank" href=https://www.labins.org/survey_data/water/water.cfm?town1=' + results[i - 1].attributes.tr_dissolve.substring(0, 2) + '&town2=' + results[i - 1].attributes.tr_dissolve.substring(2, 3) + '&range1=' + results[i - 1].attributes.tr_dissolve.substring(3, 5) + '&range2=' + results[i - 1].attributes.tr_dissolve.substring(5, 6) + '&sec1=' + results[i - 1].attributes.tr_dissolve.substring(1,2) + '>' + 'Search for MHW Surveys in this section ' + '</a><br><br>'
+            );
             } else if (results[i - 1].attributes.layerName === 'Township-Range') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Township</b> </p>' +
                     '<b>Township-Range: </b>' + results[i - 1].attributes.tr_dissolve.substring(0, 3) + ' ' + results[i - 1].attributes.tr_dissolve.substring(3, ) + '<br>'

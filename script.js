@@ -1635,9 +1635,9 @@ require([
       buildEmptySelectPanel("Select an R-Monument", "rMonumentQuery");
     }
 
-    function removeRMonumentDropdown() {
+    function clearRMonumentDropdown() {
       rMonumentElement = document.getElementById('rMonumentQuery');
-      rMonumentElement ? rMonumentElement.remove() : null
+      rMonumentElement.options.length = 1;
     }
 
     function createQuadDropdown(attributeURL, quadAttribute, ngs = false) {
@@ -1966,7 +1966,8 @@ require([
       });
 
       query(countyDropdownAfter).on('change', function (event) {
-        const county = event.target.value
+        clearRMonumentDropdown();
+        const county = event.target.value;
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
@@ -1985,7 +1986,6 @@ require([
 
       query(rMonumentDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
-        resetElements(rMonumentDropdownAfter);
         infoPanelData = [];
         getGeometry(labinsURL + '6', 'unique_id', event.target.value, '*')
           .then(function (response) {

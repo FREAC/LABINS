@@ -1971,17 +1971,7 @@ require([
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        getGeometry(labinsURL + '6', 'county', county, '*')
-          .then(function (response) {
-            for (i = 0; i < response.features.length; i++) {
-              response.features[i].attributes.layerName = 'R-Monuments';
-              infoPanelData.push(response.features[i]);
-            }
-            goToFeature(infoPanelData[0]);
-            queryInfoPanel(infoPanelData, 1);
-            togglePanel();
-          });
-          buildSelectPanel(labinsURL + '6', 'unique_id', "Select an R-Monument", "rMonumentQuery", false, county, true);
+        buildSelectPanel(labinsURL + '6', 'unique_id', "Select an R-Monument", "rMonumentQuery", false, county, true);
     });
 
       query(rMonumentDropdownAfter).on('change', function (event) {

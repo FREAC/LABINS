@@ -676,9 +676,22 @@ require([
   /////////////////////////////
 
   // query layer and populate a dropdown
-  function buildSelectPanel(url, attribute, zoomParam, panelParam, ngs = false) {
+  function buildEmptySelectPanel(zoomParam, panelParam) {
+    var option = domConstruct.create("option");
+    option.text = zoomParam;
+    dom.byId(panelParam).add(option);
+  }
+  
+  function buildSelectPanel(url, attribute, zoomParam, panelParam, ngs = false, county = null, populateEmptyDropdown = false) {
+    if (!populateEmptyDropdown) {
+      var option = domConstruct.create("option");
+      option.text = zoomParam;
+      dom.byId(panelParam).add(option);  
+    }
 
-    let whereClause = ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL";
+    let whereClause = county === null 
+    ? ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL"
+    : ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL and COUNTY = '" + county.toUpperCase() + "'"
 
     var task = new QueryTask({
       url: url
@@ -690,26 +703,22 @@ require([
       returnDistinctValues: true,
     });
 
-    var option = domConstruct.create("option");
-    option.text = zoomParam;
-    dom.byId(panelParam).add(option);
-
     task.execute(params)
-      .then(function (response) {
-        var features = response.features;
-        var values = features.map(function (feature) {
-          return feature.attributes[attribute];
-        });
-        return values;
-      })
-      .then(function (uniqueValues) {
-        uniqueValues.sort();
-        uniqueValues.forEach(function (value) {
-          var option = domConstruct.create("option");
-          option.text = value;
-          dom.byId(panelParam).add(option);
-        });
+    .then(function (response) {
+      var features = response.features;
+      var values = features.map(function (feature) {
+        return feature.attributes[attribute];
       });
+      return values;
+    })
+    .then(function (uniqueValues) {
+      uniqueValues.sort();
+      uniqueValues.forEach(function (value) {
+        var option = domConstruct.create("option");
+        option.text = value;
+        dom.byId(panelParam).add(option);
+      });
+    });
   }
 
   // Input location from drop down, zoom to it and highlight
@@ -1518,7 +1527,7 @@ require([
   ////////////////////////////
 
   // Layer choices to query
-  var layerChoices = ['Select Layer', 'NGS Control Points', 'Certified Corners', 'Tide Interpolation Points', 'Tide Stations', 'Erosion Control Line', 'SWFWMD and Tampa Bay Points'];
+  var layerChoices = ['Select Layer', 'NGS Control Points', 'Certified Corners', 'Tide Interpolation Points', 'Tide Stations', 'R-Monuments', 'Erosion Control Line', 'SWFWMD and Tampa Bay Points'];
 
   for (var i = 0; i < layerChoices.length; i++) {
     $('<option/>').val(layerChoices[i]).text(layerChoices[i]).appendTo('#selectLayerDropdown');
@@ -1618,12 +1627,17 @@ require([
       buildSelectPanel(attributeURL, countyAttribute, "Select a County", "countyQuery", ngs);
     }
 
-    function createRMonumentDropdown(attributeURL, rMonumentAttribute, ngs = false) {
-      var rMonumentDropdown = document.createElement('select');
+    function createRMonumentDropdown() {
+      const rMonumentDropdown = document.createElement('select');
       rMonumentDropdown.setAttribute('id', 'rMonumentQuery');
       rMonumentDropdown.setAttribute('class', 'form-control');
       document.getElementById('parametersQuery').appendChild(rMonumentDropdown);
-      buildSelectPanel(attributeURL, rMonumentAttribute, "Select an R-Monument", "rMonumentQuery", ngs);
+      buildEmptySelectPanel("Select an R-Monument", "rMonumentQuery");
+    }
+
+    function clearRMonumentDropdown() {
+      rMonumentElement = document.getElementById('rMonumentQuery');
+      rMonumentElement.options.length = 1;
     }
 
     function createQuadDropdown(attributeURL, quadAttribute, ngs = false) {
@@ -1934,13 +1948,11 @@ require([
           });
       });
 
-    } else if (layerSelection === 'Erosion Control Line') {
+    } else if (layerSelection === 'R-Monuments') {
       clearDiv('parametersQuery');
       addDescript();
       createCountyDropdown(labinsURL + '7', 'county');
-      createRMonumentDropdown(labinsURL + '6', 'unique_id');
-      createTextBox('textQuery', 'Enter an ECL Name')
-      createSubmit();
+      createRMonumentDropdown();
 
       var submitButton = document.getElementById('submitQuery');
       var countyDropdownAfter = document.getElementById('countyQuery');
@@ -1954,13 +1966,21 @@ require([
       });
 
       query(countyDropdownAfter).on('change', function (event) {
+        clearRMonumentDropdown();
+        const county = event.target.value;
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
-        getGeometry(labinsURL + '7', 'county', event.target.value, '*')
+        buildSelectPanel(labinsURL + '6', 'unique_id', "Select an R-Monument", "rMonumentQuery", false, county, true);
+    });
+
+      query(rMonumentDropdownAfter).on('change', function (event) {
+        clearDiv('informationdiv');
+        infoPanelData = [];
+        getGeometry(labinsURL + '6', 'unique_id', event.target.value, '*')
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
-              response.features[i].attributes.layerName = 'Erosion Control Line';
+              response.features[i].attributes.layerName = 'R-Monuments';
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
@@ -1969,14 +1989,47 @@ require([
           });
       });
 
-      query(rMonumentDropdownAfter).on('change', function (event) {
+      query(submitButton).on('click', function (event) {
         clearDiv('informationdiv');
-        resetElements(rMonumentDropdownAfter);
         infoPanelData = [];
-        getGeometry(labinsURL + '6', 'unique_id', event.target.value, '*')
+        textQueryQuerytask(labinsURL + '7', 'ecl_name', inputAfter.value)
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
-              response.features[i].attributes.layerName = 'R-Monuments';
+              response.features[i].attributes.layerName = 'Erosion Control Line';
+              infoPanelData.push(response.features[i]);
+            }
+            goToFeature(infoPanelData[0]);
+            queryInfoPanel(infoPanelData, 1, event);
+            togglePanel();
+          });
+      });
+
+    } else if (layerSelection === 'Erosion Control Line') {
+      clearDiv('parametersQuery');
+      addDescript();
+      createCountyDropdown(labinsURL + '7', 'county');
+      createTextBox('textQuery', 'Enter an ECL Name')
+      createSubmit();
+
+      var submitButton = document.getElementById('submitQuery');
+      var countyDropdownAfter = document.getElementById('countyQuery');
+      var inputAfter = document.getElementById('textQuery');
+
+      // clear other elements when keypress happens
+      query(inputAfter).on('keypress', function () {
+        clearDiv('informationdiv');
+        resetElements(inputAfter);
+      });
+
+      query(countyDropdownAfter).on('change', function (event) {
+        const county = event.target.value
+        clearDiv('informationdiv');
+        resetElements(countyDropdownAfter);
+        infoPanelData = [];
+        getGeometry(labinsURL + '7', 'county', county, '*')
+          .then(function (response) {
+            for (i = 0; i < response.features.length; i++) {
+              response.features[i].attributes.layerName = 'Erosion Control Line';
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);

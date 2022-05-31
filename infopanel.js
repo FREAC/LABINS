@@ -128,8 +128,11 @@ async function queryInfoPanel(results, i, event = false) {
                         '<b>County: </b>' + results[i - 1].attributes.county + '<br>' +
                         '<b>ECL Name: </b>' + results[i - 1].attributes.ecl_name + '<br>' +
                         '<b>MHW: </b>' + results[i - 1].attributes.mhw + '<br>' +
-                        '<b>Location: </b>' + results[i - 1].attributes.location + '<br>' +
-                        '<b>Download Information: </b>' + '<a target="_blank" href=https://www.labins.org/survey_data/water/ecl_detail.cfm?sel_file=' + results[i - 1].attributes.mhw + '.pdf&fileType=MAP>' + results[i - 1].attributes.mhw + '.pdf</a><br>'
+                        '<b>Beginning Range: </b>' + results[i - 1].attributes.begining_r + '<br>' +
+                        '<b>Ending Range: </b>' + results[i - 1].attributes.ending_ran + '<br>' +
+                        '<b>FDEP Oculus: </b><a target="_blank" href=' + results[i - 1].attributes.survey_lin + '>' + results[i - 1].attributes.ecl_name + '</a><br>' + 
+                        '<p><b>NOTE:</b> To download maps, click the ECL name link above. You will be re-directed to DEP\'s website. Click the "Public Oculus Login" Button to Continue to the ECL Download.</p>' +
+                        '<img src="./oculus_login.png" width="150" height="100"><br>'
                     );
                 } else {
                     count -= 1;
@@ -207,7 +210,7 @@ async function queryInfoPanel(results, i, event = false) {
             } else if (results[i - 1].attributes.layerName === 'Coastal Construction Control Lines') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Coastal Construction Control Lines</b></p>' +
                     '<b>County: </b>' + results[i - 1].attributes.COUNTY + '<br>' +
-                    '<b>ECL Name: </b>' + results[i - 1].attributes.YEAR + '<br>' +
+                    '<b>CCCL Name: </b>' + results[i - 1].attributes.YEAR + '<br>' +
                     '<b>MHW: </b>' + results[i - 1].attributes.OBJECTID + '<br>' + 
                     '<b>PDF: </b><a href="https://ftp.labins.org/CCCL/combined_PDFs/' + results[i - 1].attributes.COUNTY + '.pdf" target="_blank">' + results[i - 1].attributes.COUNTY + '</a><br>'
                 );

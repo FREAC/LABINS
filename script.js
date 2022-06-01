@@ -2008,11 +2008,13 @@ require([
       clearDiv('parametersQuery');
       addDescript();
       createCountyDropdown(labinsURL + '7', 'county');
+      createRMonumentDropdown(labinsURL + '6', 'unique_id');
       createTextBox('textQuery', 'Enter an ECL Name')
       createSubmit();
 
       var submitButton = document.getElementById('submitQuery');
       var countyDropdownAfter = document.getElementById('countyQuery');
+      var rMonumentDropdownAfter = document.getElementById('rMonumentQuery');
       var inputAfter = document.getElementById('textQuery');
 
       // clear other elements when keypress happens
@@ -2030,6 +2032,22 @@ require([
           .then(function (response) {
             for (i = 0; i < response.features.length; i++) {
               response.features[i].attributes.layerName = 'Erosion Control Line';
+              infoPanelData.push(response.features[i]);
+            }
+            goToFeature(infoPanelData[0]);
+            queryInfoPanel(infoPanelData, 1);
+            togglePanel();
+          });
+      });
+
+      query(rMonumentDropdownAfter).on('change', function (event) {
+        clearDiv('informationdiv');
+        resetElements(rMonumentDropdownAfter);
+        infoPanelData = [];
+        getGeometry(labinsURL + '6', 'unique_id', event.target.value, '*')
+          .then(function (response) {
+            for (i = 0; i < response.features.length; i++) {
+              response.features[i].attributes.layerName = 'R-Monuments';
               infoPanelData.push(response.features[i]);
             }
             goToFeature(infoPanelData[0]);
@@ -2632,7 +2650,7 @@ require([
       view: mapView,
       content: measurementToolbar,
       expandIconClass: "esri-icon-measure-area",
-      expandTooltip: "Measurement Tools",
+      expandTooltip: "Measurement Tools (Select by Area)",
       collapseTooltip: "Measurement Tools",
     });
 
@@ -2653,7 +2671,7 @@ require([
     const areaButton = document.createElement("button");
     areaButton.id = "area";
     areaButton.className = "esri-widget--button esri-interactive esri-icon-measure-area";
-    areaButton.title = "Area Measurement Tool";
+    areaButton.title = "Area Measurement (Select Search Area)";
     measurementToolbar.appendChild(areaButton)
 
     const clearButton = document.createElement("button");

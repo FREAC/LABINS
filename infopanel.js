@@ -149,7 +149,7 @@ async function queryInfoPanel(results, i, event = false) {
             } else if (results[i - 1].attributes.layerName === 'Township-Range-Section') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>MHW Surveys</b> </p>' +
                     '<b>Section-Township-Range: </b>' + results[i - 1].attributes.twnrngsec.substring(8, ) + ' ' + results[i - 1].attributes.twnrngsec.substring(1, 4) + ' ' + results[i - 1].attributes.twnrngsec.substring(5, 8) + '<br>' +
-                    '<a target="_blank" href=https://www.labins.org/survey_data/water/water.cfm?town1=' + results[i - 1].attributes.tr_dissolve.substring(0, 2) + '&town2=' + results[i - 1].attributes.tr_dissolve.substring(2, 3) + '&range1=' + results[i - 1].attributes.tr_dissolve.substring(3, 5) + '&range2=' + results[i - 1].attributes.tr_dissolve.substring(5, 6) + '&sec1=' + results[i - 1].attributes.twnrngsec.substring(8,) + '>' + 'Search for MHW Surveys in this section ' + '</a><br><br>' +
+                    '<a target="_blank" href=https://www.labins.org/survey_data/water/water.cfm?town1=' + results[i - 1].attributes.tr_dissolve.substring(0, 2) + '&town2=' + results[i - 1].attributes.tr_dissolve.substring(2, 3) + '&range1=' + results[i - 1].attributes.tr_dissolve.substring(3, 5) + '&range2=' + results[i - 1].attributes.tr_dissolve.substring(5, 6) + '&sec1=' + results[i - 1].attributes.twnrngsec.substring(8) + '>' + 'Search for MHW Surveys in this section ' + '</a><br><br>' +
                     '<hr>'
                 );
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>GLO</b> </p>' +

@@ -108,6 +108,8 @@ async function queryInfoPanel(results, i, event = false) {
                     '<b>County: </b>' + results[i - 1].attributes.cname + '<br>' +
                     '<b>Quad: </b>' + results[i - 1].attributes.tile_name + '<br>' +
                     '<b>Method: </b>' + results[i - 1].attributes.method + '<br>' +
+                    '<b>MHW: </b>' + results[i - 1].attributes.mhw2_ft + '<br>' +
+                    '<b>MLW: </b>' + results[i - 1].attributes.mlw2_ft + '<br>' +
                     '<b>Station 1: </b>' + results[i - 1].attributes.station1 + '<br>' +
                     '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>' +
                     "<b>For MHW and MLW data, please request: </b> <a target='_blank' href='https://www.labins.org/survey_data/water/procedures_and_forms/Forms/MHW_MLW_RequestForm.pdf'>here</a><br>"

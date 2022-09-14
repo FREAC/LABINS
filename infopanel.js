@@ -94,7 +94,7 @@ async function queryInfoPanel(results, i, event = false) {
                 );
             } else if (results[i - 1].attributes.layerName === 'Tide Stations') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Stations</b></p>' +
-                    '<b>Tide Station ID: </b>' + results[i - 1].attributes.id + '<br>' +
+					'<b>Tide Station ID: </b><a target="_blank" href=https://ftp.labins.org/tide/NewReports/872-' + results[i - 1].attributes.id + '_DEP.PDF>'+ results[i - 1].attributes.id + '</a><br>' + 
                     '<b>Tide Station Name: </b>' + results[i - 1].attributes.name + '<br>' +
                     '<b>County: </b>' + results[i - 1].attributes.countyname + '<br>' +
                     '<b>Quad: </b>' + results[i - 1].attributes.quadname + '<br>' +

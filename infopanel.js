@@ -59,13 +59,13 @@ async function queryInfoPanel(results, i, event = false) {
                     'County: ' + results[i - 1].attributes.COUNTY + '<br>' +
                     'PID: ' + '<a target="_blank" href=' + results[i - 1].attributes.DATA_SRCE + '>' + results[i - 1].attributes.PID + '</a><br>'
                 );
-                var url = 'https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.PID;
+                var url = 'https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + results[i - 1].attributes.PID;
                 const opusData = async (url, result) => {
-                	const response = await fetch(url);
-                	text = await response.text();
-                	if (text.length > 428) { // response always 200, response length will be > 428 if there is an opus point
-                		$('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.labins.org/OPUS/getDatasheet.jsp?PID=' + result.attributes.PID + '>' + result.attributes.PID + '</a> <br>');
-                    }
+                	// const response = await fetch(url);
+                	// text = await response.text();
+                	// if (text.length > 428) { // response always 200, response length will be > 428 if there is an opus point
+                		$('#informationdiv').append('OPUS Datasheet: ' + '<a target="_blank" href=https://www.ngs.noaa.gov/OPUS/getDatasheet.jsp?PID=' + result.attributes.PID + '>' + result.attributes.PID + '</a> <br>');
+                    // }
                 }
                 // had to change the queryInfoPanel function to be async in order for the next line to work
                 await opusData(url, results[i - 1]);
@@ -94,11 +94,12 @@ async function queryInfoPanel(results, i, event = false) {
                 );
             } else if (results[i - 1].attributes.layerName === 'Tide Stations') {
                 $('#informationdiv').append('<p style= "font-size: 15px"><b>Tide Stations</b></p>' +
-                    '<b>Tide Station ID: </b>' + results[i - 1].attributes.id + '<br>' +
+					'<b>Tide Station ID: </b><a target="_blank" href=https://ftp.labins.org/tide/NewReports/872-' + results[i - 1].attributes.id + '_DEP.PDF>'+ results[i - 1].attributes.id + '</a><br>' + 
                     '<b>Tide Station Name: </b>' + results[i - 1].attributes.name + '<br>' +
                     '<b>County: </b>' + results[i - 1].attributes.countyname + '<br>' +
                     '<b>Quad: </b>' + results[i - 1].attributes.quadname + '<br>' +
                     '<b>Status: </b>' + results[i - 1].attributes.status + '<br>' +
+                    "<b>NOAA Tide Report (<i>If available</i>): </b> <a target='_blank' href='https://tidesandcurrents.noaa.gov/datums.html?id=872" + results[i - 1].attributes.id +  "'>872-"  + results[i - 1].attributes.id + "</a><br>" +
                     "<b>For MHW and MLW data, please request: </b> <a target='_blank' href='https://www.labins.org/survey_data/water/procedures_and_forms/Forms/MHW_MLW_RequestForm.pdf'>here</a><br>"
                 );
             } else if (results[i - 1].attributes.layerName === 'Tide Interpolation Points') {
@@ -108,6 +109,8 @@ async function queryInfoPanel(results, i, event = false) {
                     '<b>County: </b>' + results[i - 1].attributes.cname + '<br>' +
                     '<b>Quad: </b>' + results[i - 1].attributes.tile_name + '<br>' +
                     '<b>Method: </b>' + results[i - 1].attributes.method + '<br>' +
+                    '<b>MHW: </b>' + results[i - 1].attributes.mhw2_ft + '<br>' +
+                    '<b>MLW: </b>' + results[i - 1].attributes.mlw2_ft + '<br>' +
                     '<b>Station 1: </b>' + results[i - 1].attributes.station1 + '<br>' +
                     '<b>Station 2: </b>' + results[i - 1].attributes.station2 + '<br>' +
                     "<b>For MHW and MLW data, please request: </b> <a target='_blank' href='https://www.labins.org/survey_data/water/procedures_and_forms/Forms/MHW_MLW_RequestForm.pdf'>here</a><br>"

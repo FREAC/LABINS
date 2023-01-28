@@ -2683,7 +2683,7 @@ require([
     const measurementIdentifyToggleButton = document.createElement("button");
     measurementIdentifyToggleButton.id = "identifyMeasurement";
     measurementIdentifyToggleButton.className = "esri-widget--button esri-interactive esri-icon-description";
-    measurementIdentifyToggleButton.title = "Identify Measurement";
+    measurementIdentifyToggleButton.title = "Identify Features in search area";
     measurementToolbar.appendChild(measurementIdentifyToggleButton)
     
 

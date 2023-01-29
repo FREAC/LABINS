@@ -8,7 +8,6 @@ require([
   "esri/rest/support/Query",
   "esri/geometry/geometryEngine",
   "esri/geometry/projection",
-  "esri/geometry/Extent",
   "esri/geometry/Point",
   "esri/layers/GraphicsLayer",
   "esri/Graphic",
@@ -31,31 +30,16 @@ require([
   "esri/widgets/Home",
   "esri/widgets/Locate",
   "esri/widgets/Expand",
-  "esri/widgets/DistanceMeasurement2D",
-  "esri/widgets/AreaMeasurement2D",
   "esri/widgets/Measurement",
   "esri/widgets/Swipe",
   "esri/widgets/Bookmarks",
   "esri/core/reactiveUtils",
-  "dojo/on",
-  "dojo/dom",
-  "dojo/dom-class",
-  "dojo/dom-construct",
-  "dojo/dom-geometry",
-  "dojo/keys",
-  "dojo/json",
-  "dojo/query",
-  "dojo/_base/Color",
+  "esri/Color",
 
   // Calcite Maps ArcGIS Support
   "calcite-maps/calcitemaps-arcgis-support-v0.6",
   "calcite-maps/calcitemaps-v0.6",
 
-  // Bootstrap
-  "bootstrap/Collapse",
-  "bootstrap/Dropdown",
-
-  "dojo/domReady!"
 ], function (
   Map,
   MapView,
@@ -65,7 +49,6 @@ require([
   Query,
   geometryEngine,
   projection,
-  Extent,
   Point,
   GraphicsLayer,
   Graphic,
@@ -86,12 +69,10 @@ require([
   Home,
   Locate,
   Expand,
-  DistanceMeasurement2D,
-  AreaMeasurement2D,
   Measurement,
   Swipe,
   Bookmarks,
-  reactiveUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, dojoQuery, Color,
+  reactiveUtils, Color,
   CalciteMapsArcGISSupport) {
 
   var minimumDrawScale = 95000;
@@ -628,7 +609,7 @@ require([
       $("#bookmarksDiv").prepend(header);
 
       const closebtn = document.getElementById('closeBookmarksBtn');
-      on(closebtn, "click", function (event) {
+      closebtn.addEventListener("click", () => {
         $("#bookmarksHeader").remove();
         mapView.ui.remove(bookmarks);
         bookmarkStatus = 0;
@@ -680,16 +661,16 @@ require([
 
   // query layer and populate a dropdown
   function buildEmptySelectPanel(zoomParam, panelParam) {
-    var option = domConstruct.create("option");
+    var option = document.createElement("option");
     option.text = zoomParam;
-    dom.byId(panelParam).add(option);
+    document.getElementById(panelParam).add(option);
   }
 
   function buildSelectPanel(url, attribute, zoomParam, panelParam, ngs = false, county = null, populateEmptyDropdown = false) {
     if (!populateEmptyDropdown) {
-      var option = domConstruct.create("option");
+      var option = document.createElement("option");
       option.text = zoomParam;
-      dom.byId(panelParam).add(option);
+      document.getElementById(panelParam).add(option);
     }
 
     let whereClause = county === null
@@ -713,9 +694,9 @@ require([
       .then(function (uniqueValues) {
         uniqueValues.sort();
         uniqueValues.forEach(function (value) {
-          var option = domConstruct.create("option");
+          var option = document.createElement("option");
           option.text = value;
-          dom.byId(panelParam).add(option);
+          document.getElementById(panelParam).add(option);
         });
       });
   }
@@ -844,27 +825,28 @@ require([
   buildSelectPanel(countyBoundariesURL + '0', 'tigername', "Zoom to a County", "selectCountyPanel");
 
   //Zoom to feature
-  dojoQuery("#selectCountyPanel").on("change", function (e) {
+  document.getElementById("selectCountyPanel").addEventListener("change", async (e) => {
     resetElements(document.getElementById('selectCountyPanel'));
-    return zoomToFeature(countyBoundariesURL + '0', e.target.value, 'tigername').then(fadeBuffer);
-  });
+    return await zoomToFeature(countyBoundariesURL + '0', e.target.value, 'tigername').then(fadeBuffer);
+  })
+
 
   //Build Quad Dropdown panel
   buildSelectPanel(labinsURL + '8', "tile_name", "Zoom to a Quad", "selectQuadPanel");
 
   //Zoom to feature
-  dojoQuery("#selectQuadPanel").on("change", function (e) {
+  document.getElementById("selectQuadPanel").addEventListener("change", async (e) => {
     resetElements(document.getElementById('selectQuadPanel'));
-    return zoomToFeature(labinsURL + '8', e.target.value, "tile_name").then(fadeBuffer);
+    return await zoomToFeature(labinsURL + '8', e.target.value, "tile_name").then(fadeBuffer);
   });
 
   //Build City Dropdown panel
   buildSelectPanel(labinsURL + '11', "name", "Zoom to a City", "selectCityPanel");
 
   //Zoom to feature
-  dojoQuery("#selectCityPanel").on("change", function (e) {
+  document.getElementById("selectCityPanel").addEventListener("change", async (e) => {
     resetElements(document.getElementById('selectCityPanel'));
-    return zoomToFeature(labinsURL + '11', e.target.value, "name").then(fadeBuffer);
+    return await zoomToFeature(labinsURL + '11', e.target.value, "name").then(fadeBuffer);
   });
 
   ////////////////////////////////////////////////
@@ -906,7 +888,7 @@ require([
   // to filter states by subregion.
   function buildTownshipDropdown(values) {
     values.features.forEach(function (value) {
-      var option = domConstruct.create("option");
+      var option = document.createElement("option");
       var name = value.attributes.twn_ch + value.attributes.tdir;
       option.text = name;
       townshipSelect.add(option);
@@ -917,7 +899,7 @@ require([
   // range selection element.
   function buildRangeDropdown(values) {
     values.features.forEach(function (value) {
-      var option = domConstruct.create("option");
+      var option = document.createElement("option");
       var name = value.attributes.rng_ch + value.attributes.rdir;
       option.text = name;
       rangeSelect.add(option);
@@ -936,7 +918,7 @@ require([
     placeholder.disabled = true;
     sectionSelect.add(placeholder);
     sortedSections.forEach(function (value) {
-      const option = domConstruct.create("option");
+      const option = document.createElement("option");
       option.text = value
       sectionSelect.add(option);
     });
@@ -992,24 +974,25 @@ require([
   }
 
   // when township changes, reset the section dropdown and execute queryTR.
-  on(townshipSelect, "change", function (evt) {
+  townshipSelect.addEventListener("change", (e) => {
     resetElements(townshipSelect, false);
-    const type = evt.target.value;
+    const type = e.target.value;
     queryTR(type, 'selectTownship');
   });
 
   // when range changes, reset the section dropdown and execute queryTR .
-  on(rangeSelect, "change", function (evt) {
+  rangeSelect.addEventListener("change", (e) => {
     resetElements(rangeSelect, false);
-    const type = evt.target.value;
+    const type = e.target.value;
     queryTR(type, 'selectRange');
   });
 
-  on(sectionSelect, "change", function (e) {
+  sectionSelect.addEventListener("change", (e) => {
     resetElements(sectionSelect, false);
     const type = e.target.value;
     zoomToSectionFeature(townshipRangeSectionURL, type, "sec_ch");
   });
+
 
   let infoPanelData = [];
   let layerList;
@@ -1048,7 +1031,7 @@ require([
 
     // status to watch if layerlist is on
     let layerlistStatus;
-    on(dom.byId("desktopLayerlist"), "click", function (evt) {
+    document.getElementById("desktopLayerlist").addEventListener("click", () => {
       // if layerlist status != 1, add it to the map
       if (layerlistStatus != 1) {
         mapView.ui.remove(scaleBar);
@@ -1068,19 +1051,18 @@ require([
         $("#layersDiv").prepend(header);
 
         const closebtn = document.getElementById('closeLyrBtn');
-        on(closebtn, "click", function (event) {
+        closebtn.addEventListener("click", () => {
           $("#layerlistHeader").remove();
           mapView.ui.remove(layerList);
           layerlistStatus = 0;
-        });
+        })
         layerlistStatus = 1;
       } else {
         $("#layerlistHeader").remove();
         mapView.ui.remove(layerList);
         layerlistStatus = 0;
       }
-    });
-
+    })
     // Toggle labels from LayerList widget
     layerList.on("trigger-action", function (event) {
       if (mapView.scale < minimumDrawScale) {
@@ -1090,7 +1072,7 @@ require([
 
     // when mapview is clicked:
     // clear graphics, check vis layers, identify layers
-    on(mapView, "click", async function (event) {
+    mapView.on("click", async (event) => {
       selectionLayer.opacity = 1; // reset this because it may be 0 from a fadeBuffer call
       if (screen.availWidth > 992) { // if not on mobile device
         if ((measurement.viewModel.state == "disabled") || (measurement.viewModel.state == "measured")) {
@@ -1524,7 +1506,7 @@ require([
   for (var i = 0; i < layerChoices.length; i++) {
     $('<option/>').val(layerChoices[i]).text(layerChoices[i]).appendTo('#selectLayerDropdown');
   }
-  dojoQuery("#selectLayerDropdown").on("change", function (event) {
+  document.getElementById("selectLayerDropdown").addEventListener("change", (event) => {
 
     // get geometry based on query results
     async function getGeometry(url, attribute, value, outFields = false) {
@@ -1680,7 +1662,7 @@ require([
 
       var countyDropdownAfter = document.getElementById('countyQuery');
       // county event listener
-      dojoQuery(countyDropdownAfter).on('change', function (event) {
+      document.getElementById(countyDropdownAfter).addEventListener('change', function (event) {
         // cursor wait button
         document.getElementById("mapViewDiv").style.cursor = "wait";
         clearDiv('informationdiv');
@@ -1707,7 +1689,7 @@ require([
       // Query the quad dropdown
       var quadDropdownAfter = document.getElementById('quadQuery');
 
-      dojoQuery(quadDropdownAfter).on('change', function (event) {
+      document(quadDropdownAfter).addEventListener('change', function (event) {
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
@@ -1729,13 +1711,13 @@ require([
 
       // Textbox Query of NGS Control Points
       var textboxAfter = document.getElementById('textQuery');
-      dojoQuery(textboxAfter).on('keypress', function () {
+      document.getElementById(textboxAfter).addEventListener('keypress', function () {
         // once typing begins, all of the other elements in the map will reset
         resetElements(textboxAfter);
       });
 
       var submitAfter = document.getElementById('submitQuery');
-      dojoQuery(submitAfter).on('click', function (event) {
+      document.getElementById(submitAfter).addEventListener('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('textQuery').value;
@@ -1760,7 +1742,7 @@ require([
       createSubmit();
       var textboxAfter = document.getElementById('IDQuery');
       var submitAfter = document.getElementById('submitQuery');
-      dojoQuery(submitAfter).on('click', function (event) {
+      document.getElementById(submitAfter).addEventListener('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('IDQuery').value;
@@ -1787,7 +1769,7 @@ require([
       createSubmit();
 
       var countyDropdownAfter = document.getElementById('countyQuery');
-      dojoQuery(countyDropdownAfter).on('change', function (event) {
+      document.getElementById(countyDropdownAfter).addEventListener('change', function (event) {
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
@@ -1811,7 +1793,7 @@ require([
       // Query the quad dropdown
       var quadDropdownAfter = document.getElementById('quadQuery');
 
-      dojoQuery(quadDropdownAfter).on('change', function (event) {
+      document.getElementById(quadDropdownAfter).addEventListener('change', function (event) {
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
@@ -1834,13 +1816,13 @@ require([
 
       // Textbox Query
       var textboxAfter = document.getElementById('IDQuery');
-      dojoQuery(textboxAfter).on('keypress', function () {
+      document.getElementById(textboxAfter).addEventListener('keypress', function () {
         clearDiv('informationdiv');
         resetElements(textboxAfter);
       });
 
       var submitAfter = document.getElementById('submitQuery');
-      dojoQuery(submitAfter).on('click', function (event) {
+      document.getElementById(submitAfter).addEventListener('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('IDQuery').value;
@@ -1864,7 +1846,7 @@ require([
       createTextBox('textQuery', 'Enter Tide Station ID or Name');
       createSubmit();
       var countyDropdownAfter = document.getElementById('countyQuery');
-      dojoQuery(countyDropdownAfter).on('change', function (event) {
+      document.getElementById(countyDropdownAfter).addEventListener('change', function (event) {
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
@@ -1887,7 +1869,7 @@ require([
 
       // Query the quad dropdown
       var quadDropdownAfter = document.getElementById('quadQuery');
-      dojoQuery(quadDropdownAfter).on('change', function (event) {
+      document.getElementById(quadDropdownAfter).addEventListener('change', function (event) {
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
@@ -1913,12 +1895,12 @@ require([
       var submitButton = document.getElementById('submitQuery');
 
       // clear other elements when keypress happens
-      dojoQuery(inputAfter).on('keypress', function () {
+      document.getElementById(inputAfter).addEventListener('keypress', function () {
         clearDiv('informationdiv');
         resetElements(inputAfter);
       });
 
-      dojoQuery(submitButton).on('click', function (event) {
+      document.getElementById(submitButton).addEventListener('click', function (event) {
         infoPanelData = [];
         var textValue = inputAfter.value;
         multiTextQuerytask(labinsURL + '3', 'id', textValue, 'name', textValue)
@@ -1946,12 +1928,12 @@ require([
       var inputAfter = document.getElementById('textQuery');
 
       // clear other elements when keypress happens
-      dojoQuery(inputAfter).on('keypress', function () {
+      document.getElementById(inputAfter).addEventListener('keypress', function () {
         clearDiv('informationdiv');
         resetElements(inputAfter);
       });
 
-      dojoQuery(countyDropdownAfter).on('change', function (event) {
+      document.getElementById(countyDropdownAfter).addEventListener('change', function (event) {
         clearRMonumentDropdown();
         const county = event.target.value;
         clearDiv('informationdiv');
@@ -1960,7 +1942,7 @@ require([
         buildSelectPanel(labinsURL + '6', 'unique_id', "Select an R-Monument", "rMonumentQuery", false, county, true);
       });
 
-      dojoQuery(rMonumentDropdownAfter).on('change', function (event) {
+      document.getElementById(rMonumentDropdownAfter).addEventListener('change', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         getGeometry(labinsURL + '6', 'unique_id', event.target.value, '*')
@@ -1975,7 +1957,7 @@ require([
           });
       });
 
-      dojoQuery(submitButton).on('click', function (event) {
+      document.getElementById(submitButton).addEventListener('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         textQueryQuerytask(labinsURL + '7', 'ecl_name', inputAfter.value)
@@ -2002,12 +1984,12 @@ require([
       var inputAfter = document.getElementById('textQuery');
 
       // clear other elements when keypress happens
-      dojoQuery(inputAfter).on('keypress', function () {
+      document.getElementById(inputAfter).addEventListener('keypress', function () {
         clearDiv('informationdiv');
         resetElements(inputAfter);
       });
 
-      dojoQuery(countyDropdownAfter).on('change', function (event) {
+      document.getElementById(countyDropdownAfter).addEventListener('change', function (event) {
         const county = event.target.value
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
@@ -2024,7 +2006,7 @@ require([
           });
       });
 
-      dojoQuery(submitButton).on('click', function (event) {
+      document.getElementById(submitButton).addEventListener('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         textQueryQuerytask(labinsURL + '7', 'ecl_name', inputAfter.value)
@@ -2048,12 +2030,12 @@ require([
       var submitButton = document.getElementById('submitNameQuery');
       var inputAfter = document.getElementById('textQuery');
       // clear other elements when keypress happens
-      dojoQuery(inputAfter).on('keypress', function () {
+      document.getElementById(inputAfter).addEventListener('keypress', function () {
         clearDiv('informationdiv');
         resetElements(inputAfter);
       });
 
-      dojoQuery(submitButton).on('click', function (event) {
+      document.getElementById(submitButton).addEventListener('click', function (event) {
         infoPanelData = [];
         textQueryQuerytask(swfwmdURL + '/0', 'BENCHMARK_NAME', inputAfter.value)
           .then(function (response) {
@@ -2076,7 +2058,7 @@ require([
   //// Clickable Links
 
   // Switch to Data Query panel on click
-  dojoQuery('#gobackBtn').on('click', function () {
+  document.getElementById('gobackBtn').addEventListener('click', function () {
     var identifyPanel = document.getElementById('panelPopup');
     var identifyStyle = document.getElementById('collapsePopup');
     var dataQueryPanel = document.getElementById('panelQuery');
@@ -2096,7 +2078,7 @@ require([
   });
 
   // Switch panel to zoom to feature panel
-  dojoQuery('#gotozoom').on('click', function () {
+  document.getElementById('gotozoom').addEventListener('click', function () {
     var identifyPanel = document.getElementById('panelPopup');
     var identifyStyle = document.getElementById('collapsePopup');
     var zoomToFeaturePanel = document.getElementById('panelLayer');
@@ -2116,13 +2098,8 @@ require([
   });
 
   // switch to identify panel on click
-  dojoQuery('#goToIdentify').on('click', function () {
+  document.getElementById("goToIdentify").addEventListener("click", function () {
     togglePanel();
-  });
-
-  //Basemap panel change
-  dojoQuery("#selectBasemapPanel").on("change", function (e) {
-    mapView.map.basemap = e.target.value;
   });
 
   // after a query typed into search bar
@@ -2186,7 +2163,7 @@ require([
       view: mapView
     });
     let legendStatus;
-    on(dom.byId("desktopLegend"), "click", function (event) {
+    document.getElementById("desktopLegend").addEventListener("click", () => {
       // if legend status != 1 (not currently being displayed), add it to the map
       if (legendStatus != 1) {
         mapView.ui.remove(scaleBar);
@@ -2204,18 +2181,18 @@ require([
         // add legend header to beginning of div
         $("#legendDiv").prepend(header);
         const closebtn = document.getElementById('closeLgdBtn');
-        on(closebtn, "click", function (event) {
+        closebtn.addEventListener("click", () => {
           $("#legendHeader").remove();
           mapView.ui.remove(legendWidget);
           legendStatus = 0;
-        });
+        })
         legendStatus = 1;
       } else {
         $("#legendHeader").remove();
         mapView.ui.remove(legendWidget);
         legendStatus = 0;
       }
-    });
+    })
 
     //Coordinates widget
     var ccWidget = new CoordinateConversion({

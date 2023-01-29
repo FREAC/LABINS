@@ -4,8 +4,8 @@ require([
   "esri/views/MapView",
   "esri/layers/MapImageLayer",
   "esri/layers/FeatureLayer",
-  "esri/tasks/QueryTask",
-  "esri/tasks/support/Query",
+  "esri/rest/query",
+  "esri/rest/support/Query",
   "esri/geometry/geometryEngine",
   "esri/geometry/projection",
   "esri/geometry/Extent",
@@ -62,7 +62,7 @@ require([
   MapView,
   MapImageLayer,
   FeatureLayer,
-  QueryTask,
+  query,
   Query,
   geometryEngine,
   projection,
@@ -93,7 +93,7 @@ require([
   Measurement,
   Swipe,
   Bookmarks,
-  watchUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, query, Color,
+  watchUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, dojoQuery, Color,
   CalciteMapsArcGISSupport) {
 
   var minimumDrawScale = 95000;
@@ -252,11 +252,11 @@ require([
     title: "LABINS Data",
     url: labinsURL,
     sublayers: [{
-        id: 17,
-        title: "Erosion Control Line1",
-        visible: true,
-        popupEnabled: false,
-        minScale: minimumDrawScale
+      id: 17,
+      title: "Erosion Control Line1",
+      visible: true,
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 16,
       title: "Soils June 2012 - Dept. of Agriculture",
@@ -383,7 +383,7 @@ require([
       minScale: minimumDrawScale
     }]
   });
-  
+
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
   var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
@@ -599,19 +599,19 @@ require([
   const bookmarksMenuBtn = document.getElementById("bookmarksMenuBtn")
   bookmarksMenuBtn.addEventListener("click", () => {
     // addCustomWidgetHeaders("desktopBookmarks", bookmarks, bookmarkStatus);
-      // if bookmark status != 1, add it to the map
-      
-      // close the menu options
-      const navbarToggleArr = document.getElementsByClassName("navbar-menu-toggle");
-      for (i = 0; i < navbarToggleArr.length; i++) {
-        navbarToggleArr[i].classList.remove("open");
-      }
-      
-      if (bookmarkStatus != 1) {
-        mapView.ui.remove(scaleBar);
+    // if bookmark status != 1, add it to the map
 
-        // custom header to display a header and close button
-        const header = `
+    // close the menu options
+    const navbarToggleArr = document.getElementsByClassName("navbar-menu-toggle");
+    for (i = 0; i < navbarToggleArr.length; i++) {
+      navbarToggleArr[i].classList.remove("open");
+    }
+
+    if (bookmarkStatus != 1) {
+      mapView.ui.remove(scaleBar);
+
+      // custom header to display a header and close button
+      const header = `
         <div id="bookmarksHeader" style="background-color:#315866; position: sticky; top: 0; z-index: 999; padding-top: 1px; padding-left: 10px">
           <span class="glyphicon esri-icon-layers" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 2px;"></span>
           <span id="bookmarksSpan" class="panel-label"  style="color: white; margin-top: 5px;">Bookmarks</span>
@@ -620,22 +620,22 @@ require([
           </button>
         </div>
         `
-        mapView.ui.add([bookmarks, scaleBar], "bottom-left");
-        // add bookmarks header to beginning of div
-        $("#bookmarksDiv").prepend(header);
+      mapView.ui.add([bookmarks, scaleBar], "bottom-left");
+      // add bookmarks header to beginning of div
+      $("#bookmarksDiv").prepend(header);
 
-        const closebtn = document.getElementById('closeBookmarksBtn');
-        on(closebtn, "click", function (event) {
-          $("#bookmarksHeader").remove();
-          mapView.ui.remove(bookmarks);
-          bookmarkStatus = 0;
-        });
-        bookmarkStatus = 1;
-      } else {
+      const closebtn = document.getElementById('closeBookmarksBtn');
+      on(closebtn, "click", function (event) {
         $("#bookmarksHeader").remove();
         mapView.ui.remove(bookmarks);
         bookmarkStatus = 0;
-      }
+      });
+      bookmarkStatus = 1;
+    } else {
+      $("#bookmarksHeader").remove();
+      mapView.ui.remove(bookmarks);
+      bookmarkStatus = 0;
+    }
   });
 
   let existingData = [];
@@ -661,7 +661,7 @@ require([
 
   // watching for additions or deletes
   bookmarks.bookmarks.watch("length", () => addBookmarksToLocalStorage(bookmarks));
-  
+
   function resetElements(currentElement, trs = true) {
     let doNotSelect = "#" + currentElement.id + ", #selectLayerDropdown";
     doNotSelect = trs ? doNotSelect : doNotSelect + ", .trs";
@@ -681,57 +681,52 @@ require([
     option.text = zoomParam;
     dom.byId(panelParam).add(option);
   }
-  
+
   function buildSelectPanel(url, attribute, zoomParam, panelParam, ngs = false, county = null, populateEmptyDropdown = false) {
     if (!populateEmptyDropdown) {
       var option = domConstruct.create("option");
       option.text = zoomParam;
-      dom.byId(panelParam).add(option);  
+      dom.byId(panelParam).add(option);
     }
 
-    let whereClause = county === null 
-    ? ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL"
-    : ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL and COUNTY = '" + county.toUpperCase() + "'"
+    let whereClause = county === null
+      ? ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL"
+      : ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL and COUNTY = '" + county.toUpperCase() + "'"
 
-    var task = new QueryTask({
-      url: url
-    });
-
-    var params = new Query({
+    let params = new Query({
       where: whereClause,
       outFields: [attribute],
       returnDistinctValues: true,
     });
 
-    task.execute(params)
-    .then(function (response) {
-      var features = response.features;
-      var values = features.map(function (feature) {
-        return feature.attributes[attribute];
+    query.executeQueryJSON(url, params)
+      .then(function (response) {
+        var features = response.features;
+        var values = features.map(function (feature) {
+          return feature.attributes[attribute];
+        });
+        return values;
+      })
+      .then(function (uniqueValues) {
+        uniqueValues.sort();
+        uniqueValues.forEach(function (value) {
+          var option = domConstruct.create("option");
+          option.text = value;
+          dom.byId(panelParam).add(option);
+        });
       });
-      return values;
-    })
-    .then(function (uniqueValues) {
-      uniqueValues.sort();
-      uniqueValues.forEach(function (value) {
-        var option = domConstruct.create("option");
-        option.text = value;
-        dom.byId(panelParam).add(option);
-      });
-    });
   }
 
   // Input location from drop down, zoom to it and highlight
   async function zoomToFeature(panelurl, location, attribute) {
     // union features so that they can be returned as a single geometry
-    var task = new QueryTask({
-      url: panelurl
-    });
+
     var params = new Query({
       where: attribute + " = '" + location + "'",
       returnGeometry: true
-    });
-    const response = await task.execute(params)
+    })
+
+    const response = await query.executeQueryJSON(panelurl, params)
     mapView.goTo(response.features);
     bufferLayer.graphics.removeAll();
     selectionLayer.graphics.removeAll();
@@ -766,14 +761,12 @@ require([
     var section = document.getElementById("selectSection");
     var sectionUser = section.options[section.selectedIndex].text;
 
-    var task = new QueryTask({
-      url: panelurl
-    });
     var params = new Query({
       where: "twn_ch = '" + strUser.substr(0, 2) + "' AND tdir = '" + strUser.substr(2) + "' AND rng_ch = '" + rangeUser.substr(0, 2) + "' AND rdir = '" + rangeUser.substr(2) + "' AND sec_ch = '" + sectionUser + "'",
       returnGeometry: true
     });
-    task.execute(params)
+
+    query.executeQueryJSON(panelurl, params)
       .then(function (response) {
         var multiPolygonGeometries = [];
         for (i = 0; i < response.features.length; i++) {
@@ -818,22 +811,22 @@ require([
     bufferLayer.add(bufferGraphic);
     return buffer;
   }
-  const fadeBuffer = async () =>  {
+  const fadeBuffer = async () => {
     var clrG = document.getElementById("clearGraphics")
     selectionLayer.opacity = 1;
-    bufferLayer.opacity    = 1;
+    bufferLayer.opacity = 1;
     if (clrG.checked) {
       const delay = ms => new Promise(res => setTimeout(res, ms));
       await delay(3500); // 3.5 seconds
       selectionLayer.opacity = .75;
       await delay(500);
-      bufferLayer.opacity    = .45
+      bufferLayer.opacity = .45
       selectionLayer.opacity = .45;
       await delay(500);
-      bufferLayer.opacity    = .25
+      bufferLayer.opacity = .25
       selectionLayer.opacity = .25;
       await delay(500);
-      bufferLayer.opacity    = .05
+      bufferLayer.opacity = .05
       selectionLayer.opacity = .05;
       bufferLayer.graphics.removeAll();
       selectionLayer.graphics.removeAll();
@@ -848,7 +841,7 @@ require([
   buildSelectPanel(countyBoundariesURL + '0', 'tigername', "Zoom to a County", "selectCountyPanel");
 
   //Zoom to feature
-  query("#selectCountyPanel").on("change", function (e) {
+  dojoQuery("#selectCountyPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCountyPanel'));
     return zoomToFeature(countyBoundariesURL + '0', e.target.value, 'tigername').then(fadeBuffer);
   });
@@ -857,7 +850,7 @@ require([
   buildSelectPanel(labinsURL + '8', "tile_name", "Zoom to a Quad", "selectQuadPanel");
 
   //Zoom to feature
-  query("#selectQuadPanel").on("change", function (e) {
+  dojoQuery("#selectQuadPanel").on("change", function (e) {
     resetElements(document.getElementById('selectQuadPanel'));
     return zoomToFeature(labinsURL + '8', e.target.value, "tile_name").then(fadeBuffer);
   });
@@ -866,7 +859,7 @@ require([
   buildSelectPanel(labinsURL + '11', "name", "Zoom to a City", "selectCityPanel");
 
   //Zoom to feature
-  query("#selectCityPanel").on("change", function (e) {
+  dojoQuery("#selectCityPanel").on("change", function (e) {
     resetElements(document.getElementById('selectCityPanel'));
     return zoomToFeature(labinsURL + '11', e.target.value, "name").then(fadeBuffer);
   });
@@ -1026,8 +1019,8 @@ require([
     // Add label toggles in Layerlist widget
     function defineActions(event) {
       if (["Certified Corners", "Hi-Res Imagery Grid State Plane East",
-          "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"
-        ].includes(event.item.title)) {
+        "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"
+      ].includes(event.item.title)) {
         event.item.actionsSections = [
           [{
             title: "Toggle labels",
@@ -1131,7 +1124,7 @@ require([
     return false;
   }
 
-  async function queryCCRRelatedFeatures (result) {
+  async function queryCCRRelatedFeatures(result) {
     let relatedFeatures = [];
     const ccp_rquery = {
       outFields: ["DOCNUM"],
@@ -1199,7 +1192,7 @@ require([
                 feature.feature.attributes.layerName = feature.layerName;
                 let result = feature.feature.attributes
                 if (result.layerName === 'Certified Corners') {
-                  result.relatedFeatures = await queryCCRRelatedFeatures (result);
+                  result.relatedFeatures = await queryCCRRelatedFeatures(result);
                 }
                 // make sure only certified corners with images are identified
                 if (result.layerName !== 'Certified Corners' || result.is_image === 'Y') {
@@ -1316,9 +1309,7 @@ require([
 
   // inputs the geometry of the data query feature, and matches to it. 
   function dataQueryQuerytask(url, geometry) {
-    var queryTask = new QueryTask({
-      url: url
-    });
+
     var params = new Query({
       where: '1=1',
       geometry: geometry,
@@ -1326,17 +1317,17 @@ require([
       outFields: '*'
     });
 
-    return queryTask.execute(params)
+    return query.executeQueryJSON(url, params)
       .then(function (response) {
         if (response.features.length > 0) {
-          return queryTask.execute(params);
+          return query.executeQueryJSON(url, params);
         } else {
           $('#infoSpan').html('Information Panel - 0 features found.');
           $('#informationdiv').append('<p>This query did not return any features</p>');
         }
       });
   }
-  
+
   async function loadProjection() {
     projection.load()
   }
@@ -1376,13 +1367,13 @@ require([
         // first we have to decide if this is an NGS point because we will get LAT/LON
         // instead of the world mercator coordinates everthing else is in.
         newPt = feature.geometry
-        if (feature.geometry.x > -90){
+        if (feature.geometry.x > -90) {
           // ready to convert lat/lon to world mercator
           let outSpatialReference = new SpatialReference({
-              wkid: 3857
+            wkid: 3857
           });
           loadProjection();
-          var newPt = projection.project(feature.geometry,outSpatialReference)
+          var newPt = projection.project(feature.geometry, outSpatialReference)
         } else {
           // if it is a point other than NGS we just want to load the point and move on
           newPt = feature.geometry
@@ -1532,23 +1523,23 @@ require([
   for (var i = 0; i < layerChoices.length; i++) {
     $('<option/>').val(layerChoices[i]).text(layerChoices[i]).appendTo('#selectLayerDropdown');
   }
-  query("#selectLayerDropdown").on("change", function (event) {
+  dojoQuery("#selectLayerDropdown").on("change", function (event) {
 
     // get geometry based on query results
     async function getGeometry(url, attribute, value, outFields = false) {
       // modifies value to remove portions of the string in parentheses 
       value = value.replace(/ *\([^)]*\) */g, "")
 
-      var task = new QueryTask({
-        url: url
+      var params = new Query({
+        returnGeometry: true,
+        where: "Upper(" + attribute + ") LIKE '" + value.toUpperCase() + "%'" //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
       });
-      var query = new Query();
-      query.returnGeometry = true;
-      query.where = "Upper(" + attribute + ") LIKE '" + value.toUpperCase() + "%'"; //"ctyname = '" + value + "'" needs to return as ctyname = 'Brevard'
+
       if (outFields) { // define outfields or accept default of no outfields returned
-        query.outFields = outFields
+        params.outFields = outFields
       }
-      const results = task.execute(query);
+
+      const results = query.executeQueryJSON(url, params);
       return results;
     }
 
@@ -1562,9 +1553,6 @@ require([
         whereStatement += " AND STATE = 'FL'";
       }
 
-      var queryTask = new QueryTask({
-        url: url
-      });
       var params = new Query({
         where: whereStatement,
         returnGeometry: true,
@@ -1572,10 +1560,10 @@ require([
         outFields: ['*']
       });
 
-      return queryTask.execute(params)
+      return query.executeQueryJSON(url, params)
         .then(function (response) {
           if (response.features.length > 0) {
-            return queryTask.execute(params);
+            return query.executeQueryJSON(url, params);
           } else {
             togglePanel();
             $('#infoSpan').html('Information Panel - 0 features found.');
@@ -1598,19 +1586,16 @@ require([
         $('#informationdiv').append('<p>This query did not return any features</p>');
       }
 
-      var queryTask = new QueryTask({
-        url: url
-      });
       var params = new Query({
         where: whereStatement,
         returnGeometry: true,
         // possibly could be limited to return only necessary outfields
         outFields: ['*']
       });
-      return queryTask.execute(params)
+      return query.executeQueryJSON(url, params)
         .then(function (response) {
           if (response.features.length > 0) {
-            return queryTask.execute(params);
+            return query.executeQueryJSON(url, params);
           } else {
             togglePanel();
             $('#infoSpan').html('Information Panel - 0 features found.');
@@ -1694,7 +1679,7 @@ require([
 
       var countyDropdownAfter = document.getElementById('countyQuery');
       // county event listener
-      query(countyDropdownAfter).on('change', function (event) {
+      dojoQuery(countyDropdownAfter).on('change', function (event) {
         // cursor wait button
         document.getElementById("mapViewDiv").style.cursor = "wait";
         clearDiv('informationdiv');
@@ -1721,7 +1706,7 @@ require([
       // Query the quad dropdown
       var quadDropdownAfter = document.getElementById('quadQuery');
 
-      query(quadDropdownAfter).on('change', function (event) {
+      dojoQuery(quadDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
@@ -1743,13 +1728,13 @@ require([
 
       // Textbox Query of NGS Control Points
       var textboxAfter = document.getElementById('textQuery');
-      query(textboxAfter).on('keypress', function () {
+      dojoQuery(textboxAfter).on('keypress', function () {
         // once typing begins, all of the other elements in the map will reset
         resetElements(textboxAfter);
       });
 
       var submitAfter = document.getElementById('submitQuery');
-      query(submitAfter).on('click', function (event) {
+      dojoQuery(submitAfter).on('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('textQuery').value;
@@ -1774,7 +1759,7 @@ require([
       createSubmit();
       var textboxAfter = document.getElementById('IDQuery');
       var submitAfter = document.getElementById('submitQuery');
-      query(submitAfter).on('click', function (event) {
+      dojoQuery(submitAfter).on('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('IDQuery').value;
@@ -1801,7 +1786,7 @@ require([
       createSubmit();
 
       var countyDropdownAfter = document.getElementById('countyQuery');
-      query(countyDropdownAfter).on('change', function (event) {
+      dojoQuery(countyDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
@@ -1825,7 +1810,7 @@ require([
       // Query the quad dropdown
       var quadDropdownAfter = document.getElementById('quadQuery');
 
-      query(quadDropdownAfter).on('change', function (event) {
+      dojoQuery(quadDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
@@ -1848,13 +1833,13 @@ require([
 
       // Textbox Query
       var textboxAfter = document.getElementById('IDQuery');
-      query(textboxAfter).on('keypress', function () {
+      dojoQuery(textboxAfter).on('keypress', function () {
         clearDiv('informationdiv');
         resetElements(textboxAfter);
       });
 
       var submitAfter = document.getElementById('submitQuery');
-      query(submitAfter).on('click', function (event) {
+      dojoQuery(submitAfter).on('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         var textValue = document.getElementById('IDQuery').value;
@@ -1878,7 +1863,7 @@ require([
       createTextBox('textQuery', 'Enter Tide Station ID or Name');
       createSubmit();
       var countyDropdownAfter = document.getElementById('countyQuery');
-      query(countyDropdownAfter).on('change', function (event) {
+      dojoQuery(countyDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
@@ -1901,7 +1886,7 @@ require([
 
       // Query the quad dropdown
       var quadDropdownAfter = document.getElementById('quadQuery');
-      query(quadDropdownAfter).on('change', function (event) {
+      dojoQuery(quadDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         resetElements(quadDropdownAfter);
         infoPanelData = [];
@@ -1927,12 +1912,12 @@ require([
       var submitButton = document.getElementById('submitQuery');
 
       // clear other elements when keypress happens
-      query(inputAfter).on('keypress', function () {
+      dojoQuery(inputAfter).on('keypress', function () {
         clearDiv('informationdiv');
         resetElements(inputAfter);
       });
 
-      query(submitButton).on('click', function (event) {
+      dojoQuery(submitButton).on('click', function (event) {
         infoPanelData = [];
         var textValue = inputAfter.value;
         multiTextQuerytask(labinsURL + '3', 'id', textValue, 'name', textValue)
@@ -1960,21 +1945,21 @@ require([
       var inputAfter = document.getElementById('textQuery');
 
       // clear other elements when keypress happens
-      query(inputAfter).on('keypress', function () {
+      dojoQuery(inputAfter).on('keypress', function () {
         clearDiv('informationdiv');
         resetElements(inputAfter);
       });
 
-      query(countyDropdownAfter).on('change', function (event) {
+      dojoQuery(countyDropdownAfter).on('change', function (event) {
         clearRMonumentDropdown();
         const county = event.target.value;
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
         infoPanelData = [];
         buildSelectPanel(labinsURL + '6', 'unique_id', "Select an R-Monument", "rMonumentQuery", false, county, true);
-    });
+      });
 
-      query(rMonumentDropdownAfter).on('change', function (event) {
+      dojoQuery(rMonumentDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         getGeometry(labinsURL + '6', 'unique_id', event.target.value, '*')
@@ -1989,7 +1974,7 @@ require([
           });
       });
 
-      query(submitButton).on('click', function (event) {
+      dojoQuery(submitButton).on('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         textQueryQuerytask(labinsURL + '7', 'ecl_name', inputAfter.value)
@@ -2016,12 +2001,12 @@ require([
       var inputAfter = document.getElementById('textQuery');
 
       // clear other elements when keypress happens
-      query(inputAfter).on('keypress', function () {
+      dojoQuery(inputAfter).on('keypress', function () {
         clearDiv('informationdiv');
         resetElements(inputAfter);
       });
 
-      query(countyDropdownAfter).on('change', function (event) {
+      dojoQuery(countyDropdownAfter).on('change', function (event) {
         const county = event.target.value
         clearDiv('informationdiv');
         resetElements(countyDropdownAfter);
@@ -2038,7 +2023,7 @@ require([
           });
       });
 
-      query(submitButton).on('click', function (event) {
+      dojoQuery(submitButton).on('click', function (event) {
         clearDiv('informationdiv');
         infoPanelData = [];
         textQueryQuerytask(labinsURL + '7', 'ecl_name', inputAfter.value)
@@ -2062,12 +2047,12 @@ require([
       var submitButton = document.getElementById('submitNameQuery');
       var inputAfter = document.getElementById('textQuery');
       // clear other elements when keypress happens
-      query(inputAfter).on('keypress', function () {
+      dojoQuery(inputAfter).on('keypress', function () {
         clearDiv('informationdiv');
         resetElements(inputAfter);
       });
 
-      query(submitButton).on('click', function (event) {
+      dojoQuery(submitButton).on('click', function (event) {
         infoPanelData = [];
         textQueryQuerytask(swfwmdURL + '/0', 'BENCHMARK_NAME', inputAfter.value)
           .then(function (response) {
@@ -2090,7 +2075,7 @@ require([
   //// Clickable Links
 
   // Switch to Data Query panel on click
-  query('#gobackBtn').on('click', function () {
+  dojoQuery('#gobackBtn').on('click', function () {
     var identifyPanel = document.getElementById('panelPopup');
     var identifyStyle = document.getElementById('collapsePopup');
     var dataQueryPanel = document.getElementById('panelQuery');
@@ -2110,7 +2095,7 @@ require([
   });
 
   // Switch panel to zoom to feature panel
-  query('#gotozoom').on('click', function () {
+  dojoQuery('#gotozoom').on('click', function () {
     var identifyPanel = document.getElementById('panelPopup');
     var identifyStyle = document.getElementById('collapsePopup');
     var zoomToFeaturePanel = document.getElementById('panelLayer');
@@ -2130,12 +2115,12 @@ require([
   });
 
   // switch to identify panel on click
-  query('#goToIdentify').on('click', function () {
+  dojoQuery('#goToIdentify').on('click', function () {
     togglePanel();
   });
 
   //Basemap panel change
-  query("#selectBasemapPanel").on("change", function (e) {
+  dojoQuery("#selectBasemapPanel").on("change", function (e) {
     mapView.map.basemap = e.target.value;
   });
 
@@ -2147,12 +2132,12 @@ require([
     if (!(results[0].sourceIndex === 6)) {
       // grab layername from search result
       var layerName = results["0"].results[0].feature.layer.name;
-      
+
       if (layerName == "Certified Corners") {
         results["0"].results["0"].feature.attributes.layerName = "Certified Corners";
-        results[0].results[0].feature.attributes.relatedFeatures = await queryCCRRelatedFeatures (results[0].results[0].feature.attributes);
+        results[0].results[0].feature.attributes.relatedFeatures = await queryCCRRelatedFeatures(results[0].results[0].feature.attributes);
       }
-      
+
       //clear content of information panel
       clearDiv('informationdiv');
       $('#numinput').val('');
@@ -2667,7 +2652,7 @@ require([
     measurementIdentifyToggleButton.className = "esri-widget--button esri-interactive esri-icon-description";
     measurementIdentifyToggleButton.title = "Identify Features in search area";
     measurementToolbar.appendChild(measurementIdentifyToggleButton)
-    
+
 
     measureExpand.watch("expanded", function () {
       if (measureExpand.expanded == false) {
@@ -2741,7 +2726,7 @@ require([
   swipeDiv.setAttribute("aria-label", "Swipe Tool");
   swipeDiv.title = "Swipe Tool";
 
-  
+
   var swipeSpanIcon = document.createElement("span");
   swipeSpanIcon.setAttribute("aria-hidden", "true");
   swipeSpanIcon.className = "esri-icon esri-icon-sliders-horizontal";
@@ -2754,29 +2739,29 @@ require([
 
   swipeDiv.appendChild(swipeSpanIcon);
   swipeDiv.appendChild(swipeSpanFallback);
-  mapView.ui.add(swipeDiv,"top-left")
+  mapView.ui.add(swipeDiv, "top-left")
 
   mapView.ui.add(measureExpand, "top-left");
 
   let swipe = null;
 
-    swipeDiv.addEventListener("click", () => {
-      if (swipe == null) {
+  swipeDiv.addEventListener("click", () => {
+    if (swipe == null) {
 
-        let swipeParams = {
-          view: mapView,
-          leadingLayers: [labinsLayer, ngsLayer, CCCLLayer, swfwmdLayer, layer],
-          trailingLayers: [],
-          direction: "horizontal", // swipe widget will move from right to left of view
-          position: 50 // position set to middle of the view (50%)
-        }
-        swipe = new Swipe(swipeParams);
-        mapView.ui.add(swipe);
-      } else if (swipe !== null) {
-        swipe.destroy()
-        swipe = null;
+      let swipeParams = {
+        view: mapView,
+        leadingLayers: [labinsLayer, ngsLayer, CCCLLayer, swfwmdLayer, layer],
+        trailingLayers: [],
+        direction: "horizontal", // swipe widget will move from right to left of view
+        position: 50 // position set to middle of the view (50%)
       }
-    });
+      swipe = new Swipe(swipeParams);
+      mapView.ui.add(swipe);
+    } else if (swipe !== null) {
+      swipe.destroy()
+      swipe = null;
+    }
+  });
 
 
 });

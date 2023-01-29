@@ -12,8 +12,8 @@ require([
   "esri/geometry/Point",
   "esri/layers/GraphicsLayer",
   "esri/Graphic",
-  "esri/tasks/IdentifyTask",
-  "esri/tasks/support/IdentifyParameters",
+  "esri/rest/identify",
+  "esri/rest/support/IdentifyParameters",
   "esri/symbols/SimpleFillSymbol",
   "esri/symbols/SimpleLineSymbol",
   "esri/tasks/Locator",
@@ -70,7 +70,7 @@ require([
   Point,
   GraphicsLayer,
   Graphic,
-  IdentifyTask,
+  identify,
   IdentifyParameters,
   SimpleFillSymbol,
   SimpleLineSymbol,
@@ -1184,21 +1184,20 @@ require([
                   }
                 });
             } else {
-              const task = new IdentifyTask(layer.layer.url)
               const params = await setIdentifyParameters(visibleLayers, eventType, event);
-              const identify = await executeIdentifyTask(task, params);
-              // push each feature to the infoPanelData
-              for (feature of identify.results) {
-                feature.feature.attributes.layerName = feature.layerName;
-                let result = feature.feature.attributes
-                if (result.layerName === 'Certified Corners') {
-                  result.relatedFeatures = await queryCCRRelatedFeatures(result);
+              identify.identify(layer.layer.url, params).then(async (response) => {
+                for (feature of response.results) {
+                  feature.feature.attributes.layerName = feature.layerName;
+                  let result = feature.feature.attributes
+                  if (result.layerName === 'Certified Corners') {
+                    result.relatedFeatures = await queryCCRRelatedFeatures(result);
+                  }
+                  // make sure only certified corners with images are identified
+                  if (result.layerName !== 'Certified Corners' || result.is_image === 'Y') {
+                    await infoPanelData.push(feature.feature);
+                  }
                 }
-                // make sure only certified corners with images are identified
-                if (result.layerName !== 'Certified Corners' || result.is_image === 'Y') {
-                  await infoPanelData.push(feature.feature);
-                }
-              }
+              })
             }
           }
         }

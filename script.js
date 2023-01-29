@@ -1154,7 +1154,7 @@ require([
       // look inside of layerList layers
       let layers = layerList.operationalItems.items
       // loop through layers
-      for (layer of layers) {
+      for (const layer of layers) {
         let visibleLayers;
         // exclude geographic names layer from identify operation
         if (layer.title !== 'Geographic Names') {
@@ -1183,8 +1183,9 @@ require([
                 });
             } else {
               const params = await setIdentifyParameters(visibleLayers, eventType, event);
-              identify.identify(layer.layer.url, params).then(async (response) => {
-                for (feature of response.results) {
+              await identify.identify(layer.layer.url, params).then(async (response) => {
+                const { results } = response;
+                for (feature of results) {
                   feature.feature.attributes.layerName = feature.layerName;
                   let result = feature.feature.attributes
                   if (result.layerName === 'Certified Corners') {
@@ -1192,7 +1193,7 @@ require([
                   }
                   // make sure only certified corners with images are identified
                   if (result.layerName !== 'Certified Corners' || result.is_image === 'Y') {
-                    await infoPanelData.push(feature.feature);
+                    infoPanelData.push(feature.feature);
                   }
                 }
               })
@@ -1203,7 +1204,7 @@ require([
       if (infoPanelData.length > 0) {
         await queryInfoPanel(infoPanelData, 1, event);
         togglePanel();
-        await goToFeature(infoPanelData[0], button = false);
+        goToFeature(infoPanelData[0], button = false);
       } else {
         $('#infoSpan').html('Information Panel - 0 features found.');
         $('#informationdiv').append('<p>This query did not return any features</p>');
@@ -2128,30 +2129,26 @@ require([
     infoPanelData = [];
     const results = event.results
     // 6 is the ESRI Geocoder service
-    if (!(results[0].sourceIndex === 6)) {
-      // grab layername from search result
-      var layerName = results["0"].results[0].feature.layer.name;
+    // if (!(results[0].sourceIndex === 6)) {
+    // grab layername from search result
+    var layerName = results[0].results[0].feature.layer.name;
 
-      if (layerName == "Certified Corners") {
-        results["0"].results["0"].feature.attributes.layerName = "Certified Corners";
-        results[0].results[0].feature.attributes.relatedFeatures = await queryCCRRelatedFeatures(results[0].results[0].feature.attributes);
-      }
-
-      //clear content of information panel
-      clearDiv('informationdiv');
-      $('#numinput').val('');
-      $('#infoSpan').html('Information Panel');
-
-      // push query results of search bar to information panel
-      infoPanelData.push(event.results["0"].results["0"].feature);
-      await queryInfoPanel(infoPanelData, 1, event);
-      goToFeature(infoPanelData[0]);
-      togglePanel();
+    if (layerName == "Certified Corners") {
+      results[0].results[0].feature.attributes.layerName = "Certified Corners";
+      results[0].results[0].feature.attributes.relatedFeatures = await queryCCRRelatedFeatures(results[0].results[0].feature.attributes);
     } else {
-      clearDiv('informationdiv');
-      $('#numinput').val('');
-      $('#infoSpan').html('Information Panel');
+      results[0].results[0].feature.attributes.layerName = layerName;
     }
+
+    //clear content of information panel
+    clearDiv('informationdiv');
+    $('#numinput').val('');
+    $('#infoSpan').html('Information Panel');
+    // push query results of search bar to information panel
+    infoPanelData.push(event.results[0].results[0].feature);
+    await queryInfoPanel(infoPanelData, 1, event);
+    goToFeature(infoPanelData[0]);
+    togglePanel();
   });
 
   // set up alert for dynamically created zoom to feature buttons

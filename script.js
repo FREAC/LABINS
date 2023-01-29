@@ -36,7 +36,7 @@ require([
   "esri/widgets/Measurement",
   "esri/widgets/Swipe",
   "esri/widgets/Bookmarks",
-  "esri/core/watchUtils",
+  "esri/core/reactiveUtils",
   "dojo/on",
   "dojo/dom",
   "dojo/dom-class",
@@ -91,7 +91,7 @@ require([
   Measurement,
   Swipe,
   Bookmarks,
-  watchUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, dojoQuery, Color,
+  reactiveUtils, on, dom, domClass, domConstruct, domGeom, keys, JSON, dojoQuery, Color,
   CalciteMapsArcGISSupport) {
 
   var minimumDrawScale = 95000;
@@ -484,7 +484,7 @@ require([
   /////////////////////
 
   var map = new Map({
-    basemap: "topo",
+    basemap: "topo-vector",
     layers: [selectionLayer, bufferLayer]
   });
 
@@ -510,7 +510,7 @@ require([
   if (screen.availWidth > 992) {
     // Create another Map, to be used in the overview "view"
     var overviewMap = new Map({
-      basemap: "topo"
+      basemap: "topo-vector"
     });
 
     //Overview Mapview
@@ -552,7 +552,12 @@ require([
 
     overView.when(function () {
       // Update the minimap overview when the main view becomes stationary
-      watchUtils.when(mapView, "stationary", updateOverview);
+      reactiveUtils.when(
+        // getValue function
+        () => mapView.stationary,
+        // callback
+        updateOverview
+      )
 
       function updateOverview() {
         // Animate the MapView to a zoomed-out scale so we get a nice overview.
@@ -1271,10 +1276,6 @@ require([
       params.mapExtent = mapView.extent;
     }
     return params;
-  }
-
-  async function executeIdentifyTask(tasks, params) {
-    return tasks.execute(params)
   }
 
   // collapse any of the current panels and switch to the identifyResults panel

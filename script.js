@@ -16,7 +16,6 @@ require([
   "esri/rest/support/IdentifyParameters",
   "esri/symbols/SimpleFillSymbol",
   "esri/symbols/SimpleLineSymbol",
-  "esri/tasks/Locator",
   "esri/geometry/SpatialReference",
 
   // Widgets
@@ -74,7 +73,6 @@ require([
   IdentifyParameters,
   SimpleFillSymbol,
   SimpleLineSymbol,
-  Locator,
   SpatialReference,
   CoordinateConversion,
   Format,
@@ -1410,7 +1408,6 @@ require([
     container: "searchWidgetDiv",
     view: mapView,
     popupEnabled: false,
-    includeDefaultSources: false,
     allPlaceholder: "Search for data or an address",
     sources: [{
       name: "Certified Corners",
@@ -1485,29 +1482,32 @@ require([
       exactMatch: false,
       resultSymbol: highlightPoint,
       placeholder: "Search by Survey Benchmark",
-    }, {
-      locator: new Locator({
-        url: "//geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
-      }),
-      singleLineFieldName: "SingleLine",
-      name: "Addresses & Points of Interest",
-      placeholder: "Search by Address",
-      maxResults: 1,
-      countryCode: "US",
-      resultSymbol: highlightPointAddr,
-      filter: {
-        // Extent of Florida
-        geometry: new Extent({
-          xmin: -87.8,
-          ymin: 24.4,
-          xmax: -79.8,
-          ymax: 31.2,
-          "spatialReference": {
-            "wkid": 4326
-          }
-        })
-      }
-    }],
+    },
+      // TODO: FIX THIS
+      // support for the previous implementation of this is broken and requires an api key now. 
+      // the default source covers this for now until better solution
+      // {
+      //   url: "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer",
+      //   singleLineFieldName: "SingleLine",
+      //   name: "Addresses & Points of Interest",
+      //   placeholder: "Search by Address",
+      //   maxResults: 1,
+      //   countryCode: "US",
+      //   resultSymbol: highlightPointAddr,
+      //   filter: {
+      //     // Extent of Florida
+      //     geometry: new Extent({
+      //       xmin: -87.8,
+      //       ymin: 24.4,
+      //       xmax: -79.8,
+      //       ymax: 31.2,
+      //       "spatialReference": {
+      //         "wkid": 4326
+      //       }
+      //     })
+      //   }
+      // }
+    ],
   });
 
   CalciteMapsArcGISSupport.setSearchExpandEvents(searchWidget);

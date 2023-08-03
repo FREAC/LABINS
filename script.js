@@ -175,7 +175,7 @@ require([
   }
 
   // const ngsLayerURL = "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/ArcGIS/rest/services/ngs_datasheets/FeatureServer/0";
-  const ngsLayerURL = "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/arcgis/rest/services/NGS_Datasheets_Feature_Service/FeatureServer/0";
+  const ngsLayerURL = "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/arcgis/rest/services/NGS_Datasheets_Feature_Service/FeatureServer/1";
   const ngsLayer = new FeatureLayer({
     url: ngsLayerURL,
     outFields: ["pos_srce", "vert_srce"],
@@ -252,11 +252,11 @@ require([
     title: "LABINS Data",
     url: labinsURL,
     sublayers: [{
-        id: 17,
-        title: "Erosion Control Line1",
-        visible: true,
-        popupEnabled: false,
-        minScale: minimumDrawScale
+      id: 17,
+      title: "Erosion Control Line1",
+      visible: true,
+      popupEnabled: false,
+      minScale: minimumDrawScale
     }, {
       id: 16,
       title: "Soils June 2012 - Dept. of Agriculture",
@@ -383,7 +383,7 @@ require([
       minScale: minimumDrawScale
     }]
   });
-  
+
   var swfwmdURL = "https://www25.swfwmd.state.fl.us/arcgis12/rest/services/BaseVector/SurveyBM/MapServer/";
   var swfwmdLayer = new MapImageLayer({
     url: swfwmdURL,
@@ -599,19 +599,19 @@ require([
   const bookmarksMenuBtn = document.getElementById("bookmarksMenuBtn")
   bookmarksMenuBtn.addEventListener("click", () => {
     // addCustomWidgetHeaders("desktopBookmarks", bookmarks, bookmarkStatus);
-      // if bookmark status != 1, add it to the map
-      
-      // close the menu options
-      const navbarToggleArr = document.getElementsByClassName("navbar-menu-toggle");
-      for (i = 0; i < navbarToggleArr.length; i++) {
-        navbarToggleArr[i].classList.remove("open");
-      }
-      
-      if (bookmarkStatus != 1) {
-        mapView.ui.remove(scaleBar);
+    // if bookmark status != 1, add it to the map
 
-        // custom header to display a header and close button
-        const header = `
+    // close the menu options
+    const navbarToggleArr = document.getElementsByClassName("navbar-menu-toggle");
+    for (i = 0; i < navbarToggleArr.length; i++) {
+      navbarToggleArr[i].classList.remove("open");
+    }
+
+    if (bookmarkStatus != 1) {
+      mapView.ui.remove(scaleBar);
+
+      // custom header to display a header and close button
+      const header = `
         <div id="bookmarksHeader" style="background-color:#315866; position: sticky; top: 0; z-index: 999; padding-top: 1px; padding-left: 10px">
           <span class="glyphicon esri-icon-layers" aria-hidden="true" style="color: white; margin-right: 5px; margin-top: 5px; margin-left: 2px;"></span>
           <span id="bookmarksSpan" class="panel-label"  style="color: white; margin-top: 5px;">Bookmarks</span>
@@ -620,22 +620,22 @@ require([
           </button>
         </div>
         `
-        mapView.ui.add([bookmarks, scaleBar], "bottom-left");
-        // add bookmarks header to beginning of div
-        $("#bookmarksDiv").prepend(header);
+      mapView.ui.add([bookmarks, scaleBar], "bottom-left");
+      // add bookmarks header to beginning of div
+      $("#bookmarksDiv").prepend(header);
 
-        const closebtn = document.getElementById('closeBookmarksBtn');
-        on(closebtn, "click", function (event) {
-          $("#bookmarksHeader").remove();
-          mapView.ui.remove(bookmarks);
-          bookmarkStatus = 0;
-        });
-        bookmarkStatus = 1;
-      } else {
+      const closebtn = document.getElementById('closeBookmarksBtn');
+      on(closebtn, "click", function (event) {
         $("#bookmarksHeader").remove();
         mapView.ui.remove(bookmarks);
         bookmarkStatus = 0;
-      }
+      });
+      bookmarkStatus = 1;
+    } else {
+      $("#bookmarksHeader").remove();
+      mapView.ui.remove(bookmarks);
+      bookmarkStatus = 0;
+    }
   });
 
   let existingData = [];
@@ -661,7 +661,7 @@ require([
 
   // watching for additions or deletes
   bookmarks.bookmarks.watch("length", () => addBookmarksToLocalStorage(bookmarks));
-  
+
   function resetElements(currentElement, trs = true) {
     let doNotSelect = "#" + currentElement.id + ", #selectLayerDropdown";
     doNotSelect = trs ? doNotSelect : doNotSelect + ", .trs";
@@ -681,17 +681,17 @@ require([
     option.text = zoomParam;
     dom.byId(panelParam).add(option);
   }
-  
+
   function buildSelectPanel(url, attribute, zoomParam, panelParam, ngs = false, county = null, populateEmptyDropdown = false) {
     if (!populateEmptyDropdown) {
       var option = domConstruct.create("option");
       option.text = zoomParam;
-      dom.byId(panelParam).add(option);  
+      dom.byId(panelParam).add(option);
     }
 
-    let whereClause = county === null 
-    ? ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL"
-    : ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL and COUNTY = '" + county.toUpperCase() + "'"
+    let whereClause = county === null
+      ? ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL"
+      : ngs ? attribute + " IS NOT NULL AND STATE = 'FL'" : attribute + " IS NOT NULL and COUNTY = '" + county.toUpperCase() + "'"
 
     var task = new QueryTask({
       url: url
@@ -704,21 +704,21 @@ require([
     });
 
     task.execute(params)
-    .then(function (response) {
-      var features = response.features;
-      var values = features.map(function (feature) {
-        return feature.attributes[attribute];
+      .then(function (response) {
+        var features = response.features;
+        var values = features.map(function (feature) {
+          return feature.attributes[attribute];
+        });
+        return values;
+      })
+      .then(function (uniqueValues) {
+        uniqueValues.sort();
+        uniqueValues.forEach(function (value) {
+          var option = domConstruct.create("option");
+          option.text = value;
+          dom.byId(panelParam).add(option);
+        });
       });
-      return values;
-    })
-    .then(function (uniqueValues) {
-      uniqueValues.sort();
-      uniqueValues.forEach(function (value) {
-        var option = domConstruct.create("option");
-        option.text = value;
-        dom.byId(panelParam).add(option);
-      });
-    });
   }
 
   // Input location from drop down, zoom to it and highlight
@@ -818,22 +818,22 @@ require([
     bufferLayer.add(bufferGraphic);
     return buffer;
   }
-  const fadeBuffer = async () =>  {
+  const fadeBuffer = async () => {
     var clrG = document.getElementById("clearGraphics")
     selectionLayer.opacity = 1;
-    bufferLayer.opacity    = 1;
+    bufferLayer.opacity = 1;
     if (clrG.checked) {
       const delay = ms => new Promise(res => setTimeout(res, ms));
       await delay(3500); // 3.5 seconds
       selectionLayer.opacity = .75;
       await delay(500);
-      bufferLayer.opacity    = .45
+      bufferLayer.opacity = .45
       selectionLayer.opacity = .45;
       await delay(500);
-      bufferLayer.opacity    = .25
+      bufferLayer.opacity = .25
       selectionLayer.opacity = .25;
       await delay(500);
-      bufferLayer.opacity    = .05
+      bufferLayer.opacity = .05
       selectionLayer.opacity = .05;
       bufferLayer.graphics.removeAll();
       selectionLayer.graphics.removeAll();
@@ -1026,8 +1026,8 @@ require([
     // Add label toggles in Layerlist widget
     function defineActions(event) {
       if (["Certified Corners", "Hi-Res Imagery Grid State Plane East",
-          "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"
-        ].includes(event.item.title)) {
+        "Hi-Res Imagery Grid: State Plane North", "Hi-Res Imagery Grid: State Plane West"
+      ].includes(event.item.title)) {
         event.item.actionsSections = [
           [{
             title: "Toggle labels",
@@ -1131,7 +1131,7 @@ require([
     return false;
   }
 
-  async function queryCCRRelatedFeatures (result) {
+  async function queryCCRRelatedFeatures(result) {
     let relatedFeatures = [];
     const ccp_rquery = {
       outFields: ["DOCNUM"],
@@ -1199,7 +1199,7 @@ require([
                 feature.feature.attributes.layerName = feature.layerName;
                 let result = feature.feature.attributes
                 if (result.layerName === 'Certified Corners') {
-                  result.relatedFeatures = await queryCCRRelatedFeatures (result);
+                  result.relatedFeatures = await queryCCRRelatedFeatures(result);
                 }
                 // make sure only certified corners with images are identified
                 if (result.layerName !== 'Certified Corners' || result.is_image === 'Y') {
@@ -1336,7 +1336,7 @@ require([
         }
       });
   }
-  
+
   async function loadProjection() {
     projection.load()
   }
@@ -1376,13 +1376,13 @@ require([
         // first we have to decide if this is an NGS point because we will get LAT/LON
         // instead of the world mercator coordinates everthing else is in.
         newPt = feature.geometry
-        if (feature.geometry.x > -90){
+        if (feature.geometry.x > -90) {
           // ready to convert lat/lon to world mercator
           let outSpatialReference = new SpatialReference({
-              wkid: 3857
+            wkid: 3857
           });
           loadProjection();
-          var newPt = projection.project(feature.geometry,outSpatialReference)
+          var newPt = projection.project(feature.geometry, outSpatialReference)
         } else {
           // if it is a point other than NGS we just want to load the point and move on
           newPt = feature.geometry
@@ -1972,7 +1972,7 @@ require([
         resetElements(countyDropdownAfter);
         infoPanelData = [];
         buildSelectPanel(labinsURL + '6', 'unique_id', "Select an R-Monument", "rMonumentQuery", false, county, true);
-    });
+      });
 
       query(rMonumentDropdownAfter).on('change', function (event) {
         clearDiv('informationdiv');
@@ -2147,12 +2147,12 @@ require([
     if (!(results[0].sourceIndex === 6)) {
       // grab layername from search result
       var layerName = results["0"].results[0].feature.layer.name;
-      
+
       if (layerName == "Certified Corners") {
         results["0"].results["0"].feature.attributes.layerName = "Certified Corners";
-        results[0].results[0].feature.attributes.relatedFeatures = await queryCCRRelatedFeatures (results[0].results[0].feature.attributes);
+        results[0].results[0].feature.attributes.relatedFeatures = await queryCCRRelatedFeatures(results[0].results[0].feature.attributes);
       }
-      
+
       //clear content of information panel
       clearDiv('informationdiv');
       $('#numinput').val('');
@@ -2667,7 +2667,7 @@ require([
     measurementIdentifyToggleButton.className = "esri-widget--button esri-interactive esri-icon-description";
     measurementIdentifyToggleButton.title = "Identify Features in search area";
     measurementToolbar.appendChild(measurementIdentifyToggleButton)
-    
+
 
     measureExpand.watch("expanded", function () {
       if (measureExpand.expanded == false) {
@@ -2741,7 +2741,7 @@ require([
   swipeDiv.setAttribute("aria-label", "Swipe Tool");
   swipeDiv.title = "Swipe Tool";
 
-  
+
   var swipeSpanIcon = document.createElement("span");
   swipeSpanIcon.setAttribute("aria-hidden", "true");
   swipeSpanIcon.className = "esri-icon esri-icon-sliders-horizontal";
@@ -2754,29 +2754,29 @@ require([
 
   swipeDiv.appendChild(swipeSpanIcon);
   swipeDiv.appendChild(swipeSpanFallback);
-  mapView.ui.add(swipeDiv,"top-left")
+  mapView.ui.add(swipeDiv, "top-left")
 
   mapView.ui.add(measureExpand, "top-left");
 
   let swipe = null;
 
-    swipeDiv.addEventListener("click", () => {
-      if (swipe == null) {
+  swipeDiv.addEventListener("click", () => {
+    if (swipe == null) {
 
-        let swipeParams = {
-          view: mapView,
-          leadingLayers: [labinsLayer, ngsLayer, CCCLLayer, swfwmdLayer, layer],
-          trailingLayers: [],
-          direction: "horizontal", // swipe widget will move from right to left of view
-          position: 50 // position set to middle of the view (50%)
-        }
-        swipe = new Swipe(swipeParams);
-        mapView.ui.add(swipe);
-      } else if (swipe !== null) {
-        swipe.destroy()
-        swipe = null;
+      let swipeParams = {
+        view: mapView,
+        leadingLayers: [labinsLayer, ngsLayer, CCCLLayer, swfwmdLayer, layer],
+        trailingLayers: [],
+        direction: "horizontal", // swipe widget will move from right to left of view
+        position: 50 // position set to middle of the view (50%)
       }
-    });
+      swipe = new Swipe(swipeParams);
+      mapView.ui.add(swipe);
+    } else if (swipe !== null) {
+      swipe.destroy()
+      swipe = null;
+    }
+  });
 
 
 });
